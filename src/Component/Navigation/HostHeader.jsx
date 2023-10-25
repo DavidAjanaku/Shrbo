@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import HostModal from "../Dashboard/HostModal";
+import Logo from "../../assets/logo.png"
 
 export default function HostHeader() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -40,11 +41,13 @@ export default function HostHeader() {
     <header className="bg-gray-800 text-white py-4 hidden md:block">
       <div className="container mx-auto flex items-center justify-between">
         <div className="text-2xl font-semibold">
-          <img
-            src="/path/to/your/logo.png"
+       <Link to="/">
+       <img
+            src={Logo}
             alt="Logo"
-            className="h-8 w-8 mr-2"
+            className="h-16 w-16 mr-2"
           />
+       </Link>
         </div>
         <nav className="flex">
           <Link to="/Hosting" className="text-white hover:text-gray-300 ml-4">

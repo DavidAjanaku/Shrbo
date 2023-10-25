@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import HostModal from "../Dashboard/HostModal";
 import bellIcon from "../../assets/svg/bell-icon.svg";
+import Logo from "../../assets/logo.png"
 
 export default function Header() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -61,11 +62,13 @@ export default function Header() {
     <header className="bg-gray-800 text-white py-4 hidden md:block">
       <div className="container mx-auto flex items-center justify-between">
         <div className="text-2xl font-semibold">
-          <img
-            src="/path/to/your/logo.png"
+        <Link to="/">
+       <img
+            src={Logo}
             alt="Logo"
-            className="h-8 w-8 mr-2"
+            className="h-16 w-16 mr-2"
           />
+       </Link>
         </div>
         <nav className="flex items-center">
           <Link to="/" className="text-white hover:text-gray-300 ml-4">
