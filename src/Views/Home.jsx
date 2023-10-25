@@ -103,11 +103,13 @@ export default function Home() {
         <div>
           <div className="hero-pattern relative bg-cover bg-center md:h-[70vh] h-[100vh] bg-[url('https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh')]">
             <h1 className="absolute inset-0 flex items-center justify-center -top-20 md:top-0 text-white md:text-6xl text-5xl lg:text-6xl p-4 text-center">
-              Find your place for together
+            Unlock Comfort, Discover Adventure with Shrbo.
             </h1>
-            <p className="absolute inset-0 flex items-center justify-center text-white -bottom-20 md:-bottom-40 md:text-lg text-center   text-xl">
-              Find great places, hotels, restaurants, shops.
+          <div>
+              <p className="absolute inset-5 flex items-center justify-center  text-white -bottom-60 md:-bottom-32 md:text-base text-center   text-sm">
+            Welcome to Shrbo, where comfort meets adventure. Find your perfect home away from home and embark on memorable journeys, one stay at a time.
             </p>
+          </div>
             <section className="flex  justify-center bottom-0 ">
               {/* <SearchLocation /> */}
             </section>
