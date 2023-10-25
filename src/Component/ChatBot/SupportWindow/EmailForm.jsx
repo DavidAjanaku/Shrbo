@@ -30,18 +30,18 @@ const EmailForm = (props) => {
 
 
     return (
-        <div className="transition-3"  
+        <div className="transition-3 bg-white"  
             style={{
                 ...styles.emailFormWindow,
                 ...{
                     height:props.visible?"100%":"0%",
                     opacity:props.visible? '1':'0',
-                    display:props.visible? "block":"none",
+                    display:isAnimation? "block":"none",
                 }
             }}
         >
             <div style={{ height:'0px'}}>
-                <div style={styles.stripe}           />
+                <div style={styles.stripe2}           />
 
             </div>
             
@@ -89,6 +89,8 @@ const EmailForm = (props) => {
                   
                 >
                     <input
+                        type="email"
+                        required
                         style={styles.emailInput}
                         onChange={e=>setEmail(e.target.value)}
                         placeholder="your email"

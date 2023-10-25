@@ -8,7 +8,7 @@ export const styles = {
         backgroundImage: `url(https://imagetolink.com/ib/GWS2AQy3uI.png)`, 
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
-        backgroundSize: '84px',
+        backgroundSize: 'cover',
         // Size
         width: '84px',
         height: '84px',
@@ -56,12 +56,20 @@ export const styles = {
         WebkitTransition: "all 0.5s ease",
         MozTransition: "all 0.5s ease",
     },
-    stripe: {
+    stripe2: {
         position: 'relative',
         top: '-45px',
         width: '100%',
         height: '338px',
         backgroundColor: '#7a39e0',
+        transform: 'skewY(-12deg)',
+    },
+    stripe: {
+        position: 'relative',
+        top: '-45px',
+        width: '100%',
+        height: '338px',
+        backgroundColor: 'rgb(30, 41, 59)',
         transform: 'skewY(-12deg)',
     },
     topText: { 
