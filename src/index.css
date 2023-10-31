@@ -132,7 +132,7 @@
   height: 500px !important;
 }
 
-:where(.css-dev-only-do-not-override-3mqfnx).ant-picker-dropdown .ant-picker-panel-container .ant-picker-panels {
+:where(.css-3mqfnx).ant-picker-dropdown .ant-picker-panel-container .ant-picker-panels {
   display: inline-flex;
   flex-wrap: wrap !important;
   direction: ltr;
