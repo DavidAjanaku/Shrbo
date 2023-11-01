@@ -103,6 +103,9 @@ const HamburgerMenuComponent = ({ isOpen, toggleMenu }) => {
               <Link to="/DisplayBookingsPaid">Paid Payment</Link>
             </li>
             <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+              <Link to="/PendingPayment">Pending Payments</Link>
+            </li>
+            <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
               <Link to="/FailedPayment">Failed Payment</Link>
             </li>
             <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">

@@ -45,6 +45,8 @@ import ReceivablePayable from "./Component/AdminDashboard/ReceivablePayable";
 import BookingTable from "./Component/AdminDashboard/BookingTable";
 import CompletedBooking from "./Component/AdminDashboard/CompletedBooking";
 import ReviewList from "./Component/AdminDashboard/ReviewList";
+import HostPayment from "./Component/Dashboard/HostPayment";
+import PendingPayment from "./Component/AdminDashboard/PendingPayment";
 
 function App() {
   return (
@@ -111,6 +113,8 @@ function App() {
         <Route path="/BookingTable" element={<BookingTable />} />
         <Route path="/CompletedBooking" element={<CompletedBooking />} />
         <Route path="/ReviewList" element={<ReviewList />} />
+        <Route path="/HostPayment" element={<HostPayment />} />
+        <Route path="/PendingPayment" element={<PendingPayment />} />
 
       </Routes>
     </Router>

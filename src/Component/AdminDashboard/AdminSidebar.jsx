@@ -107,6 +107,9 @@ export default function AdminSidebar() {
               Paid Payment</div></Link>
             </li>
             <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+              <Link to="/PendingPayment">Pending Payments</Link>
+            </li>
+            <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
               <Link to="/FailedPayment"><div>
               Failed Payment</div></Link>
             </li>
