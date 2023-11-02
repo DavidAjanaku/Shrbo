@@ -293,6 +293,7 @@ export default function Listings() {
       height: "200px", 
       width: "300px",  
       margin: "auto",
+      boxShadow:" 0 0 10px rgba(0, 0, 0, 0.2)",
     },
   }}
 >
@@ -302,7 +303,7 @@ export default function Listings() {
     <button onClick={handleDeleteButtonClick} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full">
       Confirm
     </button>
-    <button onClick={closeDeleteModal} className="bg-gray-300 hover:bg-gray-400 text-gray-600 px-4 py-2 rounded-full">
+    <button onClick={closeDeleteModal} className="bg-gray-300  hover:bg-gray-400 text-gray-600 px-4 py-2 rounded-full">
       Cancel
     </button>
   </div>

@@ -179,7 +179,7 @@ const ChatEngine= (props) => {
     return (
         <div  className="transition-3" style={{...styles.chatEngineWindow,
                         ...{
-                            height:props.visible ? '90%':'0%',
+                            height:props.visible ? '92%':'0%',
                             zIndex:props.visible ? '100' :' 0',
                             opacity:props.visible? '1':'0'
                             

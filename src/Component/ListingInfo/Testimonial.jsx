@@ -90,10 +90,10 @@ const Testimonial=()=>{
                       
                         <div className="flex justify-items-start flex-row items-center box-border  mt-5  w4/5">
                             
-                            <div   className=" h-[40px] w-[40px] md:w-[58px] md:h-[58px]  overflow-hidden rounded-full bg-orange-600 m-1"  ><img src={client.min}/></div>
+                            <div   className=" h-[40px] w-[40px] md:w-[58px] md:h-[58px]  overflow-hidden rounded-full bg-orange-500 m-1"  ><img src={client.min}/></div>
 
                             <div className=" pt-3 pl-2" > 
-                                <div className=" md:text-lg  text-base font-bold text-orange-600"  ><label>{client.user} </label></div> 
+                                <div className=" md:text-lg  text-base font-bold text-orange-500"  ><label>{client.user} </label></div> 
                                 <div className=" text-sm md:text-base"><label>{client.date}</label></div> 
                             </div>
 

@@ -109,8 +109,9 @@ const ListingPhotos = () => {
 
       <div className="md:flex md:flex-row relative mt-5 w-full hidden">
         <div className="w-1/2 h-full rounded-l-xl md:mr-2 overflow-hidden">
-          <div className="h-full w-full cursor-pointer">
-            <video src={video} className="h-full w-full" controls></video>
+          <div className="h-full   w-full cursor-pointer">
+            <video src={video}   className="h-full   w-full" controls 
+            ></video>
           </div>
         </div>
 
