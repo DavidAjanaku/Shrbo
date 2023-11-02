@@ -83,7 +83,7 @@ const data = [
       propertyId: "ABC123",
       amountReceivedByHost: 70,
       paymentAmount: 100,
-      taxes: 10,
+      serivceCharge: 10,
       bookingDetails: sampleBookingDetails, // Add the booking details object
   
     },
@@ -96,7 +96,7 @@ const data = [
       amountReceivedByHost: 85,
 
       paymentAmount: 150,
-      taxes: 15,
+      serivceCharge: 15,
       bookingDetails: sampleBookingDetails2, // Add the booking details object
 
     },
@@ -140,9 +140,9 @@ const HostTransactionHistory = () => {
         key: "amountReceivedByHost",
       },
     {
-      title: "Taxes",
-      dataIndex: "taxes",
-      key: "taxes",
+      title: "Serivce Charge",
+      dataIndex: "serivceCharge",
+      key: "serivceCharge",
     },
     {
       title: "Action",
