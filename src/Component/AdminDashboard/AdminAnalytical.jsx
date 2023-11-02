@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import { Link } from "react-router-dom";
-import { Select, Card, Row, Col, Table } from 'antd';
-
+import { Select, Card, Row, Col, Table } from "antd";
+import Cards from "./AdminAnalysisCard";
 
 export default function AdminAnalytical() {
   const data = [
@@ -51,86 +51,42 @@ export default function AdminAnalytical() {
                 <option value="month">Month</option>
                 <option value="year">Year</option>
                 <option value="All Time">All Time</option>
-
               </select>
             </div>
 
             <div className="bg-gray-200 p-4 rounded shadow">
               <h2 className="text-xl font-semibold">Today's Summary</h2>
-              <div className="flex flex-col md:flex-row flex-wrap justify-between mt-4 gap-4">
+              <div className="flex flex-col md:flex-row flex-wrap  mt-4 gap-4">
                 {/* Card for Guests Today */}
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Reg No of Guests </p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
+                <Cards title="Reg No of Guests" value={235} />
 
-                {/* Card for Hosts Today */}
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Reg No of Hosts </p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Active Guests</p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Active Hosts</p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">
-                     Property Listings
-                  </p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Revenue</p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Visitors</p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
+                {/* Cards for Hosts Today */}
+                <Cards title="Reg No of Hosts" value={20} />
+
+                <Cards title="Active Guests" value={215} />
+                <Cards title="Active Hosts" value={20} />
+                <Cards title="Property Listings" value={4599} />
+                <Cards title="Revenue" value={25457473.43} currency="₦" />
+                <Cards title="Visitors" value={4553} />
               </div>
             </div>
 
             <div className="bg-gray-200 p-4 rounded shadow">
               <h2 className="text-xl font-semibold">Today's Summary</h2>
-              <div className="flex flex-wrap justify-between mt-4 gap-3">
-                {/* Card for Guests Today */}
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Users</p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
-
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Pending Verified Users</p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Pending Approvals</p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
+              <div className="flex flex-wrap  mt-4 gap-3">
+                <Cards title="Users" value={0} />
+                <Cards title="Pending Verified Users" value={0} />
+                <Cards title="Pending Approvals" value={0} />
               </div>
             </div>
 
             <div className="bg-gray-200 p-4 rounded shadow">
               <h2 className="text-xl font-semibold"> Summary of Apartments</h2>
-              <div className="flex flex-wrap justify-between mt-4 gap-3">
-                {/* Card for Guests Today */}
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Booking Requests</p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
-
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Reservations</p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
-                <div className="bg-white rounded p-4 shadow flex-1 mr-4">
-                  <p className="text-xl font-semibold">Confirmed Bookings</p>
-                  <p className="text-4xl font-bold text-orange-400">0</p>
-                </div>
+              <div className="flex flex-wrap  mt-4 gap-3">
+              <Cards title="Booking Requests" value={0} />
+              <Cards title="Reservations" value={0} />
+              <Cards title="Confirmed Bookings" value={0} />
+            
               </div>
             </div>
 
@@ -144,50 +100,51 @@ export default function AdminAnalytical() {
                 </div>
               </div>
 
-          
               <div className="overflow-x-auto  pb-32">
-              <Table
-                dataSource={data}
-                columns={[
-                  {
-                    title: 'Property Name',
-                    dataIndex: 'propertyName',
-                    key: 'propertyName',
-                    render: (text, record) => (
-                      <Link to={`/property/${record.propertyId}`}>{text}</Link>
-                    ),
-                  },
-                  {
-                    title: 'Guest Name',
-                    dataIndex: 'guestName',
-                    key: 'guestName',
-                    render: (text, record) => (
-                      <Link to={`/guest/${record.guestId}`}>{text}</Link>
-                    ),
-                  },
-                  {
-                    title: 'Total',
-                    dataIndex: 'total',
-                    key: 'total',
-                  },
-                  {
-                    title: 'Start Date',
-                    dataIndex: 'startDate',
-                    key: 'startDate',
-                  },
-                  {
-                    title: 'End Date',
-                    dataIndex: 'endDate',
-                    key: 'endDate',
-                  },
-                  {
-                    title: 'Status',
-                    dataIndex: 'status',
-                    key: 'status',
-                  },
-                ]}
-              />
-            </div>
+                <Table
+                  dataSource={data}
+                  columns={[
+                    {
+                      title: "Property Name",
+                      dataIndex: "propertyName",
+                      key: "propertyName",
+                      render: (text, record) => (
+                        <Link to={`/property/${record.propertyId}`}>
+                          {text}
+                        </Link>
+                      ),
+                    },
+                    {
+                      title: "Guest Name",
+                      dataIndex: "guestName",
+                      key: "guestName",
+                      render: (text, record) => (
+                        <Link to={`/guest/${record.guestId}`}>{text}</Link>
+                      ),
+                    },
+                    {
+                      title: "Total",
+                      dataIndex: "total",
+                      key: "total",
+                    },
+                    {
+                      title: "Start Date",
+                      dataIndex: "startDate",
+                      key: "startDate",
+                    },
+                    {
+                      title: "End Date",
+                      dataIndex: "endDate",
+                      key: "endDate",
+                    },
+                    {
+                      title: "Status",
+                      dataIndex: "status",
+                      key: "status",
+                    },
+                  ]}
+                />
+              </div>
             </div>
           </div>
         </div>

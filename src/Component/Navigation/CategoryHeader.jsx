@@ -10,24 +10,22 @@ import FilterModal from "../Filter/FilterModal";
 
 export default function CategoryHeader() {
   const categories = [
-    { id: "design", label: "Design", image: Homes, link: "/" },
-    { id: "travel", label: "Travel", image: Travel, link: "/" },
-    { id: "food", label: "Food", image: Food, link: "/" },
+    { id: "Trending", label: "Trending", image: Homes, link: "/" },
+    { id: "Beachfront Bliss", label: "Beachfront Bliss", image: Travel, link: "/" },
+    { id: "Mountain Retreats", label: "Mountain Retreats", image: Food, link: "/" },
     { id: "Office", label: "Office", image: Office, link: "/" },
     { id: "Art", label: "Art", image: Art, link: "/" },
-    { id: "Beach", label: "Beach", image: Beach, link: "/" },
-    { id: "11", label: "Food", image: Food, link: "/" },
-    { id: "12", label: "Office", image: Office, link: "/" },
-    { id: "13", label: "Art", image: Art, link: "/" },
-    { id: "1", label: "Beach", image: Beach, link: "/" },
-    { id: "4", label: "Food", image: Food, link: "/" },
-    { id: "10", label: "Office", image: Office, link: "/" },
-    { id: "7", label: "Art", image: Art, link: "/" },
-    { id: "2", label: "Beach", image: Beach, link: "/" },
-    { id: "6", label: "Food", image: Food, link: "/" },
-    { id: "8", label: "Office", image: Office, link: "/" },
-    { id: "9", label: "Art", image: Art, link: "/" },
-    { id: "3", label: "Beach", image: Beach, link: "/" },
+    { id: "City Apartments", label: "City Apartments", image: Beach, link: "/" },
+    { id: "Pet-Friendly Retreats", label: "Pet-Friendly Retreats", image: Food, link: "/" },
+    { id: "Treehouse Retreats", label: "Treehouse Retreats", image: Office, link: "/" },
+    { id: "Family-Friendly Homes", label: "Family-Friendly Homes", image: Art, link: "/" },
+    { id: "Boutique Villas", label: "Boutique Villas", image: Beach, link: "/" },
+    { id: "Lakeside Serenity", label: "Lakeside Serenity", image: Food, link: "/" },
+    { id: "Desert Oases", label: "Desert Oases", image: Office, link: "/" },
+    { id: "Urban Getaways", label: "Urban Getaways", image: Art, link: "/" },
+    { id: "Countryside Charm", label: "Countryside Charm", image: Beach, link: "/" },
+    { id: "Luxury Estates", label: "Luxury Estates", image: Food, link: "/" },
+  
   ];
 
   const [selectedCategory, setSelectedCategory] = useState(categories[0].id);
