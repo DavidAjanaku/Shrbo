@@ -194,21 +194,12 @@ const HostTransactionHistory = () => {
       >
      {selectedBooking && (
   <div>
-    <h2 className="text-base font-semibold mt-4 mb-2">Guest Information:</h2>
-    <p>Guest Name:{selectedBooking.guestName}</p>
-    <p>Email:{selectedBooking.email}</p>
-    <p>Number of Guests:{selectedBooking.numGuests}</p>
-    <p>Special Requests:{selectedBooking.bookingDetails.specialRequests}</p>
-
-
-    <h2 className="text-base font-semibold mt-4 mb-2">Host Information:</h2>
-    <p>Host Name:{selectedBooking.bookingDetails.hostName}</p>
-    <p>Host Contact:{selectedBooking.bookingDetails.hostContact}</p>
+  
 
 
 
 
-    <h2 className="text-base font-semibold mt-4 mb-2">Property Selection:</h2>
+    <h2 className="text-base font-semibold mt-4 mb-2">Guest Paid</h2>
     <p>Property Name:{selectedBooking.bookingDetails.propertyName}</p>
     <p>Property Type:{selectedBooking.bookingDetails.propertyType}</p>
     <p>Check-In Date:{selectedBooking.bookingDetails.checkInDate}</p>

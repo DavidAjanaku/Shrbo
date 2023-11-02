@@ -362,3 +362,6 @@ The slider*/
 }
 
 
+.custom-table .ant-table-thead th {
+  background: white;
+}

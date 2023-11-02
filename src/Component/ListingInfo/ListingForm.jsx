@@ -131,7 +131,7 @@ export default function ListingForm() {
             {/* <!--Traveler input--> */}
 
             <div className=" relative box-border p-2  ">
-              <div className=" overflow-hidden relative border rounded min-h-[50px] block box-border ">
+              <div className=" overflow-hidden relative border rounded-lg min-h-[50px] block box-border ">
                 {/* <label className=" text-xs font-normal px-4  overflow-hidden absolute text-ellipsis whitespace-nowrap  ">
                   Travelers
                 </label> */}

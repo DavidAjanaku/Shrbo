@@ -3,6 +3,7 @@ import { Tabs } from "antd";
 import HostHeader from "../Navigation/HostHeader";
 import HostPayoutRequests from "./HostPayoutRequests";
 import HostTransactionHistory from "./HostTransactionHistory";
+import CompletedPayout from "./CompletedPayout";
 
 const { TabPane } = Tabs;
 
@@ -13,7 +14,7 @@ export default function HostPayment() {
       <div className="m-3 md:w-3/4 md:mx-auto md:my-28">
         <Tabs defaultActiveKey="1">
           <TabPane tab="Completed Payouts" key="1">
-            <div>lorem</div>
+            <div><CompletedPayout/></div>
           </TabPane>
           <TabPane tab="Transaction History" key="2">
             <div><HostTransactionHistory/></div>

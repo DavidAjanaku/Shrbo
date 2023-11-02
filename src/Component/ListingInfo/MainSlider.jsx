@@ -54,20 +54,16 @@ const MainSlider = (props) => {
       min: video,
     },
     {
-      id: 1,
-      min: room,
-    },
-    {
       id: 2,
       min: kitchen,
     },
     {
       id: 3,
-      min: apartment,
+      min: room,
     },
     {
       id: 4,
-      min: apartment1,
+      min: kitchen,
     },
     {
       id: 5,
@@ -100,7 +96,7 @@ const MainSlider = (props) => {
               <video
                 src={slide.min}
                 alt="Video"
-                className='rounded h-full w-full'
+                className='rounded  h-full w-full'
                 
                 controls
                 playsInline

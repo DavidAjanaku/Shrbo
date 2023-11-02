@@ -13,7 +13,8 @@ export default function ReviewListings() {
       rentalName: "Awesome Villa",
       rating: 5,
       emailAddress: "johndoe@example.com",
-      comments: "lorem",
+      comments:
+        "     Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur similique aperiam, quasi hic commodi, voluptatum alias enim repellat odit deleniti sit itaque, deserunt impedit maiores rerum ipsam neque laborum tempore.",
       dateAdded: "2023-10-01",
       status: "Active",
     },
@@ -51,7 +52,9 @@ export default function ReviewListings() {
       title: "Do you want to delete this review?",
       icon: <ExclamationCircleOutlined />,
       onOk() {
-        const updatedReviews = reviews.filter((review) => review.id !== reviewId);
+        const updatedReviews = reviews.filter(
+          (review) => review.id !== reviewId
+        );
         setReviews(updatedReviews);
       },
     });
@@ -75,10 +78,10 @@ export default function ReviewListings() {
     },
 
     {
-        title: "Comments",
-        dataIndex: "comments",
-        key: "comments",
-      },
+      title: "Comments",
+      dataIndex: "comments",
+      key: "comments",
+    },
     {
       title: "Date Added",
       dataIndex: "dateAdded",
@@ -118,9 +121,13 @@ export default function ReviewListings() {
           >
             <a onClick={(e) => e.preventDefault()}>Action</a>
           </Dropdown>
-
           &nbsp;
-          <span onClick={() => handleDeleteReview(record.id)} className="cursor-pointer">Delete</span>
+          <span
+            onClick={() => handleDeleteReview(record.id)}
+            className="cursor-pointer"
+          >
+            Delete
+          </span>
         </div>
       ),
     },
@@ -129,8 +136,7 @@ export default function ReviewListings() {
   const filteredReviews = reviews.filter((review) => {
     const { status } = filters;
 
-    const matchesStatus =
-      status === "Any" || review.status === status;
+    const matchesStatus = status === "Any" || review.status === status;
 
     const matchesSearch =
       review.rentalName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -141,42 +147,40 @@ export default function ReviewListings() {
 
   return (
     <div className="bg-gray-100 h-[100vh]">
-        <AdminHeader/>
-        <div className="flex">
+      <AdminHeader />
+      <div className="flex">
         <div className="hidden md:block bg-orange-400 text-white md:w-1/5 h-[100vh] p-4">
           <AdminSidebar />
         </div>
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
-
-        <h1 className="text-2xl font-semibold mb-4">Review Listings</h1>
-      <div className="bg-white p-4 rounded shadow">
-        <div className="mb-4 flex justify-end">
-          <Input
-            type="text"
-            name="searchQuery"
-            value={searchQuery}
-            onChange={handleSearchInputChange}
-            placeholder="Search by name or email"
-            className="border p-1 rounded-full mr-2"
-          />
-          <Select
-            style={{ width: 120 }}
-            value={filters.status}
-            onChange={handleFilterChange}
-          >
-            <Select.Option value="Any">Status (Any)</Select.Option>
-            <Select.Option value="Active">Active</Select.Option>
-            <Select.Option value="Not Active">Not Active</Select.Option>
-            {/* Add more status options as needed */}
-          </Select>
-        </div>
-        <div className="overflow-x-auto">
-          <Table columns={columns} dataSource={filteredReviews} />
+          <h1 className="text-2xl font-semibold mb-4">Review Listings</h1>
+          <div className="bg-white p-4 rounded shadow">
+            <div className="mb-4 flex justify-end">
+              <Input
+                type="text"
+                name="searchQuery"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+                placeholder="Search by name or email"
+                className="border p-1 rounded-full mr-2"
+              />
+              <Select
+                style={{ width: 120 }}
+                value={filters.status}
+                onChange={handleFilterChange}
+              >
+                <Select.Option value="Any">Status (Any)</Select.Option>
+                <Select.Option value="Active">Active</Select.Option>
+                <Select.Option value="Not Active">Not Active</Select.Option>
+                {/* Add more status options as needed */}
+              </Select>
+            </div>
+            <div className="overflow-x-auto">
+              <Table columns={columns} dataSource={filteredReviews} />
+            </div>
+          </div>
         </div>
       </div>
-      </div>
-        </div>
-    
     </div>
   );
 }

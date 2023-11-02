@@ -81,7 +81,7 @@ export default function AdminSidebar() {
             <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
               <Link to="/ApartmentListingApproval">
                 <div>
-                Apartment Listing Approval
+                Property Listing Approval
                 </div>
               </Link>
             </li>
@@ -151,6 +151,11 @@ export default function AdminSidebar() {
         <Link to="/UserVerificationPage">
           <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
             User Verification Page
+          </li>
+        </Link>
+        <Link to="/CanceledReservationTable">
+          <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+          Canceled Reservation Table
           </li>
         </Link>
         <Link to="/AdminRolesPage">

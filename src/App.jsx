@@ -26,7 +26,7 @@ import ScrollToTop from "./Component/ScrollToTop";
 import HostAnalysis from "./Component/Dashboard/HostAnalysis";
 import Schduler from "./Component/Dashboard/Schduler";
 import ChatAndNotifcationTab from "./Views/ChatAndNotifcationTab";
-import Registration from "./Views/Registration"
+import Registration from "./Views/Registration";
 import EditHomepage from "./Component/AdminDashboard/EditHomepage";
 import AdminAnalytical from "./Component/AdminDashboard/AdminAnalytical";
 import GuestsListings from "./Component/AdminDashboard/GuestsListings";
@@ -47,6 +47,7 @@ import CompletedBooking from "./Component/AdminDashboard/CompletedBooking";
 import ReviewList from "./Component/AdminDashboard/ReviewList";
 import HostPayment from "./Component/Dashboard/HostPayment";
 import PendingPayment from "./Component/AdminDashboard/PendingPayment";
+import CanceledReservationTable from "./Component/AdminDashboard/CanceledReservationTable";
 
 function App() {
   return (
@@ -79,12 +80,11 @@ function App() {
         <Route path="/Reservations" element={<Reservations />} />
         <Route path="/HostAnalysis" element={<HostAnalysis />} />
         <Route path="/Schduler" element={<Schduler />} />
-        <Route path="/ChatAndNotifcationTab" element={<ChatAndNotifcationTab />} />
-        <Route path="/Registration" element={<Registration/>}/>
-
-
-
-
+        <Route
+          path="/ChatAndNotifcationTab"
+          element={<ChatAndNotifcationTab />}
+        />
+        <Route path="/Registration" element={<Registration />} />
 
         <Route
           path="/ChatAndNotifcationTab"
@@ -102,7 +102,10 @@ function App() {
           element={<ApartmentListingApproval />}
         />
         <Route path="/CurrentBookingsList" element={<CurrentBookingsList />} />
-        <Route path="/UserVerificationPage" element={<UserVerificationPage />} />
+        <Route
+          path="/UserVerificationPage"
+          element={<UserVerificationPage />}
+        />
         <Route path="/AdminRolesPage" element={<AdminRolesPage />} />
         <Route path="/AdminSupportPage" element={<AdminSupportPage />} />
         <Route path="/AnnouncementPage" element={<AnnouncementPage />} />
@@ -115,7 +118,10 @@ function App() {
         <Route path="/ReviewList" element={<ReviewList />} />
         <Route path="/HostPayment" element={<HostPayment />} />
         <Route path="/PendingPayment" element={<PendingPayment />} />
-
+        <Route
+          path="/CanceledReservationTable"
+          element={<CanceledReservationTable />}
+        />
       </Routes>
     </Router>
   );

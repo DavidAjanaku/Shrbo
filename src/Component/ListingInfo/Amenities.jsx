@@ -44,7 +44,7 @@ import PopupFull from "../../hoc/PopupFull";
            // Amenities Like 2 bedroom, living room, 3 bath room ,  cinema Room 
         const amenities=amenities_info.map(amenity=>(
                 <div key={amenity.id} className=" relative px-[6px]  w-full md:w-1/2 md:px-2 ">
-                    <div className=" flex itens-center md:max-w-[83.33%]  pb-4 justify-end flex-row-reverse ">
+                    <div className=" flex items-center md:max-w-[83.33%]  pb-4 justify-end flex-row-reverse ">
                         <div>{amenity.text}</div>
                         <div className=" mr-4 min-w-[24px]">
                                      <svg xmlns="http://www.w3.org/2000/svg" 

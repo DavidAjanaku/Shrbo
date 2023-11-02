@@ -126,10 +126,10 @@ const BookingInfo = () => {
           {/* <!--Traveler input--> */}
 
           <div className=" relative box-border py-4  ">
-            <div className=" overflow-hidden relative border rounded min-h-[50px] block box-border ">
-              <label className=" text-xs font-normal px-4  overflow-hidden absolute text-ellipsis whitespace-nowrap  ">
+            <div className=" overflow-hidden relative border rounded-lg min-h-[50px] block box-border ">
+              {/* <label className=" text-xs font-normal px-4  overflow-hidden absolute text-ellipsis whitespace-nowrap  ">
                 Guests
-              </label>
+              </label> */}
               {/* <input className=' border rounded text-base font-normal '/> */}
               <MyDropdown
                 adults={adults}
@@ -440,7 +440,7 @@ function MyDropdown({ adults, children, pets, infants }) {
               onClick={handleSubmit}
             >
               {" "}
-              Click me!
+              Done
             </Button>
           </Space>
         </div>
@@ -452,8 +452,8 @@ function MyDropdown({ adults, children, pets, infants }) {
           className=" block m-4 cursor-pointer overflow-hidden text-ellipsis text-start whitespace-nowrap text-base font-normal      "
         >
          <span className="block">Guests</span>
-           <span className="text-gray-500">
-              {adultCount + childCount} guests {infantCount!=0&& `,${infantCount} infant`} {petCount!=0&& `,${petCount} pet`} 
+         <span className="text-gray-500">
+               {(adultCount + childCount>1?`${adultCount + childCount} guests`:`${adultCount + childCount} guest`) }  {infantCount!=0&& (infantCount>1?`,${infantCount} infants`:`,${infantCount} infant`)}   {petCount!=0&& (petCount>1?`,${petCount} pets`:`,${petCount} pet`)} 
            </span>
         </button>
       </Space>
