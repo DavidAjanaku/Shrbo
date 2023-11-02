@@ -24,6 +24,7 @@ const AnnouncementPage = () => {
         <h1 className="text-2xl font-semibold mb-4">Send Announcement to All Users</h1>
 
           <Form form={form} onFinish={handleSubmit}>
+      
             <Form.Item
               name="announcement"
               label="Announcement"
@@ -31,11 +32,18 @@ const AnnouncementPage = () => {
                 { required: true, message: "Please enter your announcement" },
                 
               ]}
-            >
+            >    <select className="p-2">
+            <option>Guest</option>
+            <option>Host</option>
+            <option>All</option>
+
+
+          </select>
                 <br />
               <Input.TextArea rows={4} />
             </Form.Item>
             <Form.Item>
+            
               <Button type="primary" htmlType="submit">
                 Send Announcement
               </Button>
