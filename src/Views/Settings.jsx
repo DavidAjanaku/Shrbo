@@ -80,7 +80,7 @@ export default function Settings() {
             </Link>
             <Link to="/AccountNotifications">
               <Card
-                icon={BellIcon}
+                icon={ProfileIcon}
                 title="Notifications "
                 text="Provide personal details and how we can reach you"
               />
