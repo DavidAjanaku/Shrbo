@@ -204,6 +204,7 @@ const Listings = () => {
           <ToastContainer />
         </div>
       ))}
+      <button className="py-2 px-4 bg-gray-800 text-white rounded-full">Show more</button>
     </div>
   );
 };
