@@ -207,7 +207,7 @@ const Listings = () => {
       ))} <br />
     </div>
 <div className="flex justify-center mb-10">
-<button className="py-2 px-4 bg-gray-800 block text-white rounded-full">Show more</button>
+<button className="py-2 px-4 bg-gray-800 block text-white rounded-full">Show more listings</button>
 
 </div>
    </div>
