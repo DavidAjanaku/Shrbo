@@ -139,14 +139,8 @@ export default function TransactionHistory() {
           <span>{booking.numNights} nights room fee</span>
           <span>${totalNightsFee}</span>
         </div>
-        <div className="flex justify-between">
-          <span>Nightly rate adjustment</span>
-          <span>${booking.nightlyRateAdjustment}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Host service fee (3.0%)</span>
-          <span>${booking.hostServiceFee}</span>
-        </div>
+       
+      
         <div className="flex justify-between">
           <span>Total (USD)</span>
           <span>${calculateTotal(booking)}</span>
@@ -250,13 +244,10 @@ export default function TransactionHistory() {
         <div className="my-4">
         <h1 className="text-lg font-semibold mb-2">Deductions</h1>
         <div className="flex justify-between mb-2">
-            <span>Guest service fee</span>
+            <span> Service fee</span>
             <span>${selectedBooking.guestServiceFee.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between mb-2">
-            <span>Nightly rate adjustment</span>
-            <span>${selectedBooking.nightlyRateAdjustment.toFixed(2)}</span>
-          </div>
+        
           <div className="flex justify-between mb-2">
             <span>Total (USD)</span>
             <span>
