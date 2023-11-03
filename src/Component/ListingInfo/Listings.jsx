@@ -149,7 +149,8 @@ const Listings = () => {
   
 
   return (
-    <div className="flex flex-wrap justify-center mt-10 mb-32">
+   <div>
+     <div className="flex flex-wrap justify-center mt-10 mb-32">
       {listings.map((listing) => (
         <div
           key={listing.id}
@@ -203,9 +204,13 @@ const Listings = () => {
           </Link>
           <ToastContainer />
         </div>
-      ))}
-      <button className="py-2 px-4 bg-gray-800 text-white rounded-full">Show more</button>
+      ))} <br />
     </div>
+<div className="flex justify-center mb-10">
+<button className="py-2 px-4 bg-gray-800 block text-white rounded-full">Show more</button>
+
+</div>
+   </div>
   );
 };
 

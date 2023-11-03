@@ -32,6 +32,7 @@ function CityCard({ name, description, image, facts, destinations }) {
           </div>
         </div>
       </div>
+
     </div>
   );
 }
