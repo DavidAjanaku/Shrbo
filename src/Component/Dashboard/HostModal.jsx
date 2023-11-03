@@ -117,6 +117,22 @@ export default function HostModal({ isOpen, onClose }) {
                   </li>
                   <li>
                     <div className=" p-4 my-4">
+                      <Link to="/TransactionHistory" className="flex justify-between cursor-pointer items-center">
+                        <div className="bg-orange-400 text-white rounded-full p-2">
+                          <BsHouseDoor />
+                        </div>
+                        <div className="text-base text-slate-500 text-center">
+                          Transaction History
+                        </div>
+                        <div className="text-2xl">
+                          <img src={rightArrow} className="w-4 h-4" alt="" />
+                        </div>{" "}
+                        {/* Right arrow icon */}
+                      </Link>
+                    </div>
+                  </li>
+                  <li>
+                    <div className=" p-4 my-4">
                       <Link to="/Payments" className="flex justify-between cursor-pointer items-center">
                         <div className="bg-orange-400 text-white rounded-full p-2">
                           <BsHouseDoor />

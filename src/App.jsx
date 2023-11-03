@@ -48,6 +48,7 @@ import ReviewList from "./Component/AdminDashboard/ReviewList";
 import HostPayment from "./Component/Dashboard/HostPayment";
 import PendingPayment from "./Component/AdminDashboard/PendingPayment";
 import CanceledReservationTable from "./Component/AdminDashboard/CanceledReservationTable";
+import TransactionHistory from "./Component/Settings/TransactionHistory";
 
 function App() {
   return (
@@ -121,6 +122,10 @@ function App() {
         <Route
           path="/CanceledReservationTable"
           element={<CanceledReservationTable />}
+        />
+         <Route
+          path="/TransactionHistory"
+          element={<TransactionHistory />}
         />
       </Routes>
     </Router>

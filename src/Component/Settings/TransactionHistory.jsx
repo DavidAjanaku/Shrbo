@@ -1,53 +1,73 @@
 import React, { useState, useRef } from "react";
+import { Link } from "react-router-dom";
+import SettingsNavigation from "./SettingsNavigation";
+import ChangePassword from "./ChangePassword";
+import GoBackButton from "../GoBackButton";
 import { Table, Button, Modal } from "antd";
 import { usePDF } from "react-to-pdf";
 import Logo from "../../assets/logo.png";
 
-
+// Sample booking details
 const sampleBookingDetails = {
   bookingDetails1: {
-    guestName: "Jane Smith",
+    hostName: "Jane Smith",
     roomPerNightPrice: 100, // Replace with the actual price per night
     guestServiceFee: 20,   // Replace with the actual guest service fee
     numNights: 10,
     nightlyRateAdjustment: -50.70,
     hostServiceFee: -28.90,
+    bookingDates: "2023-02-15 to 2023-02-23",
+    hostServiceFee: -28.90,
+    propertyDetails: "Beachfront Villa, Miami Beach",
+
+
+
   },
   bookingDetails2: {
-    guestName: "John Doe",
+    hostName: "John Doe",
     roomPerNightPrice: 120, // Replace with the actual price per night
     guestServiceFee: 25,   // Replace with the actual guest service fee
     numNights: 8,
     nightlyRateAdjustment: -40.60,
     hostServiceFee: -23.50,
+    bookingDates: "2023-01-10 to 2023-01-20",
+    propertyDetails: "Mountain Cabin, Aspen",
+    hostServiceFee: -23.50,
+
+
   },
 };
 
+// Sample transaction data
 const data = [
   {
     key: "1",
-    guestName: "John Doe",
+    hostName: "John Doe",
     transactionId: "T12345",
     numGuests: 2,
     propertyId: "ABC123",
-    amountReceivedByHost: 70,
+    bookingStatus: "confirmed",
     paymentAmount: 100,
     serivceCharge: 10,
+    bookingDates: "2023-01-10 to 2023-01-20",
+
   },
   {
     key: "2",
-    guestName: "Jane Smith",
+    hostName: "Jane Smith",
     transactionId: "T12345",
     numGuests: 3,
     propertyId: "XYZ789",
-    amountReceivedByHost: 85,
+    bookingStatus: "pending",
     paymentAmount: 150,
     serivceCharge: 15,
+    bookingDates: "2023-02-15 to 2023-02-23",
+
   },
   // Add more booking data as needed
 ];
 
-const HostTransactionHistory = () => {
+export default function TransactionHistory() {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showBreakdowns, setShowBreakdowns] = useState(false);
@@ -56,15 +76,16 @@ const HostTransactionHistory = () => {
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
 
   const columns = [
+    // Define table columns
     {
       title: "Transaction ID",
       dataIndex: "transactionId",
       key: "transactionId",
     },
     {
-      title: "Guest Name",
-      dataIndex: "guestName",
-      key: "guestName",
+      title: "Host Name",
+      dataIndex: "hostName",
+      key: "hostName",
     },
     {
       title: "Number of Guests",
@@ -82,14 +103,14 @@ const HostTransactionHistory = () => {
       key: "paymentAmount",
     },
     {
-      title: " Amount Received By Host",
-      dataIndex: "amountReceivedByHost",
-      key: "amountReceivedByHost",
+      title: " Booking Status",
+      dataIndex: "bookingStatus",
+      key: "bookingStatus",
     },
     {
-      title: "Service Charge",
-      dataIndex: "serivceCharge",
-      key: "serivceCharge",
+      title: "Booking Dates",
+      dataIndex: "bookingDates",
+      key: "bookingDates",
     },
     {
       title: "Action",
@@ -100,18 +121,10 @@ const HostTransactionHistory = () => {
     },
   ];
 
-  const downloadPDF = () => {
-    if (selectedBooking) {
-      toPDF(pdfRef, {
-        unit: "mm",
-        format: "a4", // Set the format to A4 paper size
-      });
-    }
-  };
-
+  // Function to render booking details breakdown
   const renderBreakdowns = (booking) => {
     const totalNightsFee = booking.roomPerNightPrice * booking.numNights;
-    
+
     return (
       <div className="breakdoguestPaid4">
         <h2 className="text-base font-semibold mt-4 mb-2">Breakdowns</h2>
@@ -135,9 +148,10 @@ const HostTransactionHistory = () => {
     );
   };
 
+  // Function to view booking details
   const viewBookingDetails = (booking) => {
     const matchingBooking = Object.values(sampleBookingDetails).find(
-      (details) => details.guestName === booking.guestName
+      (details) => details.hostName === booking.hostName
     );
 
     if (matchingBooking) {
@@ -146,6 +160,7 @@ const HostTransactionHistory = () => {
     }
   };
 
+  // Function to calculate the total cost of a booking
   const calculateTotal = (booking) => {
     const total =
       booking.roomPerNightPrice * booking.numNights +
@@ -155,21 +170,34 @@ const HostTransactionHistory = () => {
     return total;
   };
 
+  // Function to handle closing the details modal
   const handleDetailsClose = () => {
     setDetailsVisible(false);
     setShowBreakdowns(false);
   };
 
+  // Function to toggle displaying the breakdowns
   const toggleBreakdowns = () => {
     setShowBreakdowns(!showBreakdowns);
   };
 
+  // Function to download the PDF
+  const downloadPDF = () => {
+    if (selectedBooking) {
+      toPDF(pdfRef, {
+        unit: "mm",
+        format: "a4", // Set the format to A4 paper size
+      });
+    }
+  };
+
   return (
     <div>
-      <div className="">
-        <div className="overflow-auto example">
-          <h1 className="text-2xl font-semibold mb-4">Transaction History</h1>
+      <div className="max-w-2xl mx-auto p-4">
+        <GoBackButton />
+        <SettingsNavigation title="Transaction History" text="Transaction History" />
 
+        <div>
           <div className="bg-white p-4 rounded shadow">
             <div className="overflow-x-auto">
               <Table columns={columns} dataSource={data} />
@@ -183,31 +211,49 @@ const HostTransactionHistory = () => {
           onOk={handleDetailsClose}
           onCancel={handleDetailsClose}
         >
-     <div ref={targetRef} className="receipt-container flex items-center justify-center ">
+         <div ref={targetRef} className="receipt-container flex items-center justify-center ">
   {selectedBooking && (
     <div className="bg-white p-4 border border-black w-full">
-        <img src={Logo} alt="Company Logo" className="w-16 h-auto" />
+      <img src={Logo} alt="Company Logo" className="w-16 h-auto" />
       <div className="receipt-header flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Your transaction receipt from Shbro </h2>
+        <h2 className="text-xl font-semibold">Your transaction receipt from Shbro</h2>
       </div>
       <div className="receipt-details mt-4">
-       <div className="guestPaid">
-       <h2 className="text-lg font-semibold mb-2">Guest Paid</h2>
-        <div className="flex justify-between mb-2">
-          <span>
-          ${(selectedBooking.roomPerNightPrice * selectedBooking.numNights).toFixed(2)} * {selectedBooking.numNights} nights
-          </span>
-          <span>${(selectedBooking.roomPerNightPrice * selectedBooking.numNights).toFixed(2)}</span>
+        <div className="guestPaid">
+          <h2 className="text-lg font-semibold mb-2">Guest Paid</h2>
+          <div className="flex justify-between mb-2">
+            <span>
+              {selectedBooking.propertyDetails}
+            </span>
+            <span>
+              ${(
+                selectedBooking.roomPerNightPrice * selectedBooking.numNights
+              ).toFixed(2)} * {selectedBooking.numNights} nights
+            </span>
+          </div>
+          <div className="flex justify-between mb-2">
+            <span>Booking Dates</span>
+            <span>{selectedBooking.bookingDates}</span>
+          </div>
+          <div className="flex justify-between mb-2">
+            <span>Guest service fee</span>
+            <span>${selectedBooking.guestServiceFee.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between mb-2">
+            <span>Nightly rate adjustment</span>
+            <span>${selectedBooking.nightlyRateAdjustment.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between mb-2">
+            <span>Total (USD)</span>
+            <span>
+              ${(
+                selectedBooking.roomPerNightPrice * selectedBooking.numNights +
+                selectedBooking.guestServiceFee +
+                selectedBooking.nightlyRateAdjustment
+              ).toFixed(2)}
+            </span>
+          </div>
         </div>
-        <div className="flex justify-between mb-2">
-          <span>Guest service fee</span>
-          <span>${selectedBooking.guestServiceFee.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between mb-2">
-          <span>Total (USD)</span>
-          <span>${(selectedBooking.roomPerNightPrice * selectedBooking.numNights + selectedBooking.guestServiceFee).toFixed(2)}</span>
-        </div>
-       </div>
         {renderBreakdowns(selectedBooking)}
         <button
           onClick={downloadPDF}
@@ -224,6 +270,4 @@ const HostTransactionHistory = () => {
       </div>
     </div>
   );
-};
-
-export default HostTransactionHistory;
+}

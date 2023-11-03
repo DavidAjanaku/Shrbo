@@ -85,11 +85,13 @@ export default function Settings() {
                 text="Provide personal details and how we can reach you"
               />
             </Link>
-            <Card
-              icon="hello"
-              title="Personal Info"
-              text="Provide personal details and how we can reach you"
-            />
+            <Link to="/TransactionHistory">
+              <Card
+                icon="hello"
+                title="Transaction History"
+                text="Provide personal details and how we can reach you"
+              />
+            </Link>
             <Card
               icon="hello"
               title="Personal Info"
