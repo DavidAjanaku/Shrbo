@@ -19,7 +19,10 @@ const sampleBookingDetails = {
     bookingDates: "2023-02-15 to 2023-02-23",
     hostServiceFee: -28.90,
     propertyDetails: "Beachfront Villa, Miami Beach",
-
+    receiptId: "ADkfkfkslf124",
+    paymentMethod: "Card", 
+    propertyDescription: "2bed 3 guests",
+    host: "Hosted by Endi",
 
 
   },
@@ -33,6 +36,10 @@ const sampleBookingDetails = {
     bookingDates: "2023-01-10 to 2023-01-20",
     propertyDetails: "Mountain Cabin, Aspen",
     hostServiceFee: -23.50,
+    receiptId: "ADkfkfkslf124",
+    paymentMethod: "Transfer", // Add payment method for the second booking
+    propertyDescription: "2bed 3 guests",
+    host: "Hosted by Daniel",
 
 
   },
@@ -206,12 +213,12 @@ export default function TransactionHistory() {
         </div>
 
         <Modal
-          title="Booking Details"
-          visible={detailsVisible}
+          title="Receipt from  Shortlet Booking"
+          open={detailsVisible}
           onOk={handleDetailsClose}
           onCancel={handleDetailsClose}
         >
-         <div ref={targetRef} className="receipt-container flex items-center justify-center ">
+<div ref={targetRef} className="receipt-container flex items-center justify-center ">
   {selectedBooking && (
     <div className="bg-white p-4 border border-black w-full">
       <img src={Logo} alt="Company Logo" className="w-16 h-auto" />
@@ -219,8 +226,13 @@ export default function TransactionHistory() {
         <h2 className="text-xl font-semibold">Your transaction receipt from Shbro</h2>
       </div>
       <div className="receipt-details mt-4">
+      <div className="flex justify-between mb-2 font-bold my-5">
+            <span>Receipt ID</span>
+            <span className="uppercase">{selectedBooking.receiptId}</span>
+          </div>
         <div className="guestPaid">
           <h2 className="text-lg font-semibold mb-2">Guest Paid</h2>
+          
           <div className="flex justify-between mb-2">
             <span>
               {selectedBooking.propertyDetails}
@@ -235,7 +247,9 @@ export default function TransactionHistory() {
             <span>Booking Dates</span>
             <span>{selectedBooking.bookingDates}</span>
           </div>
-          <div className="flex justify-between mb-2">
+        <div className="my-4">
+        <h1 className="text-lg font-semibold mb-2">Deductions</h1>
+        <div className="flex justify-between mb-2">
             <span>Guest service fee</span>
             <span>${selectedBooking.guestServiceFee.toFixed(2)}</span>
           </div>
@@ -254,10 +268,28 @@ export default function TransactionHistory() {
             </span>
           </div>
         </div>
+         <div className="my-5">
+         <h1 className="text-lg font-semibold mb-2">Description</h1>
+
+         <div className="flex justify-between mb-2">
+  <span>Payment Method</span>
+  <span>{selectedBooking.paymentMethod}</span>
+</div>
+<div className="flex justify-between mb-2">
+  <span>Property Description</span>
+  <span>{selectedBooking.propertyDescription}</span>
+</div>
+
+<div className="flex justify-between mb-2">
+  <span>Host</span>
+  <span>{selectedBooking.host}</span>
+</div>
+         </div>
+        </div>
         {renderBreakdowns(selectedBooking)}
         <button
           onClick={downloadPDF}
-          className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-700 mt-4"
+          className="bg-orange-500 text-white px-4 py-2 rounded-full hover-bg-orange-700 mt-4"
         >
           Download PDF
         </button>
@@ -265,6 +297,7 @@ export default function TransactionHistory() {
     </div>
   )}
 </div>
+
 
         </Modal>
       </div>

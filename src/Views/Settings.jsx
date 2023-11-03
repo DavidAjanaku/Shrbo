@@ -74,7 +74,7 @@ export default function Settings() {
             <Link to="/payments">
               <Card
                 icon={PaymentIcon}
-                title="Payment Details"
+                title="Payment Method"
                 text="Provide personal details and how we can reach you"
               />
             </Link>
