@@ -365,3 +365,10 @@ The slider*/
 .custom-table .ant-table-thead th {
   background: white;
 }
+
+
+.react-pdf__Page__canvas {
+  margin: 0 auto !important;
+  width: 80% !important;
+  height: 100% !important;
+}

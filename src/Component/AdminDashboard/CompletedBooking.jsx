@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Table, Button, Modal } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
@@ -98,6 +98,8 @@ const data = [
 const CompletedBooking = () => {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const pdfRef = useRef(); // Create a ref for the PDF content
+
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
 
   const columns = [
@@ -162,15 +164,13 @@ const CompletedBooking = () => {
   };
   const downloadPDF = () => {
     if (selectedBooking) {
-      // Create a copy of the selectedBooking object without the button element
-      const bookingForPDF = { ...selectedBooking };
-      delete bookingForPDF.button;
-
-      toPDF(targetRef, () => {
-        // Logic to save or open the generated PDF can be added here
+      toPDF(pdfRef, {
+        unit: "mm",
+        format: "a4", // Set the format to A4 paper size
       });
     }
   };
+
 
   return (
     <div>
@@ -225,7 +225,8 @@ const CompletedBooking = () => {
               ref={targetRef}
               className="p-4 bg-white border-2 border-black w-full h-full"
             >
-              <div className="mb-4">
+          <div className="w-full" ref={pdfRef}>
+             <div className="mb-4">
                 <img
                   src={Logo}
                   alt="Company Logo"
@@ -350,6 +351,7 @@ const CompletedBooking = () => {
                   </tr>
                 </tbody>
               </table>
+             </div>
               <button
                 onClick={downloadPDF}
                 className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-700 mt-4"
