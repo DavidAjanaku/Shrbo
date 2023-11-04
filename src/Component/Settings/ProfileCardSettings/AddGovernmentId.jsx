@@ -1,101 +1,63 @@
-import React, { useState, useRef } from "react";
-import SettingsNavigation from "../SettingsNavigation";
-import GoBackButton from "../../GoBackButton";
-import { Select } from "antd";
-import * as faceapi from "face-api.js"; // Import face-api.js
-const { Option } = Select;
+import React, { useState } from 'react';
+import SettingsNavigation from '../SettingsNavigation';
+import GoBackButton from '../../GoBackButton';
 
 export default function AddGovernmentId() {
   const [uploadedImage, setUploadedImage] = useState(null);
-  const [message, setMessage] = useState("");
-  const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [cameraImage, setCameraImage] = useState(null);
+  const [message, setMessage] = useState('');
+  const [confirmationMessage, setConfirmationMessage] = useState('');
   const [submittedImages, setSubmittedImages] = useState([]);
-  const [selectedDocument, setSelectedDocument] = useState(null);
-  const videoRef = useRef(null);
-
-  const handleDocumentChange = (value) => {
-    setSelectedDocument(value);
-  };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
 
     if (file) {
-      setUploadedImage(URL.createObjectURL(file));
-      addToSubmittedImages(URL.createObjectURL(file));
-      detectFace(file); // Detect face in the uploaded image
+      // Simulate uploading the image to a server (replace with actual API call)
+      uploadImageToServer(file)
+        .then(() => {
+          setUploadedImage(URL.createObjectURL(file));
+          setMessage(
+            "It looks like this isn’t a photo of a valid form of ID. Please provide a photo of the type of ID you selected. If this is incorrect, try taking another photo and make sure the information on your ID is clearly visible."
+          );
+          addToSubmittedImages(URL.createObjectURL(file));
+        })
+        .catch((error) => {
+          console.error('Error uploading image:', error);
+        });
     }
+  };
+
+  const handleCameraSnap = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+      const mediaStreamTrack = stream.getVideoTracks()[0];
+      const imageCapture = new ImageCapture(mediaStreamTrack);
+
+      const photoBlob = await imageCapture.takePhoto();
+      const photoUrl = URL.createObjectURL(photoBlob);
+
+      setCameraImage(photoUrl);
+      addToSubmittedImages(photoUrl);
+    } catch (error) {
+      console.error('Error capturing image:', error);
+    }
+  };
+
+  const uploadImageToServer = (file) => {
+    // Simulate uploading the image to a server (replace with actual API call)
+    return new Promise((resolve, reject) => {
+      // Simulating a delay for the upload
+      setTimeout(() => {
+        console.log('Image uploaded successfully:', file);
+        resolve();
+      }, 2000);
+    });
   };
 
   const addToSubmittedImages = (image) => {
     setSubmittedImages((prevImages) => [...prevImages, image]);
-  };
-
-  // Function to start the camera for face capture
-  const startCamera = async () => {
-    if (navigator.mediaDevices.getUserMedia) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error("Error starting camera:", error);
-      }
-    } else {
-      console.error("getUserMedia is not supported.");
-    }
-  };
-
-  // Function to capture a photo from the camera feed
-  const capturePhoto = async () => {
-    if (videoRef.current) {
-      const canvas = document.createElement("canvas");
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      const context = canvas.getContext("2d");
-      context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-
-      const dataUrl = canvas.toDataURL("image/jpeg");
-      setUploadedImage(dataUrl);
-      addToSubmittedImages(dataUrl);
-      detectFace(dataUrl);
-
-      videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
-    }
-  };
-
-  const detectFace = async (image) => {
-    await loadModels();
-
-    const canvas = faceapi.createCanvasFromMedia(image);
-    document.body.append(canvas);
-    const displaySize = { width: image.width, height: image.height };
-    faceapi.matchDimensions(canvas, displaySize);
-
-    const detections = await faceapi
-      .detectAllFaces(image)
-      .withFaceLandmarks()
-      .withFaceDescriptors();
-    if (detections.length > 0) {
-      setMessage("Face detected!");
-    } else {
-      setMessage("No face detected.");
-    }
-  };
-
-  const loadModels = async () => {
-    await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
-    await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
-    await faceapi.nets.faceRecognitionNet.loadFromUri("/models");
-  };
-
-  const handleSubmit = () => {
-    console.log("Selected Document:", selectedDocument);
-    console.log("Uploaded Image:", uploadedImage);
-    console.log("Submitted Images:", submittedImages);
   };
 
   return (
@@ -103,76 +65,58 @@ export default function AddGovernmentId() {
       <GoBackButton />
       <SettingsNavigation title="Government Info" text="Government info" />
       <h1 className="text-2xl font-bold">Upload Government ID Card</h1>
-      <p className="mt-2 text-gray-600">
-        It looks like this isn't a photo of a valid form of ID. Please provide a
+      <p>
+        It looks like this isn’t a photo of a valid form of ID. Please provide a
         photo of the type of ID you selected. If this is incorrect, try taking
         another photo and make sure the information on your ID is clearly
         visible.
       </p>
-      <Select
-        value={selectedDocument}
-        onChange={handleDocumentChange}
-        className="mt-4"
-        placeholder="Select identity document to upload"
-      >
-        <Option value="driversLicense">Driver's License</Option>
-        <Option value="passport">International Passport</Option>
-        <Option value="nationalIDCard">National Identity Card</Option>
-        <Option value="nationalIDNumber">
-          National Identity Number (Slip)
-        </Option>
-      </Select>
       <input
         type="file"
         accept="image/*"
         onChange={handleImageUpload}
         className="mt-4 p-2 border border-gray-300 rounded"
       />
-      <div className="mt-4">
-        <video ref={videoRef} autoPlay playsInline className="w-full rounded" />
-        <div className="flex justify-between mt-2">
-          <button
-            onClick={startCamera}
-            className="w-1/2 p-2 m-2 bg-orange-400 text-white rounded hover m-2:bg-orange-500"
-          >
-            Start Camera
-          </button>
-          <button
-            onClick={capturePhoto}
-            className="w-1/2 p-2 m-2 bg-orange-400 text-white rounded hover m-2:bg-orange-500"
-          >
-            Capture Photo
-          </button>
-        </div>
-      </div>
+
+      <button
+        onClick={handleCameraSnap}
+        className="mt-4 p-2 bg-blue-400 text-white rounded hover:bg-blue-500"
+      >
+        Take Photo with Camera
+      </button>
+
       {submittedImages.length > 0 && (
-        <div className="mt-4">
-          <h2 className="text-xl font-semibold">Submitted Images:</h2>
-          {submittedImages.map((image, index) => (
-            <img
-              key={index}
-              src={image}
-              alt={`Submitted Image ${index}`}
-              className="mt-2 w-full max-w-md rounded"
-            />
-          ))}
-        </div>
-      )}
+  <div className="mt-4">
+    <h2 className="text-xl font-semibold">Submitted Images:</h2>
+    {submittedImages.map((image, index) => (
+      <img key={index} src={image} alt={`Submitted Image ${index}`} className="mt-2 max-w-md" />
+    ))}
+  </div>
+)}
+
       {message && (
         <div className="mt-4">
-          <h2 className="text-xl font-semibold">Message:</h2>
-          <p className="mt-2">{message}</p>
+          <h2 className="text-xl font-semibold">Error Message:</h2>
+          <p className="mt-2 text-red-500">{message}</p>
         </div>
-      )}
+     ) }
+
       {confirmationMessage && (
         <div className="mt-4">
           <h2 className="text-xl font-semibold">Confirmation:</h2>
-          <p className="mt-2">{confirmationMessage}</p>
+          <p className="mt-2 text-green-500">{confirmationMessage}</p>
         </div>
       )}
+
+      {/* Submit Button */}
       <button
-        onClick={handleSubmit} // Call the handleSubmit function on button click
-        className="mt-4 p-2 bg-orange-400 text-white rounded hover:bg-orange-500"
+        onClick={() => {
+          // Log the uploaded image and camera image when the submit button is clicked
+          console.log('Uploaded Image:', uploadedImage);
+          console.log('Camera Image:', cameraImage);
+          console.log('Submitted Images:', submittedImages);
+        }}
+        className="mt-4 p-2 bg-orange-400 text-white rounded hover-bg-orange-500"
       >
         Submit
       </button>
