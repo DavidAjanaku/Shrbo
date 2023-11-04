@@ -71,38 +71,44 @@ export default function HostHomes() {
     logSelectedVideo();
     console.log("House Title: " + houseTitle); // Log the house title
 
-
-
     logSelectedHouseDescription(houseDescription);
     console.log("House Description: " + houseDescriptions);
 
-
     console.log("Selected Instant Book Types:");
-    instantBook.filter((type) => selectedTypes.includes(type.id)).map((type) => console.log(type.id));
+    instantBook
+      .filter((type) => selectedTypes.includes(type.id))
+      .map((type) => console.log(type.id));
 
     console.log("Price per Night: " + housePrice); // Log the price here
 
     console.log("Selected Discounts:");
-    houseDiscount.filter((type) => selectedTypes.includes(type.id)).map((type) => console.log(type.id));
-
-
+    houseDiscount
+      .filter((type) => selectedTypes.includes(type.id))
+      .map((type) => console.log(type.id));
 
     console.log("Selected Welcome Types:");
-    visiblity.filter((type) => selectedTypes.includes(type.id)).map((type) => console.log(type.id));
+    visiblity
+      .filter((type) => selectedTypes.includes(type.id))
+      .map((type) => console.log(type.id));
 
-  // Log selected values for "Rules" section
-  console.log("Selected Rules:");
-  Object.keys(HouseRules).filter((rule) => selectedTypes.includes(rule)).map((rule) => console.log(rule + ": " + HouseRules[rule]));
+    // Log selected values for "Rules" section
+    console.log("Selected Rules:");
+    Object.keys(HouseRules)
+      .filter((rule) => selectedTypes.includes(rule))
+      .map((rule) => console.log(rule + ": " + HouseRules[rule]));
 
     console.log(additionalRules);
     console.log("Selected Hosting Types:");
-    HostType.filter((type) => selectedTypes.includes(type.id)).map((type) => console.log(type.id));
+    HostType.filter((type) => selectedTypes.includes(type.id)).map((type) =>
+      console.log(type.id)
+    );
 
     console.log("Selected Caution Types:");
-    caution.filter((type) => selectedTypes.includes(type.id)).map((type) => console.log(type.id));
+    caution
+      .filter((type) => selectedTypes.includes(type.id))
+      .map((type) => console.log(type.id));
 
-
-    console.log(selectedTimew);
+    console.log(selectedTime);
   };
 
   const handleNext = () => {
@@ -481,12 +487,14 @@ export default function HostHomes() {
       // Add more image-related data as needed
     });
   };
-  
+
   const logSelectedVideo = () => {
     if (selectedVideo) {
       console.log("Selected Video Data:");
       console.log("Video Name: " + selectedVideo.name);
-      console.log("Video Size (MB): " + (selectedVideo.size / (1024 * 1024)).toFixed(2));
+      console.log(
+        "Video Size (MB): " + (selectedVideo.size / (1024 * 1024)).toFixed(2)
+      );
       // Add more video-related data as needed
     }
   };
@@ -505,10 +513,10 @@ export default function HostHomes() {
     const updatedSelectedTypes = selectedTypes.includes(typeId)
       ? selectedTypes.filter((type) => type !== typeId)
       : [...selectedTypes, typeId];
-  
+
     // Log the selected options
     console.log(updatedSelectedTypes);
-  
+
     // Update the selected types state
     setSelectedTypes(updatedSelectedTypes);
   };
@@ -523,7 +531,6 @@ export default function HostHomes() {
       setSelectedTypes([...selectedTypes, selectedId]);
     }
   };
-  
 
   const addressFields = [
     { id: "street", label: "Street Address" },
@@ -784,8 +791,7 @@ export default function HostHomes() {
                         value={guestDetails.guests}
                       />
                       <button
-                                              type="button"
-
+                        type="button"
                         onClick={() => handleIncrement("guests")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
@@ -802,21 +808,18 @@ export default function HostHomes() {
                       <button
                         onClick={() => handleDecrement("bedrooms")}
                         type="button"
-
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
                         -
                       </button>
                       <input
                         type="button"
-                        
                         className="w-8 text-center"
                         value={guestDetails.bedrooms}
                       />
                       <button
                         onClick={() => handleIncrement("bedrooms")}
                         type="button"
-
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
                         +
@@ -830,8 +833,7 @@ export default function HostHomes() {
                     </div>
                     <div className="flex items-center">
                       <button
-                                              type="button"
-
+                        type="button"
                         onClick={() => handleDecrement("beds")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
@@ -843,8 +845,7 @@ export default function HostHomes() {
                         value={guestDetails.beds}
                       />
                       <button
-                                              type="button"
-
+                        type="button"
                         onClick={() => handleIncrement("beds")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
@@ -859,8 +860,7 @@ export default function HostHomes() {
                     </div>
                     <div className="flex items-center">
                       <button
-                                              type="button"
-
+                        type="button"
                         onClick={() => handleDecrement("bathrooms")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
@@ -872,8 +872,7 @@ export default function HostHomes() {
                         value={guestDetails.bathrooms}
                       />
                       <button
-                                              type="button"
-
+                        type="button"
                         onClick={() => handleIncrement("bathrooms")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
