@@ -11,6 +11,8 @@ export default function HostHomes() {
   const [additionalRules, setAdditionalRules] = useState("");
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [selectedTime, setSelectedTime] = useState("12:00 PM");
+  const [selectedHouseTypeLabel, setSelectedHouseTypeLabel] = useState("");
+  const [selectedPrivacyTypeLabel, setSelectedPrivacyTypeLabel] = useState("");
 
   const handleAdditionalRules = (newValue) => {
     setAdditionalRules(newValue);
@@ -54,16 +56,55 @@ export default function HostHomes() {
   const [housePrice, setHousePrice] = useState(""); // Add this line for the house price
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission
+    // Log the submitted data when the submit button is clicked
 
-    // Log all the data to the console
-    console.log("House Title:", houseTitle);
-    console.log("House Descriptions:", houseDescriptions);
-    console.log("House Price:", housePrice);
-    // ... log other data from state variables ...
+    console.log("Submitted Data:");
+    console.log("Selected Property Type Label: " + selectedHouseTypeLabel);
+    console.log("Selected Privacy Type Label: " + selectedPrivacyTypeLabel);
+    console.log("Max Guests: " + guestDetails.guests);
+    console.log("Bedrooms: " + guestDetails.bedrooms);
+    console.log("Beds: " + guestDetails.beds);
+    console.log("Bathrooms: " + guestDetails.bathrooms);
+    logSelectedAmenities();
+    logUploadedImages();
+    logSelectedVideo();
+    console.log("House Title: " + houseTitle); // Log the house title
 
-    // You can now submit the data to your backend or perform other actions here.
+
+
+    logSelectedHouseDescription(houseDescription);
+    console.log("House Description: " + houseDescriptions);
+
+
+    console.log("Selected Instant Book Types:");
+    instantBook.filter((type) => selectedTypes.includes(type.id)).map((type) => console.log(type.id));
+
+    console.log("Price per Night: " + housePrice); // Log the price here
+
+    console.log("Selected Discounts:");
+    houseDiscount.filter((type) => selectedTypes.includes(type.id)).map((type) => console.log(type.id));
+
+
+
+    console.log("Selected Welcome Types:");
+    visiblity.filter((type) => selectedTypes.includes(type.id)).map((type) => console.log(type.id));
+
+  // Log selected values for "Rules" section
+  console.log("Selected Rules:");
+  Object.keys(HouseRules).filter((rule) => selectedTypes.includes(rule)).map((rule) => console.log(rule + ": " + HouseRules[rule]));
+
+    console.log(additionalRules);
+    console.log("Selected Hosting Types:");
+    HostType.filter((type) => selectedTypes.includes(type.id)).map((type) => console.log(type.id));
+
+    console.log("Selected Caution Types:");
+    caution.filter((type) => selectedTypes.includes(type.id)).map((type) => console.log(type.id));
+
+
+    console.log(selectedTimew);
   };
+
   const handleNext = () => {
     setStep(step + 1);
   };
@@ -403,7 +444,16 @@ export default function HostHomes() {
   ];
 
   const handleTypeSelection = (typeId) => {
+    const selectedType = propertyTypes.find((type) => type.id === typeId);
+    setSelectedHouseTypeLabel(selectedType ? selectedType.label : "");
     setSelectedTypes([typeId]);
+  };
+
+  const handlePrivacyTypeSelection = (typeId) => {
+    setSelectedTypes([typeId]);
+    setSelectedPrivacyTypeLabel(
+      privacyTypes.find((type) => type.id === typeId)?.label || ""
+    );
   };
 
   const handleTypeSelections = (typeId) => {
@@ -413,6 +463,67 @@ export default function HostHomes() {
       setSelectedTypes([...selectedTypes, typeId]);
     }
   };
+
+  const logSelectedAmenities = () => {
+    console.log("Selected Amenities:");
+    amenities.forEach((amenity) => {
+      if (selectedTypes.includes(amenity.id)) {
+        console.log(amenity.id);
+      }
+    });
+  };
+
+  const logUploadedImages = () => {
+    console.log("Uploaded Images:");
+    uploadedImages.forEach((image) => {
+      console.log("Image ID:", image.id);
+      console.log("Image Source:", image.src);
+      // Add more image-related data as needed
+    });
+  };
+  
+  const logSelectedVideo = () => {
+    if (selectedVideo) {
+      console.log("Selected Video Data:");
+      console.log("Video Name: " + selectedVideo.name);
+      console.log("Video Size (MB): " + (selectedVideo.size / (1024 * 1024)).toFixed(2));
+      // Add more video-related data as needed
+    }
+  };
+
+  function logSelectedHouseDescription(descriptionItems) {
+    console.log("Selected House Description:");
+    descriptionItems.forEach((type) => {
+      if (selectedTypes.includes(type.id)) {
+        console.log(type.id);
+      }
+    });
+  }
+
+  const handleConfirmReservationSelection = (typeId) => {
+    // Toggle the selected state of the typeId
+    const updatedSelectedTypes = selectedTypes.includes(typeId)
+      ? selectedTypes.filter((type) => type !== typeId)
+      : [...selectedTypes, typeId];
+  
+    // Log the selected options
+    console.log(updatedSelectedTypes);
+  
+    // Update the selected types state
+    setSelectedTypes(updatedSelectedTypes);
+  };
+
+  const handleWelcomeSelection = (selectedId) => {
+    // Check if the selected option is already in the selectedTypes state
+    if (selectedTypes.includes(selectedId)) {
+      // If it's already selected, remove it from the selectedTypes state
+      setSelectedTypes(selectedTypes.filter((id) => id !== selectedId));
+    } else {
+      // If it's not selected, add it to the selectedTypes state
+      setSelectedTypes([...selectedTypes, selectedId]);
+    }
+  };
+  
 
   const addressFields = [
     { id: "street", label: "Street Address" },
@@ -609,7 +720,6 @@ export default function HostHomes() {
               </div>
               <div className="pb-32">
                 <div className=" space-y-4">
-                  {/* <h3 className="text-xl font-semibold">Property Types</h3> */}
                   <div className="  w-full">
                     {privacyTypes.map((type) => (
                       <div
@@ -619,7 +729,7 @@ export default function HostHomes() {
                             ? "bg-orange-500 text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleTypeSelection(type.id)}
+                        onClick={() => handlePrivacyTypeSelection(type.id)}
                       >
                         <span className="mr-2 text-2xl mb-3">{type.icon}</span>
                         {type.label}
@@ -627,6 +737,8 @@ export default function HostHomes() {
                       </div>
                     ))}
                   </div>
+                  <button onClick={handleSubmit}>Submit</button>{" "}
+                  {/* Add this button */}
                 </div>
               </div>
             </div>
@@ -661,19 +773,19 @@ export default function HostHomes() {
                     <div className="flex items-center">
                       <button
                         onClick={() => handleDecrement("guests")}
+                        type="button"
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
                         -
                       </button>
                       <input
-                        type="number"
+                        type="button"
                         className="w-8 text-center"
                         value={guestDetails.guests}
-                        onChange={(e) =>
-                          handleGuestDetailsChange("guests", e.target.value)
-                        }
                       />
                       <button
+                                              type="button"
+
                         onClick={() => handleIncrement("guests")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
@@ -689,20 +801,22 @@ export default function HostHomes() {
                     <div className="flex items-center">
                       <button
                         onClick={() => handleDecrement("bedrooms")}
+                        type="button"
+
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
                         -
                       </button>
                       <input
-                        type="number"
+                        type="button"
+                        
                         className="w-8 text-center"
                         value={guestDetails.bedrooms}
-                        onChange={(e) =>
-                          handleGuestDetailsChange("bedrooms", e.target.value)
-                        }
                       />
                       <button
                         onClick={() => handleIncrement("bedrooms")}
+                        type="button"
+
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
                         +
@@ -716,6 +830,8 @@ export default function HostHomes() {
                     </div>
                     <div className="flex items-center">
                       <button
+                                              type="button"
+
                         onClick={() => handleDecrement("beds")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
@@ -725,11 +841,10 @@ export default function HostHomes() {
                         type="number"
                         className="w-8 text-center"
                         value={guestDetails.beds}
-                        onChange={(e) =>
-                          handleGuestDetailsChange("beds", e.target.value)
-                        }
                       />
                       <button
+                                              type="button"
+
                         onClick={() => handleIncrement("beds")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
@@ -744,20 +859,21 @@ export default function HostHomes() {
                     </div>
                     <div className="flex items-center">
                       <button
+                                              type="button"
+
                         onClick={() => handleDecrement("bathrooms")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
                         -
                       </button>
                       <input
-                        type="number"
+                        type="button"
                         className="w-8 text-center"
                         value={guestDetails.bathrooms}
-                        onChange={(e) =>
-                          handleGuestDetailsChange("bathrooms", e.target.value)
-                        }
                       />
                       <button
+                                              type="button"
+
                         onClick={() => handleIncrement("bathrooms")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
                       >
@@ -834,11 +950,11 @@ export default function HostHomes() {
                 </div>
                 <div className="flex flex-wrap mt-6">
                   {uploadedImages.map((image) => (
-                    <div key={image.id} className="relative w-1/4 p-2">
+                    <div key={image.id} className="relative  p-2">
                       <img
                         src={image.src}
                         alt="House"
-                        className="w-full h-auto"
+                        className="w-64 object-cover h-64"
                       />
                       <button
                         onClick={() => handleImageDelete(image.id)}
@@ -1065,7 +1181,7 @@ export default function HostHomes() {
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleTypeSelection(type.id)}
+                        onClick={() => handleWelcomeSelection(type.id)}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
                         {type.description}
@@ -1258,7 +1374,9 @@ export default function HostHomes() {
           <div className=" mx-auto  flex justify-center p-4">
             <div className="  overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
-                <h1 className="text-6xl">When  do you want Guests checking in on Shbro?</h1>
+                <h1 className="text-6xl">
+                  When do you want Guests checking in on Shbro?
+                </h1>
               </div>
               <div className="max-w-md mx-auto p-4">
                 <h2 className="text-2xl font-semibold mb-4">
@@ -1314,6 +1432,7 @@ export default function HostHomes() {
         )}
         {step < 18 && (
           <button
+            type="button" // Add this line to prevent form submission
             onClick={handleNext}
             className="text-white text-center  bg-orange-400 w-full p-4"
           >
@@ -1322,8 +1441,9 @@ export default function HostHomes() {
         )}
         {step === 18 && (
           <button
-            type="submit"
-            className="text-white text-center  bg-orange-400 w-full p-4"
+            type="button" // Add this line to prevent form submission
+            onClick={handleSubmit}
+            className="text-white text-center bg-orange-400 w-full p-4"
           >
             Submit
           </button>

@@ -17,7 +17,6 @@ const sampleBookingDetails = {
     nightlyRateAdjustment: -50.70,
     hostServiceFee: -28.90,
     bookingDates: "2023-02-15 to 2023-02-23",
-    hostServiceFee: -28.90,
     propertyDetails: "Beachfront Villa, Miami Beach",
     receiptId: "ADkfkfkslf124",
     paymentMethod: "Card", 
@@ -35,7 +34,6 @@ const sampleBookingDetails = {
     hostServiceFee: -23.50,
     bookingDates: "2023-01-10 to 2023-01-20",
     propertyDetails: "Mountain Cabin, Aspen",
-    hostServiceFee: -23.50,
     receiptId: "ADkfkfkslf124",
     paymentMethod: "Transfer", // Add payment method for the second booking
     propertyDescription: "2bed 3 guests",
