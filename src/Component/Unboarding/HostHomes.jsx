@@ -60,8 +60,14 @@ export default function HostHomes() {
     // Log the submitted data when the submit button is clicked
 
     console.log("Submitted Data:");
-    console.log("Selected Property Type Label: " + selectedHouseTypeLabel);
-    console.log("Selected Privacy Type Label: " + selectedPrivacyTypeLabel);
+    console.log("Selected Property Types:");
+    propertyTypes
+      .filter((type) => selectedTypes.includes(type.id))
+      .map((type) => console.log(type.label));    
+      
+      console.log("Selected Privacy Type Label: " + selectedPrivacyTypeLabel);
+
+
     console.log("Max Guests: " + guestDetails.guests);
     console.log("Bedrooms: " + guestDetails.bedrooms);
     console.log("Beds: " + guestDetails.beds);
@@ -1423,6 +1429,8 @@ export default function HostHomes() {
       <div className="bg-orange-400 flex fixed bottom-0 w-full text-center">
         {step > 0 && (
           <button
+          type="button" 
+
             onClick={handlePrevious}
             className="text-white  bg-orange-200 w-full p-4"
           >
