@@ -11,7 +11,6 @@ export default function SupportAndHelp() {
       <div className=" md:w-[80%] py-32 mx-auto bg-white p-6 rounded-lg">
         <h1 className="text-2xl font-bold mb-4">Support and Help</h1>
         
-        {/* Contact Support Section */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-2">Contact Support</h2>
           <div className="flex space-x-4">
@@ -30,14 +29,12 @@ export default function SupportAndHelp() {
           </div>
         </div>
         
-        {/* FAQs Section */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-2">FAQs</h2>
           <p>Browse Frequently Asked Questions</p>
           <a href="/FAQAccordion" className="text-orange-500 hover:underline">Browse all FAQs</a>
         </div>
         
-        {/* Report an Issue Section */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-2">Report an Issue</h2>
           <p>Describe the Issue:</p>
@@ -55,7 +52,6 @@ export default function SupportAndHelp() {
           </div>
         </div>
         
-        {/* Feedback and Suggestions Section */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-2">Feedback and Suggestions</h2>
           <p>Provide Feedback:</p>
@@ -74,7 +70,6 @@ export default function SupportAndHelp() {
           </div>
         </div>
         
-        {/* Back to Settings Section */}
         <div className="mt-4">
           <a href="/settings" className="text-orange-500 hover:underline">Back to Settings</a>
           <button
