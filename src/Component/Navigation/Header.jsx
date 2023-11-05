@@ -59,7 +59,7 @@ export default function Header() {
   }, [isProfileDropdownOpen, isBellDropdownOpen]);
 
   return (
-    <header className="bg-gray-800 text-white py-4 hidden md:block">
+    <header className="bg-gray-800 text-white py-2 hidden md:block">
       <div className="container mx-auto flex items-center justify-between">
         <div className="text-2xl font-semibold">
         <Link to="/">
