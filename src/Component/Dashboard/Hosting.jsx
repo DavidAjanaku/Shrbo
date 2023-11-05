@@ -379,6 +379,9 @@ export default function Hosting() {
       <div className="flex flex-wrap md:flex-col md:w-[80vw] md:mx-auto md:my-10 p-4 md:p-10">
         <GoBackButton />
         <div className="w-full">
+        <p className="text-gray-400 font-normal text-base my-4 italic">Efficiently manage your home rental listings with our comprehensive management tool.
+</p>
+
           <div className="">Bell</div>
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-medium my-7">Welcome back, Endo</h1>

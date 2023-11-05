@@ -192,6 +192,8 @@ export default function Trip() {
                 : "bg-gray-200 text-gray-600"
             } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("All")}
+            title="Show all trips" // Add the title attribute
+
           >
             All
           </button>
@@ -202,6 +204,8 @@ export default function Trip() {
                 : "bg-gray-200 text-gray-600"
             } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Reserved")}
+            title="The booking is confirmed, and the check-in date is in the future. The trip has not yet started.
+            "
           >
             Reserved
           </button>
@@ -212,6 +216,8 @@ export default function Trip() {
                 : "bg-gray-200 text-gray-600"
             } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Checked in")}
+            title="The booking is confirmed, and the check-in date is approaching. This status is typically used for upcoming trips."
+
           >
             Checked In
           </button>
@@ -222,6 +228,8 @@ export default function Trip() {
                 : "bg-gray-200 text-gray-600"
             } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Checked Out")}
+            title="The trip has ended, and both the check-in and check-out dates have passed. This status indicates that the reservation is no longer active.
+            "
           >
             Checked Out
           </button>

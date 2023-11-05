@@ -30,6 +30,9 @@ export default function Security() {
         <SettingsNavigation title="Login & security" text="Login & security" />
 
         <div>
+        <p className="text-gray-400 font-normal text-base my-4">        Enhance the security of your account with password and login management options.
+</p>
+
           <div className="tab">
             {isChangePassword && (
               <div className="max-w-2xl mx-auto p-4">

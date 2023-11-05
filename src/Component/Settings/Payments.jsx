@@ -13,14 +13,14 @@ export default function Payments() {
   const detailsArray = [
     {
       title: "Payment Cards",
-      value: "pay with new card",
+      value: "Add New Payment Method",
       action: "Add",
       link: "/edit-name",
     },
     {
       title: "MasterCard ****4567",
       value: "Expiration: 02/24",
-      action: "Remove",
+      action: "Remove Payment Method",
       link: "",
     },
   ];
@@ -38,7 +38,11 @@ export default function Payments() {
         
 
         <div>
+        <p className="text-gray-400 font-normal text-base my-4">Manage your payment methods and view your transaction history.
+</p>
+
           <div className="tab">
+
             {isChangePassword && (
               <div className="max-w-2xl mx-auto p-4">
                 <h2 className="text-2xl font-medium mb-4">Payment Card</h2>
