@@ -132,18 +132,18 @@ export default function Hosting() {
       case "checkingOut":
         if (checkingOut.length === 0) {
           return (
-            <div className="bg-orange-100 mt-4 h-36 flex justify-center items-center">
+            <div className=" mt-4 h-36 flex justify-center items-center">
               No hosts are currently hosting.
             </div>
           );
         }
         return (
-          <div className="bg-orange-100 mt-4">
+          <div className="  mt-4">
             <div className="whitespace-nowrap overflow-x-auto example">
               <div className="flex space-x-3 w-fit p-6 ">
                 {checkingOut.map((host, index) => (
                   <div
-                    className=" w-[300px] p-4 mt-4 rounded-xl bg-white shadow-sm"
+                    className="shadow-xl border-2 w-[300px] p-4 mt-4 rounded-xl bg-white "
                     key={index}
                   >
                     <div className="current text-orange-300 text-sm">
@@ -179,18 +179,18 @@ export default function Hosting() {
       case "currentlyHosting":
         if (currentlyHosting.length === 0) {
           return (
-            <div className="bg-orange-100 mt-4 h-36 flex justify-center items-center">
+            <div className=" mt-4 h-36 flex justify-center items-center">
               No hosts are currently hosting.
             </div>
           );
         }
         return (
-          <div className="bg-orange-100 mt-4">
+          <div className=" mt-4">
             <div className="whitespace-nowrap overflow-x-auto example">
               <div className="flex space-x-3 w-fit p-6 ">
                 {currentlyHosting.map((host, index) => (
                   <div
-                    className=" w-64  w-[300px] p-4 mt-4 rounded-xl bg-white shadow-sm"
+                    className="shadow-xl border-2 w-64  w-[300px] p-4 mt-4 rounded-xl bg-white "
                     key={index}
                   >
                     <div className="current text-orange-300 text-sm">
@@ -225,18 +225,18 @@ export default function Hosting() {
       case "arrivingSoon":
         if (arrivingSoonReservations.length === 0) {
           return (
-            <div className="bg-orange-100 mt-4 h-36 flex justify-center items-center">
+            <div className=" mt-4 h-36 flex justify-center items-center">
               No hosts are currently hosting.
             </div>
           );
         }
         return (
-          <div className="bg-orange-100 mt-4">
+          <div className=" mt-4">
             <div className="whitespace-nowrap overflow-x-auto example">
               <div className="flex space-x-3 w-fit p-6 ">
                 {arrivingSoonReservations.map((reservation, index) => (
                   <div
-                    className=" w-64  w-[300px] p-4 mt-4 rounded-xl bg-white shadow-sm"
+                    className="shadow-xl border-2 w-64  w-[300px] p-4 mt-4 rounded-xl bg-white"
                     key={index}
                   >
                     <div className="current text-orange-300 text-sm">
@@ -277,18 +277,18 @@ export default function Hosting() {
       case "upcoming":
         if (upcomingReservations.length === 0) {
           return (
-            <div className="bg-orange-100 mt-4 h-36 flex justify-center items-center">
+            <div className=" mt-4 h-36 flex justify-center items-center">
               No upcoming reservations.
             </div>
           );
         }
         return (
-          <div className="bg-orange-100 mt-4">
+          <div className=" mt-4">
             <div className="whitespace-nowrap overflow-x-auto example">
               <div className="flex space-x-3 w-fit p-6 ">
                 {upcomingReservations.map((reservation, index) => (
                   <div
-                    className="w-64 w-[300px] p-4 mt-4 rounded-xl bg-white shadow-sm"
+                    className=" shadow-xl border-2 w-64 w-[300px] p-4 mt-4 rounded-xl bg-white "
                     key={index}
                   >
                     {/* Content for each upcoming reservation */}
@@ -326,18 +326,18 @@ export default function Hosting() {
       case "pendingReview":
         if (pendingReviews.length === 0) {
           return (
-            <div className="bg-orange-100 mt-4 h-36 flex justify-center items-center">
+            <div className=" mt-4 h-36 flex justify-center items-center">
               No pending reviews.
             </div>
           );
         }
         return (
-          <div className="bg-orange-100 mt-4">
+          <div className=" mt-4">
             <div className="whitespace-nowrap overflow-x-auto example">
               <div className="flex space-x-3 w-fit p-6 ">
                 {pendingReviews.map((review, index) => (
                   <div
-                    className="w-64 w-[300px] p-4 mt-4 rounded-xl bg-white shadow-sm"
+                    className="shadow-xl border-2 w-64 w-[300px] p-4 mt-4 rounded-xl bg-white "
                     key={index}
                   >
                     <div className="current text-orange-300 text-sm">
@@ -408,6 +408,7 @@ export default function Hosting() {
                  </Link>
                 </div>
               </div>
+              
               <div className="px-4">
                 <img src={exclammationMark} className="w-7" alt="" />
               </div>

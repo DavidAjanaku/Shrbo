@@ -74,27 +74,25 @@ export default function Settings() {
             <Link to="/payments">
               <Card
                 icon={PaymentIcon}
-                title="Payment Details"
+                title="Payment Method"
                 text="Provide personal details and how we can reach you"
               />
             </Link>
             <Link to="/AccountNotifications">
               <Card
-                icon={BellIcon}
+                icon={ProfileIcon}
                 title="Notifications "
                 text="Provide personal details and how we can reach you"
               />
             </Link>
-            <Card
-              icon="hello"
-              title="Personal Info"
-              text="Provide personal details and how we can reach you"
-            />
-            <Card
-              icon="hello"
-              title="Personal Info"
-              text="Provide personal details and how we can reach you"
-            />
+            <Link to="/TransactionHistory">
+              <Card
+                icon="hello"
+                title="Transaction History"
+                text="Provide personal details and how we can reach you"
+              />
+            </Link>
+         
           </div>
         </div>
       </div>
