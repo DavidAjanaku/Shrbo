@@ -19,7 +19,7 @@ const Footer = () => {
             <h2 className="text-base font-bold mb-4">About Us</h2>
             <ul>
               <li className='text-sm'><Link to="/aboutus">About Shbro</Link></li>
-              <li className='text-sm'><Link to="/support">Customer Support and Information</Link></li>
+              <li className='text-sm'><Link to="/SupportAndHelp">Customer Support and Information</Link></li>
               <li className='text-sm'><Link to="/ContactSupport">Help Center</Link></li>
               <li className='text-sm'><Link to="/CancellationPolicy">Cancellation options</Link></li>
               <li className='text-sm'><Link to="/FAQAccordion">Frequently Asked Questions (FAQ)</Link></li>

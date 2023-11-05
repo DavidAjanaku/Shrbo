@@ -53,6 +53,7 @@ import AboutUs from "./Views/AboutUs";
 import ContactSupport from "./Views/ContactSupport";
 import CancellationPolicy from "./Views/CancellationPolicy";
 import FAQAccordion from "./Views/FAQAccordion";
+import SupportAndHelp from "./Views/SupportAndHelp";
 
 function App() {
   return (
@@ -146,6 +147,10 @@ function App() {
          <Route
           path="/FAQAccordion"
           element={<FAQAccordion />}
+        />
+         <Route
+          path="/SupportAndHelp"
+          element={<SupportAndHelp />}
         />
       </Routes>
       
