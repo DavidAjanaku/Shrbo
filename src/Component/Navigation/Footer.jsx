@@ -21,9 +21,9 @@ const Footer = () => {
               <li className='text-sm'><Link to="/aboutus">About Shbro</Link></li>
               <li className='text-sm'><Link to="/support">Customer Support and Information</Link></li>
               <li className='text-sm'><Link to="/ContactSupport">Help Center</Link></li>
-              <li className='text-sm'><Link to="/cancellation">Cancellation options</Link></li>
-              <li className='text-sm'><Link to="/faq">Frequently Asked Questions (FAQ)</Link></li>
-              <li className='text-sm'><Link to="/shbro-space">Shrbo Your Space</Link></li>
+              <li className='text-sm'><Link to="/CancellationPolicy">Cancellation options</Link></li>
+              <li className='text-sm'><Link to="/FAQAccordion">Frequently Asked Questions (FAQ)</Link></li>
+              <li className='text-sm'><Link to="/HostHomes">Shrbo Your Space</Link></li>
             </ul>
           </div>
           <div>

@@ -51,6 +51,9 @@ import CanceledReservationTable from "./Component/AdminDashboard/CanceledReserva
 import TransactionHistory from "./Component/Settings/TransactionHistory";
 import AboutUs from "./Views/AboutUs";
 import ContactSupport from "./Views/ContactSupport";
+import CancellationPolicy from "./Views/CancellationPolicy";
+import FAQAccordion from "./Views/FAQAccordion";
+
 function App() {
   return (
     <Router>
@@ -135,6 +138,14 @@ function App() {
           <Route
           path="/ContactSupport"
           element={<ContactSupport />}
+        />
+          <Route
+          path="/CancellationPolicy"
+          element={<CancellationPolicy />}
+        />
+         <Route
+          path="/FAQAccordion"
+          element={<FAQAccordion />}
         />
       </Routes>
       
