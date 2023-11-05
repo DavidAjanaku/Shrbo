@@ -50,6 +50,7 @@ import PendingPayment from "./Component/AdminDashboard/PendingPayment";
 import CanceledReservationTable from "./Component/AdminDashboard/CanceledReservationTable";
 import TransactionHistory from "./Component/Settings/TransactionHistory";
 import AboutUs from "./Views/AboutUs";
+import ContactSupport from "./Views/ContactSupport";
 function App() {
   return (
     <Router>
@@ -131,7 +132,12 @@ function App() {
           path="/AboutUs"
           element={<AboutUs />}
         />
+          <Route
+          path="/ContactSupport"
+          element={<ContactSupport />}
+        />
       </Routes>
+      
     </Router>
   );
 }

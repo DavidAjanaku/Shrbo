@@ -20,7 +20,7 @@ const Footer = () => {
             <ul>
               <li className='text-sm'><Link to="/aboutus">About Shbro</Link></li>
               <li className='text-sm'><Link to="/support">Customer Support and Information</Link></li>
-              <li className='text-sm'><Link to="/help">Help Center</Link></li>
+              <li className='text-sm'><Link to="/ContactSupport">Help Center</Link></li>
               <li className='text-sm'><Link to="/cancellation">Cancellation options</Link></li>
               <li className='text-sm'><Link to="/faq">Frequently Asked Questions (FAQ)</Link></li>
               <li className='text-sm'><Link to="/shbro-space">Shrbo Your Space</Link></li>
