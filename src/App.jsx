@@ -49,7 +49,7 @@ import HostPayment from "./Component/Dashboard/HostPayment";
 import PendingPayment from "./Component/AdminDashboard/PendingPayment";
 import CanceledReservationTable from "./Component/AdminDashboard/CanceledReservationTable";
 import TransactionHistory from "./Component/Settings/TransactionHistory";
-
+import AboutUs from "./Views/AboutUs";
 function App() {
   return (
     <Router>
@@ -126,6 +126,10 @@ function App() {
          <Route
           path="/TransactionHistory"
           element={<TransactionHistory />}
+        />
+          <Route
+          path="/AboutUs"
+          element={<AboutUs />}
         />
       </Routes>
     </Router>
