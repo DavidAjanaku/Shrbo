@@ -1,16 +1,66 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import exclammationMark from "../../assets/svg/exclamation-round-icon.svg";
 import GoBackButton from "../GoBackButton";
 import SuperHostGuidanceCard from "../SuperHostGuidanceCard";
 import { Link } from "react-router-dom";
 import HostHeader from "../Navigation/HostHeader";
 import HostBottomNavigation from "./HostBottomNavigation";
+import Notificationbell from "../../assets/bell-icon.png";
+import InfoCard from "../InfoCard";
+import AlertCard from "../AlertCard";
+
 export default function Hosting() {
   const [activeTab, setActiveTab] = useState("checkingOut");
-
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { id: 1, message: "Notification 1" },
+    { id: 2, message: "Notification 2" },
+    { id: 3, message: "Notification 3" },
+  ]);
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
+
+  const toggleProfileDropdown = () => {
+    setIsProfileDropdownOpen(!isProfileDropdownOpen);
+  };
+
+  const toggleBellDropdown = () => {
+    setIsBellDropdownOpen(!isBellDropdownOpen);
+  };
+
+  const closeProfileDropdown = () => {
+    setIsProfileDropdownOpen(false);
+  };
+
+  const closeBellDropdown = () => {
+    setIsBellDropdownOpen(false);
+  };
+
+  useEffect(() => {
+    const handleDocumentClick = (event) => {
+      if (isProfileDropdownOpen) {
+        const profileDropdown = document.getElementById("profile-dropdown");
+        if (profileDropdown && !profileDropdown.contains(event.target)) {
+          closeProfileDropdown();
+        }
+      }
+
+      if (isBellDropdownOpen) {
+        const bellDropdown = document.getElementById("bell-dropdown");
+        if (bellDropdown && !bellDropdown.contains(event.target)) {
+          closeBellDropdown();
+        }
+      }
+    };
+
+    document.addEventListener("click", handleDocumentClick);
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick);
+    };
+  }, [isProfileDropdownOpen, isBellDropdownOpen]);
 
   const checkingOut = [
     {
@@ -156,13 +206,13 @@ export default function Hosting() {
                         <p>{host.time}</p>
                       </div>
                       <div className="guest-image">
-                      <Link to="/UserDetails">
-                      <img
-                          src={host.image}
-                          className="w-10 h-10 object-cover rounded-full"
-                          alt=""
-                        />
-                      </Link>
+                        <Link to="/UserDetails">
+                          <img
+                            src={host.image}
+                            className="w-10 h-10 object-cover rounded-full"
+                            alt=""
+                          />
+                        </Link>
                       </div>
                     </div>
                     <div className="mt-4">
@@ -202,13 +252,13 @@ export default function Hosting() {
                         <p>{host.date}</p>
                       </div>
                       <div className="guest-image">
-                      <Link to="/UserDetails">
-                      <img
-                          src={host.image}
-                          className="w-10 h-10 object-cover rounded-full"
-                          alt=""
-                        />
-                      </Link>
+                        <Link to="/UserDetails">
+                          <img
+                            src={host.image}
+                            className="w-10 h-10 object-cover rounded-full"
+                            alt=""
+                          />
+                        </Link>
                       </div>
                     </div>
                     <div className="mt-4">
@@ -252,13 +302,13 @@ export default function Hosting() {
                         </div>
                       </div>
                       <div className="guest-image">
-                      <Link to="/UserDetails">
-                      <img
-                          src={reservation.image}
-                          className="w-10 h-10 object-cover rounded-full"
-                          alt=""
-                        />
-                      </Link>
+                        <Link to="/UserDetails">
+                          <img
+                            src={reservation.image}
+                            className="w-10 h-10 object-cover rounded-full"
+                            alt=""
+                          />
+                        </Link>
                       </div>
                     </div>
                     <div className="mt-4">
@@ -273,7 +323,6 @@ export default function Hosting() {
           </div>
         );
 
-      
       case "upcoming":
         if (upcomingReservations.length === 0) {
           return (
@@ -303,13 +352,13 @@ export default function Hosting() {
                         <p>{reservation.amountPaid}</p>
                       </div>
                       <div className="guest-image">
-                      <Link to="/UserDetails">
-                      <img
-                          src={reservation.image}
-                          className="w-10 h-10 object-cover rounded-full"
-                          alt=""
-                        />
-                      </Link>
+                        <Link to="/UserDetails">
+                          <img
+                            src={reservation.image}
+                            className="w-10 h-10 object-cover rounded-full"
+                            alt=""
+                          />
+                        </Link>
                       </div>
                     </div>
                     <div className="mt-4">
@@ -349,13 +398,13 @@ export default function Hosting() {
                         <p>Check-In Date: {review.checkInDate}</p>
                       </div>
                       <div className="guest-image">
-                      <Link to="/UserDetails">
-                      <img
-                          src={review.image}
-                          className="w-10 h-10 object-cover rounded-full"
-                          alt=""
-                        />
-                      </Link>
+                        <Link to="/UserDetails">
+                          <img
+                            src={review.image}
+                            className="w-10 h-10 object-cover rounded-full"
+                            alt=""
+                          />
+                        </Link>
                       </div>
                     </div>
                     <div className="mt-4">
@@ -372,50 +421,72 @@ export default function Hosting() {
       // ...
     }
   };
- 
+
   return (
     <div className="pb-20">
-      <HostHeader/>
+      <HostHeader />
       <div className="flex flex-wrap md:flex-col md:w-[80vw] md:mx-auto md:my-10 p-4 md:p-10">
         <GoBackButton />
         <div className="w-full">
-        <p className="text-gray-400 font-normal text-base my-4 italic">Efficiently manage your home rental listings with our comprehensive management tool.
-</p>
+          <p className="text-gray-400 font-normal text-base my-4 italic">
+            Efficiently manage your home rental listings with our comprehensive
+            management tool.
+          </p>
 
-          <div className="">Bell</div>
-          <div className="flex items-center justify-between">
+          <div className="">
+            <div
+              id="bell-dropdown"
+              className={`relative group  ${isBellDropdownOpen ? "group" : ""}`}
+              onClick={toggleBellDropdown}
+            >
+              <button className="text-white relative">
+                <img src={Notificationbell} className="w-5 h-5" alt="" />
+                {notifications.length > 0 && (
+                  <span className="bg-red-500 text-white  absolute h-[2px] w-[2px] p-[5px] top-0 right-0 rounded-full">
+                    {/* {notifications.length} */}
+                  </span>
+                )}
+              </button>
+              {isBellDropdownOpen && notifications.length > 0 && (
+                <div className="absolute bg-white z-[60] left-0 mt-1 p-2 w-64 border rounded-lg shadow-lg">
+                  {/* Render your notifications here */}
+                  {notifications.map((notification, index) => (
+                    <div
+                      key={index}
+                      className="text-gray-800 p-2 cursor-pointer hover:bg-orange-400 hover:text-white"
+                    >
+                      {notification.message}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-wrap my-4 items-center justify-between">
             <h1 className="text-3xl font-medium my-7">Welcome back, Endo</h1>
             <Link to="/Reservations">All Reservations(3)</Link>
           </div>
-          <div className="flex space-x-5">
-            <div className="flex justify-between border rounded-lg p-4 md:w-fit items-center space-x-4 w-full w-80">
-              <div className="">
-                <div>
-                  <h1 className="text-sm font-medium mb-2">
-                    Verify your identity
-                  </h1>
-                </div>
-                <div>
-                  <span className="text-red-600 text-sm">
-                    Required to publish
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-600 text-sm">House Title</span>
-                </div>
-                <div>
-                 <Link to="/AddGovvernmentId">
-                 <span className="text-blue-500 cursor-pointer underline-offset-4 underline">
-                    Get started
-                  </span>
-                 </Link>
-                </div>
-              </div>
-              
-              <div className="px-4">
-                <img src={exclammationMark} className="w-7" alt="" />
-              </div>
-            </div>
+          <div className="flex space-x-5  w-full overflow-scroll example">
+            <AlertCard
+              title="Verify your identity"
+              description="Required to publish"
+              link="/AddGovvernmentId"
+              image={exclammationMark}
+              houseTitle={"Fully Furnished Apartment at Carrington 32 road"}
+            />
+
+            <AlertCard
+              title="Resubmit your government ID photo"
+              description="It looks like the photo of your id is in black and white. Please make sure your camera is set to take color photos and try again."
+              link="/AddGovvernmentId"
+
+              // image={exclammationMark}
+            />
+            <InfoCard
+              title="QUICK LINK"
+              description="Finding reservation details Your Trips tab has full details, receipts, and Host contact info for each of your reservations. Go to Trips"
+              link="/Trip"
+            />
           </div>
         </div>
         <div className="reservation w-full md:w-[80vw] mt-14 pb-20">
@@ -485,12 +556,11 @@ export default function Hosting() {
                   Personalizing your profile can improve your search ranking and
                   help guests get to know you better.
                 </p>
-               <Link to="/UsersShow">
-               
-               <button className="bg-orange-400 py-2 px-4 rounded-full mt-2 text-white">
-                  <strong>Add profile details</strong>
-                </button>
-               </Link>
+                <Link to="/UsersShow">
+                  <button className="bg-orange-400 py-2 px-4 rounded-full mt-2 text-white">
+                    <strong>Add profile details</strong>
+                  </button>
+                </Link>
               </div>
               <button className="absolute top-2 right-2 bg-black text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer">
                 X
@@ -515,7 +585,7 @@ export default function Hosting() {
         </div>
       </div>
 
-      <HostBottomNavigation/>
+      <HostBottomNavigation />
     </div>
   );
 }
