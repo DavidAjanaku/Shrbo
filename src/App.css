@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 
+*{
+  margin: 0;
+  padding: 0;
+}
+
 .hero-pattern::before {
     content: "";
     position: absolute;
@@ -371,4 +376,8 @@ The slider*/
   margin: 0 auto !important;
   width: 80% !important;
   height: 100% !important;
+}
+
+.slick-slider .slick-initialized{
+    width: 90% !important;
 }

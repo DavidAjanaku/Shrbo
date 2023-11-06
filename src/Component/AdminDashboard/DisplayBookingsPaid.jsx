@@ -1,12 +1,17 @@
-import React, { useState } from "react";
-import { Table, Space, Input, DatePicker, Select } from "antd";
+import React, { useState, useRef } from "react";
+import { Table, Space, Input, DatePicker, Select, Dropdown, Modal } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import { parse, isAfter } from 'date-fns';
+import { usePDF } from "react-to-pdf";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
+
+const { confirm } = Modal;
+
 
 const DisplayBookingsPaid = () => {
 
@@ -16,6 +21,38 @@ const DisplayBookingsPaid = () => {
     dateRange: null,
   });
 
+
+  const handleDeleteHost = () => {
+    confirm({
+      title: "Do you want to delete this host?",
+      icon: <ExclamationCircleOutlined />,
+      onOk() {
+      },
+    });
+  };
+
+  const pdfRef = useRef(); // Create a ref for the PDF content
+
+const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
+
+
+const items = [
+  {
+    label: <div>DOwnload </div>,
+    key: "0",
+  },
+  {
+    label: <div>Suspend</div>,
+    key: "1",
+  },
+  {
+    type: "divider",
+  },
+  {
+    label: <div>No idea</div>,
+    key: "3",
+  },
+];
 
   const columns = [
     {
@@ -52,10 +89,19 @@ const DisplayBookingsPaid = () => {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
-        <Space>
-          <a>Edit</a>
-          <a>Delete</a>
-        </Space>
+        <div className=" flex space-x-4">
+            <Dropdown
+            menu={{
+              items,
+            }}
+            trigger={["click"]}
+          >
+            <a onClick={(e) => e.preventDefault()}>
+              <Space>Edit</Space>
+            </a>
+          </Dropdown>
+          <div onClick={() => handleDeleteHost()}>Delete</div>
+        </div>
       ),
     },
   ];

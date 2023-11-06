@@ -50,6 +50,11 @@ import PendingPayment from "./Component/AdminDashboard/PendingPayment";
 import CanceledReservationTable from "./Component/AdminDashboard/CanceledReservationTable";
 import TransactionHistory from "./Component/Settings/TransactionHistory";
 import TermsofService from "./Component/TermsofService";
+import AboutUs from "./Views/AboutUs";
+import ContactSupport from "./Views/ContactSupport";
+import CancellationPolicy from "./Views/CancellationPolicy";
+import FAQAccordion from "./Views/FAQAccordion";
+import SupportAndHelp from "./Views/SupportAndHelp";
 
 function App() {
   return (
@@ -130,7 +135,28 @@ function App() {
           element={<TransactionHistory />}
         />
           <Route path="/TermsofService" element={<TermsofService/>}  />
+          <Route
+          path="/AboutUs"
+          element={<AboutUs />}
+        />
+          <Route
+          path="/ContactSupport"
+          element={<ContactSupport />}
+        />
+          <Route
+          path="/CancellationPolicy"
+          element={<CancellationPolicy />}
+        />
+         <Route
+          path="/FAQAccordion"
+          element={<FAQAccordion />}
+        />
+         <Route
+          path="/SupportAndHelp"
+          element={<SupportAndHelp />}
+        />
       </Routes>
+      
     </Router>
   );
 }

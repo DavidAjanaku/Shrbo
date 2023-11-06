@@ -163,6 +163,28 @@ export default function Trip() {
       checkingInDate: "Thursday, 28 december 2023",
       checkingInTime: "12:00pm",
     },
+
+    {
+      destination: "Cancelled Reservation in XYZ",
+      startDate: "2023-12-01",
+      endDate: "2023-12-07",
+      notes: "This reservation has been canceled.",
+      image: room,
+      amenities: ["Wi-Fi", "Kitchen"],
+      hostName: "Jane Doe",
+      rating: 4.5,
+      bathrooms: 2,
+      bedrooms: 2,
+      guests: 4,
+      price: 15000,
+      morePhotos: [room, room2, room],
+      contactHost: "/chat",
+      comments: [],
+      checkedIn: "Cancelled",
+      checkingInDate: "2023-11-15",
+      checkingInTime: "12:00pm",
+    },
+    
   ];
 
   const [filteredTrips, setFilteredTrips] = useState(tripHistory);
@@ -192,6 +214,8 @@ export default function Trip() {
                 : "bg-gray-200 text-gray-600"
             } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("All")}
+            title="Show all trips" // Add the title attribute
+
           >
             All
           </button>
@@ -202,6 +226,8 @@ export default function Trip() {
                 : "bg-gray-200 text-gray-600"
             } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Reserved")}
+            title="The booking is confirmed, and the check-in date is in the future. The trip has not yet started.
+            "
           >
             Reserved
           </button>
@@ -212,6 +238,8 @@ export default function Trip() {
                 : "bg-gray-200 text-gray-600"
             } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Checked in")}
+            title="The booking is confirmed, and the check-in date is approaching. This status is typically used for upcoming trips."
+
           >
             Checked In
           </button>
@@ -222,9 +250,24 @@ export default function Trip() {
                 : "bg-gray-200 text-gray-600"
             } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Checked Out")}
+            title="The trip has ended, and both the check-in and check-out dates have passed. This status indicates that the reservation is no longer active.
+            "
           >
             Checked Out
           </button>
+          <button
+  className={`${
+    selectedTab === "Cancelled"
+      ? "bg-orange-400 text-white"
+      : "bg-gray-200 text-gray-600"
+  } px-4 py-2 rounded-full m-2`}
+  onClick={() => filterTripsByTab("Cancelled")}
+  title="The booking has been canceled by either the guest or the host. Cancellation can occur for various reasons, and the status indicates that the reservation is no longer active.
+  "
+>
+  Cancelled
+</button>
+
         </div>
         <div className="flex flex-wrap">
           {filteredTrips.length > 0 ? (

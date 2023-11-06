@@ -9,6 +9,9 @@ export default function AccountNotifications(props) {
       <SettingsNavigation title="Notifications" text="Notifications" />
 
       <div className="space-y-16">
+      <p className="text-gray-400 font-normal text-base my-4">      Take control of how and when you receive updates and alerts from Shrbo to stay informed at all times.
+</p>
+
         <div className=" flex items-center space-x-4">
           <div className=" ">
             <div className="bui-switch">

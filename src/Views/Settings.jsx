@@ -61,35 +61,35 @@ export default function Settings() {
               <Card
                 icon={ProfileIcon}
                 title="Personal Info"
-                text="Provide personal details and how we can reach you"
+                text="Manage your account information and preferences."
               />
             </Link>
             <Link to="/security">
               <Card
                 icon={Padlock}
                 title="Security"
-                text="Provide personal details and how we can reach you"
+                text="Enhance the security of your account with password and login management options."
               />
             </Link>
             <Link to="/payments">
               <Card
                 icon={PaymentIcon}
                 title="Payment Method"
-                text="Provide personal details and how we can reach you"
+                text="Manage your payment methods "
               />
             </Link>
             <Link to="/AccountNotifications">
               <Card
                 icon={ProfileIcon}
                 title="Notifications "
-                text="Provide personal details and how we can reach you"
+                text="Control how and when you receive notifications from Shrbo."
               />
             </Link>
             <Link to="/TransactionHistory">
               <Card
                 icon="hello"
                 title="Transaction History"
-                text="Provide personal details and how we can reach you"
+                text="View your transaction history."
               />
             </Link>
          

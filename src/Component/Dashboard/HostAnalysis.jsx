@@ -360,11 +360,7 @@ export default function HostAnalysis() {
             </div>
           </items>
 
-          <items tab="Withdrawal" key="4">
-            <div>
-              <h1>Withdrawal</h1>
-            </div>
-          </items>
+         
         </Tabs>
       </div>
 

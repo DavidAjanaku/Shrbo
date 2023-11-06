@@ -3,7 +3,7 @@ import React from "react";
 export default function Card(props) {
   return (
     <div>
-      <div className="bg-white border rounded-lg shadow-md p-4  cursor-pointer">
+      <div className="bg-white border h-40 rounded-lg shadow-md p-4  cursor-pointer">
         <div>
           <img src={props.icon} alt="" className="w-7 h-7 mb-5" />
         </div>

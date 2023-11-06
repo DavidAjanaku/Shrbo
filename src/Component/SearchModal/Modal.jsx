@@ -7,7 +7,8 @@ import Select, { components } from "react-select";
 import LocationIcon from "../../assets/svg/maps-pin-black-icon.svg";
 import GuestIcon from "../../assets/svg/couple-icon.svg";
 import { DatePicker, Space } from "antd";
-import moment from "moment"; // Import moment
+import moment from "moment";
+import { AutoComplete, Input } from "antd";
 
 const { RangePicker } = DatePicker;
 
@@ -266,16 +267,16 @@ const SearchModal = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 z-50 w-full h-[100vh] overflow-auto md:h-full flex items-center justify-center bg-gray-800 bg-opacity-75 ${
-        isOpen ? "visible" : "invisible"
+      className={`fixed top-0 left-0 z-50 w-full h-[100vh] overflow-auto md:h-full flex items-center justify-center bg-slate-900  bg-opacity-90 ${
+        isOpen ? "visible " : "invisible"
       }`}
     >
-      <div className="bg-white p-4  w-full h-[100vh] overflow-auto md:h-full">
+      <div className=" relative bg-white p-4  w-full h-[100vh] overflow-auto md:h-[70vh] md:w-[50%] md:rounded-xl">
         <header>
           <h1 className="text-center text-2xl mb-4">Lorem Ipsum</h1>
         </header>
         <div className=" md:h-2/6">
-          <div className="mb-4 bg-gray-300 p-4">
+          <div className="mb-4 border p-4">
             <Select
               className="text-black"
               defaultValue={selectedOption}
@@ -287,39 +288,60 @@ const SearchModal = ({ isOpen, onClose }) => {
           </div>
           <div className="mb-4 overflow-scroll">
             <Space direction="vertical" size={12}>
-            <RangePicker
-  className="custom-picker"
-  value={
-    checkInDate && checkOutDate
-      ? [moment(checkInDate), moment(checkOutDate)]
-      : [null, null]
-  }
-  onChange={(dates) => {
-    if (dates && dates.length === 2) {
-      const [startDate, endDate] = dates;
-      handleCheckInDateChange(startDate.toDate());
-      handleCheckOutDateChange(endDate.toDate());
-    } else {
-      // Handle the case when the date range is cleared
-      handleCheckInDateChange(null);
-      handleCheckOutDateChange(null);
-    }
-  }}
-/>
-
+              <RangePicker
+                className="custom-picker"
+                value={
+                  checkInDate && checkOutDate
+                    ? [moment(checkInDate), moment(checkOutDate)]
+                    : [null, null]
+                }
+                onChange={(dates) => {
+                  if (dates && dates.length === 2) {
+                    const [startDate, endDate] = dates;
+                    handleCheckInDateChange(startDate.toDate());
+                    handleCheckOutDateChange(endDate.toDate());
+                  } else {
+                    // Handle the case when the date range is cleared
+                    handleCheckInDateChange(null);
+                    handleCheckOutDateChange(null);
+                  }
+                }}
+              />
             </Space>
           </div>
 
           <div className="mb-4">
             <div
               onClick={() => setGuestModalVisible(true)}
-              className="w-full text-start bg-gray-300 p-4"
+              className="w-full text-start  py-4"
             >
-              <label className="font-semibold"> Guests:</label> <br />{" "}
-              {displayGuestData.adults} Adults, {displayGuestData.children}{" "}
-              Children, {displayGuestData.pets} Pets, {displayGuestData.infants}{" "}
-              Infants
+              <label className=" bg-orange-400 rounded-2xl py-2 text-white px-2">
+                {displayGuestData.adults +
+                  displayGuestData.children +
+                  displayGuestData.pets +
+                  displayGuestData.infants ===
+                0
+                  ? "Add Guests"
+                  : "Guests"}
+                :
+              </label>
+              <br />
+              {displayGuestData.adults +
+                displayGuestData.children +
+                displayGuestData.pets +
+                displayGuestData.infants >
+                0 && (
+                <>
+                  <div className="mt-5 text-gray-500">
+                    {displayGuestData.adults} Adults,{" "}
+                    {displayGuestData.children} Children,{" "}
+                    {displayGuestData.pets} Pets, {displayGuestData.infants}{" "}
+                    Infants
+                  </div>
+                </>
+              )}
             </div>
+
             <GuestModal
               visible={guestModalVisible}
               onCancel={() => setGuestModalVisible(false)}
@@ -331,20 +353,20 @@ const SearchModal = ({ isOpen, onClose }) => {
             />
           </div>
           <div>{/* <FilterModal /> */}</div>
-        </div>
-        <div className="absolute bottom-20 md:bottom-7 flex items-center left-0 right-0 w-[90%] mx-auto space-x-2">
-          <button
-            onClick={handleSubmit}
-            className="w-full bg-orange-400 text-white font-semibold py-2 rounded-lg hover:bg-orange-500 transition duration-300"
-          >
-            Check Availability
-          </button>
-          <button
-            onClick={onClose}
-            className="w-full  text-gray-700 font-semibold py-2 border rounded-lg hover:bg-gray-100 transition duration-300"
-          >
-            Cancel
-          </button>
+          <div className="absolute bottom-20 md:bottom-7 flex items-center left-0 right-0 w-[90%] mx-auto space-x-2">
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-orange-400 text-white font-semibold py-2 rounded-lg hover:bg-orange-500 transition duration-300"
+            >
+              Check Availability
+            </button>
+            <button
+              onClick={onClose}
+              className="w-full  text-gray-700 font-semibold py-2 border rounded-lg hover:bg-gray-100 transition duration-300"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>
