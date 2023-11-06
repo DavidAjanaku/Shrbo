@@ -49,6 +49,7 @@ import HostPayment from "./Component/Dashboard/HostPayment";
 import PendingPayment from "./Component/AdminDashboard/PendingPayment";
 import CanceledReservationTable from "./Component/AdminDashboard/CanceledReservationTable";
 import TransactionHistory from "./Component/Settings/TransactionHistory";
+import TermsofService from "./Component/TermsofService";
 
 function App() {
   return (
@@ -93,6 +94,7 @@ function App() {
         />
         <Route path="/EditHomepage" element={<EditHomepage />} />
         <Route path="/AdminAnalytical" element={<AdminAnalytical />} />
+      
 
         <Route path="/GuestsListings" element={<GuestsListings />} />
 
@@ -127,6 +129,7 @@ function App() {
           path="/TransactionHistory"
           element={<TransactionHistory />}
         />
+          <Route path="/TermsofService" element={<TermsofService/>}  />
       </Routes>
     </Router>
   );
