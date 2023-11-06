@@ -17,6 +17,16 @@ export default function Hosting() {
     { id: 1, message: "Notification 1" },
     { id: 2, message: "Notification 2" },
     { id: 3, message: "Notification 3" },
+    { id: 2, message: "Notification 2" },
+    { id: 3, message: "Notification 3" },
+    { id: 2, message: "Notification 2" },
+    { id: 3, message: "Notification 3" },
+    { id: 2, message: "Notification 2" },
+    { id: 3, message: "Notification 3" },
+    { id: 2, message: "Notification 2" },
+    { id: 3, message: "Notification 3" },
+    { id: 2, message: "Notification 2" },
+    { id: 3, message: "Notification 3" },
   ]);
   const handleTabClick = (tab) => {
     setActiveTab(tab);
