@@ -377,3 +377,7 @@ The slider*/
   width: 80% !important;
   height: 100% !important;
 }
+
+.slick-slider .slick-initialized{
+    width: 90% !important;
+}

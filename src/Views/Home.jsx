@@ -365,7 +365,7 @@ export default function Home() {
           </div>
 
           <Listings />
-          <div className="pb-32">
+          <div className="pb-32 w-[90%] mx-auto">
             <h1 className="text-center text-4xl mb-10">
               Learn About the Major Cities
             </h1>
