@@ -14,7 +14,7 @@ export default function CancellationPolicy() {
       <BottomNavigation />
       <div className="grid grid-cols-1 pt-24  md:grid-cols-3 py-8">
         <HelpNavigation />
-        <div className="container w-[80%] col-span-2 mx-auto p-4">
+        <div className="container md:w-[80%] col-span-2 mx-auto p-4">
           <h1 className="text-3xl font-semibold mb-4">Cancellation Policy</h1>
           <p className="mb-4">
             At Shrbo, we understand that flexibility is essential when planning
@@ -158,7 +158,7 @@ export default function CancellationPolicy() {
             </p>
           </div>
         </div>
-        <div className="moreInfo mx-auto w-[80%] px-4 my-4 pb-32">
+        <div className="moreInfo mx-auto md:w-[80%] px-4 my-4 pb-32">
           <h1 className="text-2xl font-semibold">
             <FontAwesomeIcon
               icon={faPhone}

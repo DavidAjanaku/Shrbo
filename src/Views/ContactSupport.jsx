@@ -8,8 +8,9 @@ const ContactSupport = () => {
     <div>
         <BottomNavigation/>
       <HelpNavigation/>
-      <div className="container pt-24 w-[80%] h-[70vh]  mx-auto p-4">
-        <h1 className='text-4xl text-center my-10 font-semibold'>Hi Endi, how can we help?</h1>
+      <div className="container pt-24 md:w-[80%] h-[70vh]   mx-auto p-4">
+     <div className='pb-32'>
+     <h1 className='text-4xl text-center my-10 font-semibold'>Hi Endi, how can we help?</h1>
         <h1 className="text-2xl font-semibold">Contact and Support Information</h1>
 
         <p>
@@ -24,6 +25,7 @@ const ContactSupport = () => {
           You can also reach us at our physical address:
           18, Akpera Oshi Close, Works And Housing Estate, 3rd Avenue Gwarinpa, Abuja, FCT, Nigeria.
         </p>
+     </div>
       </div>
       <Footer/>
     </div>
