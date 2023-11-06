@@ -466,27 +466,31 @@ export default function Hosting() {
             <h1 className="text-3xl font-medium my-7">Welcome back, Endo</h1>
             <Link to="/Reservations">All Reservations(3)</Link>
           </div>
-          <div className="flex space-x-5  w-full overflow-scroll example">
-            <AlertCard
-              title="Verify your identity"
-              description="Required to publish"
-              link="/AddGovvernmentId"
-              image={exclammationMark}
-              houseTitle={"Fully Furnished Apartment at Carrington 32 road"}
-            />
 
-            <AlertCard
-              title="Resubmit your government ID photo"
-              description="It looks like the photo of your id is in black and white. Please make sure your camera is set to take color photos and try again."
-              link="/AddGovvernmentId"
+          <div>
+            <div className="block text-2xl my-4 font-semibold">Recommended for you</div>
+            <div className="flex space-x-5  w-full overflow-scroll example">
+              <AlertCard
+                title="Verify your identity"
+                description="Required to publish"
+                link="/AddGovvernmentId"
+                image={exclammationMark}
+                houseTitle={"Fully Furnished Apartment at Carrington 32 road"}
+              />
 
-              // image={exclammationMark}
-            />
-            <InfoCard
-              title="QUICK LINK"
-              description="Finding reservation details Your Trips tab has full details, receipts, and Host contact info for each of your reservations. Go to Trips"
-              link="/Trip"
-            />
+              <AlertCard
+                title="Resubmit your government ID photo"
+                description="It looks like the photo of your id is in black and white. Please make sure your camera is set to take color photos and try again."
+                link="/AddGovvernmentId"
+
+                // image={exclammationMark}
+              />
+              <InfoCard
+                title="QUICK LINK"
+                description="Finding reservation details Your Trips tab has full details, receipts, and Host contact info for each of your reservations. Go to Trips"
+                link="/Trip"
+              />
+            </div>
           </div>
         </div>
         <div className="reservation w-full md:w-[80vw] mt-14 pb-20">
