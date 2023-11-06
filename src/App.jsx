@@ -55,6 +55,7 @@ import ContactSupport from "./Views/ContactSupport";
 import CancellationPolicy from "./Views/CancellationPolicy";
 import FAQAccordion from "./Views/FAQAccordion";
 import SupportAndHelp from "./Views/SupportAndHelp";
+import PrivacyPolicy from "./Views/PrivacyPolicy";
 
 function App() {
   return (
@@ -154,6 +155,10 @@ function App() {
          <Route
           path="/SupportAndHelp"
           element={<SupportAndHelp />}
+        />
+        <Route
+          path="/PrivacyPolicy"
+          element={<PrivacyPolicy />}
         />
       </Routes>
       

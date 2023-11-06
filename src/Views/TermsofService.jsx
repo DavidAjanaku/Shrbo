@@ -25,7 +25,7 @@ export default function TermsofService() {
           <div className="">
             <div className="lg:pr-4">
               <div className="lg:max-w-lg">
-                <p className="text-base font-semibold leading-7 text-orange-500"> Terms and Conditions</p>
+                <p className="text-base font-semibold leading-7 text-orange-500">Shrbo terms & conditions</p>
                 <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Terms of Service</h1>
                 <p className="mt-6 text-xl leading-8 text-gray-700">
                  We encourage you to read and understand these terms, as they are a fundamental part of the Shrbo experience.

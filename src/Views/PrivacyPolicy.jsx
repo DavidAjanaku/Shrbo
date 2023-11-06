@@ -24,8 +24,8 @@ export default function PrivacyPolicy() {
 
           <div className="">
             <div className="lg:pr-4">
-              <div className="lg:max-w-lg">
-                <p className="text-base font-semibold leading-7 text-orange-500"> Terms and Conditions</p>
+              <div className="lg:max-w-xl">
+                <p className="text-base font-semibold leading-7 text-orange-500">Shrbo privacy policy</p>
                 <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Privacy Policy</h1>
                 <p className="mt-6 text-xl leading-8 text-gray-700">
                 Welcome to Shortlet Booking (Shrbo), a platform dedicated to providing you with exceptional 
@@ -77,29 +77,9 @@ export default function PrivacyPolicy() {
                   <li className="flex gap-x-3">
                     {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
                     <span>
-                      <strong className="font-semibold text-gray-900">Misuse of the Platform</strong> Our platform 
-                      is built on trust and respect. Users found misusing the platform, such as spamming other users, 
-                      posting inappropriate content, or engaging in harmful behavior within the community, may face 
-                      suspension or termination. We believe in a community that is built on collaboration and mutual respect.
-
-                    </span>
-                  </li>
-                  <li className="flex gap-x-3">
-                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                    <span>
-                      <strong className="font-semibold text-gray-900">Health and Safety Concernsm</strong> In cases where a user's 
-                      behavior poses a threat to the health and safety of other users or property, we will take appropriate 
-                      action to protect our community. We prioritize the well-being of all users.
-
-                    </span>
-                  </li>
-                  <li className="flex gap-x-3">
-                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                    <span>
-                      <strong className="font-semibold text-gray-900">Multiple Complaints</strong> To ensure a positive 
-                      experience for hosts and guests alike, we may suspend or terminate the account of a user who receives 
-                      multiple complaints from hosts or other guests regarding their behavior, cleanliness, or adherence to 
-                      house rules. This is to maintain a high standard of service for our community.
+                      <strong className="font-semibold text-gray-900">Payment Information</strong> To facilitate secure 
+                      transactions, we collect payment information, including credit card details, billing address, 
+                      and payment history. This data is processed securely and used solely for booking and payment purposes.
 
 
                     </span>
@@ -107,204 +87,221 @@ export default function PrivacyPolicy() {
                   <li className="flex gap-x-3">
                     {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
                     <span>
-                      <strong className="font-semibold text-gray-900">Failure to Verify Identity</strong> Verification is a critical 
-                      component of maintaining the trust and security of our platform. If a user fails to complete the necessary identity 
-                      verification processes required by the platform, their account may be temporarily suspended until proper verification 
-                      is provided. This step is taken to safeguard the community and ensure that all users are who they claim to be.
+                      <strong className="font-semibold text-gray-900">Communications</strong> We may collect data 
+                      from your interactions with our platform, including messages, reviews, and feedback. 
+                      This helps us enhance your experience and address any concerns.
 
 
                     </span>
                   </li>
-                  
+                  <li className="flex gap-x-3">
+                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
+                    <span>
+                      <strong className="font-semibold text-gray-900">Technical and Device Information</strong> We collect information 
+                      about your device, browser, IP address, and operating system. This data assists us in ensuring platform security, 
+                      compatibility, and functionality.
 
-
+                    </span>
+                  </li>
+                          
                 </ul>
 
 
-                <h2 className=" mt-8 text-2xl font-semibold tracking-tight text-gray-900"> Cancellation Policy</h2>
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">  Data Sharing</h2>
                 <p className="mt-6">
-                Shrbo strictly implements Hosting Standards that ensure if, by any chance, 
-                the guest did not stay in the booked apartment due to issues or complications 
-                from the host, the guest is entitled to a full refund. The reservation must be 
-                cancelled on the host’s behalf, and the following penalties will apply:
+                We value your trust, and we are committed to maintaining the privacy of your 
+                data. Shrbo does not sell, rent, or trade your personal information to 
+                third parties. However, to provide you with our services, we may share your data with the following parties:
 
                 </p>
-                <ul role="list" className="mt-6 space-y-2 text-gray-600">
-                  <li className="flex gap-x-3">
-                    {/* <CloudArrowUpIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                      -
-                    <span>
-                    A cancellation fee of  <strong className="font-semibold text-gray-900"> N20,000</strong> will be deducted from the host's account.
-
-                    </span>
-                  </li>
-                  <li className="flex gap-x-3">
-                    {/* <LockClosedIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                    -
-                    <span>
-                       The calendar for the specific dates will be marked as unavailable or blocked until the cancellation fee is cleared.
-                    </span>
-                  </li>
-                </ul>
-
-                <h2 className="mt-8  text-2xl font-semibold tracking-tight text-gray-900">   Guest Cancellation</h2>
-                <p className="mt-6">
-                Guests have the flexibility to cancel their reservations free of charge within 48 hours of booking, 
-                provided that the check-in date is at least 10 days away. We believe in providing our users with the 
-                freedom to make informed decisions without incurring undue financial burden
-
-                </p>
-
-
-                
-                <h2 className=" mt-8 text-2xl font-semibold tracking-tight text-gray-900">Refunds</h2>
-                <p className="mt-6">
-                    In the event of a cancellation, refunds are processed as follows:
-                </p>
-                <ul role="list" className="mt-6 space-y-2 text-gray-600">
-                  <li className="flex gap-x-3">
-                    {/* <CloudArrowUpIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                      -
-                    <span>
-                    Cancellations made within 7 days of the check-in date will result in a refund of 50% of the total booking amount
-
-                    </span>
-                  </li>
-                  <li className="flex gap-x-3">
-                    {/* <LockClosedIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                    -
-                    <span>
-                        Cancellations made within 5 days of the check-in date are non-refundable. We recognize that 
-                        this allows hosts to better manage their availability and plan for your stay.
-                    </span>
-                  </li>
-                  <li className="flex gap-x-3">
-                    {/* <LockClosedIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                    -
-                    <span>
-                    Please note that early departures or no-shows are not eligible for refunds, and the total booking amount will be charged.
-                    </span>
-                  </li>
-
-
-                </ul>
-
-                <h2 className="mt-8  text-2xl font-semibold tracking-tight text-gray-900">   Refund Processing</h2>
-                <p className="mt-6">
-                    Refunds, when applicable, will be processed within 7-10 business days from the date of cancellation. 
-                    These refunds will be issued using the same payment method that was used for the original booking. 
-                    We believe in transparency and efficiency when it comes to your finances.
-
-                </p>
-
-                <h2 className=" mt-8 text-2xl font-semibold tracking-tight text-gray-900"> Reservation Modifications</h2>
-                <p className="mt-6">
-                At Shrbo, we understand that plans can change. Therefore, guests are allowed to request modifications to 
-                their reservation dates free of charge. These modifications are subject to availability and potential rate changes, 
-                but we aim to make this process as convenient as possible. However, we kindly request that you take note of the following:
-
-                </p>
-                <ul role="list" className="mt-6 space-y-2 text-gray-600">
-                  <li className="flex gap-x-3">
-                    {/* <CloudArrowUpIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                      -
-                    <span>
-                    Modifications requested within 5-7 days of the check-in date will be treated as cancellations and will follow the cancellation policy outlined above.
-
-                    </span>
-                  </li>
-                  <li className="flex gap-x-3">
-                    {/* <LockClosedIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                    -
-                    <span>
-                    Confirmation of Check-in and Minimum Stay Requirement: The guest must confirm check-in and stay at the apartment for at least one night before the host receives payment.
-                    </span>
-                  </li>
-                </ul>
-
-
-
-                 <h2 className=" mt-8 text-2xl font-semibold tracking-tight text-gray-900"> Termination or Suspension</h2>
-                <p className="mt-6">
-                At Shrbo, we are committed to fostering a safe and respectful community. We reserve the right to terminate 
-                or suspend a user's account under specific circumstances, as outlined below. These measures are implemented 
-                to maintain a positive experience for all users, ensuring the highest level of trust and safety.
-
-                </p>
-
                 <ul role="list" className="mt-8 space-y-8 text-gray-600">
                   <li className="flex gap-x-3">
                     {/* <CloudArrowUpIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
                     <span>
-                      <strong className="font-semibold text-gray-900">Violation of Terms of Service</strong>This includes engaging in 
-                      illegal activities, causing property damage, harassment, or any criminal behavior. 
-                      We hold a strong commitment to legal compliance and a zero-tolerance policy toward illegal activities.
+                      <strong className="font-semibold text-gray-900">Hosts </strong>If you make a booking, we share your reservation 
+                      information with the host of the property you've booked. This ensures a smooth check-in process and enables 
+                      hosts to prepare for your stay.
+
                     </span>
                   </li>
                   <li className="flex gap-x-3">
                     {/* <LockClosedIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
                     <span>
-                      <strong className="font-semibold text-gray-900"> Non-Payment</strong> Users who repeatedly 
-                      fail to make the required payments for their bookings, engage in cancellations without valid 
-                      reasons, or participate in payment fraud may find their accounts suspended or terminated. 
-                      We aim to maintain a fair platform for both guests and hosts.
+                      <strong className="font-semibold text-gray-900">Service Providers</strong> We engage service providers, 
+                      such as payment processors and customer support tools, to facilitate our platform's functionality. 
+                      These providers may access your data only as needed to perform their services.
 
                     </span>
                   </li>
                   <li className="flex gap-x-3">
                     {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
                     <span>
-                      <strong className="font-semibold text-gray-900">Misuse of the Platform</strong> Our platform 
-                      is built on trust and respect. Users found misusing the platform, such as spamming other users, 
-                      posting inappropriate content, or engaging in harmful behavior within the community, may face 
-                      suspension or termination. We believe in a community that is built on collaboration and mutual respect.
+                      <strong className="font-semibold text-gray-900">Legal Obligations</strong> We may disclose 
+                      your information to comply with legal obligations, such as responding to court orders, 
+                      government requests, and law enforcement inquiries.
 
-                    </span>
-                  </li>
-                  <li className="flex gap-x-3">
-                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                    <span>
-                      <strong className="font-semibold text-gray-900">Health and Safety Concernsm</strong> In cases where a user's 
-                      behavior poses a threat to the health and safety of other users or property, we will take appropriate 
-                      action to protect our community. We prioritize the well-being of all users.
-
-                    </span>
-                  </li>
-                  <li className="flex gap-x-3">
-                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                    <span>
-                      <strong className="font-semibold text-gray-900">Multiple Complaints</strong> To ensure a positive 
-                      experience for hosts and guests alike, we may suspend or terminate the account of a user who receives 
-                      multiple complaints from hosts or other guests regarding their behavior, cleanliness, or adherence to 
-                      house rules. This is to maintain a high standard of service for our community.
 
 
                     </span>
                   </li>
-                  <li className="flex gap-x-3">
-                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
-                    <span>
-                      <strong className="font-semibold text-gray-900">Failure to Verify Identity</strong> Verification is a critical 
-                      component of maintaining the trust and security of our platform. If a user fails to complete the necessary identity 
-                      verification processes required by the platform, their account may be temporarily suspended until proper verification 
-                      is provided. This step is taken to safeguard the community and ensure that all users are who they claim to be.
-
-
-                    </span>
-                  </li>
-                  
-
-
+                 
+                          
                 </ul>
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">Data Security</h2>
+                <p className="mt-6">
+                We employ strict security measures to protect your data and ensure its confidentiality. 
+                This includes encryption, regular security audits, and access controls. However, 
+                no data transmission or storage system can be guaranteed 100% secure. 
+                While we take every precaution to protect your data, we cannot guarantee absolute security.
+
+                </p>
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900"> Cookies and Tracking Technologies</h2>
+                <p className="mt-6">
+                Our platform uses cookies and similar tracking technologies to improve user experience 
+                and analyze usage patterns. Cookies are small data files that are stored on your 
+                device. By using our platform, you consent to the use of these cookies for the 
+                purposes of improving functionality, understanding user behavior, and delivering targeted content.
+
+
+                </p>
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">Your Privacy Choices</h2>
+                <p className="mt-6">
+                You have choices regarding the data you provide to us:
+                </p>
+                <ul role="list" className="mt-2 space-y-3 text-gray-600">
+                  <li className="flex gap-x-3">
+                    {/* <CloudArrowUpIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
+                    <span>
+                      <strong className="font-semibold text-gray-900">Account Information: </strong>You can review and 
+                      update your account information in the account settings. You can also delete your account at any time.
+
+                    </span>
+                  </li>
+                  <li className="flex gap-x-3">
+                    {/* <LockClosedIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
+                    <span>
+                      <strong className="font-semibold text-gray-900">Communications:</strong> You can choose 
+                      to opt out of promotional communications at any time by following the unsubscribe instructions in our emails.
+
+                    </span>
+                  </li>
+                  <li className="flex gap-x-3">
+                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
+                    <span>
+                      <strong className="font-semibold text-gray-900">Cookies:</strong> Most browsers 
+                      allow you to control and manage cookies. You can modify your browser settings to accept or reject cookies.
+
+
+
+
+                    </span>
+                  </li>
+                 
+                          
+                </ul>
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">Children's Privacy</h2>
+                <p className="mt-6">
+                Our platform is not intended for users under the age of 18. We do not knowingly collect 
+                information from children. If we become aware that we have collected personal data from 
+                a child without parental consent, we will take appropriate steps to delete such information.
+
+
+                </p>
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">Updates to Privacy Policy</h2>
+                <p className="mt-6">
+                We may update this Privacy Policy from time to time to reflect changes in our practices. 
+                You will be notified of any significant changes, and we encourage you to review the policy periodically.
+
+                </p>
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">Contact Us</h2>
+                <p className="mt-6">
+                If you have questions or concerns about your privacy, this Privacy Policy, or your data, please 
+                contact us at shortletbookingltd@gmail.com.
+
+
+                </p>
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">Data Access and Correction</h2>
+                <p className="mt-6">
+                We believe in transparency and your right to access and correct your data. If you wish to access, 
+                correct, or update any of your personal information, please log in to your Shrbo account and make the 
+                necessary changes. If you encounter any difficulties in accessing or editing your data, our customer support 
+                team is ready to assist you. We will respond to your request within a reasonable timeframe to ensure that your 
+                data is accurate and up to date.
+
+
+
+                </p>
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">Data Retention</h2>
+                <p className="mt-6">
+                We retain your data for as long as necessary to fulfill the purposes outlined in this Privacy 
+                Policy, unless a longer retention period is required by law or regulation. Inactive accounts 
+                may be subject to data deletion after an extended period of inactivity to ensure we maintain a streamlined platform.
+
+
+
+                </p>
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">Third-Party Links</h2>
+                <p className="mt-6">
+                Our platform may contain links to third-party websites and services. While we strive to maintain 
+                the highest standards of data security and privacy, we cannot guarantee the practices of these third parties. 
+                We recommend reviewing the privacy policies of any linked sites to ensure your data is handled in a manner 
+                that aligns with your expectations.
+
+
+
+
+                </p>
+
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">International Data Transfer</h2>
+                <p className="mt-6">
+                By using Shrbo, you acknowledge and consent to your data being transferred and stored internationally. 
+                Your data may be processed in countries that have different data protection laws. We take all necessary 
+                measures to ensure your data remains secure and is handled in accordance with this Privacy Policy.
+
+                </p>
+
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">Changes to This Policy</h2>
+                <p className="mt-6">
+                We will update this Privacy Policy periodically to reflect changes in our practices and 
+                comply with evolving data protection laws. When we make significant changes, you will be notified. 
+                We encourage you to review this policy regularly to stay informed about how we are protecting your data.
+
+                </p>
+
+                <h2 className=" mt-8  text-2xl font-semibold tracking-tight text-gray-900">Contact Us</h2>
+                <p className="mt-6">
+                If you have questions or concerns about your privacy, this Privacy Policy, or your data, 
+                please do not hesitate to contact us at shortletbookingltd@gmail.com. Your privacy matters to us, 
+                and we are committed to maintaining the security and confidentiality of your data while delivering exceptional 
+                short-term accommodation experiences.
+
+
+                </p>
+
+
+
+
+
+
 
 
                 <h2 className="mt-16 text-2xl font-bold tracking-tight text-gray-900"></h2>
                 <p className="mt-6">
-                We hope that these terms of service offer a comprehensive overview of our commitment to providing 
-                a safe, reliable, and transparent platform for all our users. We encourage you to read and understand 
-                these terms, as they are a fundamental part of the Shrbo experience. If you have any questions or require 
-                further clarification on any aspect of our terms of service, please don't hesitate to contact us. 
-                Your trust and satisfaction are of paramount importance to us.
+                By using Shrbo, you agree to the terms outlined in this Privacy Policy. Your trust is vital to us, 
+                and we are committed to maintaining the privacy and security of your data while providing you with 
+                exceptional short-term accommodation experiences. Thank you for choosing Shrbo for your accommodation needs.
+
 
                 </p>
               </div>
