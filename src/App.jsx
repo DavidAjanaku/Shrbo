@@ -49,7 +49,7 @@ import HostPayment from "./Component/Dashboard/HostPayment";
 import PendingPayment from "./Component/AdminDashboard/PendingPayment";
 import CanceledReservationTable from "./Component/AdminDashboard/CanceledReservationTable";
 import TransactionHistory from "./Component/Settings/TransactionHistory";
-import TermsofService from "./Component/TermsofService";
+import TermsofService from "./Views/TermsofService";
 import AboutUs from "./Views/AboutUs";
 import ContactSupport from "./Views/ContactSupport";
 import CancellationPolicy from "./Views/CancellationPolicy";

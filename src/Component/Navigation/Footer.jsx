@@ -30,7 +30,7 @@ const Footer = () => {
             <h2 className="text-base font-bold mb-4">Legal and Policy Links</h2>
             <ul>
        
-              <li className='text-sm'><Link to="/tos">Terms of Service</Link></li>
+              <li className='text-sm'><Link to="/TermsofService">Terms of Service</Link></li>
               <li className='text-sm'><Link to="/privacypolicy">Privacy policy</Link></li>
             </ul>
           </div>

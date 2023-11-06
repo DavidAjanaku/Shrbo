@@ -1,10 +1,15 @@
 import React from "react";
 import logo from "../assets/logo.png"
-
-export default function TermsofService() {
+import Footer from "../Component/Navigation/Footer";
+import BottomNavigation from "../Component/Navigation/BottomNavigation";
+import HelpNavigation from "../Component/HelpNavigation";
+export default function PrivacyPolicy() {
     return (
 
-        
+        <div>
+             <BottomNavigation/>
+        <HelpNavigation/>
+
         <div className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0">
      
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 ">
@@ -21,9 +26,13 @@ export default function TermsofService() {
             <div className="lg:pr-4">
               <div className="lg:max-w-lg">
                 <p className="text-base font-semibold leading-7 text-orange-500"> Terms and Conditions</p>
-                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Terms of Service</h1>
+                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Privacy Policy</h1>
                 <p className="mt-6 text-xl leading-8 text-gray-700">
-                 We encourage you to read and understand these terms, as they are a fundamental part of the Shrbo experience.
+                Welcome to Shortlet Booking (Shrbo), a platform dedicated to providing you with exceptional 
+                short-term accommodation experiences while prioritizing your privacy and data security. 
+                This Privacy Policy outlines how we collect, use, and protect your personal information and 
+                data. We are committed to ensuring your trust, and we take your privacy seriously. Please take 
+                the time to read and understand this policy to make informed decisions about using our platform.
                 </p>
               </div>
             </div>
@@ -41,14 +50,76 @@ export default function TermsofService() {
             <div className="lg:pr-4">
               <div className="max-w-xl text-base leading-7 text-gray-700 lg:max-w-lg">
 
-                <h2 className="  text-2xl font-semibold tracking-tight text-gray-900">   Affiliated Companies</h2>
+                <h2 className="  text-2xl font-semibold tracking-tight text-gray-900">  Data Collection and Usage</h2>
                 <p className="mt-6">
-                Shortlet Booking (Shrbo) is a subsidiary of shelters - 
-                gate investment and properties. We have no affiliations with any other companies. 
-                We are dedicated to providing you with a stand-alone platform for booking accommodations with transparency, reliability, and trustworthiness. 
-                Our commitment is to ensure that your experience with us is grounded in the highest standards of safety, security, and customer service. 
-
+                At Shrbo, we collect various types of data to improve your experience and provide 
+                you with personalized services. This includes, but is not limited to:
                 </p>
+                <ul role="list" className="mt-8 space-y-8 text-gray-600">
+                  <li className="flex gap-x-3">
+                    {/* <CloudArrowUpIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
+                    <span>
+                      <strong className="font-semibold text-gray-900">User Account Information</strong>When you create a Shrbo account,
+                       we collect personal information such as your name, email address, and contact details. This enables us to create 
+                       and maintain your account, provide customer support, and keep you updated on your bookings.
+
+                    </span>
+                  </li>
+                  <li className="flex gap-x-3">
+                    {/* <LockClosedIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
+                    <span>
+                      <strong className="font-semibold text-gray-900">Booking Data</strong> When you make a booking through our 
+                      platform, we collect information about your reservation, such as the property, check-in and check-out dates, 
+                      and booking preferences. This information helps us manage your reservations and improve our service.
+
+                    </span>
+                  </li>
+                  <li className="flex gap-x-3">
+                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
+                    <span>
+                      <strong className="font-semibold text-gray-900">Misuse of the Platform</strong> Our platform 
+                      is built on trust and respect. Users found misusing the platform, such as spamming other users, 
+                      posting inappropriate content, or engaging in harmful behavior within the community, may face 
+                      suspension or termination. We believe in a community that is built on collaboration and mutual respect.
+
+                    </span>
+                  </li>
+                  <li className="flex gap-x-3">
+                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
+                    <span>
+                      <strong className="font-semibold text-gray-900">Health and Safety Concernsm</strong> In cases where a user's 
+                      behavior poses a threat to the health and safety of other users or property, we will take appropriate 
+                      action to protect our community. We prioritize the well-being of all users.
+
+                    </span>
+                  </li>
+                  <li className="flex gap-x-3">
+                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
+                    <span>
+                      <strong className="font-semibold text-gray-900">Multiple Complaints</strong> To ensure a positive 
+                      experience for hosts and guests alike, we may suspend or terminate the account of a user who receives 
+                      multiple complaints from hosts or other guests regarding their behavior, cleanliness, or adherence to 
+                      house rules. This is to maintain a high standard of service for our community.
+
+
+                    </span>
+                  </li>
+                  <li className="flex gap-x-3">
+                    {/* <ServerIcon className="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> */}
+                    <span>
+                      <strong className="font-semibold text-gray-900">Failure to Verify Identity</strong> Verification is a critical 
+                      component of maintaining the trust and security of our platform. If a user fails to complete the necessary identity 
+                      verification processes required by the platform, their account may be temporarily suspended until proper verification 
+                      is provided. This step is taken to safeguard the community and ensure that all users are who they claim to be.
+
+
+                    </span>
+                  </li>
+                  
+
+
+                </ul>
+
 
                 <h2 className=" mt-8 text-2xl font-semibold tracking-tight text-gray-900"> Cancellation Policy</h2>
                 <p className="mt-6">
@@ -239,8 +310,10 @@ export default function TermsofService() {
               </div>
             </div>
           </div>
-        </div>
+        </div>    
       </div>
+      <Footer/>
+        </div>
     )
   }
   
