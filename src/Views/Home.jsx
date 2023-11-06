@@ -16,7 +16,6 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
@@ -336,19 +335,20 @@ export default function Home() {
       <div className="pageHeader"></div>
       <div className="storeFrontHomeage">
         <div>
-        <div className="hero-pattern relative bg-cover bg-center md:h-[70vh] h-[100vh] bg-[url('https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh')]">
-  <div className="h-full flex flex-col justify-center items-center">
-    <h1 className="text-white md:text-6xl text-5xl lg:text-6xl p-4 text-center z-50">
-      Unlock Comfort, Discover Adventure with Shrbo.
-    </h1>
-    <div className="z-50">
-      <p className="z-50 text-white  md:text-base text-center text-sm">
-        Welcome to Shrbo, where comfort meets adventure. Find your perfect home away from home and embark on memorable journeys, one stay at a time.
-      </p>
-    </div>
-  </div>
-</div>
-
+          <div className="hero-pattern relative bg-cover bg-center md:h-[70vh] h-[100vh] bg-[url('https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh')]">
+            <div className="h-full flex flex-col justify-center items-center">
+              <h1 className="text-white md:text-6xl text-5xl lg:text-6xl p-4 text-center z-50">
+                Unlock Comfort, Discover Adventure with Shrbo.
+              </h1>
+              <div className="z-50">
+                <p className="z-50 text-white  md:text-base text-center text-sm">
+                  Welcome to Shrbo, where comfort meets adventure. Find your
+                  perfect home away from home and embark on memorable journeys,
+                  one stay at a time.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           {/* <p>

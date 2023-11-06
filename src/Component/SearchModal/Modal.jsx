@@ -267,7 +267,7 @@ const SearchModal = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 z-50 w-full h-[100vh] overflow-auto md:h-full flex items-center justify-center bg-slate-900  bg-opacity-75 ${
+      className={`fixed top-0 left-0 z-50 w-full h-[100vh] overflow-auto md:h-full flex items-center justify-center bg-slate-900  bg-opacity-90 ${
         isOpen ? "visible " : "invisible"
       }`}
     >
