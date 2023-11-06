@@ -15,7 +15,7 @@ export default function HostModal({ isOpen, onClose }) {
       <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center md:z-[99] text-black">
         <div className="bg-white w-full   p-4 z-[999] h-full  overflow-auto">
           <div className="text-black md:w-2/4  p-3 pb-32">
-            <h1 className="text-2xl font-bold">Menu</h1>
+            {/* <h1 className="text-2xl ">Menu</h1> */}
 
             <div>
               <section className="bg-orange-400 p-2 rounded-lg my-10">
