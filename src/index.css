@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 
+
+
+*{
+  margin: 0;
+  padding: 0;
+}
+
+
 .switch {
     position: relative;
     display: inline-block;

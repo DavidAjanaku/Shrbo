@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 
+*{
+  margin: 0;
+  padding: 0;
+}
+
 .hero-pattern::before {
     content: "";
     position: absolute;
