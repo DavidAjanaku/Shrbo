@@ -179,7 +179,7 @@ const HostTransactionHistory = () => {
 
         <Modal
           title="Booking Details"
-          visible={detailsVisible}
+          open={detailsVisible}
           onOk={handleDetailsClose}
           onCancel={handleDetailsClose}
         >

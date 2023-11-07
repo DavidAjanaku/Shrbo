@@ -316,7 +316,7 @@ export default function ListingForm() {
             isModalVisible={isReportModalVisible}
             handleCancel={()=>setIsReportModalVisible(false)}
             centered={true}  
-            width={"700px"}                  
+            // width={"600px"}                  
        
           >
             <ReportListing/>

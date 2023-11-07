@@ -3,7 +3,7 @@ import {  Tabs, Table, Button,DatePicker,Dropdown } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import GoBackButton from "../GoBackButton";
 import Popup from "../../hoc/Popup";
-import {StarOutlined,CheckCircleOutlined} from '@ant-design/icons';
+import {StarOutlined,CheckCircleOutlined,RightOutlined} from '@ant-design/icons';
 import Logo from "../../assets/logo.png"
 
 
@@ -64,7 +64,7 @@ const Reservations = () => {
     {
       key: "1",
       status: "Upcoming",
-      guests: 4,
+      guests: "4 adults",
       checkIn: "2023-11-01",
       checkOut: "2023-11-05",
       booked: "2023-10-27",
@@ -77,7 +77,7 @@ const Reservations = () => {
     {
       key: "2",
       status: "Completed",
-      guests: 2,
+      guests:"2 adults",
       checkIn: "2023-11-01",
       checkOut: "2023-11-05",
       booked: "2023-10-27",
@@ -90,7 +90,7 @@ const Reservations = () => {
     {
       key: "3",
       status: "Canceled by Airbnb",
-      guests: 1,
+      guests: "1 adults",
       checkIn: "2023-11-03",
       checkOut: "2023-11-04",
       booked: "2023-10-27",
@@ -103,7 +103,7 @@ const Reservations = () => {
     {
       key: "4",
       status: "Pending",
-      guests: 6,
+      guests: "4 adults 2 children",
       checkIn: "2023-11-01",
       checkOut: "2023-11-05",
       booked: "2023-10-27",
@@ -116,7 +116,7 @@ const Reservations = () => {
     {
       key: "5",
       status: "Canceled by Airbnb",
-      guests: 2,
+      guests: "1 adult 1 pet",
       checkIn: "2023-11-03",
       checkOut: "2023-11-07",
       booked: "2023-10-27",
@@ -128,7 +128,7 @@ const Reservations = () => {
     },{
       key: "6",
       status: "Pending",
-      guests: 6,
+      guests: "4 adults 2 infants",
       checkIn: "2023-11-02",
       checkOut: "2023-11-05",
       booked: "2023-10-27",
@@ -261,18 +261,6 @@ const Reservations = () => {
     },
   ];
 
-  const dropdownItems = [
-    {
-      key: '1',
-      label: (
-            <DatePicker.RangePicker
-          onChange={handleFilter}
-          placeholder={["Check-In Date", "Check-Out Date"]}
-        /> 
-      ),
-    },
-    
-  ];
 
   // Define data for the table
  
@@ -301,9 +289,39 @@ const Reservations = () => {
             </button>
           </div>
           <Dropdown
-      menu={{
-       items:dropdownItems,
-      }}
+      // menu={{
+      //  items:dropdownItems,
+      // }}
+      dropdownRender={(menu) => (
+        <div className=" bg-white ">
+          <div className="p-2 flex-col w-full shadow-md rounded-xl ">
+              <div className=" flex flex-col justify-center items-center  h-full">
+
+                  <DatePicker.RangePicker
+                  onChange={handleFilter}
+                  className=" h-16 text-lg"
+                  placeholder={["Check-In Date", "Check-Out Date"]}
+                  /> 
+
+                  <button onClick={handleSubmit} className="block mt-7 w-[150px] mb-2  h-10 rounded-xl bg-orange-400 px-5 pb-2 pt-2 text-base font-medium  leading-normal 
+                                    text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
+                                    focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+                                    focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+                                    dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
+                                    dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
+                                    ,0_4px_18px_0_rgba(59,113,202,0.1)]]">
+                                          
+                                          Done
+
+                            
+                   </button>
+
+
+
+           </div>
+                    </div>
+        </div>
+      )}
       onOpenChange={handleSubmit}
       open={visible}
       placement="bottom"
@@ -312,9 +330,9 @@ const Reservations = () => {
     >
       
           <div className=" pl-[18px] md:-mr-8 mt-[10px]  md:block cursor-pointer  absolute right-0  ">
-            <button  className="   ">
+            <button  className="  ">
               <svg xmlns="http://www.w3.org/2000/svg" width="24px"
-                  height="24px" viewBox="0 0 24 24">
+                  height="24px" viewBox="0 0 24 24"  >
                 <title>filter</title><path d="M3.47 5C3.25 
                 5 3.04 5.08 2.87 5.21C2.43 5.55 2.35 6.18 2.69 6.61L2.69 6.62L7 
                 12.14V18.05L10.64 21.71C11 22.1 11.66 22.1 12.05 21.71L12.05 
@@ -362,11 +380,15 @@ const Reservations = () => {
         </div>
 
 
+
+
+
+
         {/* Reservation Details ------------------------------------------------------------------------------------- */}
 
         <Popup  isModalVisible={isModalVisible}
             handleCancel={()=>{setIsModalVisible(false); setShow(false)}   }
-            // centered={true}  
+            centered={true}  
             // width={"100vw"}  
            
             title={<div className=" text-xl w-full border-b  "    >Reservation Details</div>}
@@ -382,10 +404,10 @@ const Reservations = () => {
 
                       <div className=" flex-1 gap-2 flex flex-col overflow-hidden    " >
                         <div className="name-checkin-checkout text-sm font-normal    ">
-                          <p className=" text-lg md:text-xl
+                          <p className=" text-xl
                            pb-2 font-medium ">{filteredData[selectedReservation].guestName}</p>
-                          <p className="">Sep 22 - Oct 2 { `(${filteredData[selectedReservation].nights} nights)`  } </p>
-                          <p className=" ">{ `${filteredData[selectedReservation].guests} guests -${filteredData[selectedReservation].totalPayout} `  } </p>
+                          <p className=" pb-1">Sep 22 - Oct 2 { `(${filteredData[selectedReservation].nights} nights)`  } </p>
+                          <p className=" ">{ `${filteredData[selectedReservation].guests} - ${filteredData[selectedReservation].totalPayout} `  } </p>
                         </div>
                         <div className="listing text-gray-500 text-sm     "><p className="    ">{filteredData[selectedReservation].listing} </p></div>
 
@@ -415,7 +437,7 @@ const Reservations = () => {
                 {/* Guests Review if Reservation has been completed meaning the gueest has stayed there else it shouldn't show  */}
 
                 <div className="p-2 md:p-3 w-full bg-slate-200/10 rounded-lg"  >
-                  <p className=" font-medium md:text-base   "> { `${filteredData[selectedReservation].guestName}'s  review`  }:</p>
+                  <p className=" font-medium md:text-lg   "> { `${filteredData[selectedReservation].guestName}'s  review`  }:</p>
                   <div className={` text-ellipsis overflow-hidden    w-[95%] md:w-[80%] ${show ?' whitespace-normal':'whitespace-nowrap'  }   `}  >
                     <label className=" text-sm text-gray-600 ">
                       Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati, itaque vel quis quia mollitia 
@@ -431,10 +453,10 @@ const Reservations = () => {
                 {/* Guests info  */}
 
                 <div  className=" p-2 md:p-3 w-full bg-slate-200/10 rounded-lg">
-                  <p className="text-lg md:text-xl pb-2 font-medium  ">Things to know about {filteredData[selectedReservation].guestName} </p>
+                  <p className="text-xl pb-2 font-medium  ">Things to know about {filteredData[selectedReservation].guestName} </p>
                   <ul className=" pb-3" >
-                    <li ><StarOutlined /> <label className=" pl-1 ">5.0 rating </label></li>
-                    <li> <CheckCircleOutlined className="   " /><label className=" pl-1 ">Verified identity </label></li>
+                    <li ><StarOutlined  /><label className=" pl-1 ">5.0 rating </label></li>
+                    <li> <CheckCircleOutlined className="  rounded-[50px] text-black/80  " /><label className=" pl-1 ">Verified identity </label></li>
                     <li className=" flex  "><label className=" pl-1 ">Joined Shrbo in 2020 </label> </li>
                   </ul>
                   <Link to={"/UserDetails"} className=" underline font-medium hover:text-black "  
@@ -465,21 +487,14 @@ const Reservations = () => {
 
                 </div>
 
+                {/* Details and Pricing---------------------------------------------------                 */}
 
-                <div className="property-listing overflow-auto h-[70vh] bg-slate-200/10 rounded-lg">
-              <div className="property-listing-container flex flex-wrap   ">
+                <div className="property-listing  overflow-auto h-[70vh] ">
+              <div className="property-listing-container flex flex-wrap  bg-slate-200/10 rounded-lg  ">
               
                 <div className="property-listed--2 m-5 w-full md:w-full">
-                  <header className="text-2xl">Trip Details</header>
-                  <div>
-                    <p className="">
-                      Well crafted to perfection with impeccable art
-                    </p>
-                  </div>
-                  <div className="property-location text-gray-400 text-sm border-b-[1px] py-4">
-                    Lekki, Lagos, NG
-                  </div>
-
+                  <header className="text-xl font-medium">Booking Details</header>
+                 
                   <div className="property-info-details flex items-center justify-between py-4 text-gray-500 border-b-[1px]">
                     <div>{filteredData[selectedReservation].guestName} </div>
                     <div>
@@ -491,49 +506,92 @@ const Reservations = () => {
                     </div>
                   </div>
                   <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
-                    <div>Check-in</div>
-                    <div>{filteredData[selectedReservation].checkIn} </div>
+                    <div className=" font-normal">Guests</div>
+                    <div className=" font-medium">{filteredData[selectedReservation].guests} </div>
                   </div>
                   <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
-                    <div>Check-out</div>
-                    <div>{filteredData[selectedReservation].checkOut} </div>
+                    <div className=" font-normal">Check-in</div>
+                    <div className=" font-medium">{filteredData[selectedReservation].checkIn} </div>
                   </div>
                   <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
-                    <div>Guests</div>
-                    <div>{filteredData[selectedReservation].guests} </div>
+                    <div className=" font-normal">Check-out</div>
+                    <div className=" font-medium">{filteredData[selectedReservation].checkOut} </div>
+                  </div>
+                  <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
+                    <div className=" font-normal">Booked</div>
+                    <div className=" font-medium">{filteredData[selectedReservation].booked} </div>
+                  </div>
+                  <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
+                    <div className=" font-normal">Confirmation code</div>
+                    <div className=" font-medium">{filteredData[selectedReservation].confirmationCode} </div>
+                  </div>
+                  <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
+                    <div className=" font-normal">Cancellation policy</div>
+                    <div className=" font-medium">Flexible</div>
+                  </div>
+                  
+                </div>
+              </div>
+
+              <div className="property-listed--3 mt-5 p-5 bg-slate-200/10 rounded-lg">
+                <header className="text-xl font-medium">Guest paid</header>
+
+                <div className="payment-details-info w-full ">
+                  <div className="property-info-details flex justify-between py-4 text-gray-500 ">
+                 
+                    <div>{filteredData[selectedReservation].totalPayout} x {filteredData[selectedReservation].nights} nights </div>
+                    <div className=" ">{filteredData[selectedReservation].totalPayout} </div>
+                  </div>
+                  <div className="property-info-details flex justify-between py-4 text-gray-500   ">
+                    <div>Guest service fee</div>
+                    <div>$138.00</div>
+                  </div>
+                  <div className="property-info-details flex justify-between py-4 text-gray-500 ">
+                    <div className=" font-medium text-base">Total</div>
+                    <div className=" font-medium">{filteredData[selectedReservation].totalPayout} </div>
                   </div>
                 </div>
               </div>
-              <div className="property-listed--3 m-5">
-                <header className="text-2xl">Payment details</header>
 
-                <div className="payment-details-info w-full md:w-full">
-                  <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
-                    <div>Rate per night</div>
-                    <div>{filteredData[selectedReservation].totalPayout} </div>
+
+              <div className="property-listed--3 mt-5 p-5 bg-slate-200/10 rounded-lg">
+                <header className="text-xl font-medium">Host payout</header>
+
+                <div className="payment-details-info w-full ">
+                  <div className="property-info-details flex justify-between py-4 text-gray-500 ">
+                 
+                    <div> {filteredData[selectedReservation].nights} nights room fee </div>
+                    <div className=" ">{filteredData[selectedReservation].totalPayout} </div>
                   </div>
-                  <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
-                    <div>Number of nights</div>
-                    <div>{filteredData[selectedReservation].nights} </div>
+                  <div className="property-info-details flex justify-between py-4 text-gray-500 ">
+                 
+                    <div>Nightly rate adjustment</div>
+                    <div className=" ">-$50</div>
                   </div>
-                  <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
-                    <div>Subtotal</div>
-                    <div>{filteredData[selectedReservation].totalPayout} </div>
+                  <div className="property-info-details flex justify-between py-4 text-gray-500  ">
+                    <div>Host service fee (10%)</div>
+                    <div>-$38.00</div>
                   </div>
-                  <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
-                    <div>Shbro service fee</div>
-                    <div>{filteredData[selectedReservation].totalPayout} </div>
-                  </div>
-                  <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
-                    <div>Total</div>
-                    <div>{filteredData[selectedReservation].totalPayout} </div>
+                  <div className="property-info-details flex justify-between py-4 text-gray-500  ">
+                    <div className=" font-medium text-base">Total</div>
+                    <div className=" font-medium ">{filteredData[selectedReservation].totalPayout} </div>
                   </div>
                 </div>
               </div>
-            </div>
 
 
 
+                <div className="m-4 font-semibold flex gap-2 items-center justify-center underline  " >
+                <Link to={"/HostPayment"} className="hover:text-black "  >
+                <label className=" pl-1 cursor-pointer ">Transaction History </label> <RightOutlined className=" text-xs  "  />
+                </Link>
+                </div>
+
+
+              </div>
+
+                
+                  
 
               </div>
                 :
@@ -542,6 +600,7 @@ const Reservations = () => {
 
               </Popup>
      
+        {/* Reservation Details End ------------------------------------------------------------------------------------- */}
 
       </div>
     </div>

@@ -49,11 +49,13 @@ import HostPayment from "./Component/Dashboard/HostPayment";
 import PendingPayment from "./Component/AdminDashboard/PendingPayment";
 import CanceledReservationTable from "./Component/AdminDashboard/CanceledReservationTable";
 import TransactionHistory from "./Component/Settings/TransactionHistory";
+import TermsofService from "./Views/TermsofService";
 import AboutUs from "./Views/AboutUs";
 import ContactSupport from "./Views/ContactSupport";
 import CancellationPolicy from "./Views/CancellationPolicy";
 import FAQAccordion from "./Views/FAQAccordion";
 import SupportAndHelp from "./Views/SupportAndHelp";
+import PrivacyPolicy from "./Views/PrivacyPolicy";
 
 function App() {
   return (
@@ -98,6 +100,7 @@ function App() {
         />
         <Route path="/EditHomepage" element={<EditHomepage />} />
         <Route path="/AdminAnalytical" element={<AdminAnalytical />} />
+      
 
         <Route path="/GuestsListings" element={<GuestsListings />} />
 
@@ -132,6 +135,7 @@ function App() {
           path="/TransactionHistory"
           element={<TransactionHistory />}
         />
+          <Route path="/TermsofService" element={<TermsofService/>}  />
           <Route
           path="/AboutUs"
           element={<AboutUs />}
@@ -151,6 +155,10 @@ function App() {
          <Route
           path="/SupportAndHelp"
           element={<SupportAndHelp />}
+        />
+        <Route
+          path="/PrivacyPolicy"
+          element={<PrivacyPolicy />}
         />
       </Routes>
       

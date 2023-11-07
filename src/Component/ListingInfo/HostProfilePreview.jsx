@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import {StarOutlined,CheckCircleOutlined} from '@ant-design/icons';
 
 const HostProfilePreview=()=>{
 
@@ -51,11 +52,12 @@ const HostProfilePreview=()=>{
             <div className=" flex flex-col gap-8 max-w-[380px] box-border " >
                 <div className=" relative block bg-slate-100 rounded-md " >
                     <div className=" px-8 py-6 gap-6 min-h-[230px] w-full flex flex-col font-bold  rounded-2xl ">
-                        <div className=" flex-grow flex flex-col items-center justify-center gap-2 ">
+                        <div className=" flex-grow flex flex-col items-center justify-center gap-2 relative ">
                             {/* add bg position */}
-                            <div className=" relative box-border block h-[90px] w-[90px] 
+                            <div className=" relative box-border block h-[85px] w-[85px] 
                             bg-[url('https://a0.muscache.com/im/pictures/user/82130759-fbba-4012-ac60-51d5b0e4801e.jpg?im_w=240')] 
                             bg-center rounded-[50%] bg-cover bg-no-repeat   ">
+                                  <CheckCircleOutlined className=" text-white text-xl bg-orange-500 rounded-[50px] absolute bottom-0 right-0   " />
 
                             </div>
                             <div className=" items-center flex flex-col max-w-[153px] box-border">
@@ -66,7 +68,7 @@ const HostProfilePreview=()=>{
 
                                 </div>
                                 <span className=" text-sm font-semibold gap-1 items-center flex">
-                                    <span>Superhost</span>
+                              <span>Verified</span>
 
                                 </span>
                                 
