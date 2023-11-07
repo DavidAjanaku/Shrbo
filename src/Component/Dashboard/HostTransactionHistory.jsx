@@ -3,23 +3,22 @@ import { Table, Button, Modal } from "antd";
 import { usePDF } from "react-to-pdf";
 import Logo from "../../assets/logo.png";
 
-
 const sampleBookingDetails = {
   bookingDetails1: {
     guestName: "Jane Smith",
     roomPerNightPrice: 100, // Replace with the actual price per night
-    guestServiceFee: 20,   // Replace with the actual guest service fee
+    guestServiceFee: 20, // Replace with the actual guest service fee
     numNights: 10,
-    nightlyRateAdjustment: -50.70,
-    hostServiceFee: -28.90,
+    nightlyRateAdjustment: -50.7,
+    hostServiceFee: -28.9,
   },
   bookingDetails2: {
     guestName: "John Doe",
     roomPerNightPrice: 120, // Replace with the actual price per night
-    guestServiceFee: 25,   // Replace with the actual guest service fee
+    guestServiceFee: 25, // Replace with the actual guest service fee
     numNights: 8,
-    nightlyRateAdjustment: -40.60,
-    hostServiceFee: -23.50,
+    nightlyRateAdjustment: -40.6,
+    hostServiceFee: -23.5,
   },
 };
 
@@ -111,7 +110,7 @@ const HostTransactionHistory = () => {
 
   const renderBreakdowns = (booking) => {
     const totalNightsFee = booking.roomPerNightPrice * booking.numNights;
-    
+
     return (
       <div className="breakdoguestPaid4">
         <h2 className="text-base font-semibold mt-4 mb-2">Breakdowns</h2>
@@ -183,43 +182,65 @@ const HostTransactionHistory = () => {
           onOk={handleDetailsClose}
           onCancel={handleDetailsClose}
         >
-     <div ref={targetRef} className="receipt-container flex items-center justify-center ">
-  {selectedBooking && (
-    <div className="bg-white p-4 border border-black w-full">
-        <img src={Logo} alt="Company Logo" className="w-16 h-auto" />
-      <div className="receipt-header flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Your transaction receipt from Shbro </h2>
-      </div>
-      <div className="receipt-details mt-4">
-       <div className="guestPaid">
-       <h2 className="text-lg font-semibold mb-2">Guest Paid</h2>
-        <div className="flex justify-between mb-2">
-          <span>
-          ${(selectedBooking.roomPerNightPrice * selectedBooking.numNights).toFixed(2)} * {selectedBooking.numNights} nights
-          </span>
-          <span>${(selectedBooking.roomPerNightPrice * selectedBooking.numNights).toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between mb-2">
-          <span>Guest service fee</span>
-          <span>${selectedBooking.guestServiceFee.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between mb-2">
-          <span>Total (USD)</span>
-          <span>${(selectedBooking.roomPerNightPrice * selectedBooking.numNights + selectedBooking.guestServiceFee).toFixed(2)}</span>
-        </div>
-       </div>
-        {renderBreakdowns(selectedBooking)}
-        <button
-          onClick={downloadPDF}
-          className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-700 mt-4"
-        >
-          Download PDF
-        </button>
-      </div>
-    </div>
-  )}
-</div>
-
+          <div
+            ref={targetRef}
+            className="receipt-container flex items-center justify-center "
+          >
+            {selectedBooking && (
+              <div className="bg-white p-4 border border-black w-full">
+                <img src={Logo} alt="Company Logo" className="w-16 h-auto" />
+                <div className="receipt-header flex justify-between items-center">
+                  <h2 className="text-xl font-semibold">
+                    Your transaction receipt from Shbro{" "}
+                  </h2>
+                </div>
+                <div className="receipt-details mt-4">
+                  <div className="guestPaid">
+                    <h2 className="text-lg font-semibold mb-2">Guest Paid</h2>
+                    <div className="flex justify-between mb-2">
+                      <span>
+                        $
+                        {(
+                          selectedBooking.roomPerNightPrice *
+                          selectedBooking.numNights
+                        ).toFixed(2)}{" "}
+                        * {selectedBooking.numNights} nights
+                      </span>
+                      <span>
+                        $
+                        {(
+                          selectedBooking.roomPerNightPrice *
+                          selectedBooking.numNights
+                        ).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                      <span>Guest service fee</span>
+                      <span>${selectedBooking.guestServiceFee.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                      <span>Total (USD)</span>
+                      <span>
+                        $
+                        {(
+                          selectedBooking.roomPerNightPrice *
+                            selectedBooking.numNights +
+                          selectedBooking.guestServiceFee
+                        ).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                  {renderBreakdowns(selectedBooking)}
+                  <button
+                    onClick={downloadPDF}
+                    className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-700 mt-4"
+                  >
+                    Download PDF
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </Modal>
       </div>
     </div>
