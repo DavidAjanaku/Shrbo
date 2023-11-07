@@ -5,7 +5,7 @@ import AdminSidebar from "./AdminSidebar";
 import { parse, isAfter } from "date-fns";
 import { usePDF } from "react-to-pdf";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-import Logo from "../../assets/logo.png"
+import Logo from "../../assets/logo.png";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -68,7 +68,6 @@ const DisplayBookingsPaid = () => {
       });
     }
   };
-  
 
   const handleViewDetails = (payment) => {
     setSelectedPayment(payment);
@@ -143,8 +142,15 @@ const DisplayBookingsPaid = () => {
               <Space>Edit</Space>
             </a>
           </Dropdown>
-          <div onClick={() => handleDeleteHost()}>Delete</div>
-          <div onClick={() => handleViewDetails(record)}>View Details</div>{" "}
+          <div onClick={() => handleDeleteHost()} className="cursor-pointer">
+            Delete
+          </div>
+          <div
+            onClick={() => handleViewDetails(record)}
+            className="cursor-pointer"
+          >
+            View Details
+          </div>{" "}
           {/* Pass the record here */}
         </div>
       ),
@@ -248,63 +254,70 @@ const DisplayBookingsPaid = () => {
             </div>
 
             <Modal
-  title="Payment Receipt"
-  open={isModalVisible}
-  onCancel={() => setIsModalVisible(false)}
-  footer={null}
-  className="receipt-container"
->
-  {selectedPayment && (
-   <div>
-     <div className="bg-white p-4 border border-black w-full" ref={targetRef}>
-      <img src={Logo} alt="Company Logo" className="w-16 h-auto" />
-      <div className="receipt-header flex justify-between items-center">
-        <h2 className="text-xl font-semibold">
-          Your payment receipt from Shbro
-        </h2>
-      </div>
-      
-      <div className="receipt-details mt-4">
-        <div className="guestPaid" >
-          <h2 className="text-lg font-semibold mb-2">Payment Details</h2>
-          <div className="flex justify-between mb-2">
-            <span>Email:</span>
-            <span>{selectedPayment.username}</span>
-          </div>
-          <div className="flex justify-between mb-2">
-            <span>Payment Date:</span>
-            <span>{selectedPayment.paymentDate}</span>
-          </div>
-          <div className="flex justify-between mb-2">
-            <span>Booking No:</span>
-            <span>{selectedPayment.bookingNo}</span>
-          </div>
-          <div className="flex justify-between mb-2">
-            <span>Total Amount:</span>
-            <span>{selectedPayment.totalAmount}</span>
-          </div>
-          <div className="flex justify-between mb-2">
-            <span>Payment Type:</span>
-            <span>{selectedPayment.paymentType}</span>
-          </div>
-          <div className="flex justify-between mb-2">
-            <span>Status:</span>
-            <span>{selectedPayment.status}</span>
-          </div>
-        </div>
-      
-      </div>
-    </div>
-    <button
-          onClick={downloadPDF}
-          className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-700 mt-4"
-        >
-          Download PDF
-        </button>
-   </div>
-  )}
-</Modal>
+              title="Payment Receipt"
+              open={isModalVisible}
+              onCancel={() => setIsModalVisible(false)}
+              footer={null}
+              className="receipt-container"
+            >
+              {selectedPayment && (
+                <div>
+                  <div
+                    className="bg-white p-4 border border-black w-full"
+                    ref={targetRef}
+                  >
+                    <img
+                      src={Logo}
+                      alt="Company Logo"
+                      className="w-16 h-auto"
+                    />
+                    <div className="receipt-header flex justify-between items-center">
+                      <h2 className="text-xl font-semibold">
+                        Your payment receipt from Shbro
+                      </h2>
+                    </div>
 
+                    <div className="receipt-details mt-4">
+                      <div className="guestPaid">
+                        <h2 className="text-lg font-semibold mb-2">
+                          Payment Details
+                        </h2>
+                        <div className="flex justify-between mb-2">
+                          <span>Email:</span>
+                          <span>{selectedPayment.username}</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
+                          <span>Payment Date:</span>
+                          <span>{selectedPayment.paymentDate}</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
+                          <span>Booking No:</span>
+                          <span>{selectedPayment.bookingNo}</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
+                          <span>Total Amount:</span>
+                          <span>{selectedPayment.totalAmount}</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
+                          <span>Payment Type:</span>
+                          <span>{selectedPayment.paymentType}</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
+                          <span>Status:</span>
+                          <span>{selectedPayment.status}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={downloadPDF}
+                    className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-700 mt-4"
+                  >
+                    Download PDF
+                  </button>
+                </div>
+              )}
+            </Modal>
           </div>
         </div>
       </div>

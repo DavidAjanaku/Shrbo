@@ -96,6 +96,7 @@ export default function UserVerificationPage() {
       ),
     },
   ];
+  
 
   return (
     <div className="bg-gray-100 h-[100vh]">
