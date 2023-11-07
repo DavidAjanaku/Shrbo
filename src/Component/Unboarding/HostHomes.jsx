@@ -13,6 +13,7 @@ export default function HostHomes() {
   const [selectedTime, setSelectedTime] = useState("12:00 PM");
   const [selectedHouseTypeLabel, setSelectedHouseTypeLabel] = useState("");
   const [selectedPrivacyTypeLabel, setSelectedPrivacyTypeLabel] = useState("");
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
 
   const handleAdditionalRules = (newValue) => {
     setAdditionalRules(newValue);
@@ -63,10 +64,9 @@ export default function HostHomes() {
     console.log("Selected Property Types:");
     propertyTypes
       .filter((type) => selectedTypes.includes(type.id))
-      .map((type) => console.log(type.label));    
-      
-      console.log("Selected Privacy Type Label: " + selectedPrivacyTypeLabel);
+      .map((type) => console.log(type.label));
 
+    console.log("Selected Privacy Type Label: " + selectedPrivacyTypeLabel);
 
     console.log("Max Guests: " + guestDetails.guests);
     console.log("Bedrooms: " + guestDetails.bedrooms);
@@ -115,6 +115,17 @@ export default function HostHomes() {
       .map((type) => console.log(type.id));
 
     console.log(selectedTime);
+ 
+
+    const selectedCancellationPolicy = cancellationPolicies.find((policy) => policy.id === selectedPolicy);
+
+    // Check if a valid policy is found
+    if (selectedCancellationPolicy) {
+      console.log(selectedCancellationPolicy.label);
+    } else {
+      console.log("No cancellation policy selected.");
+    }
+
   };
 
   const handleNext = () => {
@@ -455,6 +466,24 @@ export default function HostHomes() {
     },
   ];
 
+  const cancellationPolicies = [
+    {
+      id: 1,
+      label: "Moderate Cancellation Policy",
+      description:"a guest will be refunded 70% of their total booking amount when they cancel within 10 days of the check-in date."
+    },
+    {
+      id: 2,
+      label: "Strict Cancellation Policy",
+      description:"a guest will be refunded 50% of their total booking amount when they cancel within 10 days of the check-in date."
+    },
+    {
+      id: 3,
+      label: "Flexible Cancellation Policy",
+      description:"We offer a flexible cancellation policy that allows guests to cancel their reservation free of charge within 48 hours of booking provided that the check-in date is at least 10 days away."
+    },
+  ];
+
   const handleTypeSelection = (typeId) => {
     const selectedType = propertyTypes.find((type) => type.id === typeId);
     setSelectedHouseTypeLabel(selectedType ? selectedType.label : "");
@@ -468,12 +497,22 @@ export default function HostHomes() {
     );
   };
 
+  const handleCancellationPolicySelection = (policyId) => {
+    console.log("Selected Cancellation Policy ID:", policyId);
+    setSelectedPolicy(policyId);
+  };
+  
+
   const handleTypeSelections = (typeId) => {
     if (selectedTypes.includes(typeId)) {
       setSelectedTypes(selectedTypes.filter((type) => type !== typeId));
     } else {
       setSelectedTypes([...selectedTypes, typeId]);
     }
+  };
+
+  const handlePolicySelection = (id) => {
+    setSelectedPolicy(id);
   };
 
   const logSelectedAmenities = () => {
@@ -1376,7 +1415,7 @@ export default function HostHomes() {
 
       case 18: // Step for hosting type and property features
         return (
-          <div className=" mx-auto  flex justify-center p-4">
+          <div className=" mx-auto   flex justify-center p-4">
             <div className="  overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
                 <h1 className="text-6xl">
@@ -1418,6 +1457,49 @@ export default function HostHomes() {
           </div>
         );
 
+      case 19:
+        return (
+          <div className="mx-auto md:w-3/4 flex justify-center p-4">
+            <div className="overflow-auto">
+              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
+                <h1 className="text-6xl">Choose Your Cancellation Policy</h1>
+                <p className="text-gray-400 mt-10">
+                  When you host your home, select the cancellation policy that
+                  suits your needs.
+                </p>
+              </div>
+              <div className="pb-32">
+                <div className=" space-y-4">
+                  <div className="w-full">
+                    {cancellationPolicies.map((policy) => (
+                      <div
+                        key={policy.id}
+                        className={`property-type   m-3   flex ${
+                          selectedPolicy === policy.id
+                            ? "bg-orange-500 text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() =>
+                          handleCancellationPolicySelection(policy.id)
+                        }
+                      >
+                        <span className="mr-2 text-2xl mb-3">
+                          {policy.icon}
+                        </span>
+                        <h1 className="font-bold text-lg my-3">
+                          {" "}
+                          {policy.label}
+                        </h1>
+                        <p>{policy.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
       default:
         return null;
     }
@@ -1429,15 +1511,14 @@ export default function HostHomes() {
       <div className="bg-orange-400 flex fixed bottom-0 w-full text-center">
         {step > 0 && (
           <button
-          type="button" 
-
+            type="button"
             onClick={handlePrevious}
             className="text-white  bg-orange-200 w-full p-4"
           >
             Previous
           </button>
         )}
-        {step < 18 && (
+        {step < 19 && (
           <button
             type="button" // Add this line to prevent form submission
             onClick={handleNext}
@@ -1446,7 +1527,7 @@ export default function HostHomes() {
             Next
           </button>
         )}
-        {step === 18 && (
+        {step === 19 && (
           <button
             type="button" // Add this line to prevent form submission
             onClick={handleSubmit}
