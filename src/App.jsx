@@ -88,10 +88,7 @@ function App() {
         <Route path="/Reservations" element={<Reservations />} />
         <Route path="/HostAnalysis" element={<HostAnalysis />} />
         <Route path="/Schduler" element={<Schduler />} />
-        <Route
-          path="/ChatAndNotifcationTab"
-          element={<ChatAndNotifcationTab />}
-        />
+   
         <Route path="/Registration" element={<Registration />} />
 
         <Route

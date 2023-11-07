@@ -449,7 +449,7 @@ function MyDropdown({ adults, children, pets, infants }) {
       <Space>
         <button
           type="button"
-          className=" block m-4 cursor-pointer overflow-hidden text-ellipsis text-start whitespace-nowrap text-base font-normal      "
+          className=" block m-4 cursor-pointer overflow-hidden text-ellipsis text-start whitespace-nowrap text-base font-normal w-full min-w-full      "
         >
          <span className="block">Guests</span>
          <span className="text-gray-500">

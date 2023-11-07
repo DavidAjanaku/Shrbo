@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import GoBackButton from "./GoBackButton";
+import {FlagFilled,FlagOutlined} from '@ant-design/icons';
+import Popup from "../hoc/Popup";
+import ReportUser from "./ReportUser";
 
 const UserDetails = () => {
   const [showReviews, setShowReviews] = useState(false);
   const [showAllHouses, setShowAllHouses] = useState(false);
   const [housesPerPage, setHousesPerPage] = useState(5); // Number of houses to display per page
   const [currentPage, setCurrentPage] = useState(1); // Current page
+  const [isReportModalVisible, setIsReportModalVisible] = useState(false);
 
 
  
@@ -166,7 +170,7 @@ const UserDetails = () => {
   return (
     <div className="bg-white md:w-[80vw] md:mx-auto md:my-20 rounded-lg shadow-md p-6">
       <GoBackButton/>
-      <div className="flex flex-wrap items-center space-x-3">
+      <div className="flex flex-wrap  items-center space-x-3 relative">
         <div>
           <img
             src={user.image}
@@ -182,6 +186,8 @@ const UserDetails = () => {
           <p className="text-gray-600">Years Hosting: {user.yearsHosted}</p>
 
         </div>
+
+        
       </div>
 
       <button
@@ -253,6 +259,31 @@ const UserDetails = () => {
           ))}
         </div>
       )}
+
+        <div className=" font-normal text-sm box-border flex mt-8 mb-4  break-words      ">
+                  {/* <span> see full price</span> */}
+                  <button
+                    type="button"
+                    className=" whitespace-nowrap break-normal md:hover:font-medium transition    underline flex gap-1  items-center  cursor-pointer "
+                    onClick={()=>setIsReportModalVisible(true)}
+                  >
+                 <FlagFilled className="  " />
+                  <span>Report this profile</span>
+                  </button>
+                </div>
+
+
+         <Popup
+           isModalVisible={isReportModalVisible}
+           handleCancel={()=>setIsReportModalVisible(false)}
+           centered={true}  
+          //  width={"450px"} 
+             >
+
+              <ReportUser/>
+          
+        </Popup>       
+
 
     </div>
   );

@@ -126,7 +126,7 @@ const ReportListing=()=>{
                                 name="message"
                                 id="message"
                                 rows={4}
-                                placeholder="give us more details on why you think the listing is inaccurate "
+                                placeholder={`(optional) give us more details on why you think the listing is ${report.report} `}
                                 className="block w-full rounded-md ring-0 outline-gray-400  border px-3.5 py-2 text-gray-900 shadow-sm focus:outline-gray-400  placeholder:text-gray-400 sm:text-sm sm:leading-6"
                                 defaultValue={''}
                                 />
