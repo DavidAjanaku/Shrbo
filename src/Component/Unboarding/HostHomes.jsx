@@ -115,9 +115,10 @@ export default function HostHomes() {
       .map((type) => console.log(type.id));
 
     console.log(selectedTime);
- 
 
-    const selectedCancellationPolicy = cancellationPolicies.find((policy) => policy.id === selectedPolicy);
+    const selectedCancellationPolicy = cancellationPolicies.find(
+      (policy) => policy.id === selectedPolicy
+    );
 
     // Check if a valid policy is found
     if (selectedCancellationPolicy) {
@@ -125,7 +126,6 @@ export default function HostHomes() {
     } else {
       console.log("No cancellation policy selected.");
     }
-
   };
 
   const handleNext = () => {
@@ -470,17 +470,20 @@ export default function HostHomes() {
     {
       id: 1,
       label: "Moderate Cancellation Policy",
-      description:"a guest will be refunded 70% of their total booking amount when they cancel within 10 days of the check-in date."
+      description:
+        "Cancellation  after booking, guest will refunded 70% of their total booking amount",
     },
     {
       id: 2,
       label: "Strict Cancellation Policy",
-      description:"a guest will be refunded 50% of their total booking amount when they cancel within 10 days of the check-in date."
+      description:
+        "Cancellation after booking, guest will refunded 50% of their total booking amount",
     },
     {
       id: 3,
       label: "Flexible Cancellation Policy",
-      description:"We offer a flexible cancellation policy that allows guests to cancel their reservation free of charge within 48 hours of booking provided that the check-in date is at least 10 days away."
+      description:
+        "Cancelling within 48 hours of booking is free and guest will have a full refund of their total booking amount. Hence, cancellation after 48hours, guest will be refunded 70% of their total booking amount. ",
     },
   ];
 
@@ -501,7 +504,6 @@ export default function HostHomes() {
     console.log("Selected Cancellation Policy ID:", policyId);
     setSelectedPolicy(policyId);
   };
-  
 
   const handleTypeSelections = (typeId) => {
     if (selectedTypes.includes(typeId)) {
