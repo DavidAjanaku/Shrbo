@@ -19,20 +19,36 @@ export default class Scheduler extends Component {
       selectedDate: null,
       selectedDatePrice: "",
       selectedEditDate: null,
-      isEditingPrice: false, // State for editing mode
-      editedPrice: "", // State for edited price
-      selectedDates: [], // Array to track selected dates
-      showWeeklyDiscountDetails: false, // State for toggling details
-
+      isEditingPrice: false,
+      editedPrice: "",
+      selectedDates: [],
+      showWeeklyDiscountDetails: false,
       apartmentPrices: {
-        "Lekki Admiralty": "$42",
-        "Lekki Phase 1": "$50",
-        "Lekki Units square": "$45",
-        // Add prices for other apartments as needed
+        "Lekki Admiralty": {
+          basePrice: "$42",
+          weekendDiscount: "10%",
+          weeklyDiscount: "15%",
+          // Add other details for Lekki Admiralty
+        },
+        "Lekki Phase 1": {
+          basePrice: "$50",
+          weekendDiscount: "15%",
+          weeklyDiscount: "20%",
+          // Add other details for Lekki Phase 1
+        },
+        "Lekki Units square": {
+          basePrice: "$45",
+          weekendDiscount: "12%",
+          weeklyDiscount: "18%",
+          // Add other details for Lekki Units square
+        },
+        // Add other apartments and their details here
       },
     };
   }
+  
 
+  
   
   handleToggleWeeklyDetails = () => {
     this.setState((prevState) => ({
@@ -92,9 +108,9 @@ export default class Scheduler extends Component {
 
   handleSavePrice = (event) => {
     event.preventDefault();
-
+  
     const { selectedEditDate, selectedDatePrice } = this.state;
-
+  
     if (selectedEditDate) {
       Modal.confirm({
         title: "Save Changes",
@@ -109,22 +125,18 @@ export default class Scheduler extends Component {
         },
       });
     } else {
-      console.error("Please select a date before saving the price.");
-
-      // Clear the input values with a callback
-      this.setState({ selectedDatePrice: "", editedPrice: "" }, () => {
-        Modal.confirm({
-          title: "Error",
-          content: "Please select a date before saving the price.",
-          onOk: () => {
-            // User confirmed, you can choose to handle it as needed
-          },
-          okButtonProps: { className: "orange-button" }, // Add a custom class to the OK button
-
-        });
+      // If a date is not selected, show the "Please select a date" modal
+      Modal.confirm({
+        title: "Error",
+        content: "Please select a date before saving the price.",
+        onOk: () => {
+          // User confirmed, you can choose to handle it as needed
+        },
+        okButtonProps: { className: "orange-button" },
       });
     }
   };
+  
 
   handleBlockMode = () => {
     this.setState({ blockingMode: true });
@@ -277,21 +289,21 @@ export default class Scheduler extends Component {
                   ]}
                   eventContent={(arg) => {
                     const dateStr = arg.event.start.toISOString().split("T")[0];
-                    const price =
-                      this.state.apartmentPrices[this.state.selectedHouse];
-
+                    const price = this.state.apartmentPrices[this.state.selectedHouse];
+                  
                     return {
                       html: `
-                  <div>
-                    <div>${arg.event.title}</div>
-                    <div>${price}</div>
-                  </div>
-                `,
+                      <div>
+                        <div>${arg.event.title}</div>
+                        <div>Base Price: ${price.basePrice}</div>
+                      </div>
+                    `,
                       backgroundColor: this.dateHasBackground(arg.event.start)
                         ? "blue"
                         : "white",
                     };
                   }}
+                  
                 />
               )}
               {selectedDate && blockingMode && (
@@ -355,6 +367,8 @@ export default class Scheduler extends Component {
   }
 }
 
+// ...
+
 const Pricing = ({
   selectedHouse,
   isEditingPrice,
@@ -365,12 +379,12 @@ const Pricing = ({
   selectedDate,
   blockingMode,
   selectedDatePrice,
-  showWeeklyDiscountDetails, // Receive showWeeklyDiscountDetails as a prop
-  handleToggleWeeklyDetails, // Access the function from props
+  showWeeklyDiscountDetails,
+  handleToggleWeeklyDetails,
 }) => {
-  const apartments = [
-    {
-      name: "Lekki Admiralty",
+  // Define the apartment data
+  const apartments = {
+    "Lekki Admiralty": {
       basePrice: "$42",
       customWeekendPrice: "Add",
       weeklyDiscount: "10%",
@@ -379,8 +393,7 @@ const Pricing = ({
       monthlyAverage: "$265",
       moreDiscounts: "Early bird, last-minute, trip length",
     },
-    {
-      name: "Lekki Phase 1",
+    "Lekki Phase 1": {
       basePrice: "$50",
       customWeekendPrice: "Add",
       weeklyDiscount: "15%",
@@ -389,8 +402,7 @@ const Pricing = ({
       monthlyAverage: "$300",
       moreDiscounts: "Early bird, last-minute, trip length",
     },
-    {
-      name: "Lekki Units square",
+    "Lekki Units square": {
       basePrice: "$45",
       customWeekendPrice: "Add",
       weeklyDiscount: "12%",
@@ -399,14 +411,11 @@ const Pricing = ({
       monthlyAverage: "$280",
       moreDiscounts: "Early bird, last-minute, trip length",
     },
-  ];
+  };
 
-  const selectedApartment = apartments.find(
-    (apartment) => apartment.name === selectedHouse
-  );
+  const selectedApartment = apartments[selectedHouse];
 
   const clearInputValue = () => {
-    // This function will clear the input value
     onPriceChange({ target: { value: "" } });
   };
 
@@ -432,36 +441,48 @@ const Pricing = ({
           <div className="flex flex-col gap-4 relative">
             <div className="cursor-pointer w-full h-full outline-none">
               <div className="pointer p-6 rounded-2xl border">
-                <div className="font-medium mb-2 mr-1 text-sm">Per night</div>
-                <div className="h-auto visible w-full">
-                  <div className="text-3xl break-keep inline-block font-extrabold">
-                    <div className="block">{selectedApartment.basePrice}</div>
-                    {editedPrice}
+                <div>
+                  <div className="font-medium mb-2 mr-1 text-sm">Per night</div>
+                  <div className="h-auto visible w-full">
+                    <div className="text-3xl break-keep inline-block font-extrabold">
+                      <div className="block">
+                        {selectedApartment.basePrice}
+                      </div>
+                      {editedPrice}
+                    </div>
+                    {isEditingPrice ? (
+                      <div>
+                        <form
+                          onSubmit={(e) => {
+                            onSavePrice(e);
+                            clearInputValue();
+                          }}
+                        >
+                          <input
+                            type="number"
+                            value={selectedDatePrice}
+                            onChange={onPriceChange}
+                            placeholder="Enter price per night"
+                            className="border w-full p-4 my-4 rounded-md"
+                          />
+                          <button
+                            type="submit"
+                            className="bg-orange-400 py-2 mt-4 px-4 text-white rounded-full"
+                          >
+                            Save
+                          </button>
+                        </form>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="font-medium">{selectedDatePrice}</div>
+                        <div>
+                          Weekend Discount: {selectedApartment.weekendDiscount}
+                        </div>
+                        <button onClick={onEditPrice}>Edit</button>
+                      </div>
+                    )}
                   </div>
-                  {isEditingPrice ? (
-                    <div>
-                      <form
-                        onSubmit={(e) => {
-                          onSavePrice(e);
-                          clearInputValue();
-                        }}
-                      >
-                        <input
-                          type="number"
-                          value={selectedDatePrice}
-                          onChange={onPriceChange}
-                          placeholder="Enter price per night"
-                          className="border w-full p-4 my-4 rounded-md"
-                        />
-                        <button type="submit" className="bg-orange-400 py-2 mt-4 px-4 text-white rounded-full">Save</button>
-                      </form>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="font-medium">{selectedDatePrice}</div>
-                      <button onClick={onEditPrice}>Edit</button>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -473,6 +494,7 @@ const Pricing = ({
     </div>
   );
 };
+
 
 
 const Availability=()=>{
