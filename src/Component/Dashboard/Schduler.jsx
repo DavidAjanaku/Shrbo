@@ -256,7 +256,7 @@ export default class Scheduler extends Component {
       <div>
         <HostHeader />
         <HostBottomNavigation />
-        <div className="flex flex-wrap box-border w-full">
+        <div className="flex flex-wrap  box-border w-full">
           <div className="block flex-grow relative overflow-y-scroll example">
             <div className="flex flex-col relative py-8 px-6">
               <select
@@ -471,7 +471,7 @@ const Pricing = ({
   return (
     <div className="block box-border  overflow-y-scroll example pb-32">
       {selectedApartment ? (
-        <div className="block box-border mt-8 mb-8 min-[1128px]:mb-4">
+        <div className="block box-border my-5 min-[1128px]:mb-4">
           <div className="box-border flex justify-between items-baseline mb-6">
             <span>
               <h2 className="m-0 p-0 text-2xl block box-border">
@@ -488,11 +488,11 @@ const Pricing = ({
             </div>
           </div>
           <div className="flex flex-col gap-4 relative">
-          <h1 className="my-5 font-bold text-2xl">Base Price</h1>
+          <h1 className="my-2 font-bold text-2xl">Base Price</h1>
 
             <div className="cursor-pointer w-full h-full outline-none">
              <div className="space-y-4">
-             <div className="pointer p-6 rounded-2xl border">
+             <div className="pointer p-4 rounded-2xl border">
                 <div>
                   <div className="font-medium mb-2 mr-1 text-sm">Per night</div>
                   <div className="h-auto visible w-full">
@@ -505,7 +505,7 @@ const Pricing = ({
                 </div>
               </div>
 
-              <div className="pointer p-6 rounded-2xl border">
+              <div className="pointer p-4 rounded-2xl border">
                 <div>
                   <div className="font-medium mb-2 mr-1 text-sm">Custom weekend Price</div>
                   <div className="h-auto visible w-full">
@@ -520,11 +520,11 @@ const Pricing = ({
              </div>
 
               <br />
-              <h1 className="my-5 font-bold text-2xl">Discount</h1>
+              <h1 className="my-2 font-bold text-2xl">Discount</h1>
 
               <div className="space-y-3">
                 <div
-                  className="pointer p-6 rounded-2xl border"
+                  className="pointer p-4 rounded-2xl border"
                   onClick={showDiscountModal}
                 >
                   <div>
