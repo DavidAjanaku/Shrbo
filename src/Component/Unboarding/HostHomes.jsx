@@ -791,8 +791,6 @@ export default function HostHomes() {
                       </div>
                     ))}
                   </div>
-                  <button onClick={handleSubmit}>Submit</button>{" "}
-                  {/* Add this button */}
                 </div>
               </div>
             </div>
