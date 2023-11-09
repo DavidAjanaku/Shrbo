@@ -263,7 +263,7 @@ export default class Scheduler extends Component {
                 name="houseSelect"
                 id="houseSelect"
                 onChange={(e) => this.handleHouseSelect(e.target.value)}
-                className="py-4 border mb-4 pl-4"
+                className="py-5 border pr-4 border-orange-400 mb-4 pl-4"
               >
                 <option value="">Select an Apartment</option>
                 {houseOptions.map((house, index) => (
@@ -503,7 +503,7 @@ const Pricing = ({
               </div>
 
               <br />
-              <div className="font-medium mb-2 mr-1 text-2xl font-bold">
+              <div className="font-medium mb-2 mr-1 text-2xl ">
                 Discount
               </div>
               <div className="space-y-3">
@@ -572,6 +572,4 @@ const Pricing = ({
   );
 };
 
-const Availability = () => {
-  return <div></div>;
-};
+

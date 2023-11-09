@@ -180,3 +180,9 @@
 }
 
 
+@media (max-width: 600px) {
+
+  .fc .fc-toolbar-title {
+    font-size: 1.2rem;
+  }
+}
