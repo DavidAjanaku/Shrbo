@@ -3,11 +3,14 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { Tabs } from "antd";
+
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import { IoIosArrowForward } from "react-icons/io";
 import HostHeader from "../Navigation/HostHeader";
 import HostBottomNavigation from "./HostBottomNavigation";
-import { Modal } from "antd";
+import { Modal, Select, Input } from "antd";
+import DiscountCustomModal from "./DiscountCustomModal";
+import CalenderAvailability from "./CalenderAvailability";
 
 export default class Scheduler extends Component {
   constructor(props) {
@@ -31,20 +34,31 @@ export default class Scheduler extends Component {
       selectedDates: [], // Array to track selected dates
       showWeeklyDiscountDetails: false, // State for toggling details
 
-      maxValidDate: maxValidDate,// limits the amount dates the calender shows
-
       apartmentPrices: {
-        "Lekki Admiralty": "$42",
-        "Lekki Phase 1": "$50",
-        "Lekki Units square": "$45",
-        // Add prices for other apartments as needed
+        "Lekki Admiralty": {
+          basePrice: "₦400002",
+          weekendDiscount: "10%",
+          weeklyDiscount: "15%",
+          // Add other details for Lekki Admiralty
+        },
+        "Lekki Phase 1": {
+          basePrice: "₦500000",
+          weekendDiscount: "15%",
+          weeklyDiscount: "20%",
+          // Add other details for Lekki Phase 1
+        },
+        "Lekki Units square": {
+          basePrice: "₦400005",
+          weekendDiscount: "12%",
+          weeklyDiscount: "18%",
+          // Add other details for Lekki Units square
+        },
+        // Add other apartments and their details here
       },
     };
  
 
   }
-
-  
 
   
   handleToggleWeeklyDetails = () => {
@@ -122,19 +136,14 @@ export default class Scheduler extends Component {
         },
       });
     } else {
-      console.error("Please select a date before saving the price.");
-
-      // Clear the input values with a callback
-      this.setState({ selectedDatePrice: "", editedPrice: "" }, () => {
-        Modal.confirm({
-          title: "Error",
-          content: "Please select a date before saving the price.",
-          onOk: () => {
-            // User confirmed, you can choose to handle it as needed
-          },
-          okButtonProps: { className: "orange-button" }, // Add a custom class to the OK button
-
-        });
+      // If a date is not selected, show the "Please select a date" modal
+      Modal.confirm({
+        title: "Error",
+        content: "Please select a date before saving the price.",
+        onOk: () => {
+          // User confirmed, you can choose to handle it as needed
+        },
+        okButtonProps: { className: "orange-button" },
       });
     }
   };
@@ -170,6 +179,8 @@ export default class Scheduler extends Component {
       selectedDatePrice,
       isEditingPrice,
       editedPrice,
+      discountModalVisible, // Include this state variable
+
       showWeeklyDiscountDetails,
     } = this.state;
     const items = [
@@ -202,39 +213,39 @@ export default class Scheduler extends Component {
             Availability
           </div>
         ),
-        children:<Availability/>,
+        children: <div className="text-neutral-600 rounded-t-lg">Upcoming</div>,
       },
     ];
 
     const apartments = [
       {
         name: "Lekki Admiralty",
-        basePrice: "$42",
+        basePrice: "₦400002",
         customWeekendPrice: "Add",
         weeklyDiscount: "10%",
-        weeklyAverage: "$265",
+        weeklyAverage: "₦2000065",
         monthlyDiscount: "20%",
-        monthlyAverage: "$265",
+        monthlyAverage: "₦2000065",
         moreDiscounts: "Early bird, last-minute, trip length",
       },
       {
         name: "Lekki Phase 1",
-        basePrice: "$50",
+        basePrice: "₦500000",
         customWeekendPrice: "Add",
         weeklyDiscount: "15%",
-        weeklyAverage: "$300",
+        weeklyAverage: "₦3000000",
         monthlyDiscount: "25%",
-        monthlyAverage: "$300",
+        monthlyAverage: "₦3000000",
         moreDiscounts: "Early bird, last-minute, trip length",
       },
       {
         name: "Lekki Units square",
-        basePrice: "$45",
+        basePrice: "₦400005",
         customWeekendPrice: "Add",
         weeklyDiscount: "12%",
-        weeklyAverage: "$280",
+        weeklyAverage: "₦2000080",
         monthlyDiscount: "22%",
-        monthlyAverage: "$280",
+        monthlyAverage: "₦2000080",
         moreDiscounts: "Early bird, last-minute, trip length",
       },
     ];
@@ -253,14 +264,14 @@ export default class Scheduler extends Component {
       <div>
         <HostHeader />
         <HostBottomNavigation />
-        <div className="flex flex-wrap box-border w-full">
+        <div className="flex flex-wrap  box-border w-full">
           <div className="block flex-grow relative overflow-y-scroll example">
             <div className="flex flex-col relative py-8 px-6">
               <select
                 name="houseSelect"
                 id="houseSelect"
                 onChange={(e) => this.handleHouseSelect(e.target.value)}
-                className="py-4 border mb-4 pl-4"
+                className="py-5 border pr-4 border-orange-400 mb-4 pl-4"
               >
                 <option value="">Select an Apartment</option>
                 {houseOptions.map((house, index) => (
@@ -306,13 +317,13 @@ export default class Scheduler extends Component {
 
                     return {
                       html: `
-                      <div style="width: 100%;">
-                      <div>${arg.event.title}</div>
-                      <div>${price}</div>
-                    </div>
+                  <div>
+                    <div>${arg.event.title}</div>
+                    <div>${price}</div>
+                  </div>
                 `,
                       backgroundColor: this.dateHasBackground(arg.event.start)
-                        ? "blue"
+                        ? "orange"
                         : "white",
                     };
                   }}
@@ -379,6 +390,8 @@ export default class Scheduler extends Component {
   }
 }
 
+// ...
+
 const Pricing = ({
   selectedHouse,
   isEditingPrice,
@@ -389,55 +402,87 @@ const Pricing = ({
   selectedDate,
   blockingMode,
   selectedDatePrice,
-  showWeeklyDiscountDetails, // Receive showWeeklyDiscountDetails as a prop
-  handleToggleWeeklyDetails, // Access the function from props
+  showWeeklyDiscountDetails,
+  handleToggleWeeklyDetails,
 }) => {
-  const apartments = [
-    {
-      name: "Lekki Admiralty",
-      basePrice: "$42",
+  // Define the apartment data
+  const apartments = {
+    "Lekki Admiralty": {
+      basePrice: "₦42",
       customWeekendPrice: "Add",
       weeklyDiscount: "10%",
-      weeklyAverage: "$265",
+      weeklyAverage: "₦265000",
       monthlyDiscount: "20%",
-      monthlyAverage: "$265",
+      monthlyAverage: "₦265000",
       moreDiscounts: "Early bird, last-minute, trip length",
     },
-    {
-      name: "Lekki Phase 1",
-      basePrice: "$50",
+    "Lekki Phase 1": {
+      basePrice: "₦50000",
       customWeekendPrice: "Add",
       weeklyDiscount: "15%",
-      weeklyAverage: "$300",
+      weeklyAverage: "₦300000",
       monthlyDiscount: "25%",
-      monthlyAverage: "$300",
+      monthlyAverage: "₦300000",
       moreDiscounts: "Early bird, last-minute, trip length",
     },
-    {
-      name: "Lekki Units square",
-      basePrice: "$45",
+    "Lekki Units square": {
+      basePrice: "₦40005",
       customWeekendPrice: "Add",
       weeklyDiscount: "12%",
-      weeklyAverage: "$280",
+      weeklyAverage: "₦200080",
       monthlyDiscount: "22%",
-      monthlyAverage: "$280",
+      monthlyAverage: "₦200080",
       moreDiscounts: "Early bird, last-minute, trip length",
     },
-  ];
+  };
 
-  const selectedApartment = apartments.find(
-    (apartment) => apartment.name === selectedHouse
-  );
+  const [discountModalVisible, setDiscountModalVisible] = useState(false);
+  const [discountDuration, setDiscountDuration] = useState(""); // Store the selected discount duration
+  const [discountPercentage, setDiscountPercentage] = useState(""); // Store the discount percentage
+  const [weeklyDiscount, setWeeklyDiscount] = useState(""); // Store the weekly discount
+  const [monthlyDiscount, setMonthlyDiscount] = useState("");
+
+  const selectedApartment = apartments[selectedHouse];
 
   const clearInputValue = () => {
-    // This function will clear the input value
     onPriceChange({ target: { value: "" } });
   };
 
+  const showDiscountModal = () => {
+    setCustomModalVisible(true); // Set the custom modal to be visible
+  };
+
+  const hideDiscountModal = () => {
+    setDiscountModalVisible(false);
+  };
+
+  const isWeeklyDiscountApplicable = () => {
+    // Calculate the number of selected nights
+    const numberOfNights = 7;
+    return numberOfNights >= 7; // Display the discount if the duration is 7 nights or more
+  };
+
+  const [isCustomModalVisible, setCustomModalVisible] = useState(false);
+
+  // ... other code
+
+  const showCustomModal = () => {
+    setCustomModalVisible(true);
+  };
+
+  const hideCustomModal = () => {
+    setCustomModalVisible(false);
+  };
+
+  const saveDiscountSettings = (discount) => {
+    // Handle saving the discount (e.g., updating state or making API requests)
+    // Here, `discount` contains the calculated discount (e.g., "10%")
+  };
+
   return (
-    <div className="block box-border overflow-y-scroll example">
+    <div className="block box-border  overflow-y-scroll example pb-32">
       {selectedApartment ? (
-        <div className="block box-border mt-8 mb-8 min-[1128px]:mb-4">
+        <div className="block box-border my-5 min-[1128px]:mb-4">
           <div className="box-border flex justify-between items-baseline mb-6">
             <span>
               <h2 className="m-0 p-0 text-2xl block box-border">
@@ -454,41 +499,97 @@ const Pricing = ({
             </div>
           </div>
           <div className="flex flex-col gap-4 relative">
+          <h1 className="my-2 font-bold text-2xl">Base Price</h1>
+
             <div className="cursor-pointer w-full h-full outline-none">
-              <div className="pointer p-6 rounded-2xl border">
-                <div className="font-medium mb-2 mr-1 text-sm">Per night</div>
-                <div className="h-auto visible w-full">
-                  <div className="text-3xl break-keep inline-block font-extrabold">
-                    <div className="block">{selectedApartment.basePrice}</div>
-                    {editedPrice}
+             <div className="space-y-4">
+             <div className="pointer p-4 rounded-2xl border">
+                <div>
+                  <div className="font-medium mb-2 mr-1 text-sm">Per night</div>
+                  <div className="h-auto visible w-full">
+                    <div className="text-3xl break-keep inline-block font-extrabold">
+                      <div className="block">{selectedApartment.basePrice}</div>
+                      {editedPrice}
+                    </div>
+                    {/* ... other code ... */}
                   </div>
-                  {isEditingPrice ? (
-                    <div>
-                      <form
-                        onSubmit={(e) => {
-                          onSavePrice(e);
-                          clearInputValue();
-                        }}
-                      >
-                        <input
-                          type="number"
-                          value={selectedDatePrice}
-                          onChange={onPriceChange}
-                          placeholder="Enter price per night"
-                          className="border w-full p-4 my-4 rounded-md"
-                        />
-                        <button type="submit" className="bg-orange-400 py-2 mt-4 px-4 text-white rounded-full">Save</button>
-                      </form>
+                </div>
+              </div>
+
+              <div className="pointer p-4 rounded-2xl border">
+                <div>
+                  <div className="font-medium mb-2 mr-1 text-sm">Custom weekend Price</div>
+                  <div className="h-auto visible w-full">
+                    <div className="text-3xl break-keep inline-block font-extrabold">
+                      <div className="block">{selectedApartment.basePrice}</div>
+                      {editedPrice}
                     </div>
-                  ) : (
-                    <div>
-                      <div className="font-medium">{selectedDatePrice}</div>
-                      <button onClick={onEditPrice}>Edit</button>
+                    {/* ... other code ... */}
+                  </div>
+                </div>
+              </div>
+             </div>
+
+              <br />
+              <h1 className="my-2 font-bold text-2xl">Discount</h1>
+
+              <div className="space-y-3">
+                <div
+                  className="pointer p-4 rounded-2xl border"
+                  onClick={showDiscountModal}
+                >
+                  <div>
+                    <div className="font-medium mb-2 mr-1 text-sm">Weekly</div>
+                    <p className="text-gray-400">For 7 nights or more</p>
+                    <div className="h-auto visible w-full">
+                      <div className="text-3xl break-keep inline-block font-extrabold">
+                        0%
+                      </div>
+                      {isEditingPrice ? (
+                        <div>{/* ... other code ... */}</div>
+                      ) : (
+                        <div>
+                          <div className="text-gray-400">
+                            Weekend Average:{" "}
+                            <span className="font-medium">₦900000</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
+                </div>
+
+                <div
+                  className="pointer p-6 rounded-2xl border"
+                  onClick={showDiscountModal}
+                >
+                  <div>
+                    <div className="font-medium mb-2 mr-1 text-sm">Monthly</div>
+                    <p className="text-gray-400">For 28 nights or more</p>
+                    <div className="h-auto visible w-full">
+                      <div className="text-3xl break-keep inline-block font-extrabold">
+                        0%
+                      </div>
+                      {isEditingPrice ? (
+                        <div>{/* ... other code ... */}</div>
+                      ) : (
+                        <div>
+                          <div className="text-gray-400">
+                            Monthly Average:{" "}
+                            <span className="font-medium">₦9000000</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+            <DiscountCustomModal
+              visible={isCustomModalVisible}
+              onClose={hideCustomModal}
+              onSubmit={saveDiscountSettings}
+            />
           </div>
         </div>
       ) : (
@@ -499,15 +600,3 @@ const Pricing = ({
 };
 
 
-const Availability=()=>{
-  return(
-      <div>
-        
-
-
-
-
-
-      </div>
-  );
-}

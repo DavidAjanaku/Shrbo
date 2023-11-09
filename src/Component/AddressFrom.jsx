@@ -56,16 +56,17 @@ const AddressForm = () => {
 
   return (
     <div>
-      <div>
-        <label>Enter your address:</label>
+      <div className="w-[80%] mx-auto my-10">
+        <label className="text-xl">Enter your address:</label>
         <input
           type="text"
           value={address}
           onChange={handleAddressChange}
           placeholder="Enter your address"
+          className="bg-orange-200 my-4 p-4 rounded-full"
         />
       </div>
-      <div id="map" style={{ height: "400px", width: "100%" }}></div>
+      <div id="map" style={{ height: "400px", width: "80%", margin:"auto" }}></div>
     </div>
   );
 };
