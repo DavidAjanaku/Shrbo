@@ -31,19 +31,19 @@ export default class Scheduler extends Component {
       showWeeklyDiscountDetails: false,
       apartmentPrices: {
         "Lekki Admiralty": {
-          basePrice: "$42",
+          basePrice: "₦400002",
           weekendDiscount: "10%",
           weeklyDiscount: "15%",
           // Add other details for Lekki Admiralty
         },
         "Lekki Phase 1": {
-          basePrice: "$50",
+          basePrice: "₦500000",
           weekendDiscount: "15%",
           weeklyDiscount: "20%",
           // Add other details for Lekki Phase 1
         },
         "Lekki Units square": {
-          basePrice: "$45",
+          basePrice: "₦400005",
           weekendDiscount: "12%",
           weeklyDiscount: "18%",
           // Add other details for Lekki Units square
@@ -220,32 +220,32 @@ export default class Scheduler extends Component {
     const apartments = [
       {
         name: "Lekki Admiralty",
-        basePrice: "$42",
+        basePrice: "₦400002",
         customWeekendPrice: "Add",
         weeklyDiscount: "10%",
-        weeklyAverage: "$265",
+        weeklyAverage: "₦2000065",
         monthlyDiscount: "20%",
-        monthlyAverage: "$265",
+        monthlyAverage: "₦2000065",
         moreDiscounts: "Early bird, last-minute, trip length",
       },
       {
         name: "Lekki Phase 1",
-        basePrice: "$50",
+        basePrice: "₦500000",
         customWeekendPrice: "Add",
         weeklyDiscount: "15%",
-        weeklyAverage: "$300",
+        weeklyAverage: "₦3000000",
         monthlyDiscount: "25%",
-        monthlyAverage: "$300",
+        monthlyAverage: "₦3000000",
         moreDiscounts: "Early bird, last-minute, trip length",
       },
       {
         name: "Lekki Units square",
-        basePrice: "$45",
+        basePrice: "₦400005",
         customWeekendPrice: "Add",
         weeklyDiscount: "12%",
-        weeklyAverage: "$280",
+        weeklyAverage: "₦2000080",
         monthlyDiscount: "22%",
-        monthlyAverage: "$280",
+        monthlyAverage: "₦2000080",
         moreDiscounts: "Early bird, last-minute, trip length",
       },
     ];
@@ -397,30 +397,30 @@ const Pricing = ({
   // Define the apartment data
   const apartments = {
     "Lekki Admiralty": {
-      basePrice: "$42",
+      basePrice: "₦42",
       customWeekendPrice: "Add",
       weeklyDiscount: "10%",
-      weeklyAverage: "$265",
+      weeklyAverage: "₦265000",
       monthlyDiscount: "20%",
-      monthlyAverage: "$265",
+      monthlyAverage: "₦265000",
       moreDiscounts: "Early bird, last-minute, trip length",
     },
     "Lekki Phase 1": {
-      basePrice: "$50",
+      basePrice: "₦50000",
       customWeekendPrice: "Add",
       weeklyDiscount: "15%",
-      weeklyAverage: "$300",
+      weeklyAverage: "₦300000",
       monthlyDiscount: "25%",
-      monthlyAverage: "$300",
+      monthlyAverage: "₦300000",
       moreDiscounts: "Early bird, last-minute, trip length",
     },
     "Lekki Units square": {
-      basePrice: "$45",
+      basePrice: "₦40005",
       customWeekendPrice: "Add",
       weeklyDiscount: "12%",
-      weeklyAverage: "$280",
+      weeklyAverage: "₦200080",
       monthlyDiscount: "22%",
-      monthlyAverage: "$280",
+      monthlyAverage: "₦200080",
       moreDiscounts: "Early bird, last-minute, trip length",
     },
   };
@@ -488,8 +488,11 @@ const Pricing = ({
             </div>
           </div>
           <div className="flex flex-col gap-4 relative">
+          <h1 className="my-5 font-bold text-2xl">Base Price</h1>
+
             <div className="cursor-pointer w-full h-full outline-none">
-              <div className="pointer p-6 rounded-2xl border">
+             <div className="space-y-4">
+             <div className="pointer p-6 rounded-2xl border">
                 <div>
                   <div className="font-medium mb-2 mr-1 text-sm">Per night</div>
                   <div className="h-auto visible w-full">
@@ -502,10 +505,23 @@ const Pricing = ({
                 </div>
               </div>
 
-              <br />
-              <div className="font-medium mb-2 mr-1 text-2xl ">
-                Discount
+              <div className="pointer p-6 rounded-2xl border">
+                <div>
+                  <div className="font-medium mb-2 mr-1 text-sm">Custom weekend Price</div>
+                  <div className="h-auto visible w-full">
+                    <div className="text-3xl break-keep inline-block font-extrabold">
+                      <div className="block">{selectedApartment.basePrice}</div>
+                      {editedPrice}
+                    </div>
+                    {/* ... other code ... */}
+                  </div>
+                </div>
               </div>
+             </div>
+
+              <br />
+              <h1 className="my-5 font-bold text-2xl">Discount</h1>
+
               <div className="space-y-3">
                 <div
                   className="pointer p-6 rounded-2xl border"
@@ -524,7 +540,7 @@ const Pricing = ({
                         <div>
                           <div className="text-gray-400">
                             Weekend Average:{" "}
-                            <span className="font-medium">$900</span>
+                            <span className="font-medium">₦900000</span>
                           </div>
                         </div>
                       )}
@@ -549,7 +565,7 @@ const Pricing = ({
                         <div>
                           <div className="text-gray-400">
                             Monthly Average:{" "}
-                            <span className="font-medium">$900</span>
+                            <span className="font-medium">₦9000000</span>
                           </div>
                         </div>
                       )}
