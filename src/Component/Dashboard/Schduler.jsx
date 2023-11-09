@@ -469,7 +469,7 @@ const Pricing = ({
   };
 
   return (
-    <div className="block box-border overflow-y-scroll example pb-32">
+    <div className="block box-border  overflow-y-scroll example pb-32">
       {selectedApartment ? (
         <div className="block box-border mt-8 mb-8 min-[1128px]:mb-4">
           <div className="box-border flex justify-between items-baseline mb-6">
