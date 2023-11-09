@@ -3,11 +3,14 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { Tabs } from "antd";
+
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import { IoIosArrowForward } from "react-icons/io";
 import HostHeader from "../Navigation/HostHeader";
 import HostBottomNavigation from "./HostBottomNavigation";
-import { Modal } from "antd";
+import { Modal, Select, Input } from "antd";
+import DiscountCustomModal from "./DiscountCustomModal";
+import CalenderAvailability from "./CalenderAvailability";
 
 export default class Scheduler extends Component {
   constructor(props) {
@@ -22,6 +25,9 @@ export default class Scheduler extends Component {
       isEditingPrice: false,
       editedPrice: "",
       selectedDates: [],
+      discountModalVisible: false,
+      isApartmentSelected: false,
+
       showWeeklyDiscountDetails: false,
       apartmentPrices: {
         "Lekki Admiralty": {
@@ -46,10 +52,7 @@ export default class Scheduler extends Component {
       },
     };
   }
-  
 
-  
-  
   handleToggleWeeklyDetails = () => {
     this.setState((prevState) => ({
       showWeeklyDiscountDetails: !prevState.showWeeklyDiscountDetails,
@@ -108,9 +111,9 @@ export default class Scheduler extends Component {
 
   handleSavePrice = (event) => {
     event.preventDefault();
-  
+
     const { selectedEditDate, selectedDatePrice } = this.state;
-  
+
     if (selectedEditDate) {
       Modal.confirm({
         title: "Save Changes",
@@ -136,7 +139,6 @@ export default class Scheduler extends Component {
       });
     }
   };
-  
 
   handleBlockMode = () => {
     this.setState({ blockingMode: true });
@@ -169,6 +171,8 @@ export default class Scheduler extends Component {
       selectedDatePrice,
       isEditingPrice,
       editedPrice,
+      discountModalVisible, // Include this state variable
+
       showWeeklyDiscountDetails,
     } = this.state;
     const items = [
@@ -201,7 +205,15 @@ export default class Scheduler extends Component {
             Availability
           </div>
         ),
-        children: <div className="text-neutral-600 rounded-t-lg">Upcoming</div>,
+        children: (
+          <div className="text-neutral-600 rounded-t-lg">
+            {selectedHouse ? (
+              <CalenderAvailability />
+            ) : (
+              <div>Select an apartment/house to view details</div>
+            )}
+          </div>
+        ),
       },
     ];
 
@@ -289,8 +301,9 @@ export default class Scheduler extends Component {
                   ]}
                   eventContent={(arg) => {
                     const dateStr = arg.event.start.toISOString().split("T")[0];
-                    const price = this.state.apartmentPrices[this.state.selectedHouse];
-                  
+                    const price =
+                      this.state.apartmentPrices[this.state.selectedHouse];
+
                     return {
                       html: `
                       <div>
@@ -299,11 +312,10 @@ export default class Scheduler extends Component {
                       </div>
                     `,
                       backgroundColor: this.dateHasBackground(arg.event.start)
-                        ? "blue"
+                        ? "orange"
                         : "white",
                     };
                   }}
-                  
                 />
               )}
               {selectedDate && blockingMode && (
@@ -413,10 +425,47 @@ const Pricing = ({
     },
   };
 
+  const [discountModalVisible, setDiscountModalVisible] = useState(false);
+  const [discountDuration, setDiscountDuration] = useState(""); // Store the selected discount duration
+  const [discountPercentage, setDiscountPercentage] = useState(""); // Store the discount percentage
+  const [weeklyDiscount, setWeeklyDiscount] = useState(""); // Store the weekly discount
+  const [monthlyDiscount, setMonthlyDiscount] = useState("");
+
   const selectedApartment = apartments[selectedHouse];
 
   const clearInputValue = () => {
     onPriceChange({ target: { value: "" } });
+  };
+
+  const showDiscountModal = () => {
+    setCustomModalVisible(true); // Set the custom modal to be visible
+  };
+
+  const hideDiscountModal = () => {
+    setDiscountModalVisible(false);
+  };
+
+  const isWeeklyDiscountApplicable = () => {
+    // Calculate the number of selected nights
+    const numberOfNights = 7;
+    return numberOfNights >= 7; // Display the discount if the duration is 7 nights or more
+  };
+
+  const [isCustomModalVisible, setCustomModalVisible] = useState(false);
+
+  // ... other code
+
+  const showCustomModal = () => {
+    setCustomModalVisible(true);
+  };
+
+  const hideCustomModal = () => {
+    setCustomModalVisible(false);
+  };
+
+  const saveDiscountSettings = (discount) => {
+    // Handle saving the discount (e.g., updating state or making API requests)
+    // Here, `discount` contains the calculated discount (e.g., "10%")
   };
 
   return (
@@ -445,47 +494,75 @@ const Pricing = ({
                   <div className="font-medium mb-2 mr-1 text-sm">Per night</div>
                   <div className="h-auto visible w-full">
                     <div className="text-3xl break-keep inline-block font-extrabold">
-                      <div className="block">
-                        {selectedApartment.basePrice}
-                      </div>
+                      <div className="block">{selectedApartment.basePrice}</div>
                       {editedPrice}
                     </div>
-                    {isEditingPrice ? (
-                      <div>
-                        <form
-                          onSubmit={(e) => {
-                            onSavePrice(e);
-                            clearInputValue();
-                          }}
-                        >
-                          <input
-                            type="number"
-                            value={selectedDatePrice}
-                            onChange={onPriceChange}
-                            placeholder="Enter price per night"
-                            className="border w-full p-4 my-4 rounded-md"
-                          />
-                          <button
-                            type="submit"
-                            className="bg-orange-400 py-2 mt-4 px-4 text-white rounded-full"
-                          >
-                            Save
-                          </button>
-                        </form>
+                    {/* ... other code ... */}
+                  </div>
+                </div>
+              </div>
+
+              <br />
+              <div className="font-medium mb-2 mr-1 text-2xl font-bold">
+                Discount
+              </div>
+              <div className="space-y-3">
+                <div
+                  className="pointer p-6 rounded-2xl border"
+                  onClick={showDiscountModal}
+                >
+                  <div>
+                    <div className="font-medium mb-2 mr-1 text-sm">Weekly</div>
+                    <p className="text-gray-400">For 7 nights or more</p>
+                    <div className="h-auto visible w-full">
+                      <div className="text-3xl break-keep inline-block font-extrabold">
+                        0%
                       </div>
-                    ) : (
-                      <div>
-                        <div className="font-medium">{selectedDatePrice}</div>
+                      {isEditingPrice ? (
+                        <div>{/* ... other code ... */}</div>
+                      ) : (
                         <div>
-                          Weekend Discount: {selectedApartment.weekendDiscount}
+                          <div className="text-gray-400">
+                            Weekend Average:{" "}
+                            <span className="font-medium">$900</span>
+                          </div>
                         </div>
-                        <button onClick={onEditPrice}>Edit</button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className="pointer p-6 rounded-2xl border"
+                  onClick={showDiscountModal}
+                >
+                  <div>
+                    <div className="font-medium mb-2 mr-1 text-sm">Monthly</div>
+                    <p className="text-gray-400">For 28 nights or more</p>
+                    <div className="h-auto visible w-full">
+                      <div className="text-3xl break-keep inline-block font-extrabold">
+                        0%
                       </div>
-                    )}
+                      {isEditingPrice ? (
+                        <div>{/* ... other code ... */}</div>
+                      ) : (
+                        <div>
+                          <div className="text-gray-400">
+                            Monthly Average:{" "}
+                            <span className="font-medium">$900</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            <DiscountCustomModal
+              visible={isCustomModalVisible}
+              onClose={hideCustomModal}
+              onSubmit={saveDiscountSettings}
+            />
           </div>
         </div>
       ) : (
@@ -495,17 +572,6 @@ const Pricing = ({
   );
 };
 
-
-
-const Availability=()=>{
-  return(
-      <div>
-        
-
-
-
-
-
-      </div>
-  );
-}
+const Availability = () => {
+  return <div></div>;
+};

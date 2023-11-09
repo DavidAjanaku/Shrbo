@@ -163,3 +163,20 @@
   height: 100% !important;
 }
 
+
+.fc-h-event {
+  background: orange !important;
+  border: black;
+}
+.fc-daygrid-event{
+  padding: 10px;
+  width: 100%;
+}
+
+/* Custom CSS */
+.custom-radio {
+  color: orange; /* Set the radio button color to orange */
+  border-color: orange; /* Set the border color to orange (if desired) */
+}
+
+
