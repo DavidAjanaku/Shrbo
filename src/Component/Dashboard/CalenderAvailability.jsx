@@ -189,13 +189,13 @@ export default function CalendarAvailability() {
    
       </div>
       {advanceNoticeModalVisible && (
-        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white w-full h-full md:h-1/2 md:w-1/2 p-4 rounded shadow-lg">
+        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
+          <div className="bg-white w-full h-full md:h-fit md:w-1/2 p-4 rounded shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">Advance Notice</h2>
             <div>
               {advanceNoticeOptions.map((option) => (
                 <div key={option} className="mb-2">
-                  <label className="inline-flex items-center cursor-pointer text-gray-600">
+                  <label className="inline-flex items-center cursor-pointer ">
                     <input
                       type="radio"
                       name="advanceNotice"
@@ -226,8 +226,8 @@ export default function CalendarAvailability() {
         </div>
       )}
       {preparationTimeModalVisible && (
-        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white md:w-1/2 p-4 rounded shadow-lg">
+        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
+          <div className="bg-white md:w-1/2 w-full h-full md:h-fit p-4 rounded shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">Preparation Time</h2>
             <div>
               {preparationTimeOptions.map((option) => (
@@ -263,8 +263,8 @@ export default function CalendarAvailability() {
         </div>
       )}
       {availabilityWindowModalVisible && (
-        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white md:w-1/2 p-4 rounded shadow-lg">
+        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
+          <div className="bg-white md:w-1/2 w-full h-full md:h-fit p-4 rounded shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">Availability Window</h2>
             <div>
               {availabilityWindowOptions.map((option) => (
@@ -300,7 +300,7 @@ export default function CalendarAvailability() {
         </div>
       )}
       {minNightsModalVisible && (
-        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
           <div className="bg-white md:w-1/2 p-4 rounded shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">Minimum Nights</h2>
             <div>
@@ -329,7 +329,7 @@ export default function CalendarAvailability() {
         </div>
       )}
       {maxNightsModalVisible && (
-        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
           <div className="bg-white md:w-1/2 p-4 rounded shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">Maximum Nights</h2>
             <div>
