@@ -32,7 +32,7 @@ const TestimonialInfo = () => {
 
     const rating_category=ratinginfo.map(cat=>(
         <div key={cat.id} className=" relative px-2   md:mr-[8.33%]  w-full  md:px-2 ">
-            <div className=" flex itens-center md:max-w-[83.33%] gap-6 mb-4 justify-between md:justify-end flex-row">
+            <div className=" flex itens-center md:max-w-[83.33%] gap-6 mb-4 lg:mb-5 justify-between md:justify-end flex-row">
                 <div className="  md:w-[55%] overflow-hidden text-ellipsis whitespace-nowrap">
                     {cat.category}
                 </div>
@@ -88,7 +88,7 @@ const clients= [
 const slides=clients.map((client)=>(
         <div className="slide my-3 " key={client.id}>
 
-            <div className=" relative rounded-xl md:rounded-none border md:border-0 p-5 md:p-7 md:shadow-none shadow-md flex flex-col  justify-between h-[258px] md:h-[300px]   ">
+            <div className=" relative rounded-xl md:rounded-none border md:border-0 p-5 md:p-7 md:shadow-none shadow-md flex flex-col   justify-between h-[258px] md:h-[300px]   ">
                     <div className=" overflow-hidden text-ellipsis box-border block">
                         <p className=" text-lg text-ellipsis overflow-clip md:text-xl font-semibold pb-3 ">
                             {client.header}

@@ -213,13 +213,14 @@ const Testimonial=()=>{
                         <Splide  options={ {
                                         rewind: false,
                                         gap: '20px',
-                                      
+                                       
                                         autoplay:true,
                                         mediaQuery: 'min',
                                         breakpoints: {
                                               760: {
                                                 perPage:2,
                                                 arrows:true,
+                                            
                                               },
                                         },
                                         arrows:false,

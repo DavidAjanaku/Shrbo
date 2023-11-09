@@ -93,7 +93,7 @@ const ReportForm = () => {
                         <Radio.Group   buttonStyle={"solid"} onChange={onChange} size="medium" value={reportType}   >
                             {ReportTypes.map((cat,index)=>(
                             <div key={index} className=" relative px-[6px] mb-5  w-full break-words text-gray-700  md:px-2 ">
-                                <Radio className="    "    value={index}  ><span className="  text-base font-normal w-full   ">{cat.type}</span></Radio>                    
+                                <Radio className="    "    value={cat.index}  ><span className="  text-base font-normal w-full   ">{cat.type}</span></Radio>                    
                             </div>
 
 

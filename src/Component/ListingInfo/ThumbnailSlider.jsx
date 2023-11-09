@@ -6,6 +6,7 @@ import kitchen from "../../assets/room2.jpeg";
 import video from "../../assets/videos/luxuryInteriror.mp4";
 
 const ThumbnailSlider = (props) => {
+  
   const pics = [
     {
       id: "video",
@@ -38,7 +39,7 @@ const ThumbnailSlider = (props) => {
               <video
                 src={slide.min}
                 alt="Video"
-                className="rounded h-full w-full"
+                className=" w-auto object-cover  h-auto min-h-full min-w-full"
                 
               
                 playsInline // Add playsInline attribute for iOS

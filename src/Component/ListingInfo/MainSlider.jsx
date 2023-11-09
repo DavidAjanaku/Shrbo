@@ -96,7 +96,7 @@ const MainSlider = (props) => {
               <video
                 src={slide.min}
                 alt="Video"
-                className='rounded  h-full w-full'
+                className='rounded object-cover  h-full w-full'
                 
                 controls
                 playsInline

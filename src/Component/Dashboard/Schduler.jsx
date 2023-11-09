@@ -12,7 +12,14 @@ import { Modal } from "antd";
 export default class Scheduler extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+
+      // Calculate the current date
+   const currentDate = new Date();
+
+   // Calculate the maximum valid date (one year from the current date)
+   const maxValidDate = new Date(currentDate);
+   maxValidDate.setFullYear(currentDate.getFullYear() - 1);
+    this.state = {    
       blockingMode: false,
       blockedDates: [],
       selectedHouse: null,
@@ -24,6 +31,8 @@ export default class Scheduler extends Component {
       selectedDates: [], // Array to track selected dates
       showWeeklyDiscountDetails: false, // State for toggling details
 
+      maxValidDate: maxValidDate,// limits the amount dates the calender shows
+
       apartmentPrices: {
         "Lekki Admiralty": "$42",
         "Lekki Phase 1": "$50",
@@ -31,7 +40,11 @@ export default class Scheduler extends Component {
         // Add prices for other apartments as needed
       },
     };
+ 
+
   }
+
+  
 
   
   handleToggleWeeklyDetails = () => {
@@ -189,7 +202,7 @@ export default class Scheduler extends Component {
             Availability
           </div>
         ),
-        children: <div className="text-neutral-600 rounded-t-lg">Upcoming</div>,
+        children:<Availability/>,
       },
     ];
 
@@ -227,6 +240,14 @@ export default class Scheduler extends Component {
     ];
 
     const houseOptions = apartments.map((apartment) => apartment.name);
+
+    const { maxValidDate } = this.state;
+
+    // Set the valid range for the calendar
+    const validRange = {
+
+      start: maxValidDate, // The calendar can display dates up to the end date
+    };
 
     return (
       <div>
@@ -266,26 +287,29 @@ export default class Scheduler extends Component {
                   initialView="dayGridMonth"
                   editable
                   selectable
+                  validRange={validRange} // Set the valid date range
                   dateClick={this.handleDateClick}
                   events={[
                     ...blockedDates.map((date) => ({
                       title: "Blocked",
                       start: date,
                       allDay: true,
+                      // display: 'background'
                     })),
                     ...this.getUnblockedDates(),
                   ]}
                   eventContent={(arg) => {
+                    
                     const dateStr = arg.event.start.toISOString().split("T")[0];
                     const price =
                       this.state.apartmentPrices[this.state.selectedHouse];
 
                     return {
                       html: `
-                  <div>
-                    <div>${arg.event.title}</div>
-                    <div>${price}</div>
-                  </div>
+                      <div style="width: 100%;">
+                      <div>${arg.event.title}</div>
+                      <div>${price}</div>
+                    </div>
                 `,
                       backgroundColor: this.dateHasBackground(arg.event.start)
                         ? "blue"
@@ -300,7 +324,7 @@ export default class Scheduler extends Component {
                     Price for {selectedDate}
                   </label>
                   {isEditingPrice ? ( // Check the editing mode
-                    <div>
+                    <div className=" ">
                       <input
                         type="number"
                         value={editedPrice}
