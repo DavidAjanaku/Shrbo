@@ -2,6 +2,7 @@ import React from "react";
 import google from "../../assets/google.png"
 import { useState } from "react";
 import {  notification} from 'antd';
+import logo from "../../assets/logo.png"
 
 
 const ForgotPassword=()=>{
@@ -17,12 +18,12 @@ const ForgotPassword=()=>{
 
     return(
         
-        <div className="flex  h-full flex-col justify-center   px-6 py-12 lg:px-8">
+        <div className="flex  h-screen flex-1 flex-col justify-center    px-6 py-12 lg:px-8">
              {/* {contextHolder} */}
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
-            className="mx-auto h-10 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+            className="mx-auto h-20 w-auto"
+            src={logo}
             alt="Your Company"
           />
           <h2 className="mt-10 text-center text-2xl md:text-3xl font-bold leading-9  text-gray-900">
@@ -40,7 +41,7 @@ const ForgotPassword=()=>{
 
             <div>
               <label htmlFor="email" className="block text-base font-medium leading-6 text-gray-900">
-                Email 
+                Email address
               </label>
               <div className="mt-2">
                 <input

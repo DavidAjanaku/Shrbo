@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
 
         <div className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0">
      
-        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 ">
+        <div className="mx-auto grid max-w-3xl lg:max-w-4xl grid-cols-1 gap-x-8 gap-y-16 ">
             
         {/* <div className=" absolute top-6 ">
         <img
@@ -24,7 +24,7 @@ export default function PrivacyPolicy() {
 
           <div className="">
             <div className="lg:pr-4">
-              <div className="lg:max-w-xl">
+              <div className="lg:max-w-2xl max-w-xl">
                 <p className="text-base font-semibold leading-7 text-orange-500">Shrbo privacy policy</p>
                 <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Privacy Policy</h1>
                 <p className="mt-6 text-xl leading-8 text-gray-700">
@@ -48,7 +48,7 @@ export default function PrivacyPolicy() {
           
           <div className="">
             <div className="lg:pr-4">
-              <div className="max-w-xl text-base leading-7 text-gray-700 lg:max-w-lg">
+              <div className="max-w-lg text-base leading-7 text-gray-700 lg:max-w-2xl">
 
                 <h2 className="  text-2xl font-semibold tracking-tight text-gray-900">  Data Collection and Usage</h2>
                 <p className="mt-6">

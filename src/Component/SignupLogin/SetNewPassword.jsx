@@ -1,5 +1,6 @@
 import React from "react";
 import google from "../../assets/google.png"
+import logo from "../../assets/logo.png"
 import { useState } from "react";
 import {  notification} from 'antd';
 
@@ -38,11 +39,11 @@ const SetNewPassword=()=>{
              {contextHolder}
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
-            className="mx-auto h-10 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+            className="mx-auto h-20 w-auto"
+            src={logo}
             alt="Your Company"
           />
-          <h2 className="mt-10 text-center text-2xl md:text-3xl font-bold leading-9  text-gray-900">
+          <h2 className="mt-6 text-center text-2xl md:text-3xl font-bold leading-9  text-gray-900">
             Set new password
           </h2>
           <h3 className="text-center mt-1 px-3  tracking-tight text-gray-400" >must be at least 8 characters. </h3>
@@ -50,7 +51,7 @@ const SetNewPassword=()=>{
 
    
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-5"    onSubmit={handleSubmmit}  >
 
 

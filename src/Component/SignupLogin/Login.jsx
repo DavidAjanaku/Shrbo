@@ -1,13 +1,16 @@
 import React from "react";
 import google from "../../assets/google.png"
+import logo from "../../assets/logo.png"
 import { useState } from "react";
 import {  notification} from 'antd';
+import { Link } from "react-router-dom";
 
 const Login=()=>{   
 
     const [email,setEmail]=useState('');
     const [name,setName]=useState('');
     const [password,setPassword]=useState('');
+  
 
     const [api, contextHolder] = notification.useNotification();
     const openNotificationWithIcon = (type) => {
@@ -34,15 +37,15 @@ const Login=()=>{
     return(
     
     
-        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="flex h-full max-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">
              {contextHolder}
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
-            className="mx-auto h-10 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+            className="mx-auto h-16 w-auto"
+            src={logo}
             alt="Your Company"
           />
-          <h2 className="mt-10 text-center text-2xl md:text-3xl font-bold leading-9  text-gray-900">
+          <h2 className="mt-2 text-center text-2xl md:text-2xl font-medium leading-9  text-gray-900">
             Create an account
           </h2>
           <h3 className="text-center mt-1 px-3  tracking-tight text-gray-400" >Please complete the registration process to create an account. </h3>
@@ -50,7 +53,7 @@ const Login=()=>{
 
    
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm px-1">
           <form className="space-y-5"    onSubmit={handleSubmmit}  >
 
           <div>
@@ -67,11 +70,11 @@ const Login=()=>{
         className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
         <p
           className="mx-4 mb-0 text-gray-500 text-sm text-center font-semibold ">
-          OR
+          or
         </p>
       </div>
             <div>
-              <label htmlFor="Fullname" className="block text-base font-medium leading-6 text-gray-900">
+              <label htmlFor="Fullname" className="block text-sm font-medium leading-6 text-gray-900">
                 Full Name
               </label>
               <div className="mt-2">
@@ -89,8 +92,8 @@ const Login=()=>{
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-base font-medium leading-6 text-gray-900">
-                Email 
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                Email address
               </label>
               <div className="mt-2">
                 <input
@@ -108,7 +111,7 @@ const Login=()=>{
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-base font-medium leading-6 text-gray-900">
+                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   Password
                 </label>
              
@@ -127,11 +130,7 @@ const Login=()=>{
               </div>
             </div>
 
-            {/* <div className="text-sm  text-right">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                    Forgot password?
-                  </a>
-                </div> */}
+      
 
             <div>
               <button
@@ -144,13 +143,25 @@ const Login=()=>{
             </div>
           </form>
 
-          <p className="mt-10 text-center text-sm text-gray-500">
+          <p className="mt-5 text-center text-sm text-gray-500">
             Already have an account? {' '}
             <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
               Log in
             </a>
           </p>
         </div>
+
+        <div className="mt-3 text-center text-xs sm:mx-auto sm:w-full sm:max-w-sm">
+          <label>
+            By singing up,you have read and agree to our  
+            <Link to={"/TermsofService"} className=" text-indigo-600 hover:underline " > Terms & Conditions</Link> and  
+            <Link to={"/PrivacyPolicy"} className=" text-indigo-600 hover:underline " > Privacy policy</Link>.
+
+          </label>
+        </div>
+
+
+
       </div>
     
     )

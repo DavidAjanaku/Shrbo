@@ -1,26 +1,28 @@
 import React from "react";
+import logo from "../../assets/logo.png"
 import google from "../../assets/google.png"
+import { Link } from "react-router-dom";
 
 const SignUp=()=>{
     return(
     
     
-        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="flex h-full lg:max-h-screen flex-1 flex-col lg:justify-center px-6 py-16 lg:py-10 bg-slate-50/30 lg:px-8">
+        <div className="sm:mx-auto  sm:w-full sm:max-w-sm">
           <img
-            className="mx-auto h-10 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+            className="mx-auto h-16   w-auto"
+            src={logo}
             alt="Your Company"
           />
-          <h2 className="mt-10 text-center text-2xl md:text-3xl font-bold leading-9  text-gray-900">
-            Login to Your Account
+          <h2 className="mt-2 text-center text-2xl md:text-2xl font-medium leading-9  text-gray-900">
+            Sign in to Shrbo
           </h2>
           <h3 className="text-center mt-1  tracking-tight text-gray-400" >Kindly log in to gain access to your account</h3>
         </div>
 
    
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm border rounded lg:bg-blend-darken bg-white      p-6 lg:p-8">
           <form className="space-y-5" action="#" method="POST">
 
           <div>
@@ -37,12 +39,12 @@ const SignUp=()=>{
         className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
         <p
           className="mx-4 mb-0 text-gray-500 text-sm text-center font-semibold ">
-          OR
+          or
         </p>
       </div>
             <div>
-              <label htmlFor="email" className="block text-base font-medium leading-6 text-gray-900">
-                Email 
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                Email address
               </label>
               <div className="mt-2">
                 <input
@@ -59,7 +61,7 @@ const SignUp=()=>{
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-base font-medium leading-6 text-gray-900">
+                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   Password
                 </label>
              
@@ -93,13 +95,23 @@ const SignUp=()=>{
             </div>
           </form>
 
-          <p className="mt-10 text-center text-sm text-gray-500">
-            Not a member <span className=" text-slate-900 font-semibold ">Shrbo</span>?{' '}
+          <p className="mt-8 text-center text-sm text-gray-500">
+            Not a member of <span className=" text-slate-900 font-semibold ">Shrbo</span>?{' '}
             <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
               Create an account
             </a>
           </p>
         </div>
+        
+        <div className="mt-5 text-center text-sm sm:mx-auto sm:w-full sm:max-w-sm">
+          <label>
+           
+            <Link to={"/TermsofService"} className=" text-indigo-600 hover:underline " > Terms & Conditions</Link> and  
+            <Link to={"/PrivacyPolicy"} className=" text-indigo-600 hover:underline " > Privacy policy</Link>.
+
+          </label>
+        </div>
+
       </div>
     
     )

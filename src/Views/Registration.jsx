@@ -6,9 +6,9 @@ import SetNewPassword from "../Component/SignupLogin/SetNewPassword";
 
 const Registration=()=>{
 
-    return(<div className=" h-full flex ">
+    return(<div className=" min-h-screen flex ">
         <SignUp/>
-        {/* <Login/> */}
+        <Login/>
         {/* <ForgotPassword/> */}
         {/* <SetNewPassword/> */}
         {/* <div className="w-1/2">
