@@ -131,7 +131,7 @@ const PricingModal=({ visible, onClose})=>{
                                         <span onClick={handleEdit}  className={`min-h-[1lh] cursor-pointer  ${inputShow? "invisible":"visible "}  ` }>{inputValue}</span>
                                         <button onClick={handleEdit} type="button" className=" -right-9 bottom-1 absolute  text-xs font-normal text-black  underline   p-[3px] " >{inputShow ? "done":"edit "}</button>
                                         <input
-                                            className={`right-0 text-right ${inputShow? "visible":"invisible"}   border-none bg-transparent p-0 m-0 absolute top-1  bottom-1 w-full`}
+                                            className={`right-0 text-right ${inputShow? "block":"hidden"}   border-none bg-transparent p-0 m-0 absolute top-1  bottom-1 w-full`}
                                             value={inputValue}
                                             ref={inputRef}
                                             onChange={handleInputChange}
