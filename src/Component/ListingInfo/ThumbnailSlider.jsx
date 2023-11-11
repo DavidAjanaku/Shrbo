@@ -34,9 +34,10 @@ const ThumbnailSlider = (props) => {
     <SplideSlide key={slide.id}>
       <div className="  ">
         <div className=" relative       ">
-          <div className=" h-full w-full rounded  ">
+          <div className=" h-[45px] w-full rounded  ">
             {slide.id === "video" ? (
-              <video
+              <div className="h-[45px]">
+                  <video
                 src={slide.min}
                 alt="Video"
                 className=" w-auto object-cover  h-auto min-h-full min-w-full"
@@ -44,11 +45,14 @@ const ThumbnailSlider = (props) => {
               
                 playsInline // Add playsInline attribute for iOS
               />
+
+              </div>
+            
             ) : (
               <img
                 src={slide.min}
                 alt="Thumbnail 1"
-                className="rounded h-full w-full"
+                className="rounded object-cover h-full w-full"
               />
             )}
           </div>
@@ -66,7 +70,7 @@ const ThumbnailSlider = (props) => {
           gap: 10,
           perMove: 1,
           cover: true,
-          fixedHeight: 50,
+          // fixedHeight: 50,
           fixedWidth: 66,
           isNavigation: true,
           pagination: false,

@@ -1,5 +1,5 @@
 import Popup from "../../hoc/Popup"
-import React, { useState,useRef,  } from "react";
+import React, { useState,useRef,useEffect  } from "react";
 import { Radio } from 'antd';
 
 
@@ -10,14 +10,22 @@ const PricingModal=({ visible, onClose})=>{
   const toggleShow = () => setShow(!show);
   const [inputShow, setInputShow] = useState(false);
 //   const [loading,setLoading]=useState(false);
-const inputRef = useRef();
+    const inputRef = useRef(null);
   const handleEdit = () => {
     //   console.log('radio checked', e.target.value);
+    
       setInputShow(!inputShow);
     
-        inputRef.current.focus();
+       
      
   };
+
+  useEffect(()=>{
+    if (inputShow && inputRef.current) {
+        inputRef.current.focus();
+      }
+      
+  },[inputShow]);
   const [selectedButton, setSelectedButton] = useState(null);
 
   const handleButtonSelection = (buttonId) => {
@@ -34,7 +42,7 @@ const inputRef = useRef();
     // { id: 3, label: "Button 3" },
   ];
 
-  const [inputValue, setInputValue] = useState('42222222');
+  const [inputValue, setInputValue] = useState('42');
 
     const handleInputChange = (e) => {
         
@@ -49,7 +57,7 @@ const inputRef = useRef();
       isModalVisible={visible}
       handleCancel={onClose}
       >
-        <div className=" py-8 md:px-8 px-3  ">
+        <div className=" example  py-8 md:px-8 px-3 overflow-y-scroll   ">
 
                 {/* start Blocked and Unblocked should only show when they click on a particular date or highlight dates in the calender     */}
               <div className="flex justify-center items-center">
@@ -120,8 +128,8 @@ const inputRef = useRef();
                                         <span>
                                             <div className="block">₦</div>
                                         </span>
-                                        <span className={`min-h-[1lh] cursor-pointer  ${inputShow? "invisible":"visible "}  ` }>{inputValue}</span>
-                                        <button onClick={handleEdit} type="button" className=" -right-7 bottom-1 absolute  text-xs font-normal text-black  underline   p-[3px] " >{inputShow ? "done":"edit "}</button>
+                                        <span onClick={handleEdit}  className={`min-h-[1lh] cursor-pointer  ${inputShow? "invisible":"visible "}  ` }>{inputValue}</span>
+                                        <button onClick={handleEdit} type="button" className=" -right-9 bottom-1 absolute  text-xs font-normal text-black  underline   p-[3px] " >{inputShow ? "done":"edit "}</button>
                                         <input
                                             className={`right-0 text-right ${inputShow? "visible":"invisible"}   border-none bg-transparent p-0 m-0 absolute top-0 bottom-[0.5px] w-full`}
                                             value={inputValue}

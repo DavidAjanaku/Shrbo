@@ -1,24 +1,28 @@
 import React ,{ useState } from "react";
 import { Tabs } from 'antd';
 import HouseRulesTab from "./HouseRulesTab";
+import CancellationPolicyTab from "./CancellationPolicyTab";
 
 
 
 const items = [
   {
     key: '1',
-    label: 'House Rules',
+    label:  
+    <div className=" w-full h-full  k ">
+        House Rules
+    </div>,
     children: <HouseRulesTab/>,
   },
   {
     key: '2',
-    label: ' Damage and incidentals ',
+    label:<div className=" w-full h-full   ">Damage and incidentals</div> ,
     children: 'Content of Tab Pane 2',
   },
   {
     key: '3',
-    label: 'Tab 3',
-    children: 'Content of Tab Pane 3',
+    label: <div className=" w-full h-full   ">Cancellation Policy </div>,
+    children:<CancellationPolicyTab/>,
   },
 ];
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useRef } from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/themes/splide-default.min.css';
 import room from "../../assets/room.jpeg";
@@ -83,6 +83,15 @@ const MainSlider = (props) => {
     setSelectedImage(null);
     setSelectedImageIndex(0);
   };
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+ 
+  const togglePlay = () => {
+    setIsPlaying(!isPlaying);
+   
+
+  };
+
 
   const slides = pics.map((slide, index) => (
     <SplideSlide key={slide.id}>
@@ -90,19 +99,72 @@ const MainSlider = (props) => {
         <div className=" relative h-[258px]  ">
           <div
             className='h-full w-full rounded'
-            onClick={() => openImageModal(slide.min, index)}
+           
           >
             {slide.id === "video" ? (
-              <video
-                src={slide.min}
-                alt="Video"
-                className='rounded object-cover  h-full w-full'
+              <div className="w-full h-full md:mr-2 overflow-hidden">
+              <div className="h-full   w-full cursor-pointer">
+                <div className="relative h-full">
+              <img
+                src={kitchen}
+                alt="Video Thumbnail"
+                onClick={togglePlay}
+                className="cursor-pointer w-auto object-cover  h-auto min-h-full min-w-full "
+                />
+            {isPlaying ? (
+              <div  className="absolute top-0 bottom-8 inset-0 flex items-center h-full w-full justify-center">
+                <video
+                 src={slide.min}
+                  controls
                 
-                controls
-                playsInline
-              />
+                  ref={videoRef}
+                  autoPlay
+                  className=" w-auto object-cover  h-auto min-h-full min-w-full  "
+                ></video>
+                {/* <div className="absolute inset-0 opacity-0 flex hover:opacity-100  items-center justify-center">
+                    <div
+                      className="bg-black bg-opacity-50 text-white p-4 rounded-full cursor-pointer"
+                      onClick={togglePlay}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg"  width="48"
+                                  height="48" viewBox="0 0 100 100">
+                      <rect x="30" y="20" width="10" height="60" fill="white" />
+                      <rect x="60" y="20" width="10" height="60" fill="white" />
+                    </svg>
+    
+    
+                    </div>
+            </div> */}
+              </div>
+              
             ) : (
-              <img src={slide.min} alt="slide 1" className='rounded h-full w-full' />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div
+                className="bg-black bg-opacity-50 text-white p-4 rounded-full cursor-pointer"
+                onClick={togglePlay}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="48"
+                  height="48"
+                  fill="currentColor"
+                  className="bi bi-play"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10.667 8.196a.25.25 0 0 1 0 .608l-4 2.5a.25.25 0 0 1-.417-.192V5.896a.25.25 0 0 1 .417-.192l4 2.5z"
+                  />
+                </svg>
+              </div>
+            </div>
+          )}
+        </div>
+              </div>
+            </div>
+    
+            ) : (
+              <img  onClick={() => openImageModal(slide.min, index)} src={slide.min} alt="slide 1" className='rounded h-full w-full' />
             )}
           </div>
         </div>

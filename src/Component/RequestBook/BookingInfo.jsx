@@ -6,6 +6,7 @@ import { Dropdown, Popover, Button, Space } from "antd";
 import { Link } from "react-router-dom";
 import Popup from "../../hoc/Popup";
 import ContactInfo from "./ContactInfo";
+import CancellationPolicyTab from "../ListingInfo/CancellationPolicyTab";
 
 // import 'antd/dist/antd.css';
 
@@ -293,7 +294,7 @@ const BookingInfo = () => {
                   handleCancel={handleCancel}
                   title={"Cancellation policy"}
                 >
-                  <label>hello</label>
+                  <CancellationPolicyTab/>
                 </Popup>
               </div>
               <div className=" relative block box-border"></div>
@@ -446,7 +447,7 @@ function MyDropdown({ adults, children, pets, infants }) {
         </div>
       )}
     >
-      <Space>
+      <Space className="w-full"   >
         <button
           type="button"
           className=" block m-4 cursor-pointer overflow-hidden text-ellipsis text-start whitespace-nowrap text-base font-normal w-full min-w-full      "
