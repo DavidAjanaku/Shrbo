@@ -131,7 +131,7 @@ const PricingModal=({ visible, onClose})=>{
                                         <span onClick={handleEdit}  className={`min-h-[1lh] cursor-pointer  ${inputShow? "invisible":"visible "}  ` }>{inputValue}</span>
                                         <button onClick={handleEdit} type="button" className=" -right-9 bottom-1 absolute  text-xs font-normal text-black  underline   p-[3px] " >{inputShow ? "done":"edit "}</button>
                                         <input
-                                            className={`right-0 text-right ${inputShow? "visible":"invisible"}   border-none bg-transparent p-0 m-0 absolute top-0 bottom-[0.5px] w-full`}
+                                            className={`right-0 text-right ${inputShow? "visible":"invisible"}   border-none bg-transparent p-0 m-0 absolute top-0  bottom-1 w-full`}
                                             value={inputValue}
                                             ref={inputRef}
                                             onChange={handleInputChange}
@@ -144,7 +144,7 @@ const PricingModal=({ visible, onClose})=>{
                         </div>
                     </div>
                     <div className=" mt-4 gap-1 flex  flex-col-reverse min-h-[20px]">
-                        <div className={` transition-all  ${show? "opacity-100 visible h-full ":" invisible opacity-0  h-[40px]" } overflow-hidden   grid gap-y-3  `}>
+                        <div className={` transition-all  ${show? "opacity-100 visible h-full ":" invisible opacity-0  h-[40px]" }    grid gap-y-3  `}>
 
                             <div className="rounded-xl border      p-5 ">
                               <div className=" flex items-end  justify-between break-words    ">
