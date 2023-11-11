@@ -11,6 +11,7 @@ import HostBottomNavigation from "./HostBottomNavigation";
 import { Modal, Select, Input } from "antd";
 import DiscountCustomModal from "./DiscountCustomModal";
 import CalenderAvailability from "./CalenderAvailability";
+import PricingModal from "./PricingModal";
 
 export default class Scheduler extends Component {
   constructor(props) {
@@ -463,6 +464,7 @@ const Pricing = ({
   };
 
   const [discountModalVisible, setDiscountModalVisible] = useState(false);
+  const [pricingModalVisible, setPricingModalVisible] = useState(false);
   const [discountDuration, setDiscountDuration] = useState(""); // Store the selected discount duration
   const [discountPercentage, setDiscountPercentage] = useState(""); // Store the discount percentage
   const [weeklyDiscount, setWeeklyDiscount] = useState(""); // Store the weekly discount
@@ -476,6 +478,14 @@ const Pricing = ({
 
   const showDiscountModal = () => {
     setCustomModalVisible(true); // Set the custom modal to be visible
+  };
+
+  const showPricingModal = () => {
+    setPricingModalVisible(true); // Set the custom modal to be visible
+  };
+
+  const hidePricingModal = () => {
+    setPricingModalVisible(false); // Set the custom modal to be visible
   };
 
   const hideDiscountModal = () => {
@@ -530,29 +540,37 @@ const Pricing = ({
             <div className="cursor-pointer w-full h-full outline-none">
              <div className="space-y-4">
              <div className="pointer p-4 rounded-2xl border">
+             
                 <div>
                   <div className="font-medium mb-2 mr-1 text-sm">Per night</div>
                   <div className="h-auto visible w-full">
+                  <button onClick={showPricingModal}>
                     <div className="text-3xl break-keep inline-block font-extrabold">
                       <div className="block">{selectedApartment.basePrice}</div>
                       {editedPrice}
                     </div>
+                       </button>
                     {/* ... other code ... */}
                   </div>
                 </div>
+           
               </div>
 
               <div className="pointer p-4 rounded-2xl border">
+               
                 <div>
                   <div className="font-medium mb-2 mr-1 text-sm">Custom weekend Price</div>
                   <div className="h-auto visible w-full">
+                  <button onClick={showPricingModal}>
                     <div className="text-3xl break-keep inline-block font-extrabold">
                       <div className="block">{selectedApartment.basePrice}</div>
                       {editedPrice}
                     </div>
+                    </button>
                     {/* ... other code ... */}
                   </div>
                 </div>
+              
               </div>
              </div>
 
@@ -615,6 +633,10 @@ const Pricing = ({
               visible={isCustomModalVisible}
               onClose={hideCustomModal}
               onSubmit={saveDiscountSettings}
+            />
+            <PricingModal
+            visible={pricingModalVisible}
+            onClose={hidePricingModal}
             />
           </div>
         </div>
