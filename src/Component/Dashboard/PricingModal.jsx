@@ -122,7 +122,7 @@ const PricingModal=({ visible, onClose})=>{
                 <div className=" lg:my-10 m-auto box-border block ">
                     <div className=" pl-4  pb-3 " >
                         <div className=" h-auto visible w-full text-center box-border block    ">
-                            <div className=" text-5xl break-keep inline-block ">
+                            <div className=" text-5xl md:text-5xl break-keep inline-block ">
                                 <div className=" cursor-text border-none transition-shadow rounded-2xl relative font-extrabold   ">
                                     <div className=" relative text-gray-700 flex box-border">
                                         <span>
@@ -131,7 +131,7 @@ const PricingModal=({ visible, onClose})=>{
                                         <span onClick={handleEdit}  className={`min-h-[1lh] cursor-pointer  ${inputShow? "invisible":"visible "}  ` }>{inputValue}</span>
                                         <button onClick={handleEdit} type="button" className=" -right-9 bottom-1 absolute  text-xs font-normal text-black  underline   p-[3px] " >{inputShow ? "done":"edit "}</button>
                                         <input
-                                            className={`right-0 text-right ${inputShow? "block":"hidden"}   border-none bg-transparent p-0 m-0 absolute top-1  bottom-1 w-full`}
+                                            className={`right-0 text-right ${inputShow? "visible":"invisible"} min-h-[1lh]  border-none bg-transparent p-0 m-0 absolute top-0  bottom-0 w-full`}
                                             value={inputValue}
                                             ref={inputRef}
                                             onChange={handleInputChange}
