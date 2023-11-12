@@ -56,6 +56,7 @@ import CancellationPolicy from "./Views/CancellationPolicy";
 import FAQAccordion from "./Views/FAQAccordion";
 import SupportAndHelp from "./Views/SupportAndHelp";
 import PrivacyPolicy from "./Views/PrivacyPolicy";
+import DamagesIncidentals from "./Views/DamagesIncidentals";
 
 function App() {
   return (
@@ -157,6 +158,12 @@ function App() {
           path="/PrivacyPolicy"
           element={<PrivacyPolicy />}
         />
+      
+        <Route
+          path="/DamagesAndIncidentals"
+          element={<DamagesIncidentals />}
+        />
+
       </Routes>
       
     </Router>

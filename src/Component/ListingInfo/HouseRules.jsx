@@ -2,6 +2,7 @@ import React ,{ useState } from "react";
 import { Tabs } from 'antd';
 import HouseRulesTab from "./HouseRulesTab";
 import CancellationPolicyTab from "./CancellationPolicyTab";
+import DamagesTab from "./DamagesTab";
 
 
 
@@ -17,7 +18,7 @@ const items = [
   {
     key: '2',
     label:<div className=" w-full h-full   ">Damage and incidentals</div> ,
-    children: 'Content of Tab Pane 2',
+    children: <DamagesTab/>,
   },
   {
     key: '3',
