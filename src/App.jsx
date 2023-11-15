@@ -57,7 +57,8 @@ import FAQAccordion from "./Views/FAQAccordion";
 import SupportAndHelp from "./Views/SupportAndHelp";
 import PrivacyPolicy from "./Views/PrivacyPolicy";
 import DamagesIncidentals from "./Views/DamagesIncidentals";
-
+import UserVerificationDashboard from "./Component/AdminDashboard/UserVerificationDashboard";
+import ServiceChargeSettings from "./Component/AdminDashboard/AdminNavigation/ServiceChargeSettings";
 function App() {
   return (
     <Router>
@@ -162,6 +163,14 @@ function App() {
         <Route
           path="/DamagesAndIncidentals"
           element={<DamagesIncidentals />}
+        />
+         <Route
+          path="/UserVerificationDashboard"
+          element={<UserVerificationDashboard />}
+        />
+          <Route
+          path="/ServiceChargeSettings"
+          element={<ServiceChargeSettings />}
         />
 
       </Routes>

@@ -55,7 +55,7 @@ export default function HostHomes() {
   };
 
   const [housePrice, setHousePrice] = useState(""); // Add this line for the house price
-
+  const [securityDeposit, setSecurityDeposit] = useState(""); 
   const handleSubmit = (e) => {
     e.preventDefault(); // Prevent default form submission
     // Log the submitted data when the submit button is clicked
@@ -126,6 +126,9 @@ export default function HostHomes() {
     } else {
       console.log("No cancellation policy selected.");
     }
+
+    console.log("Security Deposit: " + securityDeposit); // Log the price here
+
   };
 
   const handleNext = () => {
@@ -1499,6 +1502,34 @@ export default function HostHomes() {
             </div>
           </div>
         );
+        case 20:
+          return (
+            <div className=" mx-auto  flex justify-center p-4">
+              <div className="  overflow-auto">
+                <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
+                  <h1 className="text-6xl">Now, set your Security Deposit</h1>
+                  <p className="text-gray-400 mt-10">
+                    You can change it anytime.
+                  </p>
+                  <p className="text-gray-400 mt-10">
+                   Adding security depsoit is optional you can choose to leave it blank
+                  </p>
+                </div>
+                <div className="pb-32">
+                  <div className="text-center">
+                    <input
+                      type="number"
+                      className="border rounded-lg px-4 py-2 w-full text-lg"
+                      placeholder="Security Deposit"
+                      value={securityDeposit}
+                      onChange={(e) => setSecurityDeposit(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+  
 
       default:
         return null;
@@ -1518,7 +1549,7 @@ export default function HostHomes() {
             Previous
           </button>
         )}
-        {step < 19 && (
+        {step < 20 && (
           <button
             type="button" // Add this line to prevent form submission
             onClick={handleNext}
@@ -1527,7 +1558,7 @@ export default function HostHomes() {
             Next
           </button>
         )}
-        {step === 19 && (
+        {step === 20 && (
           <button
             type="button" // Add this line to prevent form submission
             onClick={handleSubmit}

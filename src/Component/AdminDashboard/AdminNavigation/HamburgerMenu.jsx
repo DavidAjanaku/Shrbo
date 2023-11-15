@@ -37,7 +37,7 @@ const HamburgerMenuComponent = ({ isOpen, toggleMenu }) => {
         />
       </div>
       <ul
-        className={`bg-orange-400 absolute h-[100vh] z-30 left-0 top-0 text-white p-4 ${
+        className={`bg-orange-400 absolute overflow-scroll example h-[100vh] z-30 left-0 top-0 text-white p-4 ${
           isOpen ? "block" : "hidden"
         }`}
       >
@@ -182,9 +182,14 @@ const HamburgerMenuComponent = ({ isOpen, toggleMenu }) => {
               Review List
             </li>
           </Link>
-          <Link to="/">
+          <Link to="/UserVerificationDashboard">
             <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
-              Settings
+            User Verification Dashboard
+            </li>
+          </Link>
+          <Link to="/ServiceChargeSettings">
+            <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+            Service Charge Settings
             </li>
           </Link>
         </ul>
