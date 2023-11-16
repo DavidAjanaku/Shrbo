@@ -641,7 +641,7 @@ export default function Hosting() {
           <div className="my-10 bg-orange-100 p-5">
             <h1 className="mb-5 text-2xl">We are here to help</h1>
 
-            <div className="flex md:space-x-4 flex-wrap">
+            <div className="flex  flex-wrap">
               <SuperHostGuidanceCard
                 title="Guidance from a Superhost"
                 description="We’ll match you with an experienced Host who can help you get started."
@@ -649,6 +649,10 @@ export default function Hosting() {
               <SuperHostGuidanceCard
                 title="Contact specialized support"
                 description="As a new Host, you get one-tap access to a specially trained support team."
+              />
+              <SuperHostGuidanceCard
+                title="Report Property Damage"
+                description="If a guest has caused any damage to your apartment, please reach out to our specialized support team immediately. Use the 'Contact Support' option to report the incident and provide details about the damage. Our team is here to assist you in resolving the issue and ensuring a smooth resolution process."
               />
             </div>
           </div>
