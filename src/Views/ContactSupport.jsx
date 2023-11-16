@@ -11,7 +11,7 @@ const ContactSupport = () => {
       <div className="container pt-24 md:w-[80%] h-[70vh]   mx-auto p-4">
      <div className='pb-32'>
      <h1 className='text-4xl text-center my-10 font-semibold'>Hi Endi, how can we help?</h1>
-        <h1 className="text-2xl font-semibold">Contact and Support Information</h1>
+        <h1 className="text-2xl font-semibold my-4">Contact and Support Information</h1>
 
         <p>
           If you have any questions or require assistance, our dedicated support team is here to help you.
