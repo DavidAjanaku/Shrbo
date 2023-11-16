@@ -2,7 +2,7 @@ import React from 'react';
 
 const CityCard = ({ name, description, image, facts, destinations }) => {
   return (
-    <div className="city-card mx-3 bg-white p-4 m-4  rounded-lg  shadow-md">
+    <div className="city-card mx-1 bg-white p-4 m-4  rounded-lg  shadow-md">
       <img src={image} alt={name} className="w-full h-72 object-cover rounded mb-4" />
      
       <div className='h-[50vh] overflow-scroll pb-10 example'>
