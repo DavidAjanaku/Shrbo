@@ -46,7 +46,7 @@ const DamageReportForm = () => {
   <>
   <HostHeader/>
     <div className="" >
-    <div className="max-w-md mx-auto mt-8 p-4 py-10 bg-white ">
+    <div className="max-w-md mx-auto mt-8 p-4 py-10 pb-32 bg-white ">
       <h2 className="text-3xl font-semibold mb-4">Report Property Damage</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
