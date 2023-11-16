@@ -550,6 +550,12 @@ export default function Hosting() {
                 description="Finding reservation details Your Trips tab has full details, receipts, and Host contact info for each of your reservations. Go to Trips"
                 link="/Trip"
               />
+              <InfoCard
+                title="Host Tip: Enhance Your Profile"
+                description=" Enhance your guests' experience by uploading
+                your photo. Let them know who owns the apartment!"
+                link="/UsersShow"
+              />
             </div>
           </div>
         </div>
@@ -576,7 +582,7 @@ export default function Hosting() {
               }`}
               onClick={() => handleTabClick("currentlyHosting")}
             >
-              Currently hosting (0)
+              Currently hosting (3)
             </div>
             <div
               className={`tab border py-2 px-4 rounded-full cursor-pointer  ${
@@ -586,7 +592,7 @@ export default function Hosting() {
               }`}
               onClick={() => handleTabClick("arrivingSoon")}
             >
-              Arriving soon (0)
+              Arriving soon (12)
             </div>
             <div
               className={`tab border py-2 px-4 rounded-full cursor-pointer  ${
@@ -596,7 +602,7 @@ export default function Hosting() {
               }`}
               onClick={() => handleTabClick("upcoming")}
             >
-              Upcoming (0)
+              Upcoming (22)
             </div>
             <div
               className={`tab border py-2 px-4 rounded-full cursor-pointer  ${
@@ -606,7 +612,7 @@ export default function Hosting() {
               }`}
               onClick={() => handleTabClick("pendingReview")}
             >
-              Pending review (0)
+              Pending review (4)
             </div>
           </div>
           <div className="tab-content">{renderTabContent()}</div>
