@@ -215,7 +215,7 @@ export default function Header() {
               <div className="absolute bg-white z-[999999] h-96 overflow-scroll example w-96 right-0 mt-1 p-2  border rounded-lg shadow-lg">
                 {/* Render your notifications here */}
                 {notifications.map((notification, index) => (
-                  <div key={index} className="text-gray-800 my-4 p-2 cursor-pointer hover:bg-orange-400 hover:text-white">
+                  <div key={index} className="text-gray-800 my-4 p-2 rounded-md cursor-pointer hover:bg-orange-400 hover:text-white">
                     {notification.message}
                    <div className="text-gray-500 text-xs">
                    {notification.date}

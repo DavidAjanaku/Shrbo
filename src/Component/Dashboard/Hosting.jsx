@@ -509,7 +509,7 @@ export default function Hosting() {
                 {notifications.map((notification, index) => (
                   <div
                     key={index}
-                    className="text-gray-800 p-2 cursor-pointer my-4 hover:bg-orange-300 hover:text-white"
+                    className="text-gray-800 p-2 cursor-pointer my-4 rounded-md hover:bg-orange-300 hover:text-white"
                   >
                     <div>{notification.message}</div>
                     <div className="text-gray-500 text-xs">
