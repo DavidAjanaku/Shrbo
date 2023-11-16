@@ -341,7 +341,7 @@ export default function Home() {
                 Unlock Comfort, Discover Adventure with Shrbo.
               </h1>
               <div className="z-50">
-                <p className="z-50 text-white  md:text-base text-center text-sm">
+                <p className="z-50 text-white  md:text-base text-center text-sm px-10">
                   Welcome to Shrbo, where comfort meets adventure. Find your
                   perfect home away from home and embark on memorable journeys,
                   one stay at a time.
