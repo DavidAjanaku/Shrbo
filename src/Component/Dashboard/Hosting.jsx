@@ -650,10 +650,13 @@ export default function Hosting() {
                 title="Contact specialized support"
                 description="As a new Host, you get one-tap access to a specially trained support team."
               />
+              <Link to="/DamageReportForm">
               <SuperHostGuidanceCard
                 title="Report Property Damage"
                 description="If a guest has caused any damage to your apartment, please reach out to our specialized support team immediately. Use the 'Contact Support' option to report the incident and provide details about the damage. Our team is here to assist you in resolving the issue and ensuring a smooth resolution process."
               />
+              </Link>
+            
             </div>
           </div>
         </div>
