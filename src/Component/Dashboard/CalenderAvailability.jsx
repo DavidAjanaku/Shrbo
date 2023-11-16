@@ -190,8 +190,8 @@ export default function CalendarAvailability() {
       </div>
       {advanceNoticeModalVisible && (
         <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
-          <div className="bg-white w-full h-full md:h-fit md:w-1/2 p-4 rounded shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">Advance Notice</h2>
+          <div className="bg-white w-full h-full md:h-fit md:w-2/5 p-10 rounded shadow-lg">
+            <h2 className="text-5xl text-gray-700 font-semibold mb-4">Advance Notice</h2>
             <div>
               {advanceNoticeOptions.map((option) => (
                 <div key={option} className="mb-2">
@@ -208,15 +208,15 @@ export default function CalendarAvailability() {
                 </div>
               ))}
             </div>
-            <div className="mt-4">
+            <div className="mt-4 space-y-3">
               <button
-                className="bg-orange-400 hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-orange-400 w-full hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
                 onClick={handleAdvanceNoticeSubmit}
               >
                 Save
               </button>
               <button
-                className="border der  font-bold py-2 px-4 rounded"
+                className="border w-full  font-bold py-2 px-4 rounded"
                 onClick={() => setAdvanceNoticeModalVisible(false)}
               >
                 Cancel
@@ -227,8 +227,8 @@ export default function CalendarAvailability() {
       )}
       {preparationTimeModalVisible && (
         <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
-          <div className="bg-white md:w-1/2 w-full h-full md:h-fit p-4 rounded shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">Preparation Time</h2>
+          <div className="bg-white md:w-2/5 w-full h-full md:h-fit p-10 rounded shadow-lg">
+            <h2 className="text-5xl font-semibold text-gray-700 mb-4">Preparation Time</h2>
             <div>
               {preparationTimeOptions.map((option) => (
                 <div key={option} className="mb-2">
@@ -245,15 +245,15 @@ export default function CalendarAvailability() {
                 </div>
               ))}
             </div>
-            <div className="mt-4">
+            <div className="mt-4 space-y-3">
               <button
-                className="bg-orange-400 hover-bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-orange-400 w-full hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
                 onClick={handlePreparationTimeSubmit}
               >
                 Save
               </button>
               <button
-                className="border der  font-bold py-2 px-4 rounded"
+                className="border w-full  font-bold py-2 px-4 rounded"
                 onClick={() => setPreparationTimeModalVisible(false)}
               >
                 Cancel
@@ -264,8 +264,8 @@ export default function CalendarAvailability() {
       )}
       {availabilityWindowModalVisible && (
         <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
-          <div className="bg-white md:w-1/2 w-full h-full md:h-fit p-4 rounded shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">Availability Window</h2>
+          <div className="bg-white md:w-2/5 w-full h-full md:h-fit p-10 rounded shadow-lg">
+            <h2 className="text-5xl font-semibold text-gray-700 mb-4">Availability Window</h2>
             <div>
               {availabilityWindowOptions.map((option) => (
                 <div key={option} className="mb-2">
@@ -282,15 +282,15 @@ export default function CalendarAvailability() {
                 </div>
               ))}
             </div>
-            <div className="mt-4">
+            <div className="mt-4 space-y-3">
               <button
-                className="bg-orange-400 hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-orange-400 w-full hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
                 onClick={handleAvailabilityWindowSubmit}
               >
                 Save
               </button>
               <button
-                className="border der  font-bold py-2 px-4 rounded"
+                className="border w-full  font-bold py-2 px-4 rounded"
                 onClick={() => setAvailabilityWindowModalVisible(false)}
               >
                 Cancel
@@ -300,9 +300,9 @@ export default function CalendarAvailability() {
         </div>
       )}
       {minNightsModalVisible && (
-        <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
-          <div className="bg-white md:w-1/2 p-4 rounded shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">Minimum Nights</h2>
+        <div className="fixed  top-0 left-0 w-full h-full   flex items-center justify-center  bg-opacity-50 z-50">
+          <div className="bg-white md:w-2/5  p-10 rounded shadow-2xl ">
+            <h2 className="text-5xl font-semibold mb-4 text-gray-700">Minimum Nights</h2>
             <div>
               <input
                 type="number"
@@ -311,16 +311,16 @@ export default function CalendarAvailability() {
                 className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
               />
             </div>
-            <div className="mt-4">
+            <div className="my-5 space-y-2">
               <button
-                className="bg-orange-400 hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-orange-400 w-full hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
                 onClick={handleMinNightsSubmit}
               >
                 Save
               </button>
               <button
-                className="border der  font-bold py-2 px-4 rounded"
-                onClick={() => setMinNightsModalVisible(false)}
+            className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
+            onClick={() => setMinNightsModalVisible(false)}
               >
                 Cancel
               </button>
@@ -330,8 +330,8 @@ export default function CalendarAvailability() {
       )}
       {maxNightsModalVisible && (
         <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
-          <div className="bg-white md:w-1/2 p-4 rounded shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">Maximum Nights</h2>
+          <div className="bg-white md:w-2/5  p-10 rounded shadow-2xl">
+            <h2 className="text-5xl font-semibold mb-4 text-gray-700">Maximum Nights</h2>
             <div>
               <input
                 type="number"
@@ -340,16 +340,16 @@ export default function CalendarAvailability() {
                 className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
               />
             </div>
-            <div className="mt-4">
+            <div className="my-5 space-y-2">
               <button
-                className="bg-orange-400 hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-orange-400 w-full hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
                 onClick={handleMaxNightsSubmit}
               >
                 Save
               </button>
               <button
-                className="border der  font-bold py-2 px-4 rounded"
-                onClick={() => setMaxNightsModalVisible(false)}
+            className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
+            onClick={() => setMaxNightsModalVisible(false)}
               >
                 Cancel
               </button>
