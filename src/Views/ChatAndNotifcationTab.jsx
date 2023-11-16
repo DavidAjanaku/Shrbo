@@ -112,7 +112,7 @@ export default function ChatAndNotifcationTab() {
           </div>
         </div>
   
-        <div className="col-span-3 md:col-span-2 mt-4 p-4 bg-white rounded-md shadow">
+        <div className="col-span-3 md:col-span-2 mt-4 p-4 pb-32 h-[70vh] overscroll-auto example bg-white rounded-md shadow">
           {selectedTab === "chats" && (
             <Chat showGreen={window.innerWidth <= 768} />
           )}

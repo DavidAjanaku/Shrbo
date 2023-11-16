@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 export default function Notification({ notifications, onClose }) {
   return (
-    <div className="notification-container h-[80vh] overflow-auto example">
+    <div className="notification-container h-[80vh] pb-32 overflow-auto example">
       {notifications.map((notification) => (
         <div
           key={notification.id}
