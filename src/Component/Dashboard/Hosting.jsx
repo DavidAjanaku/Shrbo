@@ -14,19 +14,66 @@ export default function Hosting() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [notifications, setNotifications] = useState([
-    { id: 1, message: "Notification 1" },
-    { id: 2, message: "Notification 2" },
-    { id: 3, message: "Notification 3" },
-    { id: 2, message: "Notification 2" },
-    { id: 3, message: "Notification 3" },
-    { id: 2, message: "Notification 2" },
-    { id: 3, message: "Notification 3" },
-    { id: 2, message: "Notification 2" },
-    { id: 3, message: "Notification 3" },
-    { id: 2, message: "Notification 2" },
-    { id: 3, message: "Notification 3" },
-    { id: 2, message: "Notification 2" },
-    { id: 3, message: "Notification 3" },
+    {
+      id: 1,
+      message:
+        "New booking request for Property XYZ. Check details and confirm the reservation.",
+      date: "Oct 15, 2023",
+    },
+    {
+      id: 2,
+      message:
+        "Guests for Property ABC will be arriving soon. Ensure everything is ready for their check-in on [date].",
+      date: "Oct 18, 2023",
+    },
+    {
+      id: 3,
+      message:
+        "Don't forget to encourage guests from Property DEF to leave a review. It boosts your property's profile!",
+      date: "Oct 20, 2023",
+    },
+    {
+      id: 4,
+      message:
+        "Maintenance required at Property GHI. Schedule a visit to address issues reported by guests.",
+      date: "Oct 22, 2023",
+    },
+    {
+      id: 5,
+      message:
+        "Payment received for booking at Property JKL. Check your account for transaction details.",
+      date: "Oct 25, 2023",
+    },
+    {
+      id: 6,
+      message:
+        "Guests have checked out from Property MNO. Confirm the condition of the property and report any issues.",
+      date: "Oct 28, 2023",
+    },
+    {
+      id: 7,
+      message:
+        "Provide emergency contact information to guests staying at Property PQR. Ensure their safety and comfort.",
+      date: "Nov 1, 2023",
+    },
+    {
+      id: 8,
+      message:
+        "Create a special offer for Property STU to attract more bookings. Limited-time discounts available!",
+      date: "Nov 5, 2023",
+    },
+    {
+      id: 9,
+      message:
+        "Weather advisory for guests at Property VWX. Inform them about any potential weather-related impacts.",
+      date: "Nov 8, 2023",
+    },
+    {
+      id: 10,
+      message:
+        "Share information about upcoming local events near Property YZ. Enhance your guests' experience.",
+      date: "Nov 12, 2023",
+    },
   ]);
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -443,34 +490,35 @@ export default function Hosting() {
             management tool.
           </p>
 
-          <div className="">
-            <div
-              id="bell-dropdown"
-              className={`relative group  ${isBellDropdownOpen ? "group" : ""}`}
-              onClick={toggleBellDropdown}
-            >
-              <button className="text-white relative">
-                <img src={Notificationbell} className="w-5 h-5" alt="" />
-                {notifications.length > 0 && (
-                  <span className="bg-red-500 text-white  absolute h-[2px] w-[2px] p-[5px] top-0 right-0 rounded-full">
-                    {/* {notifications.length} */}
-                  </span>
-                )}
-              </button>
-              {isBellDropdownOpen && notifications.length > 0 && (
-                <div className="absolute bg-white z-[60] left-0 mt-1 p-2 w-64 border rounded-lg shadow-lg">
-                  {/* Render your notifications here */}
-                  {notifications.map((notification, index) => (
-                    <div
-                      key={index}
-                      className="text-gray-800 p-2 cursor-pointer hover:bg-orange-400 hover:text-white"
-                    >
-                      {notification.message}
-                    </div>
-                  ))}
-                </div>
+          <div
+            id="bell-dropdown"
+            className={`relative group  ${isBellDropdownOpen ? "group" : ""}`}
+            onClick={toggleBellDropdown}
+          >
+            <button className="text-white relative">
+              <img src={Notificationbell} className="w-5 h-5" alt="" />
+              {notifications.length > 0 && (
+                <span className="bg-red-500 text-white  absolute h-[2px] w-[2px] p-[5px] top-0 right-0 rounded-full">
+                  {/* {notifications.length} */}
+                </span>
               )}
-            </div>
+            </button>
+            {isBellDropdownOpen && notifications.length > 0 && (
+              <div className="absolute bg-white z-[60] h-96 overflow-scroll example left-0 mt-1 p-2 w-64 border rounded-lg shadow-lg">
+                {/* Render your notifications here */}
+                {notifications.map((notification, index) => (
+                  <div
+                    key={index}
+                    className="text-gray-800 p-2 cursor-pointer my-4 hover:bg-orange-300 hover:text-white"
+                  >
+                    <div>{notification.message}</div>
+                    <div className="text-gray-500 text-xs">
+                      {notification.date}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="flex flex-wrap my-4 items-center justify-between">
             <h1 className="text-3xl font-medium my-7">Welcome back, Endo</h1>
@@ -478,7 +526,9 @@ export default function Hosting() {
           </div>
 
           <div>
-            <div className="block text-2xl my-4 font-semibold">Recommended for you</div>
+            <div className="block text-2xl my-4 font-semibold">
+              Recommended for you
+            </div>
             <div className="flex space-x-5  w-full overflow-scroll example">
               <AlertCard
                 title="Verify your identity"
