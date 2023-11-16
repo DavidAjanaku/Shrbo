@@ -407,7 +407,7 @@ export default function ChatContainer() {
             />
           )}
           <div
-            className="chat--conversations h-[75vh] overflow-auto border-b-[1px]"
+            className="chat--conversations h-[60vh] overflow-auto border-b-[1px]"
             ref={chatContainerRef}
           >
             <div className="rounded-lg p-4 mb-10">

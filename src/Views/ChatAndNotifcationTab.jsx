@@ -89,7 +89,7 @@ export default function ChatAndNotifcationTab() {
 
     <div className="bg-gray-100">
         
-        <div className="col-span-3 bg-white rounded-md p-4 shadow md:hidden">
+        <div className="col-span-3 fixed top-0 left-0 right-0 bg-white rounded-md p-4 shadow md:hidden">
           <div className="flex space-x-2">
             <button
               className={`${
@@ -112,7 +112,7 @@ export default function ChatAndNotifcationTab() {
           </div>
         </div>
   
-        <div className="col-span-3 md:col-span-2 mt-4 p-4 pb-32 h-[70vh] overscroll-auto example bg-white rounded-md shadow">
+        <div className="col-span-3 md:col-span-2 pt-20 md:pt-0 p-4   overscroll-auto example bg-white rounded-md shadow">
           {selectedTab === "chats" && (
             <Chat showGreen={window.innerWidth <= 768} />
           )}
