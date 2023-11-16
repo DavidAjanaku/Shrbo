@@ -281,7 +281,7 @@ export default function Home() {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 3, // Show 3 cards on larger screens
+    slidesToShow: 2, // Show 3 cards on larger screens
     slidesToScroll: 1,
     autoplay: true,
     responsive: [
