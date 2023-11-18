@@ -10,7 +10,7 @@ const OptionWindow = ({ selectedOption , close }) => {
   };
 
   return (
-    <div className="transition-5 flex flex-col gap-5 md:gap-0 cursor-default bg-slate-800 z-[1000] bottom-0  overflow-hidden md:rounded-xl fixed h-full w-full md:w-[320px] md:h-[450px] lg:h-[420px] md:bottom-[103px] md:right-6 md:max-h-[calc(100% - 48px)] md:max-w-[calc(100% - 48px)] " style={{
+    <div className="transition-5  flex flex-col gap-5 md:gap-0 cursor-default bg-slate-800 z-[2000] bottom-0  overflow-hidden md:rounded-xl fixed h-full w-full md:w-[320px] md:h-[450px] lg:h-[420px] md:bottom-[103px] md:right-6 md:max-h-[calc(100% - 48px)] md:max-w-[calc(100% - 48px)] " style={{
         ...styles.supportWindow,
         ...{
             // opacity:props.visible ? '1':'0'
