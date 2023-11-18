@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {styles} from '../Style';
+import Avatar from "../Avatar";
 const WelcomeForm = (props) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -30,7 +31,7 @@ const WelcomeForm = (props) => {
   };
 
   return (
-    <div className=" mx-auto  p-6 bg-white rounded shadow-md"  style={{
+    <div className=" mx-auto   bg-white rounded shadow-md"  style={{
         ...styles.emailFormWindow,
         ...{
             height:props.visible?"100%":"0%",
@@ -39,28 +40,36 @@ const WelcomeForm = (props) => {
         }
     }}>
 
-{/* <div style={{ height:'0px'}}>
-                <div style={styles.stripe2}           />
+<div style={{ height:'0px'}}>
+                <div style={styles.stripe}           />
 
-            </div> */}
+            </div>
 
+            <div className=" px-6 w-full text-2xl font-medium pt-3 support/bot gap-2 relative   text-white flex justify-start items-center ">
+                
+                <img
+                  src="https://tecdn.b-cdn.net/img/new/avatars/2.webp"
+                  className="w-20 rounded-full"
+                  alt="Avatar" />
+              Hello,
+            </div>
 
-      <h2 className="text-2xl font-semibold mb-6" style={styles.topText}>Welcome to our Live Chat!</h2>
+      <h2 className="text-2xl pt-6 px-6 font-semibold mb-6 relative text-white  " >Welcome to our Live Chat!</h2>
 
       
-        <p className="text-gray-700 mb-4" >
+        <p className="text-gray-300 px-6 mb-4 relative" >
           If you have an account,{' '}
-          <span className="text-blue-500 cursor-pointer" onClick={toggleLoginForm}>
+          <span className="text-blue-500 cursor-pointer underline" onClick={toggleLoginForm}>
             log in here.
           </span>{' '}
           Otherwise, provide your details to get started.
         </p>
      
 
-      <form onSubmit={handleSubmit} >
+      <form onSubmit={handleSubmit} className='px-6 relative' >
         
           <div className="mb-4"   >
-            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="email" className="block  text-sm font-bold mb-2 text-orange-400 ">
               Email
             </label>
             <input
@@ -77,7 +86,7 @@ const WelcomeForm = (props) => {
           </div>
       
         <div className="mb-4" >
-          <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
+          <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2 text-orange-400">
             Name <label className=' text-xs font-thin '>optional</label>
           </label>
           <input
@@ -94,7 +103,7 @@ const WelcomeForm = (props) => {
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue"
+          className="bg-orange-400 text-white px-4 py-2 rounded-md hover:bg-orange-500 focus:outline-none focus:shadow-outline-blue"
         >
            Submit
         </button>

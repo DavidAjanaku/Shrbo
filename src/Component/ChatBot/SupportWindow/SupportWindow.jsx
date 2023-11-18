@@ -47,11 +47,8 @@ const SupportWindow = (props) => {
          {/* <OptionWindow/> */}
 
 
-         {props.selectedOption==="Live chat"&&<EmailForm
-                setUser={(user)=>setUser(user)}
-                setChat={(chat)=>setChat(chat)}
-                visible={user===null || chat===null}
-           />}
+         {props.selectedOption==="Live chat"&&<WelcomeForm visible={user===null || chat===null} setUser={(user)=>setUser(user)}
+                setChat={(chat)=>setChat(chat)}/>}
 
 
 {/* 
