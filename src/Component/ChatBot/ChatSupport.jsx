@@ -11,6 +11,7 @@ const ChatSupport = () => {
     const  [showOption,setShowOption]=useState(false);
     const [selectedIssue, setSelectedIssue] = useState(null);
     const [botMessage, setBotMessage] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState(null);
 
     const handleOptionSelected = (option) => {
 
@@ -20,6 +21,7 @@ const ChatSupport = () => {
       setSelectedIssue(option);
       setVisible(true);
       setShowOption(false);
+      setSelectedCategory(option);
         console.log(option);
     };
 
@@ -41,10 +43,10 @@ const ChatSupport = () => {
     }
 
     const SupportCategories=[   
-        {index:1,report:"Customer Service",message:["We'll redirect you to our support Team right now..","Please wait while i do that thank you"]},
-        {index:2,report:"Technical Support",message:["Redirecting to Support page....... ",]},
-        {index:3,type:"menu",report:"Booking Issue",message:["The property doesn't exist ","The host is requesting direct payment outside of Shrbo","The Listing includes the host's personal infromation","The host is not authorized to rent the property"]},
-        {index:4,report:"Billing",message:["We'll redirect you to our support Team right now..","make sure you have your billing details or ","image near you for the most Efficient Response "]}
+        {index:1,report:"Shrbo Support",message:["Select a Support Question from the list:",]},
+        {index:2,report:"Find booking questions",message:["Select a Booking Question from the list: ",]},
+        {index:3,type:"Find hosting questions",report:"Find hosting questions",message:["Select a Hosting Question from the list:"]},
+        {index:4,report:"Live chat",message:["Hey,please wait a minute while I try to redirect you to one of our Support agents.."]}
     ] ; 
 
 

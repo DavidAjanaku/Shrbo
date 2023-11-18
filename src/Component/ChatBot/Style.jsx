@@ -61,7 +61,7 @@ export const styles = {
         top: '-45px',
         width: '100%',
         height: '338px',
-        backgroundColor: '#7a39e0',
+        backgroundColor: 'rgb(30, 41, 59)',
         transform: 'skewY(-12deg)',
     },
     stripe: {
@@ -86,15 +86,15 @@ export const styles = {
         outline: 'none',
         padding: '12px',
         borderRadius: '12px',
-        border: '2px solid #7a39e0',
+        border: '2px solid rgb(251,146,60)',
         backgroundColor:"white",
     },
     bottomText: { 
         position: 'absolute', 
         width: '100%', 
         top: '60%', 
-        color: '#7a39e0', 
-        fontSize: '24px', 
+        // color: '#7a39e0', 
+        fontSize: '19px', 
         fontWeight: '600' 
     },
     loadingDiv: { 

@@ -2,6 +2,7 @@ import React,{useState} from "react";
 import {styles} from '../Style';
 import {LoadingOutlined}  from '@ant-design/icons';
 import Avatar from "../Avatar";
+import { Link } from "react-router-dom";
 
 
 const EmailForm = (props) => {
@@ -16,9 +17,9 @@ const EmailForm = (props) => {
             props.setChat("hello");
             console.log('Sending email')
 
-            let typingTimeout;
+            let animation;
 
-            typingTimeout = setTimeout(() => {
+            animation = setTimeout(() => {
                 setIsAnimation(false);
               }, 3000);
         
@@ -80,7 +81,7 @@ const EmailForm = (props) => {
                 <Avatar style={ " relative left-[50%] -ml-11  top-[10%] "}    />
                 
                 <div style={styles.topText}>
-                    Welcome to Shrbo <br/> Support
+                    Welcome to our <br/> live chat!
                 </div>
 
                 <form
@@ -99,9 +100,15 @@ const EmailForm = (props) => {
 
                 </form>
 
-                <div style={styles.bottomText}>
+                <div style={styles.bottomText} className="">
                     Enter your email <br/> to get started. 
+                    or <Link className=" underline text-sm">log in</Link> 
                 </div>
+                
+
+          
+
+                
 
 
 

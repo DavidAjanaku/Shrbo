@@ -14,15 +14,17 @@ const Avatar=(props)=>{
                     ...{display:hovered ? 'block' :'none'}
                 }}>Customer Support</div>
                 <div 
-                className="transition-3"
+                className=" "
                 onMouseEnter={()=>setHovered(true)}
                 onMouseLeave={()=>setHovered(false)}
                 onClick={()=>props.onClick&& props.onClick()}
                 style={{
                     ...styles.chatWithMeButton,
-                    ...{border:hovered ? '1px solid #f9f0ff':'4px solid #7a39e0'}
+                    ...{border:hovered ? '1px solid #f9f0ff':'4px solid rgb(251,146,60)'}
                     
                 }} />
+                
+                
 
             </div>
 
