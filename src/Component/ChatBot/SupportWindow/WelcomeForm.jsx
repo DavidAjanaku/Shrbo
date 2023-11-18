@@ -86,7 +86,7 @@ const WelcomeForm = (props) => {
           </div>
       
         <div className="mb-4" >
-          <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2 text-orange-400">
+          <label htmlFor="name" className="block  text-sm font-bold mb-2 text-orange-400">
             Name <label className=' text-xs font-thin '>optional</label>
           </label>
           <input
