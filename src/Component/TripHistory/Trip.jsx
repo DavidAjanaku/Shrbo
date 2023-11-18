@@ -349,7 +349,7 @@ export default function Trip() {
             className="absolute inset-0 bg-black opacity-50"
             onClick={closeModal}
           ></div>
-          <div className="bg-white pb-32 p-8 rounded-lg z-10 overflow-auto h-[100vh] md:h-[90vh]  md:w-3/6 example">
+          <div className="bg-white pb-32 p-3 rounded-lg z-10 overflow-auto h-[100vh] md:h-[90vh]  md:w-3/6 example">
             <div className="p-4 mt-10 ">
               {/* <div className="text-right"> */}
               <button
@@ -367,9 +367,11 @@ export default function Trip() {
                   className="mt-2 w-full h-2/5 object-cover rounded-lg"
                 />
               </div>
+              <Link to="/ListingInfoMain">
               <h2 className="text-2xl font-semibold my-4">
                 {selectedTrip.destination}
               </h2>
+              </Link>
               <div className="mt-4">
                 <h3 className="text-xl font-semibold">More Photos:</h3>
                 <div className="flex flex-wrap mt-2">
@@ -379,7 +381,7 @@ export default function Trip() {
                       onClick={() => changeMainPhoto(index)}
                       className={`cursor-pointer ${
                         selectedPhotoIndex === index
-                          ? "border-2 border-blue-500"
+                          ? "border-2 border-orange-400"
                           : ""
                       }`}
                     >
@@ -397,10 +399,12 @@ export default function Trip() {
                 <h2 className="font-bold text-2xl">
                   {selectedTrip.destination}
                 </h2>
-                <div className="text-sm font-medium mt-2 flex space-x-2">
+               <Link to="/UserDetails">
+               <div className="text-sm font-medium mt-2 flex space-x-2">
                   <span className="mr-2"> Hosted by:</span>
                   {selectedTrip.hostName}
                 </div>
+               </Link>
                 <div className="flex flex-wrap  my-1">
                   <p className="flex items-center mr-2">
                     <img src={calender} className="w-4 mr-3" alt="" />{" "}
@@ -444,7 +448,7 @@ export default function Trip() {
             </div>
             <div className="mb-10 flex space-x-3">
             <div>
-                <button className="bg-orange-400 p-4 rounded-full   text-white text-lg"
+                <button className="bg-orange-400 px-4 py-2 rounded-full   text-white text-sm"
                             onClick={openCancellationModal} // Step 3: Open the cancellation modal
                             >
                   Cancel Reservation
@@ -453,7 +457,7 @@ export default function Trip() {
               {selectedTrip.contactHost && (
                 <Link
                   to={selectedTrip.contactHost}
-                  className="bg-orange-400 p-4 rounded-full   text-white text-lg"
+                  className="bg-orange-400 px-4 py-2 rounded-full text-center   text-white text-sm"
                 >
                   Contact Host
                 </Link>
@@ -471,7 +475,7 @@ export default function Trip() {
             className="absolute inset-0 bg-black opacity-50"
             onClick={closeCancellationModal} // Step 3: Close the cancellation modal
           ></div>
-          <div className="bg-white p-8 rounded-lg z-10 h-[60vh] w-[80vw] overflow-auto">
+          <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
             <div className="text-right">
               <button
                 className="text-gray-500 hover:text-gray-700"

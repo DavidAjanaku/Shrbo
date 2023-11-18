@@ -57,7 +57,9 @@ import FAQAccordion from "./Views/FAQAccordion";
 import SupportAndHelp from "./Views/SupportAndHelp";
 import PrivacyPolicy from "./Views/PrivacyPolicy";
 import DamagesIncidentals from "./Views/DamagesIncidentals";
-
+import UserVerificationDashboard from "./Component/AdminDashboard/UserVerificationDashboard";
+import ServiceChargeSettings from "./Component/AdminDashboard/AdminNavigation/ServiceChargeSettings";
+import DamageReportForm from "./Component/DamageReportForm";
 function App() {
   return (
     <Router>
@@ -89,7 +91,7 @@ function App() {
         <Route path="/Reservations" element={<Reservations />} />
         <Route path="/HostAnalysis" element={<HostAnalysis />} />
         <Route path="/Schduler" element={<Schduler />} />
-   
+
         <Route path="/Registration" element={<Registration />} />
 
         <Route
@@ -98,7 +100,6 @@ function App() {
         />
         <Route path="/EditHomepage" element={<EditHomepage />} />
         <Route path="/AdminAnalytical" element={<AdminAnalytical />} />
-      
 
         <Route path="/GuestsListings" element={<GuestsListings />} />
 
@@ -129,43 +130,27 @@ function App() {
           path="/CanceledReservationTable"
           element={<CanceledReservationTable />}
         />
-         <Route
-          path="/TransactionHistory"
-          element={<TransactionHistory />}
-        />
-          <Route path="/TermsofService" element={<TermsofService/>}  />
-          <Route
-          path="/AboutUs"
-          element={<AboutUs />}
-        />
-          <Route
-          path="/ContactSupport"
-          element={<ContactSupport />}
-        />
-          <Route
-          path="/CancellationPolicy"
-          element={<CancellationPolicy />}
-        />
-         <Route
-          path="/FAQAccordion"
-          element={<FAQAccordion />}
-        />
-         <Route
-          path="/SupportAndHelp"
-          element={<SupportAndHelp />}
+        <Route path="/TransactionHistory" element={<TransactionHistory />} />
+        <Route path="/TermsofService" element={<TermsofService />} />
+        <Route path="/AboutUs" element={<AboutUs />} />
+        <Route path="/ContactSupport" element={<ContactSupport />} />
+        <Route path="/CancellationPolicy" element={<CancellationPolicy />} />
+        <Route path="/FAQAccordion" element={<FAQAccordion />} />
+        <Route path="/SupportAndHelp" element={<SupportAndHelp />} />
+        <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
+
+        <Route path="/DamagesAndIncidentals" element={<DamagesIncidentals />} />
+        <Route
+          path="/UserVerificationDashboard"
+          element={<UserVerificationDashboard />}
         />
         <Route
-          path="/PrivacyPolicy"
-          element={<PrivacyPolicy />}
-        />
-      
-        <Route
-          path="/DamagesAndIncidentals"
-          element={<DamagesIncidentals />}
+          path="/ServiceChargeSettings"
+          element={<ServiceChargeSettings />}
         />
 
+        <Route path="/DamageReportForm" element={<DamageReportForm />} />
       </Routes>
-      
     </Router>
   );
 }

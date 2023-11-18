@@ -3,6 +3,8 @@ import { Input, Modal } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import Logo from "../assets/logo.png";
+import logoutIcon from "../assets/enter-icon.svg";
+
 
 const HelpNavigation = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -70,7 +72,7 @@ const HelpNavigation = () => {
           </button>
         </div>
         <div className='hidden md:block'>
-          logout
+         <img src={logoutIcon} className='w-4 text-white' alt=""  title='logout'/>
         </div>
       </div>
       <Modal

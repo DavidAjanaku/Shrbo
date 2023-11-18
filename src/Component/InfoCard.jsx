@@ -12,9 +12,9 @@ const InfoCard = ({ title, description, link, image }) => {
           <div>
             <span className="text-sm">{description}</span>
           </div>
-          <div>
+          {/* <div>
             <span className="text-gray-600 text-sm">House Title</span>
-          </div>
+          </div> */}
         
         </div>
         <div className="absolute bottom-4 left-1">

@@ -32,16 +32,16 @@ const DiscountCustomModal = ({ visible, onClose, onSubmit }) => {
         visible ? "" : "hidden"
       }`}
     >
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 w-[90%] md:w-1/2 rounded shadow-md">
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-10  w-[90%] md:w-2/5 rounded shadow-md">
         <span
-          className="absolute top-4 right-4 cursor-pointer text-xl"
+          className="absolute top-4 right-4 cursor-pointer font-thin text-slate-400 text-4xl"
           onClick={handleCancel}
         >
           &times;
         </span>
-        <h2 className="text-2xl mb-4">Set Discounts</h2>
+        <h2 className="text-5xl text-gray-700 mb-4 font-extrabold">Set Discounts</h2>
         <div className="mb-4">
-          <p>Select duration:</p>
+          <p className="text-base ">Select duration:</p>
           <select
             value={discountDuration}
             onChange={(e) => setDiscountDuration(e.target.value)}
@@ -53,7 +53,7 @@ const DiscountCustomModal = ({ visible, onClose, onSubmit }) => {
           </select>
         </div>
         <div className="mb-4">
-          <p>Discount percentage:</p>
+          <p className="text-base">Discount percentage:</p>
           <input
             type="number"
             placeholder="Enter discount percentage"
@@ -62,16 +62,16 @@ const DiscountCustomModal = ({ visible, onClose, onSubmit }) => {
             className="w-full p-2 border rounded"
           />
         </div>
-        <div>
+        <div className="my-5 py-5">
           <button
             onClick={handleOK}
-            className="bg-orange-500 text-white p-2 rounded cursor-pointer"
+            className="bg-orange-400 w-full text-white p-2 rounded cursor-pointer"
           >
-            Submit
+            Save
           </button>
           <button
             onClick={handleCancel}
-            className="bg-gray-300 text-gray-700 p-2 rounded cursor-pointer ml-2"
+            className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
           >
             Cancel
           </button>

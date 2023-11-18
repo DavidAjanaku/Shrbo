@@ -281,7 +281,7 @@ export default function Home() {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 3, // Show 3 cards on larger screens
+    slidesToShow: 2, // Show 3 cards on larger screens
     slidesToScroll: 1,
     autoplay: true,
     responsive: [
@@ -341,7 +341,7 @@ export default function Home() {
                 Unlock Comfort, Discover Adventure with Shrbo.
               </h1>
               <div className="z-50">
-                <p className="z-50 text-white  md:text-base text-center text-sm">
+                <p className="z-50 text-white  md:text-base text-center text-sm px-10">
                   Welcome to Shrbo, where comfort meets adventure. Find your
                   perfect home away from home and embark on memorable journeys,
                   one stay at a time.
@@ -365,7 +365,7 @@ export default function Home() {
           </div>
 
           <Listings />
-          <div className="pb-32 w-[90%] mx-auto">
+          <div className="pb-48 w-[90%] mx-auto ">
             <h1 className="text-center text-4xl mb-10">
               Learn About the Major Cities
             </h1>

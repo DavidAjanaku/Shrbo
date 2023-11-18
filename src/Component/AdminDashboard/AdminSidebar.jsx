@@ -179,9 +179,14 @@ export default function AdminSidebar() {
             Review List
           </li>
         </Link>
-        <Link to="/">
+        <Link to="/UserVerificationDashboard">
           <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
-            Settings
+            User Verification Dashboard
+          </li>
+        </Link>
+        <Link to="/ServiceChargeSettings">
+          <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+          Service Charge Settings
           </li>
         </Link>
       </ul>
