@@ -23,8 +23,6 @@ const SignUp=()=>{
    
 
         <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm border rounded lg:bg-blend-darken bg-white      p-6 lg:p-8">
-          <form className="space-y-5" action="#" method="POST">
-
           <div>
               <button
                 type="submit"
@@ -35,6 +33,8 @@ const SignUp=()=>{
               </button>
             </div>
                                       
+          <form className="space-y-5" action="#" method="POST">
+
       <div
         className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
         <p

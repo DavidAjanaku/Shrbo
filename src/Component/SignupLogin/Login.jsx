@@ -51,12 +51,13 @@ const Login=()=>{
           <h3 className="text-center mt-1 px-3  tracking-tight text-gray-400" >Please complete the registration process to create an account. </h3>
         </div>
 
+
+
    
 
         <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm px-1">
-          <form className="space-y-5"    onSubmit={handleSubmmit}  >
-
-          <div>
+          
+        <div>
               <button
                 type="submit"
                 className="flex w-full mb-2 gap-1 justify-center rounded-md border-0 ring-2 ring-inset ring-gray-300   px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-50"
@@ -65,7 +66,7 @@ const Login=()=>{
                 <span>Sign in with Google   </span>
               </button>
             </div>
-                                      
+          <form className="space-y-5"    onSubmit={handleSubmmit}  >
       <div
         className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
         <p
