@@ -370,7 +370,7 @@ const WishlistsSet=()=>{
                         </div>    
 
                           {/*  */}
-                          <div className=" top-8 pt-6 px-6 sticky md:relative  z-[1] min-[744px]:top-0 min-[744px]:px-10 min-[950px]:px-6 bg-white   ">
+                          <div className=" top-10 pt-6 px-6 sticky md:relative  z-[1] min-[744px]:top-0 min-[744px]:px-10 min-[950px]:px-6 bg-white   ">
                             <h2 className=" block box-border text-2xl md:pl-4  font-medium  ">Your saved items</h2>
                           </div>
 
