@@ -1,8 +1,7 @@
 import React from "react";
 import SignUp from "../Component/SignupLogin/SignUp";
 import Login from  "../Component/SignupLogin/Login";
-import ForgotPassword from "../Component/SignupLogin/ForgotPassword";
-import SetNewPassword from "../Component/SignupLogin/SetNewPassword";
+
 
 const Registration=()=>{
 
