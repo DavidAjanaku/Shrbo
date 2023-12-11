@@ -56,7 +56,7 @@ const ChatSupport = () => {
       
         if (botm) {
           const messages = botm.message; // Access the 'message' property from the object
-          const menu=botm.type==="menu";
+          // const menu=botm.type==="menu";
           console.log(messages);
           setBotMessage(messages);
         } else {

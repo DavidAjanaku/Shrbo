@@ -86,7 +86,7 @@ const ChatEngine= (props) => {
 
 
 
-    if (props.botMessage) {
+    if (props.botMessage&&props.visible) {
       const newMessages = props.botMessage.map((element,index)=> {
         return {
           content: element,
@@ -103,7 +103,7 @@ const ChatEngine= (props) => {
         setMessages([...messages, ...newMessages]);
         setIsTyping(false);
        
-      }, 1000)
+      }, 900)
       
       
     
@@ -115,7 +115,7 @@ const ChatEngine= (props) => {
    
 
 
-  }, []);
+  }, [props.visible]);
     
 
   const messageSentSound = new Audio(messagesent);
@@ -284,7 +284,7 @@ const ChatEngine= (props) => {
           </div>
         ))}
 
-      {!isTyping && (<ChatOptions selectedOption={props.selectedOption}  />)}
+      {!isTyping && (<ChatOptions selectedOption={props.selectedOption} automateSlide={automateSlide}  />)}
       
       {/* this only shows when the chat has connected to a Customer support Agent */}
 
@@ -311,8 +311,8 @@ const ChatEngine= (props) => {
     {/*typing indicator  */}
         {isTyping && (
             <div className="self-start bg-gray-300 p-2 rounded-lg max-w-[200px]">
-             <div class="dot-pulse">
-              <div class="dot-pulse__dot"></div>
+             <div className="dot-pulse">
+              <div className="dot-pulse__dot"></div>
               </div>
           </div>
             )}

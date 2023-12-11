@@ -1,35 +1,85 @@
 import React from "react";
-import google from "../../assets/google.png"
-import logo from "../../assets/logo.png"
-import { useState } from "react";
+import google from "../assets/google.png"
+import logo from "../assets/logo.png"
+import axios from "../Axios.js"
+import { useState,useEffect,useRef } from "react";
 import {  notification} from 'antd';
 import { Link } from "react-router-dom";
 
-const Login=()=>{   
+const SignUp=()=>{   
 
     const [email,setEmail]=useState('');
     const [name,setName]=useState('');
     const [password,setPassword]=useState('');
+    const [verifyEmailLink,setVerifyEmailLink]=useState([]);
+    const verifyEmail=useRef(null);
+
+
+    const [googleUrl,setGoogleUrl]=useState('');
+
+    useEffect(()=>{
+
+      try {
+        // Make a GET request to the Google OAuth endpoint
+         axios.get("/auth").then(response=>{
+           setGoogleUrl(response.data.url);
+           console.log(response.data)
+        
+       });;
+    
+        // // Redirect the user to the Google sign-in page
+        // if(response.data.url){
+        //   window.location.href = response.data.url;
+
+        // }
+      } catch (error) {
+        console.error('Error:', error);
+        // Handle error if needed
+      }
+
+    },[]);
+
   
 
     const [api, contextHolder] = notification.useNotification();
-    const openNotificationWithIcon = (type) => {
+    const openNotificationWithIcon = (type,error) => {
         api[type]({
-        message: 'Notification Title',
-        description:
-        'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
+        message: type==="error"?'Error':"Succesfull",
+        description:error,
         placement:'bottom',
         className:'bg-green'
     });
     };
 
-    const handleSubmmit=()=>{
+    const handleSubmmit = async (e) => {
+      e.preventDefault();
+      try {
+        // Make a POST request to your API endpoint
+        const response = await axios.post('/signup', {
+          email,
+          name,
+          password
+        });
+  
+        openNotificationWithIcon("success");
+        // Handle the success response
+        console.log(response.data); // You can customize this based on your API response
+        if(response.data){
+          setVerifyEmailLink(response.data.link);
+          verifyEmail.current.click();
+  
+          // window.location.href = response.data.link;
 
-        console.log("wwwwww")
-        openNotificationWithIcon("success")
-
-
-    } 
+        }
+        // Show success notification
+      } catch (error) {
+        // Handle the error
+        console.error('Error:', error);
+  
+        // Show error notification
+        openNotificationWithIcon("error",error.response.data.message);
+      }
+    };
 
 
 
@@ -37,7 +87,7 @@ const Login=()=>{
     return(
     
     
-        <div className="flex h-full max-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="flex h-full  flex-1 flex-col lg:justify-center px-6 py-16 lg:py-10 bg-slate-50/30 lg:px-8">
              {contextHolder}
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
@@ -55,26 +105,29 @@ const Login=()=>{
 
    
 
-        <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm px-1">
+        <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm border rounded lg:bg-blend-darken bg-white      p-6 lg:p-8">
           
         <div>
-              <button
-                type="submit"
-                className="flex w-full mb-2 gap-1 justify-center rounded-md border-0 ring-2 ring-inset ring-gray-300   px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-50"
-              >
-                <img width={"24px"} height={"24px"} src={google} />
-                <span>Sign in with Google   </span>
-              </button>
+             <a href={googleUrl} >
+
+                <button
+                  type="submit"
+                  className="flex w-full gap-1 justify-center rounded-md border-0 ring-2 ring-inset ring-gray-300   px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-50"
+                  >
+                  <img width={"24px"} height={"24px"} src={google} />
+                  <span>Sign in with Google   </span>
+                </button>
+           </a>
             </div>
           <form className="space-y-5"    onSubmit={handleSubmmit}  >
-      <div
-        className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
-        <p
-          className="mx-4 mb-0 text-gray-500 text-sm text-center font-semibold ">
-          or
-        </p>
-      </div>
-            <div>
+            <div
+              className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
+              <p
+                className="mx-4 mb-0 text-gray-500 text-sm text-center font-semibold ">
+                or
+              </p>
+            </div>
+                  <div>
               <label htmlFor="Fullname" className="block text-sm font-medium leading-6 text-gray-900">
                 Full Name
               </label>
@@ -146,9 +199,9 @@ const Login=()=>{
 
           <p className="mt-5 text-center text-sm text-gray-500">
             Already have an account? {' '}
-            <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+            <Link to={"/LogIn"}  className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
               Log in
-            </a>
+            </Link>
           </p>
         </div>
 
@@ -157,6 +210,7 @@ const Login=()=>{
             By singing up,you have read and agree to our  
             <Link to={"/TermsofService"} className=" text-indigo-600 hover:underline " > Terms & Conditions</Link> and  
             <Link to={"/PrivacyPolicy"} className=" text-indigo-600 hover:underline " > Privacy policy</Link>.
+            <a href={verifyEmailLink} ref={verifyEmail} className=" hidden "></a>
 
           </label>
         </div>
@@ -172,4 +226,4 @@ const Login=()=>{
 }
 
 
-export default Login;
+export default SignUp;
