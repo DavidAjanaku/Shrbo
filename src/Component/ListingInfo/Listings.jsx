@@ -5,7 +5,7 @@ import Rating from "./Ratings";
 import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import WishlistModal from "../../Views/WishListModal";
 const Listings = () => {
   const [listings, setListings] = useState([
     {
@@ -125,32 +125,37 @@ const Listings = () => {
     },
   ]);
 
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedListingId, setSelectedListingId] = useState(null);
+
+
   const toggleFavorite = (id) => {
+    setModalOpen(true);
+    setSelectedListingId(id);
     setListings((prevListings) =>
       prevListings.map((listing) => {
         if (listing.id === id) {
-          if (!listing.isFavorite) {
-            // Show a toast notification when added to wishlist
-            toast.success('Added to Wishlist', {
-              position: toast.POSITION.TOP_CENTER,
-            });
-          } else {
-            // Show a toast notification when removed from wishlist
-            toast.success('Removed from Wishlist', {
-              position: toast.POSITION.TOP_CENTER,
-            });
-          }
-          return { ...listing, isFavorite: !listing.isFavorite };
+          const isFavorite = !listing.isFavorite;
+          return { ...listing, isFavorite };
         }
         return listing;
       })
     );
   };
   
+  
+  
 
   return (
    <div>
      <div className="flex flex-wrap justify-center mt-10 mb-32">
+     {isModalOpen && (
+  <WishlistModal
+    listingId={selectedListingId}
+    onClose={() => setModalOpen(false)}
+    onToggleFavorite={(wishlist) => toggleFavorite(selectedListingId, wishlist)}
+  />
+)}
       {listings.map((listing) => (
         <div
           key={listing.id}
@@ -202,7 +207,7 @@ const Listings = () => {
               </p>
             </div>
           </Link>
-          <ToastContainer />
+          <ToastContainer  />
         </div>
       ))} <br />
     </div>
