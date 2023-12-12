@@ -66,9 +66,9 @@ const SignUp=()=>{
         console.log(response.data); // You can customize this based on your API response
         if(response.data){
           setVerifyEmailLink(response.data.link);
-          verifyEmail.current.click();
+          // verifyEmail.current.click();
   
-          // window.location.href = response.data.link;
+          window.location.href = response.data.link;
 
         }
         // Show success notification

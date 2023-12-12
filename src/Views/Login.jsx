@@ -9,6 +9,8 @@ const LogIn=()=>{
     const [email,setEmail]=useState('');
     const [password,setPassword]=useState('');
     const [googleUrl,setGoogleUrl]=useState('');
+    const [userData,setUserData]=useState([]);
+    const [token,setToken]=useState([]);
 
     useEffect(()=>{
 
@@ -30,7 +32,7 @@ const LogIn=()=>{
         // Handle error if needed
       }
 
-    },[googleUrl]);
+    },[]);
 
 
     const [api, contextHolder] = notification.useNotification();
@@ -56,13 +58,20 @@ const LogIn=()=>{
   
         );
         openNotificationWithIcon("success");
-        console.log(response.data);
+        if(response.data){
+          
+          setUserData(response.data.user);
+          setToken(response.data.token);
+          console.log(response.data);
+        }
       } catch (error) {
         console.error('Error:', error);
-
+        
         openNotificationWithIcon("error",error.response.data.message);
         
       }
+      console.log(userData);
+      console.log(token)
 
     }
 
