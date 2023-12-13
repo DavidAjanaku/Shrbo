@@ -4,6 +4,8 @@ import CategoryHeader from "../Component/Navigation/CategoryHeader";
 import Listings from "../Component/ListingInfo/Listings";
 import Header from "../Component/Navigation/Header";
 import Hamburger from "../Component/Navigation/Hamburger";
+import {Helmet} from "react-helmet";
+
 import Modal from "../Component/SearchModal/Modal";
 import searchIcon from "../assets/svg/search-icon.svg";
 import BottomNavigation from "../Component/Navigation/BottomNavigation";
@@ -15,6 +17,8 @@ import CityCard from "../Component/CityCard";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+
+
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -302,8 +306,10 @@ export default function Home() {
 
   return (
     <div>
+      
       <Header />
       {/* <Hamburger /> */}
+      
       <BottomNavigation />
       <div
         className={` md:w-2/5 mx-auto flex justify-center fixed z-[999] left-0 right-0 transition-all ${
@@ -329,12 +335,15 @@ export default function Home() {
             <FilterModal />
           </div>
         </div>
+        
 
         <Modal isOpen={isModalOpen} onClose={closeModal} />
       </div>
       <div className="pageHeader"></div>
       <div className="storeFrontHomeage">
         <div>
+        <link rel="preload" as="image" href="https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh" />
+
           <div className="hero-pattern relative bg-cover bg-center md:h-[70vh] h-[100vh] bg-[url('https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh')]">
             <div className="h-full flex flex-col justify-center items-center">
               <h1 className="text-white md:text-6xl text-5xl lg:text-6xl p-4 text-center z-50">
