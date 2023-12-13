@@ -1,15 +1,25 @@
 import axios from 'axios';
 
+const instance = axios.create({
+  baseURL: 'https://shortletbooking.com/api',
+});
 
-const instance =axios.create(
-    {
+// Add a request interceptor
+instance.interceptors.request.use(
+  (config) => {
+    // Check if access token is present in local storage
+    const accessToken = localStorage.getItem('access_token');
 
-    baseURL:"https://shortletbooking.com/api"
+    // If access token is present, include it in the request headers
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
 
-
-}
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
 );
-// instance.defaults.post['Content-Type']= 'application/json';
 
-
-export default instance
+export default instance;

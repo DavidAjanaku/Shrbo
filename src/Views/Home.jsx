@@ -4,7 +4,6 @@ import CategoryHeader from "../Component/Navigation/CategoryHeader";
 import Listings from "../Component/ListingInfo/Listings";
 import Header from "../Component/Navigation/Header";
 import Hamburger from "../Component/Navigation/Hamburger";
-import {Helmet} from "react-helmet";
 
 import Modal from "../Component/SearchModal/Modal";
 import searchIcon from "../assets/svg/search-icon.svg";
@@ -17,6 +16,8 @@ import CityCard from "../Component/CityCard";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import axios from '../Axios'
+import Logo from "../assets/logo.png"
 
 
 
@@ -25,6 +26,8 @@ export default function Home() {
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -60,6 +63,28 @@ export default function Home() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Make a request to get the user data
+        const response = await axios.get('/user'); // Adjust the endpoint based on your API
+
+        // Set the user data in state
+        setUser(response.data);
+        console.log(response.data);
+
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        // Set loading to false regardless of success or error
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []); 
 
   useEffect(() => {
     // Simulate fetching house details after 5 seconds
@@ -306,7 +331,17 @@ export default function Home() {
 
   return (
     <div>
-      
+       {loading ? (
+        <div>
+
+          <div className="h-screen flex justify-center items-center">
+          <div class="container"><div class="cube"></div></div>
+
+          <img src={Logo} className="h-20 " alt="" />
+          </div>
+        </div>
+      ) : (
+        <>
       <Header />
       {/* <Hamburger /> */}
        
@@ -393,6 +428,9 @@ export default function Home() {
       </div>
       <ChatSupport />
       <Footer />
+      </>
+      )}
+
     </div>
   );
 }
