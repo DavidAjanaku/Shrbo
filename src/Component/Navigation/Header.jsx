@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import HostModal from "../Dashboard/HostModal";
 import bellIcon from "../../assets/svg/bell-icon.svg";
 import Logo from "../../assets/logo.png"
+import axios from "../../Axios.js"
 
 export default function Header() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -115,6 +116,24 @@ export default function Header() {
     };
   }, [isProfileDropdownOpen, isBellDropdownOpen]);
 
+  useEffect(()=>{
+
+        axios.get("/notification").then(response=>{
+            console.log(response.data);
+        }).catch(error=>{
+            console.log("Error",error);
+        });
+
+
+
+
+
+  });
+
+
+
+
+
   return (
     <header className="bg-gray-800 text-white py-2 hidden md:block">
       <div className="container mx-auto flex items-center justify-between">
@@ -146,6 +165,7 @@ export default function Header() {
           <Link to="/AdminAnalytical" className="text-white hover:text-gray-300 ml-4">
            Dashboard
           </Link>
+          <Link  to="/Login" className="text-white hover:text-gray-300 ml-4"   >Login</Link>
           <div
             id="profile-dropdown"
             className={`relative ${isProfileDropdownOpen ? "group" : ""}`}

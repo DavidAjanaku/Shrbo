@@ -26,7 +26,6 @@ import ScrollToTop from "./Component/ScrollToTop";
 import HostAnalysis from "./Component/Dashboard/HostAnalysis";
 import Schduler from "./Component/Dashboard/Schduler";
 import ChatAndNotifcationTab from "./Views/ChatAndNotifcationTab";
-import Registration from "./Views/Registration";
 import EditHomepage from "./Component/AdminDashboard/EditHomepage";
 import AdminAnalytical from "./Component/AdminDashboard/AdminAnalytical";
 import GuestsListings from "./Component/AdminDashboard/GuestsListings";
@@ -60,6 +59,9 @@ import DamagesIncidentals from "./Views/DamagesIncidentals";
 import UserVerificationDashboard from "./Component/AdminDashboard/UserVerificationDashboard";
 import ServiceChargeSettings from "./Component/AdminDashboard/AdminNavigation/ServiceChargeSettings";
 import DamageReportForm from "./Component/DamageReportForm";
+import LogIn from "./Views/Login";
+import SignUp from "./Views/SignUp";
+import AuthGoogle from "./Views/AuthGoogle";
 function App() {
   return (
     <Router>
@@ -92,7 +94,7 @@ function App() {
         <Route path="/HostAnalysis" element={<HostAnalysis />} />
         <Route path="/Schduler" element={<Schduler />} />
 
-        <Route path="/Registration" element={<Registration />} />
+        
 
         <Route
           path="/ChatAndNotifcationTab"
@@ -138,6 +140,11 @@ function App() {
         <Route path="/FAQAccordion" element={<FAQAccordion />} />
         <Route path="/SupportAndHelp" element={<SupportAndHelp />} />
         <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
+
+        <Route path="/Login" element={<LogIn/>}/>
+        <Route path="/Signup" element={<SignUp/>}/>
+        <Route path="/auth/google" element={<AuthGoogle/>} />
+
 
         <Route path="/DamagesAndIncidentals" element={<DamagesIncidentals />} />
         <Route

@@ -1,13 +1,95 @@
-import React from "react";
-import logo from "../../assets/logo.png"
-import google from "../../assets/google.png"
+import React,{useState,useEffect} from "react";
+import logo from "../assets/logo.png"
+import google from "../assets/google.png"
 import { Link } from "react-router-dom";
+import axios from "../Axios.js"
+import {  notification} from 'antd';
 
-const SignUp=()=>{
+const LogIn=()=>{
+    const [email,setEmail]=useState('');
+    const [password,setPassword]=useState('');
+    const [googleUrl,setGoogleUrl]=useState('');
+    const [userData,setUserData]=useState([]);
+    const [token,setToken]=useState([]);
+
+    useEffect(()=>{
+
+      try {
+        // Make a GET request to the Google OAuth endpoint
+         axios.get("/auth").then(response=>{
+           setGoogleUrl(response.data.url);
+           console.log(response.data)
+        
+       });;
+    
+        // // Redirect the user to the Google sign-in page
+        // if(response.data.url){
+        //   window.location.href = response.data.url;
+
+        // }
+      } catch (error) {
+        console.error('Error:', error);
+        // Handle error if needed
+      }
+
+    },[]);
+
+
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationWithIcon = (type,error) => {
+        api[type]({
+        message: type==="error"?'Error':"Succesfull",
+        description:error,
+        placement:'bottom',
+        className:'bg-green'
+    });
+    };
+
+
+
+    const handleSubmmit= async(e)=>{
+      e.preventDefault();
+      try {
+        const response= await axios.post("/login",
+          {
+            email,
+            password
+          }
+  
+        );
+        openNotificationWithIcon("success");
+        if(response.data){
+          
+          setUserData(response.data.user);
+          setToken(response.data.token);
+          console.log(response.data);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        
+        openNotificationWithIcon("error",error.response.data.message);
+        
+      }
+      console.log(userData);
+      console.log(token)
+
+    }
+
+ 
+
+
+
+    
+
+
+
+
+
     return(
     
     
         <div className="flex h-full lg:max-h-screen flex-1 flex-col lg:justify-center px-6 py-16 lg:py-10 bg-slate-50/30 lg:px-8">
+          {contextHolder}
         <div className="sm:mx-auto  sm:w-full sm:max-w-sm">
           <img
             className="mx-auto h-16   w-auto"
@@ -24,16 +106,19 @@ const SignUp=()=>{
 
         <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm border rounded lg:bg-blend-darken bg-white      p-6 lg:p-8">
           <div>
+            <a href={googleUrl} >
+
               <button
                 type="submit"
                 className="flex w-full gap-1 justify-center rounded-md border-0 ring-2 ring-inset ring-gray-300   px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-50"
-              >
+                >
                 <img width={"24px"} height={"24px"} src={google} />
                 <span>Sign in with Google   </span>
               </button>
+                </a>
             </div>
                                       
-          <form className="space-y-5" action="#" method="POST">
+          <form className="space-y-5"  onSubmit={handleSubmmit}>
 
       <div
         className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
@@ -53,6 +138,7 @@ const SignUp=()=>{
                   type="email"
                   autoComplete="email"
                   placeholder="Enter your email"
+                  onChange={(e)=>setEmail(e.target.value)}
                   required
                   className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-2 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-400 sm:text-sm sm:leading-6"
                 />
@@ -73,6 +159,7 @@ const SignUp=()=>{
                   type="password"
                   autoComplete="current-password"
                   placeholder="Enter your password"
+                  onChange={(e)=>setPassword(e.target.value)}
                   required
                   className="block w-full rounded-md border-0 px-2 py-2 text-gray-900 shadow-sm ring-2 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-400 sm:text-sm sm:leading-6"
                 />
@@ -97,9 +184,9 @@ const SignUp=()=>{
 
           <p className="mt-8 text-center text-sm text-gray-500">
             Not a member of <span className=" text-slate-900 font-semibold ">Shrbo</span>?{' '}
-            <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+            <Link to="/Signup" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
               Create an account
-            </a>
+            </Link>
           </p>
         </div>
         
@@ -121,4 +208,4 @@ const SignUp=()=>{
 }
 
 
-export default SignUp;
+export default LogIn;

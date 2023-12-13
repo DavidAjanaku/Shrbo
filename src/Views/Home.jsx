@@ -309,7 +309,7 @@ export default function Home() {
       
       <Header />
       {/* <Hamburger /> */}
-      
+       
       <BottomNavigation />
       <div
         className={` md:w-2/5 mx-auto flex justify-center fixed z-[999] left-0 right-0 transition-all ${
