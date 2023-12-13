@@ -28,6 +28,7 @@ export default function Home() {
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hostValue, setHostValue] = useState(null);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -74,6 +75,11 @@ export default function Home() {
         // Set the user data in state
         setUser(response.data);
         console.log(response.data);
+        console.log(response.data.host);
+        if (response.data.host === "0") {
+          console.log('yes');
+          setHostValue(response.data.host);
+        }
 
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -335,14 +341,14 @@ export default function Home() {
         <div>
 
           <div className="h-screen flex justify-center items-center">
-          <div class="container"><div class="cube"></div></div>
+          <div className="containerrr"><div className="cube"></div></div>
 
-          <img src={Logo} className="h-20 " alt="" />
+          <img src={Logo} className="h-20 absolute" alt="" />
           </div>
         </div>
       ) : (
         <>
-      <Header />
+<Header hostValue={hostValue} />
       {/* <Hamburger /> */}
        
       <BottomNavigation />

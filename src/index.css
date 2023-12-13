@@ -12,11 +12,11 @@
 
 
 
-  .container {
-    --uib-size: 70px;
-    --uib-color: black;
+  .containerrr {
+    --uib-size: 120px;
+    --uib-color: orange;
     --uib-speed: 1.65s;
-    --uib-cube-size: calc(var(--uib-size) / 5.5);
+    --uib-cube-size: calc(var(--uib-size) / 10.5);
     --uib-arc-1: -80deg;
     --uib-arc-2: 80deg;
     display: flex;
