@@ -76,10 +76,10 @@ export default function Home() {
         setUser(response.data);
         console.log(response.data);
         console.log(response.data.host);
-        if (response.data.host === "0") {
+       
           console.log('yes');
           setHostValue(response.data.host);
-        }
+      
 
       } catch (error) {
         console.error('Error fetching user data:', error);
