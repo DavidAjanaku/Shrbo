@@ -65,6 +65,48 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Extract the parameters from the URL
+        const params = new URLSearchParams(window.location.search);
+        const verified = params.get('verified');
+        const remtoken = params.get('remtoken');
+        const ustoken = params.get('ustoken');
+  
+        // Log out the parameters
+        console.log('Verified:', verified);
+        console.log('Remtoken:', remtoken);
+        console.log('Ustoken:', ustoken);
+  
+        // Make a request to get the user data with parameters
+        const response = await axios.get(`/verify-tokens/${remtoken}/${ustoken}`);
+        console.log('Response Data:', response.data);
+  
+        // Set the user data in state
+        setUser(response.data.user);
+        console.log('User Data:', response.data.user);
+  
+        // Set the host value in state
+        setHostValue(response.data.user.host);
+        console.log('Host:', response.data.user.host);
+        localStorage.setItem('access_token', ustoken);
+
+        // Log 'yes' to the console
+        console.log('yes');
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        // Set loading to false regardless of success or error
+        setLoading(false);
+      }
+    };
+  
+    // Call the fetchUserData function when the component mounts
+    fetchUserData();
+  }, []);
+  
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -91,6 +133,9 @@ export default function Home() {
 
     fetchUserData();
   }, []); 
+
+
+  
 
   useEffect(() => {
     // Simulate fetching house details after 5 seconds
