@@ -4,13 +4,15 @@ import google from "../assets/google.png"
 import { Link } from "react-router-dom";
 import axios from "../Axios.js"
 import {  notification} from 'antd';
+import { useStateContext } from "../ContextProvider/ContextProvider.jsx";
 
 const LogIn=()=>{
     const [email,setEmail]=useState('');
     const [password,setPassword]=useState('');
     const [googleUrl,setGoogleUrl]=useState('');
     const [userData,setUserData]=useState([]);
-    const [token,setToken]=useState([]);
+    // const [token,setToken]=useState([]);
+    const { setUser, setToken } = useStateContext();
 
     useEffect(()=>{
 
@@ -60,7 +62,7 @@ const LogIn=()=>{
         openNotificationWithIcon("success");
         if(response.data){
           
-          setUserData(response.data.user);
+          setUser(response.data.user);
           setToken(response.data.token);
           console.log(response.data);
         }

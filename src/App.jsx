@@ -1,4 +1,5 @@
 import React from "react";
+import { ContextProvider } from "./ContextProvider/ContextProvider";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./Views/Home";
 import ListingInfoMain from "./Views/ListingInfoMain";
@@ -65,6 +66,7 @@ import AuthGoogle from "./Views/AuthGoogle";
 function App() {
   return (
     <Router>
+      <ContextProvider>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -158,6 +160,7 @@ function App() {
 
         <Route path="/DamageReportForm" element={<DamageReportForm />} />
       </Routes>
+      </ContextProvider>
     </Router>
   );
 }

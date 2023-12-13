@@ -18,6 +18,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import axios from '../Axios'
 import Logo from "../assets/logo.png"
+import { useStateContext } from "../ContextProvider/ContextProvider";
 
 
 
@@ -26,7 +27,7 @@ export default function Home() {
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const { setUser, setToken, token } = useStateContext();
   const [loading, setLoading] = useState(true);
   const [hostValue, setHostValue] = useState(null);
 
@@ -45,6 +46,8 @@ export default function Home() {
   const closeRateHouseModal = () => {
     setIsRateHouseModalOpen(false);
   };
+
+  console.log(token);
 
   useEffect(() => {
     // Add an event listener to handle scrolling
@@ -90,7 +93,7 @@ export default function Home() {
         // Set the host value in state
         setHostValue(response.data.user.host);
         console.log('Host:', response.data.user.host);
-        localStorage.setItem('access_token', ustoken);
+       setToken(ustoken);
 
         // Log 'yes' to the console
         console.log('yes');

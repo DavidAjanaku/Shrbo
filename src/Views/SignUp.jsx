@@ -12,6 +12,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [verifyEmailLink, setVerifyEmailLink] = useState([]);
   const verifyEmail = useRef(null);
+  const [setUser,setToken] = useStateContext();
 
   const [googleUrl, setGoogleUrl] = useState("");
 

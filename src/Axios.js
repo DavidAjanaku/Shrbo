@@ -8,7 +8,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     // Check if access token is present in local storage
-    const accessToken = localStorage.getItem('access_token');
+    const accessToken = localStorage.getItem('Shbro');
 
     // If access token is present, include it in the request headers
     if (accessToken) {
