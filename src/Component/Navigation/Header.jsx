@@ -5,7 +5,7 @@ import bellIcon from "../../assets/svg/bell-icon.svg";
 import Logo from "../../assets/logo.png"
 import axios from "../../Axios.js"
 
-export default function Header() {
+export default function Header({hostValue}) {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -92,6 +92,13 @@ export default function Header() {
     setIsBellDropdownOpen(false);
   };
 
+  const deleteNotification=(notification)=>{
+    const response=axios.delete(`/notification/${notification}`);
+    console.log("Deleted Notification",response.data)
+
+
+  }
+
   useEffect(() => {
     const handleDocumentClick = (event) => {
       if (isProfileDropdownOpen) {
@@ -119,6 +126,7 @@ export default function Header() {
   useEffect(()=>{
 
         axios.get("/notification").then(response=>{
+          setNotifications([...notifications ,response.data]);
             console.log(response.data);
         }).catch(error=>{
             console.log("Error",error);

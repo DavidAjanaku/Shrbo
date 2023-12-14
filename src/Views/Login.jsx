@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react";
+import React,{useState,useEffect,useRef} from "react";
 import logo from "../assets/logo.png"
 import google from "../assets/google.png"
 import { Link } from "react-router-dom";
@@ -11,6 +11,7 @@ const LogIn=()=>{
     const [googleUrl,setGoogleUrl]=useState('');
     const [userData,setUserData]=useState([]);
     const [token,setToken]=useState([]);
+    const goHome=useRef();
 
     useEffect(()=>{
 
@@ -57,12 +58,17 @@ const LogIn=()=>{
           }
   
         );
+        
         openNotificationWithIcon("success");
         if(response.data){
           
           setUserData(response.data.user);
           setToken(response.data.token);
           console.log(response.data);
+          goHome.current.click();
+
+        
+
         }
       } catch (error) {
         console.error('Error:', error);
@@ -195,6 +201,7 @@ const LogIn=()=>{
            
             <Link to={"/TermsofService"} className=" text-indigo-600 hover:underline " > Terms & Conditions</Link> and  
             <Link to={"/PrivacyPolicy"} className=" text-indigo-600 hover:underline " > Privacy policy</Link>.
+            <Link to={"/"} className=" text-indigo-600 hover:underline hidden " ref={goHome} > Home page</Link>.
 
           </label>
         </div>
