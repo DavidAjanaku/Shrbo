@@ -18,6 +18,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import axios from '../Axios'
 import Logo from "../assets/logo.png"
+import { useStateContext } from "../ContextProvider/ContextProvider";
 
 
 
@@ -26,9 +27,9 @@ export default function Home() {
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const { setUser, setToken, token,setHost,setAdminStatus } = useStateContext();
   const [loading, setLoading] = useState(true);
-  const [hostValue, setHostValue] = useState(null);
+ 
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -45,6 +46,8 @@ export default function Home() {
   const closeRateHouseModal = () => {
     setIsRateHouseModalOpen(false);
   };
+
+  console.log(token);
 
   useEffect(() => {
     // Add an event listener to handle scrolling
@@ -65,6 +68,49 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Extract the parameters from the URL
+        const params = new URLSearchParams(window.location.search);
+        const verified = params.get('verified');
+        const remtoken = params.get('remtoken');
+        const ustoken = params.get('ustoken');
+  
+        // Log out the parameters
+        console.log('Verified:', verified);
+        console.log('Remtoken:', remtoken);
+        console.log('Ustoken:', ustoken);
+  
+        // Make a request to get the user data with parameters
+        const response = await axios.get(`/verify-tokens/${remtoken}/${ustoken}`);
+        console.log('Response Data:', response.data);
+  
+        // Set the user data in state
+        setUser(response.data.user);
+        console.log('User Data:', response.data.user);
+  
+        // Set the host value in state context
+        setHost(response.data.user.host);
+        console.log('Host:', response.data.user.host);
+        setToken(ustoken);
+        setAdminStatus(response.data.user.adminStatus);
+
+        // Log 'yes' to the console
+        console.log('yes');
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        // Set loading to false regardless of success or error
+        setLoading(false);
+      }
+    };
+  
+    // Call the fetchUserData function when the component mounts
+    fetchUserData();
+  }, []);
+  
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -73,13 +119,14 @@ export default function Home() {
         const response = await axios.get('/user'); // Adjust the endpoint based on your API
 
         // Set the user data in state
-        setUser(response.data);
-        console.log(response.data);
-        console.log(response.data.host);
-        if (response.data.host === "0") {
+        setUser(response.data.user);
+        console.log(response.data.user);
+        console.log(response.data.user.host);
+       
           console.log('yes');
-          setHostValue(response.data.host);
-        }
+          setHost(response.data.user.host);
+          setAdminStatus(response.data.user.adminStatus);
+      
 
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -91,6 +138,9 @@ export default function Home() {
 
     fetchUserData();
   }, []); 
+
+
+  
 
   useEffect(() => {
     // Simulate fetching house details after 5 seconds
@@ -348,7 +398,7 @@ export default function Home() {
         </div>
       ) : (
         <>
-<Header hostValue={hostValue} />
+<Header />
       {/* <Hamburger /> */}
        
       <BottomNavigation />

@@ -4,11 +4,14 @@ import HostModal from "../Dashboard/HostModal";
 import bellIcon from "../../assets/svg/bell-icon.svg";
 import Logo from "../../assets/logo.png"
 import axios from "../../Axios.js"
+import { useStateContext } from "../../ContextProvider/ContextProvider.jsx";
 
-export default function Header({hostValue}) {
+export default function Header() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user, token,adminStatus,host } = useStateContext();
+  
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -98,6 +101,7 @@ export default function Header({hostValue}) {
 
 
   }
+  
 
   useEffect(() => {
     const handleDocumentClick = (event) => {
@@ -126,8 +130,8 @@ export default function Header({hostValue}) {
   useEffect(()=>{
 
         axios.get("/notification").then(response=>{
-          setNotifications([...notifications ,response.data]);
-            console.log(response.data);
+          setNotifications([...notifications ,response.data.data]);
+            console.log("notification",response.data);
         }).catch(error=>{
             console.log("Error",error);
         });
@@ -136,7 +140,9 @@ export default function Header({hostValue}) {
 
 
 
-  });
+  },[]);
+
+  // console.log("adminStatus",notifications);
 
 
 
@@ -158,23 +164,24 @@ export default function Header({hostValue}) {
           <Link to="/" className="text-white hover:text-gray-300 ml-4">
             Home
           </Link>
-          <Link to="/wishlist" className="text-white hover:text-gray-300 ml-4">
+          {token&&<Link to="/wishlist" className="text-white hover:text-gray-300 ml-4">
             Wishlist
-          </Link>
-          <Link to="/trip" className="text-white hover:text-gray-300 ml-4">
+          </Link>}
+          {token&&<Link to="/trip" className="text-white hover:text-gray-300 ml-4">
             Trips
-          </Link>
-          <Link to="/ChatAndNotifcationTab" className="text-white hover:text-gray-300 ml-4">
+          </Link>}
+          {token&& <Link to="/ChatAndNotifcationTab" className="text-white hover:text-gray-300 ml-4">
             Inbox
-          </Link>
+          </Link>}
           <Link to="/Hosting" className="text-white hover:text-gray-300 ml-4">
             Switch to Host
           </Link>
-          <Link to="/AdminAnalytical" className="text-white hover:text-gray-300 ml-4">
+        { (adminStatus!=null) && <Link to="/AdminAnalytical" className="text-white hover:text-gray-300 ml-4">
            Dashboard
-          </Link>
-          <Link  to="/Login" className="text-white hover:text-gray-300 ml-4"   >Login</Link>
-          <div
+          </Link>}
+         { !token&&<Link  to="/Login" className="text-white hover:text-gray-300 ml-4"   >Login</Link>}
+
+         { token&& <div
             id="profile-dropdown"
             className={`relative ${isProfileDropdownOpen ? "group" : ""}`}
             onClick={toggleProfileDropdown}
@@ -204,18 +211,19 @@ export default function Header({hostValue}) {
                 >
                   Create a new Listings
                 </Link>
-                <Link
+               {(host!=0)&& <Link
                   to="/Hosting"
                   className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
                 >
                   Manage Listings
                 </Link>
-                <Link
+                }
+               {(host!=0)&& <Link
                   to="/Listings"
                   className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
                 >
                   Listings
-                </Link>
+                </Link>}
                 <Link
                   to="/logout"
                   className="block text-gray-800 hover:text-red-500 p-2 cursor-pointer"
@@ -224,9 +232,9 @@ export default function Header({hostValue}) {
                 </Link>
               </div>
             )}
-          </div>
+          </div>}
           {/* Bell Icon and Notification Dropdown */}
-          <div
+       { token&&  <div
             id="bell-dropdown"
             className={`relative group ml-4 ${isBellDropdownOpen ? "group" : ""}`}
             onClick={toggleBellDropdown}
@@ -243,7 +251,7 @@ export default function Header({hostValue}) {
               <div className="absolute bg-white z-[999999] h-96 overflow-scroll example w-96 right-0 mt-1 p-2  border rounded-lg shadow-lg">
                 {/* Render your notifications here */}
                 {notifications.map((notification, index) => (
-                  <div key={index} className="text-gray-800 my-4 p-2 rounded-md cursor-pointer hover:bg-orange-400 hover:text-white">
+                  <div key={index} onClick={()=>{deleteNotification(notification.id)}}  className="text-gray-800 my-4 p-2 rounded-md cursor-pointer hover:bg-orange-400 hover:text-white">
                     {notification.message}
                    <div className="text-gray-500 text-xs">
                    {notification.date}
@@ -252,7 +260,7 @@ export default function Header({hostValue}) {
                 ))}
               </div>
             )}
-          </div>
+          </div>}
         </nav>
       </div>
     </header>

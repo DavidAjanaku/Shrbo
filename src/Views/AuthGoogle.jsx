@@ -1,8 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import axios from "../Axios.js";
+import { useStateContext } from "../ContextProvider/ContextProvider.jsx";
+
+
+
 
 const AuthGoogle = () => {
   const goHome = useRef(null);
+  const { setUser, setToken } = useStateContext();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,7 +25,7 @@ const AuthGoogle = () => {
              const accessToken = response.data.access_token;
 
                 // Store the access token in local storage
-        localStorage.setItem('access_token', accessToken);
+                setToken(accessToken);
 
         goHome.current.click();
 
