@@ -33,7 +33,7 @@
     transform: rotate(var(var(--uib-arc-1)));
     animation: metronome var(--uib-speed) linear infinite;
 
-    &::after {
+    /* &::after {
       content: '';
       display: block;
       width: var(--uib-cube-size);
@@ -42,7 +42,7 @@
       border-radius: 25%;
       animation: morph var(--uib-speed) linear infinite;
       transition: background-color 0.3s ease;
-    }
+    } */
   }
 
   @keyframes metronome {

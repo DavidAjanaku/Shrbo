@@ -1,23 +1,50 @@
 import React, { useState } from "react";
 import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash } from "react-icons/fa";
 import AddressForm from "../AddressFrom";
+import Axios from "../../Axios";
+import { data } from "autoprefixer";
 export default function HostHomes() {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [step, setStep] = useState(0);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [fileInputKey, setFileInputKey] = useState(0);
   const [houseTitle, setHouseTitle] = useState("");
-  const [houseDescriptions, setHouseDescriptions] = useState("");
   const [additionalRules, setAdditionalRules] = useState("");
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [selectedTime, setSelectedTime] = useState("12:00 PM");
-  const [selectedHouseTypeLabel, setSelectedHouseTypeLabel] = useState("");
-  const [selectedPrivacyTypeLabel, setSelectedPrivacyTypeLabel] = useState("");
-  const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const [selectedPrivacyType, setSelectedPrivacyType] = useState(null);
+  const [selectedInstantBookType, setSelectedInstantBookType] = useState(null);
+  const [selectedHouseType, setSelectedHouseType] = useState(null);
+  const [selectedHostType, setSelectedHostType] = useState(null);
+  const [selectedCautionTypes, setSelectedCautionTypes] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleAdditionalRules = (newValue) => {
-    setAdditionalRules(newValue);
-  };
+  const [visiblities, setVisiblities] = useState([]);
+  const [selectedDiscounts, setSelectedDiscounts] = useState([]);
+  const [selectedRules, setSelectedRules] = useState([]);
+  const [selectedCautionType, setSelectedCautionType] = useState([]);
+
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [houseDescriptionDetails, setHouseDescriptionDetails] = useState("");
+  const [enteredAddress, setEnteredAddress] = useState("");
+  const [selectedHouseDescriptions, setSelectedHouseDescriptions] = useState([]);
+
+  const [formData, setFormData] = useState({
+    welcomeTypes: [],
+    housePrice: 0,
+    houseDiscount: [],
+    houseRules: [],
+    additionalRules: [], // Add additionalRules field here
+
+    hostType: "",
+    propertyFeatures: [],
+    checkInTime: "",
+    cancellationPolicy: "",
+    securityDeposit: 0,
+  });
+
+ 
 
   const handleTimeChange = (e) => {
     setSelectedTime(e.target.value);
@@ -54,82 +81,65 @@ export default function HostHomes() {
     video.src = URL.createObjectURL(file);
   };
 
-  const [housePrice, setHousePrice] = useState(""); // Add this line for the house price
-  const [securityDeposit, setSecurityDeposit] = useState(""); 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
-    // Log the submitted data when the submit button is clicked
-
-    console.log("Submitted Data:");
-    console.log("Selected Property Types:");
-    propertyTypes
-      .filter((type) => selectedTypes.includes(type.id))
-      .map((type) => console.log(type.label));
-
-    console.log("Selected Privacy Type Label: " + selectedPrivacyTypeLabel);
-
-    console.log("Max Guests: " + guestDetails.guests);
-    console.log("Bedrooms: " + guestDetails.bedrooms);
-    console.log("Beds: " + guestDetails.beds);
-    console.log("Bathrooms: " + guestDetails.bathrooms);
-    logSelectedAmenities();
-    logUploadedImages();
-    logSelectedVideo();
-    console.log("House Title: " + houseTitle); // Log the house title
-
-    logSelectedHouseDescription(houseDescription);
-    console.log("House Description: " + houseDescriptions);
-
-    console.log("Selected Instant Book Types:");
-    instantBook
-      .filter((type) => selectedTypes.includes(type.id))
-      .map((type) => console.log(type.id));
-
-    console.log("Price per Night: " + housePrice); // Log the price here
-
-    console.log("Selected Discounts:");
-    houseDiscount
-      .filter((type) => selectedTypes.includes(type.id))
-      .map((type) => console.log(type.id));
-
-    console.log("Selected Welcome Types:");
-    visiblity
-      .filter((type) => selectedTypes.includes(type.id))
-      .map((type) => console.log(type.id));
-
-    // Log selected values for "Rules" section
-    console.log("Selected Rules:");
-    Object.keys(HouseRules)
-      .filter((rule) => selectedTypes.includes(rule))
-      .map((rule) => console.log(rule + ": " + HouseRules[rule]));
-
-    console.log(additionalRules);
-    console.log("Selected Hosting Types:");
-    HostType.filter((type) => selectedTypes.includes(type.id)).map((type) =>
-      console.log(type.id)
-    );
-
-    console.log("Selected Caution Types:");
-    caution
-      .filter((type) => selectedTypes.includes(type.id))
-      .map((type) => console.log(type.id));
-
-    console.log(selectedTime);
-
-    const selectedCancellationPolicy = cancellationPolicies.find(
-      (policy) => policy.id === selectedPolicy
-    );
-
-    // Check if a valid policy is found
-    if (selectedCancellationPolicy) {
-      console.log(selectedCancellationPolicy.label);
-    } else {
-      console.log("No cancellation policy selected.");
-    }
-
-    console.log("Security Deposit: " + securityDeposit); // Log the price here
-
+  const handleAddressChange = (address) => {
+    setEnteredAddress(address);
   };
+
+  const [housePrice, setHousePrice] = useState(""); // Add this line for the house price
+  const [securityDeposit, setSecurityDeposit] = useState("");
+
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true); // Set the loader state to true
+
+      const photoSrcArray = uploadedImages.map((image) => image.src);
+      const videoBase64 = selectedVideo
+        ? await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (event) => resolve(event.target.result);
+            reader.readAsDataURL(selectedVideo);
+          })
+        : null;
+
+      const formDetails = {
+        property_type: selectedHouseType,
+        guest_choice: selectedPrivacyType,
+        address: enteredAddress,
+        guest: guestDetails.guests,
+        bedrooms: guestDetails.bedrooms,
+        beds: guestDetails.beds,
+        bathrooms: guestDetails.bathrooms,
+        amenities: [...selectedAmenities],
+        hosthomephotos: photoSrcArray,
+        hosthomevideo: videoBase64 ? videoBase64.toString() : '', // Convert to string
+        title: houseTitle,
+        hosthomedescriptions: selectedHouseDescriptions,
+        description: houseDescriptionDetails,
+        reservations: visiblities,
+        reservation: selectedInstantBookType,
+        price: Number(housePrice),
+        discounts: selectedDiscounts,
+        rules: selectedRules,
+        additionalRules: additionalRules,
+        host_type: selectedHostType,
+        notice: selectedCautionTypes,
+        checkin: selectedTime,
+        cancelPolicy: selectedPolicy,
+        securityDeposit: securityDeposit,
+      };
+      console.log('Form submitted successfully', formDetails);
+
+      // Example Axios post request
+      await Axios.post('/hosthomes', formDetails);
+
+      console.log('Form submitted successfully', formDetails);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    } finally {
+      setIsSubmitting(false); // Set the loader state back to false, whether the submission was successful or not
+    }
+  };
+  
 
   const handleNext = () => {
     setStep(step + 1);
@@ -140,13 +150,17 @@ export default function HostHomes() {
   };
 
   const handleIncrement = (field) => {
-    setGuestDetails({ ...guestDetails, [field]: guestDetails[field] + 1 });
+    setGuestDetails((prevDetails) => ({
+      ...prevDetails,
+      [field]: prevDetails[field] + 1,
+    }));
   };
 
   const handleDecrement = (field) => {
-    if (guestDetails[field] > 0) {
-      setGuestDetails({ ...guestDetails, [field]: guestDetails[field] - 1 });
-    }
+    setGuestDetails((prevDetails) => ({
+      ...prevDetails,
+      [field]: Math.max(0, prevDetails[field] - 1),
+    }));
   };
 
   const [hostingType, setHostingType] = useState("private");
@@ -174,10 +188,7 @@ export default function HostHomes() {
     bathrooms: 0,
   });
 
-  // Function to handle changes in guest details
-  const handleGuestDetailsChange = (field, value) => {
-    setGuestDetails({ ...guestDetails, [field]: value });
-  };
+ 
 
   const [discounts, setDiscounts] = useState({
     newListingPromotion: false,
@@ -185,12 +196,7 @@ export default function HostHomes() {
     monthlyDiscount: false,
   });
 
-  const handleDiscountChange = (discountType) => {
-    setDiscounts({
-      ...discounts,
-      [discountType]: !discounts[discountType],
-    });
-  };
+ 
 
   const propertyTypes = [
     { id: "house", label: "House", icon: <FaHome /> },
@@ -491,96 +497,135 @@ export default function HostHomes() {
   ];
 
   const handleTypeSelection = (typeId) => {
-    const selectedType = propertyTypes.find((type) => type.id === typeId);
-    setSelectedHouseTypeLabel(selectedType ? selectedType.label : "");
-    setSelectedTypes([typeId]);
+    setSelectedHouseType(typeId);
   };
 
   const handlePrivacyTypeSelection = (typeId) => {
-    setSelectedTypes([typeId]);
-    setSelectedPrivacyTypeLabel(
-      privacyTypes.find((type) => type.id === typeId)?.label || ""
+    setSelectedPrivacyType(typeId);
+  };
+
+  const handleAmenitySelection = (id) => {
+    // Toggle the selection status
+    setSelectedAmenities((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((selectedId) => selectedId !== id)
+        : [...prevSelected, id]
     );
   };
 
+  const updateSelection = (array = [], itemId) => {
+    // Logic to toggle the selection status of the item in the array
+    if (array.includes(itemId)) {
+      return array.filter((selectedId) => selectedId !== itemId);
+    } else {
+      return [...array, itemId];
+    }
+  };
+
+  const handleRemoveVideo = () => {
+    // Implement the logic to remove the selected video
+    setSelectedVideo(null); // Set the selectedVideo state to null or an appropriate initial value
+  };
+
+  const toggleSelection = (array, itemId) => {
+    // Logic to toggle the selection status of the item in the array
+    if (array.includes(itemId)) {
+      return array.filter((selectedId) => selectedId !== itemId);
+    } else {
+      return [...array, itemId];
+    }
+  };
+  const handleHouseDescriptionSelection = (selectedId) => {
+    // Check if the selectedId is already in the array
+    if (selectedHouseDescriptions.includes(selectedId)) {
+      // If yes, remove it
+      setSelectedHouseDescriptions((prevSelected) =>
+        prevSelected.filter((id) => id !== selectedId)
+      );
+    } else {
+      // If no, add it
+      setSelectedHouseDescriptions((prevSelected) => [...prevSelected, selectedId]);
+    }
+  };
+
+  const handleWelcomeVisibilitySelection = (typeId) => {
+    setVisiblities((prevVisibility) => {
+      // Check if the typeId is already in the array
+      if (prevVisibility.includes(typeId)) {
+        // If yes, remove it (deselect)
+        return prevVisibility.filter((id) => id !== typeId);
+      } else {
+        // If not, add it (select)
+        return [...prevVisibility, typeId];
+      }
+    });
+  };
+
+  const handleInstantBookSelection = (selectedId) => {
+    setSelectedInstantBookType(selectedId);
+  };
+
+  
+
   const handleCancellationPolicySelection = (policyId) => {
-    console.log("Selected Cancellation Policy ID:", policyId);
+    const selectedPolicy = cancellationPolicies.find(
+      (policy) => policy.id === policyId
+    );
+
+    if (selectedPolicy) {
+      console.log("Selected Cancellation Policy ID:", policyId);
+      console.log("Selected Cancellation Policy Label:", selectedPolicy.label);
+    }
+
     setSelectedPolicy(policyId);
   };
 
-  const handleTypeSelections = (typeId) => {
-    if (selectedTypes.includes(typeId)) {
-      setSelectedTypes(selectedTypes.filter((type) => type !== typeId));
-    } else {
-      setSelectedTypes([...selectedTypes, typeId]);
-    }
-  };
-
-  const handlePolicySelection = (id) => {
-    setSelectedPolicy(id);
-  };
-
-  const logSelectedAmenities = () => {
-    console.log("Selected Amenities:");
-    amenities.forEach((amenity) => {
-      if (selectedTypes.includes(amenity.id)) {
-        console.log(amenity.id);
+  const handleDiscountSelection = (discountId) => {
+    setSelectedDiscounts((prevSelectedDiscounts) => {
+      if (prevSelectedDiscounts.includes(discountId)) {
+        return prevSelectedDiscounts.filter(
+          (discount) => discount !== discountId
+        );
+      } else {
+        return [...prevSelectedDiscounts, discountId];
       }
     });
   };
 
-  const logUploadedImages = () => {
-    console.log("Uploaded Images:");
-    uploadedImages.forEach((image) => {
-      console.log("Image ID:", image.id);
-      console.log("Image Source:", image.src);
-      // Add more image-related data as needed
-    });
-  };
-
-  const logSelectedVideo = () => {
-    if (selectedVideo) {
-      console.log("Selected Video Data:");
-      console.log("Video Name: " + selectedVideo.name);
-      console.log(
-        "Video Size (MB): " + (selectedVideo.size / (1024 * 1024)).toFixed(2)
-      );
-      // Add more video-related data as needed
-    }
-  };
-
-  function logSelectedHouseDescription(descriptionItems) {
-    console.log("Selected House Description:");
-    descriptionItems.forEach((type) => {
-      if (selectedTypes.includes(type.id)) {
-        console.log(type.id);
+  const handleRuleSelection = (rule) => {
+    setSelectedRules((prevSelectedRules) => {
+      if (prevSelectedRules.includes(rule)) {
+        return prevSelectedRules.filter(
+          (selectedRule) => selectedRule !== rule
+        );
+      } else {
+        return [...prevSelectedRules, rule];
       }
     });
+  };
+
+  const handleHouseTypeSelection = (typeId) => {
+    setSelectedHouseType(typeId);
+  };
+
+  const handleHostTypeSelection = (typeId) => {
+    setSelectedHostType(typeId);
   }
 
-  const handleConfirmReservationSelection = (typeId) => {
-    // Toggle the selected state of the typeId
-    const updatedSelectedTypes = selectedTypes.includes(typeId)
-      ? selectedTypes.filter((type) => type !== typeId)
-      : [...selectedTypes, typeId];
 
-    // Log the selected options
-    console.log(updatedSelectedTypes);
-
-    // Update the selected types state
-    setSelectedTypes(updatedSelectedTypes);
+  const handleCautionTypeSelection = (id) => {
+    setSelectedCautionTypes((prevSelectedTypes) => {
+      if (prevSelectedTypes.includes(id)) {
+        // If already selected, remove it
+        return prevSelectedTypes.filter((type) => type !== id);
+      } else {
+        // If not selected, add it
+        return [...prevSelectedTypes, id];
+      }
+    });
   };
+  
 
-  const handleWelcomeSelection = (selectedId) => {
-    // Check if the selected option is already in the selectedTypes state
-    if (selectedTypes.includes(selectedId)) {
-      // If it's already selected, remove it from the selectedTypes state
-      setSelectedTypes(selectedTypes.filter((id) => id !== selectedId));
-    } else {
-      // If it's not selected, add it to the selectedTypes state
-      setSelectedTypes([...selectedTypes, selectedId]);
-    }
-  };
 
   const addressFields = [
     { id: "street", label: "Street Address" },
@@ -597,32 +642,38 @@ export default function HostHomes() {
     zipcode: "",
   });
 
-  // Function to handle address field changes
-  const handleAddressChange = (field, value) => {
-    setAddress({ ...address, [field]: value });
-  };
+
+  
+  
+  
+  
+  
 
   const handleImageUpload = (e) => {
     const files = e.target.files;
     const newImages = [];
-
+  
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const reader = new FileReader();
-
+  
       reader.onload = (event) => {
         newImages.push({ id: Date.now(), src: event.target.result });
         if (newImages.length === files.length) {
-          setUploadedImages([...uploadedImages, ...newImages]);
+          // Directly update the hosthomephotos array in the state
+          setUploadedImages((prevImages) => [...prevImages, ...newImages]);
         }
       };
-
+  
       reader.readAsDataURL(file);
     }
-
+  
     // Reset the file input field
     setFileInputKey(fileInputKey + 1);
   };
+  
+  
+  
 
   const handleImageDelete = (id) => {
     const updatedImages = uploadedImages.filter((image) => image.id !== id);
@@ -748,8 +799,8 @@ export default function HostHomes() {
                     {propertyTypes.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type h-24  w-32 m-3   flex ${
-                          selectedTypes.includes(type.id)
+                        className={`property-type h-24 w-32 m-3 flex ${
+                          selectedHouseType === type.id
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
@@ -781,8 +832,8 @@ export default function HostHomes() {
                     {privacyTypes.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type   m-3   flex ${
-                          selectedTypes.includes(type.id)
+                        className={`property-type m-3 flex ${
+                          selectedPrivacyType === type.id
                             ? "bg-orange-500 text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
@@ -802,10 +853,8 @@ export default function HostHomes() {
 
       case 4:
         return (
-          <AddressForm
-            addressFields={addressFields}
-            handleAddressChange={handleAddressChange}
-          />
+      <AddressForm onAddressChange={handleAddressChange} />
+
         );
 
       case 5:
@@ -954,11 +1003,11 @@ export default function HostHomes() {
                       <div
                         key={type.id}
                         className={`property-type h-24  w-32 m-3   flex ${
-                          selectedTypes.includes(type.id)
+                          selectedAmenities.includes(type.id) // Change this line
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleTypeSelections(type.id)}
+                        onClick={() => handleAmenitySelection(type.id)}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
                         {type.id}
@@ -1116,20 +1165,20 @@ export default function HostHomes() {
               <div className="pb-32">
                 <div className=" ">
                   <div className="flex flex-wrap   w-full">
-                    {houseDescription.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`property-type h-24  w-32 m-3   flex ${
-                          selectedTypes.includes(type.id)
-                            ? "bg-orange-300 border-2 border-black text-white"
-                            : "bg-gray-200 text-black"
-                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleTypeSelections(type.id)}
-                      >
-                        <span className="mr-2 text-2xl">{type.icon}</span>
-                        {type.id}
-                      </div>
-                    ))}
+                  {houseDescription.map((type) => (
+        <div
+          key={type.id}
+          className={`property-type h-24 w-32 m-3 flex ${
+            selectedHouseDescriptions.includes(type.id)
+              ? "bg-orange-300 border-2 border-black text-white"
+              : "bg-gray-200 text-black"
+          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+          onClick={() => handleHouseDescriptionSelection(type.id)}
+        >
+          <span className="mr-2 text-2xl">{type.icon}</span>
+          {type.id}
+        </div>
+      ))}
                   </div>
                 </div>
               </div>
@@ -1139,7 +1188,7 @@ export default function HostHomes() {
 
       case 11:
         const maxCharCount = 500;
-        const currentCharCount = houseDescriptions.length;
+        const currentCharCount = houseDescriptionDetails.length;
         const remainingCharCount = maxCharCount - currentCharCount;
 
         return (
@@ -1156,11 +1205,11 @@ export default function HostHomes() {
                   type="text"
                   className="border rounded-lg px-4 py-2 h-[400px] text-lg w-full"
                   placeholder="Enter a description for your house"
-                  value={houseDescriptions} // Use houseDescription here
+                  value={houseDescriptionDetails}
                   onChange={(e) => {
                     const inputText = e.target.value;
                     if (inputText.length <= maxCharCount) {
-                      setHouseDescriptions(inputText); // Update houseDescription state
+                      setHouseDescriptionDetails(inputText);
                     }
                   }}
                 />
@@ -1174,30 +1223,30 @@ export default function HostHomes() {
 
       case 12:
         return (
-          <div className=" mx-auto  flex justify-center p-4">
-            <div className="  overflow-auto">
+          <div className="mx-auto flex justify-center p-4">
+            <div className="overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
                 <h1 className="text-6xl">
                   Decide how you’ll confirm reservations
                 </h1>
               </div>
               <div className="pb-32">
-                <div className=" space-y-4">
-                  <div className="flex flex-wrap   w-full">
-                    {instantBook.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`property-type  m-3   flex ${
-                          selectedTypes.includes(type.id)
-                            ? "bg-orange-300 border-2 border-black text-white"
-                            : "bg-gray-200 text-black"
-                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleTypeSelection(type.id)}
-                      >
-                        <span className="mr-2 text-2xl">{type.icon}</span>
-                        {type.description}
-                      </div>
-                    ))}
+                <div className="space-y-4">
+                  <div className="flex flex-wrap w-full">
+                  {instantBook.map((type) => (
+        <div
+          key={type.id}
+          className={`property-type m-3 flex ${
+            selectedInstantBookType === type.id
+              ? "bg-orange-300 border-2 border-black text-white"
+              : "bg-gray-200 text-black"
+          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+          onClick={() => handleInstantBookSelection(type.id)}
+        >
+          <span className="mr-2 text-2xl">{type.icon}</span>
+          {type.description}
+        </div>
+      ))}
                   </div>
                 </div>
               </div>
@@ -1224,11 +1273,14 @@ export default function HostHomes() {
                       <div
                         key={type.id}
                         className={`property-type  m-3   flex ${
-                          selectedTypes.includes(type.id)
+                          visiblities.includes(type.id)
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleWelcomeSelection(type.id)}
+                        onClick={() => {
+                          handleWelcomeVisibilitySelection(type.id);
+                         
+                        }}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
                         {type.description}
@@ -1284,11 +1336,14 @@ export default function HostHomes() {
                       <div
                         key={type.id}
                         className={`property-type  m-3   flex ${
-                          selectedTypes.includes(type.id)
+                          selectedDiscounts.includes(type.id)
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleTypeSelections(type.id)}
+                        onClick={() => {
+                          handleDiscountSelection(type.id);
+                         
+                        }}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
                         {type.id}
@@ -1312,26 +1367,23 @@ export default function HostHomes() {
                   You can change it anytime.
                 </p>
               </div>
-              <div className="pb-32">
-                <div className="space-y-4">
-                  <div className="flex flex-wrap w-full">
-                    {Object.keys(HouseRules).map((rule) => (
-                      <div
-                        key={rule}
-                        className={`property-type  m-3   flex ${
-                          selectedTypes.includes(rule)
-                            ? "bg-orange-300 border-2 border-black text-white"
-                            : "bg-gray-200 text-black"
-                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleTypeSelections(rule)}
-                      >
-                        <span className="mr-2 text-2xl">{rule}</span>
-                        {HouseRules[rule]}
-                      </div>
-                    ))}
-                  </div>
+            <div className="flex">
+            {Object.keys(HouseRules).map((rule) => (
+                <div
+                  key={rule}
+                  className={`property-type  m-3   flex ${
+                    selectedRules.includes(rule)
+                      ? "bg-orange-300 border-2 border-black text-white"
+                      : "bg-gray-200 text-black"
+                  } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                  onClick={() => handleRuleSelection(rule)}
+                >
+                  <span className="mr-2 text-2xl">{rule}</span>
+                  {HouseRules[rule]}
                 </div>
-              </div>
+              ))}
+            </div>
+
               <div className="md:flex md:justify-center md:flex-col">
                 <h1 className="text-2xl">Additional Rules</h1>
               </div>
@@ -1341,7 +1393,7 @@ export default function HostHomes() {
                     <textarea
                       className="property-type m-3 bg-gray-200 text-black px-4 py-2 rounded-md w-full"
                       placeholder="Add additional rules as bullet points (one rule per line)..."
-                      onChange={(e) => handleAdditionalRules(e.target.value)}
+                      onChange={(e) => setAdditionalRules(e.target.value)}
                     />
                   </div>
                 </div>
@@ -1372,11 +1424,11 @@ export default function HostHomes() {
                       <div
                         key={type.id}
                         className={`property-type  m-3   flex ${
-                          selectedTypes.includes(type.id)
+                          selectedHostType === type.id
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleTypeSelection(type.id)}
+                        onClick={() => handleHostTypeSelection(type.id)}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
                         {type.id}
@@ -1395,20 +1447,21 @@ export default function HostHomes() {
               <div className="pb-32">
                 <div className=" space-y-4">
                   <div className="flex flex-wrap   w-full">
-                    {caution.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`property-type  m-3   flex ${
-                          selectedTypes.includes(type.id)
-                            ? "bg-orange-300 border-2 border-black text-white"
-                            : "bg-gray-200 text-black"
-                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleTypeSelections(type.id)}
-                      >
-                        <span className="mr-2 text-2xl">{type.icon}</span>
-                        {type.id}
-                      </div>
-                    ))}
+                  {caution.map((type) => (
+  <div
+    key={type.id}
+    className={`property-type  m-3   flex ${
+      selectedCautionTypes.includes(type.id)
+        ? "bg-orange-300 border-2 border-black text-white"
+        : "bg-gray-200 text-black"
+    } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+    onClick={() => handleCautionTypeSelection(type.id)}
+  >
+    <span className="mr-2 text-2xl">{type.icon}</span>
+    {type.id}
+  </div>
+))}
+
                   </div>
                 </div>
               </div>
@@ -1478,19 +1531,18 @@ export default function HostHomes() {
                       <div
                         key={policy.id}
                         className={`property-type   m-3   flex ${
-                          selectedPolicy === policy.id
+                          selectedPolicy === policy.label
                             ? "bg-orange-500 text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() =>
-                          handleCancellationPolicySelection(policy.id)
+                          handleCancellationPolicySelection(policy.label)
                         }
                       >
                         <span className="mr-2 text-2xl mb-3">
                           {policy.icon}
                         </span>
                         <h1 className="font-bold text-lg my-3">
-                          {" "}
                           {policy.label}
                         </h1>
                         <p>{policy.description}</p>
@@ -1502,34 +1554,40 @@ export default function HostHomes() {
             </div>
           </div>
         );
-        case 20:
-          return (
-            <div className=" mx-auto  flex justify-center p-4">
-              <div className="  overflow-auto">
-                <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
-                  <h1 className="text-6xl">Now, set your Security Deposit</h1>
-                  <p className="text-gray-400 mt-10">
-                    You can change it anytime.
-                  </p>
-                  <p className="text-gray-400 mt-10">
-                   Adding security depsoit is optional you can choose to leave it blank
-                  </p>
-                </div>
-                <div className="pb-32">
-                  <div className="text-center">
-                    <input
-                      type="number"
-                      className="border rounded-lg px-4 py-2 w-full text-lg"
-                      placeholder="Security Deposit"
-                      value={securityDeposit}
-                      onChange={(e) => setSecurityDeposit(e.target.value)}
-                    />
-                  </div>
+      case 20:
+        return (
+          <div className=" mx-auto  flex justify-center p-4">
+                   {isSubmitting && (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-400 bg-opacity-80 z-50">
+          <p className="text-xl text-gray-800">Loading...</p>
+        </div>
+      )}
+
+            <div className="  overflow-auto">
+              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
+                <h1 className="text-6xl">Now, set your Security Deposit</h1>
+                <p className="text-gray-400 mt-10">
+                  You can change it anytime.
+                </p>
+                <p className="text-gray-400 mt-10">
+                  Adding security depsoit is optional you can choose to leave it
+                  blank
+                </p>
+              </div>
+              <div className="pb-32">
+                <div className="text-center">
+                  <input
+                    type="number"
+                    className="border rounded-lg px-4 py-2 w-full text-lg"
+                    placeholder="Security Deposit"
+                    value={securityDeposit}
+                    onChange={(e) => setSecurityDeposit(e.target.value)}
+                  />
                 </div>
               </div>
             </div>
-          );
-  
+          </div>
+        );
 
       default:
         return null;
