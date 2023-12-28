@@ -11,6 +11,7 @@ export default function Header() {
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user, token,adminStatus,host } = useStateContext();
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   
   const [notifications, setNotifications] = useState([
     {
@@ -142,8 +143,28 @@ export default function Header() {
 
   },[]);
 
-  // console.log("adminStatus",notifications);
+  console.log("adminStatus",adminStatus);
+  console.log("host",host);
+  
 
+ const logOut=async ()=>{
+
+   try {
+    await axios.get("/logout").then(response=>{
+ 
+       console.log("logout",response);
+       localStorage.removeItem("Shbro");
+       setIsLoggedIn(false);
+       window.location.reload();
+     });
+   } catch (error) {
+
+     console.log("Error",error);
+   }
+
+
+ } 
+  
 
 
 
@@ -173,9 +194,10 @@ export default function Header() {
           {token&& <Link to="/ChatAndNotifcationTab" className="text-white hover:text-gray-300 ml-4">
             Inbox
           </Link>}
-          <Link to="/Hosting" className="text-white hover:text-gray-300 ml-4">
+         {(host!=0&&token)&&  <Link to="/Hosting" className={` hover:text-gray-300 ml-4 ${(host!=0&&token)?"block text-white":"hidden"}`}>
             Switch to Host
-          </Link>
+          </Link>}
+        {(host==0||!host) && <Link to="/HostHomes" className="text-white hover:text-gray-300 ml-4"  >Shrbo your place</Link>}
         { (adminStatus!=null) && <Link to="/AdminAnalytical" className="text-white hover:text-gray-300 ml-4">
            Dashboard
           </Link>}
@@ -224,12 +246,13 @@ export default function Header() {
                 >
                   Listings
                 </Link>}
-                <Link
-                  to="/logout"
+                <button
+                  // to="/logout"
                   className="block text-gray-800 hover:text-red-500 p-2 cursor-pointer"
+                  onClick={logOut}
                 >
                   Logout
-                </Link>
+                </button>
               </div>
             )}
           </div>}

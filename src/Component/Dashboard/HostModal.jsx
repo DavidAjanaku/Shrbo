@@ -6,9 +6,30 @@ import defaultProfile from "../../assets/svg/avatar-icon.svg";
 import MenuCard from "../MenuCard";
 import HostingCard from "../HostingCard";
 import SupportCard from "../SupportCard";
+import axios from "../../Axios"
 
 export default function HostModal({ isOpen, onClose }) {
   const [profilePicture, setProfilePicture] = useState(defaultProfile);
+
+  
+ const logOut=()=>{
+
+  try {
+    axios.get("/logout").then(response=>{
+
+      console.log("logout",response);
+      localStorage.removeItem("Shbro");
+      // setIsLoggedIn(false);
+      window.location.href ="/";
+    });
+  } catch (error) {
+
+    console.log("Error",error);
+  }
+
+
+} 
+ 
 
   return (
     isOpen && (
@@ -131,7 +152,7 @@ export default function HostModal({ isOpen, onClose }) {
                 </ul>
               </section>
               <div className="text-center">
-                <button className="border w-full p-2 my-2">Log out</button>
+                <button className="border w-full p-2 my-2" onClick={logOut}>Log out</button>
               </div>
             </div>
           </div>

@@ -29,6 +29,9 @@ export default function Home() {
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
   const { setUser, setToken, token,setHost,setAdminStatus } = useStateContext();
   const [loading, setLoading] = useState(true);
+  const [homeImage,setHomeImage]=useState("");
+  const [homeTitle,setHomeTitle]=useState("");
+  const [homeSubTitle,setHomeSubTitle]=useState("");
  
 
   const openModal = () => {
@@ -87,14 +90,14 @@ export default function Home() {
         console.log('Response Data:', response.data);
   
         // Set the user data in state
-        setUser(response.data.user);
-        console.log('User Data:', response.data.user);
+        setUser(response.data);
+        console.log('User Data:', response.data);
   
         // Set the host value in state context
-        setHost(response.data.user.host);
-        console.log('Host:', response.data.user.host);
+        setHost(response.data.host);
+        console.log('Host:', response.data.host);
         setToken(ustoken);
-        setAdminStatus(response.data.user.adminStatus);
+        setAdminStatus(response.data.adminStatus);
 
         // Log 'yes' to the console
         console.log('yes');
@@ -119,13 +122,13 @@ export default function Home() {
         const response = await axios.get('/user'); // Adjust the endpoint based on your API
 
         // Set the user data in state
-        setUser(response.data.user);
-        console.log(response.data.user);
-        console.log(response.data.user.host);
+        setUser(response.data);
+        console.log(response.data);
+        console.log(response.data.host);
        
           console.log('yes');
-          setHost(response.data.user.host);
-          setAdminStatus(response.data.user.adminStatus);
+          setHost(response.data.host);
+          setAdminStatus(response.data.adminStatus);
       
 
       } catch (error) {
@@ -138,6 +141,38 @@ export default function Home() {
 
     fetchUserData();
   }, []); 
+
+
+
+
+
+  // Home Page Data 
+
+  useEffect(()=>{
+
+    const homePageData=async ()=>{
+
+      await axios.get('/homepage').then(response=>{
+
+        console.log("HomePage",response.data.data[0]);
+        const homePageData=response.data.data[0];
+
+        setHomeImage(homePageData.image);
+        setHomeTitle(homePageData.title);
+        setHomeSubTitle(homePageData.subtitle)
+
+
+      }).catch(error=>{
+        console.error(error);
+      });
+
+    }
+
+    homePageData();
+
+
+
+  },[]);
 
 
   
@@ -361,7 +396,7 @@ export default function Home() {
       ],
     },
   ];
-
+ 
   const settings = {
     dots: true,
     infinite: true,
@@ -433,18 +468,20 @@ export default function Home() {
       <div className="pageHeader"></div>
       <div className="storeFrontHomeage">
         <div>
-        <link rel="preload" as="image" href="https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh" />
+        <link rel="preload" as="image" href={"https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh" }/>
 
-          <div className="hero-pattern relative bg-cover bg-center md:h-[70vh] h-[100vh] bg-[url('https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh')]">
+          <div className="hero-pattern relative bg-cover bg-center md:h-[70vh] h-[100vh] " 
+            style={{ backgroundImage: `url(${homeImage})` }}
+          >
             <div className="h-full flex flex-col justify-center items-center">
               <h1 className="text-white md:text-6xl text-5xl lg:text-6xl p-4 text-center z-50">
-                Unlock Comfort, Discover Adventure with Shrbo.
+                {/* Unlock Comfort, Discover Adventure with Shrbo. */} {homeTitle}
               </h1>
               <div className="z-50">
                 <p className="z-50 text-white  md:text-base text-center text-sm px-10">
-                  Welcome to Shrbo, where comfort meets adventure. Find your
+                  {/* Welcome to Shrbo, where comfort meets adventure. Find your
                   perfect home away from home and embark on memorable journeys,
-                  one stay at a time.
+                  one stay at a time. */}  {homeSubTitle}
                 </p>
               </div>
             </div>

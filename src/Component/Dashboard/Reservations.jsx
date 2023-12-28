@@ -280,12 +280,12 @@ const Reservations = () => {
       key: "6",
       label: <div className="text-neutral-700      rounded-t-lg">All</div>,
       children:
-        (
+      filteredData ? (
           <CardTable
             dataSource={filteredData}
             handlePopup={(key) => handlePopup(key)}
           />
-        ) || empty("6", ""),
+        ) : empty("6", ""),
     },
   ];
 
@@ -409,6 +409,7 @@ const Reservations = () => {
           handleCancel={() => {
             setIsModalVisible(false);
             setShow(false);
+            setSelectedReservation(null);
           }}
           centered={true}
           // width={"100vw"}

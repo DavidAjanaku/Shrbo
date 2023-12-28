@@ -38,7 +38,11 @@ const PricingModal = ({ visible, onClose }) => {
   const [inputValue, setInputValue] = useState("42");
 
   const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+    const newInputValue = e.target.value;
+
+    if (/^\d*$/.test(newInputValue) && newInputValue.length <= 8) {
+      setInputValue(newInputValue);
+  }
   };
 
   return (

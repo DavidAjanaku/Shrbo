@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { ContextProvider } from "./ContextProvider/ContextProvider";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./Views/Home";
@@ -63,7 +63,31 @@ import DamageReportForm from "./Component/DamageReportForm";
 import LogIn from "./Views/Login";
 import SignUp from "./Views/SignUp";
 import AuthGoogle from "./Views/AuthGoogle";
+import axios from "./Axios"
 function App() {
+      // View Count (register visitors)
+  
+  useEffect(()=>{
+   
+    const viewCount =async ()=>{
+
+      await axios.get('/view-count').then(response=>{
+  
+        console.log("view-Count",response);
+  
+  
+  
+      }).catch(error=>{
+          console.error(error);
+      });
+    }  
+  
+  viewCount();
+   
+
+  },[]);
+
+
   return (
     <Router>
       <ContextProvider>
