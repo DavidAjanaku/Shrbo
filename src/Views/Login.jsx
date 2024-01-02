@@ -76,11 +76,17 @@ const LogIn=()=>{
       } catch (error) {
         console.error('Error:', error);
         
-        openNotificationWithIcon("error",error.response.data.message);
+        if(error.response.data.message){
+          openNotificationWithIcon("error",error.response.data.message);
+
+        }else{
+
+          openNotificationWithIcon("error",error.response.data);
+        }
         
       }
-      console.log(userData);
-      console.log(token)
+      // console.log(userData);
+      // console.log(token)
 
     }
 

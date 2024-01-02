@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash } from "react-icons/fa";
 import AddressForm from "../AddressFrom";
 import Axios from "../../Axios";
 import { data } from "autoprefixer";
+import { useStateContext } from "../../ContextProvider/ContextProvider"
+import { Link } from "react-router-dom";
 export default function HostHomes() {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [step, setStep] = useState(0);
@@ -29,6 +31,10 @@ export default function HostHomes() {
   const [houseDescriptionDetails, setHouseDescriptionDetails] = useState("");
   const [enteredAddress, setEnteredAddress] = useState("");
   const [selectedHouseDescriptions, setSelectedHouseDescriptions] = useState([]);
+
+  const {token} = useStateContext();
+  
+  const goLogin=useRef(null);
 
   const [formData, setFormData] = useState({
     welcomeTypes: [],
@@ -142,7 +148,13 @@ export default function HostHomes() {
   
 
   const handleNext = () => {
-    setStep(step + 1);
+    if(token){
+      setStep(step + 1);
+    }
+    else{
+      goLogin.current.click();
+
+    }
   };
 
   const handlePrevious = () => {
@@ -1626,6 +1638,7 @@ export default function HostHomes() {
           </button>
         )}
       </div>
+      <Link ref={goLogin} to={"/Login"}/>
     </form>
   );
 }
