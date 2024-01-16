@@ -1,72 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
-import { Table, Input, Select, Modal, Space, Dropdown } from "antd";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { Table, Input, Select, Modal, Space, Dropdown, Spin } from "antd";
+import { ExclamationCircleOutlined, LoadingOutlined } from "@ant-design/icons";
+import axoisInstance from "../../Axios";
+import moment from "moment";
 
 const { confirm } = Modal;
 
 export default function HostsListings() {
-  const [hosts, setHosts] = useState([
-    {
-      id: 1,
-      firstName: "Alice",
-      lastName: "Johnson",
-      email: "alice@example.com",
-      housesHosted: 2,
-      image: "https://example.com/alice.jpg",
-      verified: true,
-      dateCreated: "2023-10-01",
-      lastLogin: "2023-10-15",
+  const [hosts, setHosts] = useState([]);
 
-      banned: false,
-      suspended: true,
-    },
-    {
-      id: 2,
-      firstName: "Bob",
-      lastName: "Smith",
-      email: "bob@example.com",
-      housesHosted: 4,
-
-      image: "https://example.com/bob.jpg",
-      verified: false,
-      dateCreated: "2023-09-15",
-      lastLogin: "2023-10-14",
-      banned: true,
-      suspended: false,
-    },
-    {
-      id: 3,
-      firstName: "William",
-      lastName: "Smith",
-      email: "bob@example.com",
-      housesHosted: 4,
-
-      image: "https://example.com/bob.jpg",
-      verified: true,
-      dateCreated: "2023-09-15",
-      lastLogin: "2023-10-14",
-      banned: true,
-      suspended: true,
-    },
-
-    {
-      id: 4,
-      firstName: "James",
-      lastName: "Gunn",
-      email: "bob@example.com",
-      housesHosted: 4,
-
-      image: "https://example.com/bob.jpg",
-      verified: true,
-      dateCreated: "2023-09-15",
-      lastLogin: "2023-10-14",
-      banned: false,
-      suspended: false,
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
 
   const [filters, setFilters] = useState({
     verified: "Any",
@@ -101,6 +47,20 @@ export default function HostsListings() {
     setSearchQuery(event.target.value);
   };
 
+  useEffect(() => {
+    axoisInstance
+      .get("/hosts")
+      .then((response) => {
+        setHosts(response.data.data);
+        console.log(response.data.data); // Update this line
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log("Error fetching hosts:", error);
+        setLoading(false);
+      });
+  }, []);
+
   const handleDeleteHost = (hostId) => {
     confirm({
       title: "Do you want to delete this host?",
@@ -126,23 +86,19 @@ export default function HostsListings() {
       ),
     },
     {
-      title: "First Name",
-      dataIndex: "firstName",
-      key: "firstName",
+      title: "Name",
+      dataIndex: ["user", "name"],
+      key: "name",
     },
-    {
-      title: "Last Name",
-      dataIndex: "lastName",
-      key: "lastName",
-    },
+
     {
       title: "Email",
-      dataIndex: "email",
+      dataIndex: ["user","email"],
       key: "email",
     },
     {
       title: "Houses Hosted",
-      dataIndex: "housesHosted",
+      dataIndex: "verified_homes_count",
       key: "housesHosted",
     },
     {
@@ -153,13 +109,22 @@ export default function HostsListings() {
     },
     {
       title: "Date Created",
-      dataIndex: "dateCreated",
+      dataIndex: "created_at",
       key: "dateCreated",
+
+      render: (created_at) =>
+        moment(created_at).format("MMMM Do, YYYY, h:mm:ss a"),
     },
     {
       title: "Last Login",
-      dataIndex: "lastLogin",
+      dataIndex: "last_login_at",
       key: "lastLogin",
+      render: (last_login_at) => {
+        const formattedDate = moment(last_login_at);
+        return formattedDate.isValid()
+          ? formattedDate.format("MMMM Do, YYYY, h:mm:ss a")
+          : "No Date";
+      },
     },
     {
       title: "Actions",
@@ -186,23 +151,28 @@ export default function HostsListings() {
     const { verified, ban, suspended } = filters;
 
     const matchesVerified =
-    verified === "Any" || 
-    (verified === "Yes" && host.verified) || (verified === "No" && !host.verified);
+      verified === "Any" ||
+      (verified === "Yes" && host.user.verified) ||
+      (verified === "No" && !host.user.verified);
 
     const matchesBan =
       ban === "Any" ||
-      (ban === "Yes" && host.banned) ||
-      (ban === "No" && !host.banned);
+      (ban === "Yes" &&
+        (host.user.banned !== null ? host.user.banned : false)) ||
+      (ban === "No" && (host.user.banned !== null ? !host.user.banned : true));
 
     const matchesSuspended =
       suspended === "Any" ||
-      (suspended === "Yes" && host.suspended) ||
-      (suspended === "No" && !host.suspended);
+      (suspended === "Yes" &&
+        (host.user.suspend !== null ? host.user.suspend : false)) ||
+      (suspended === "No" &&
+        (host.user.suspend !== null ? !host.user.suspend : true));
 
     const matchesSearch =
-      host.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      host.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      host.email.toLowerCase().includes(searchQuery.toLowerCase());
+      (host.user.name &&
+        host.user.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (host.user.email &&
+        host.user.email.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return matchesVerified && matchesBan && matchesSuspended && matchesSearch;
   });
@@ -245,10 +215,9 @@ export default function HostsListings() {
                 placeholder="Search by name or email"
                 className="border p-1 rounded-full mr-2"
               />
-              
             </div>
             <div className="my-4 flex space-x-3">
-            <Select
+              <Select
                 style={{ width: 120 }}
                 value={filters.verified}
                 onChange={handleFilterChange}
@@ -279,7 +248,26 @@ export default function HostsListings() {
               </Select>
             </div>
             <div className="overflow-x-auto">
-            <Table columns={columns} dataSource={filteredHosts} rowKey="id" />
+              {loading ? (
+                <div className="flex justify-center h-52 items-center">
+                  <Spin
+                    indicator={
+                      <LoadingOutlined
+                        style={{
+                          fontSize: 24,
+                        }}
+                        spin
+                      />
+                    }
+                  />
+                </div>
+              ) : (
+                <Table
+                  columns={columns}
+                  dataSource={filteredHosts}
+                  rowKey={(record) => record.id} // Set the rowKey to the guest's id
+                />
+              )}
             </div>
           </div>
         </div>

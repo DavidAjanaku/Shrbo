@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import AdminHeader from './AdminNavigation/AdminHeader';
 import AdminSidebar from './AdminSidebar';
-import { Table, Button, Input, Modal } from 'antd';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Table, Button, Input, Modal,Spin } from 'antd';
+import { ExclamationCircleOutlined , LoadingOutlined} from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import axiosInstance from "../../Axios"
+import moment from 'moment';
 
 const { confirm } = Modal;
 
 export default function PropertyList() {
   const [properties, setProperties] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
 
   // Sample data for demonstration purposes
   const sampleProperties = [
@@ -57,20 +60,21 @@ export default function PropertyList() {
 
   const filteredProperties = properties.filter((property) => {
     return (
-      property.propertyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.addedBy.toLowerCase().includes(searchQuery.toLowerCase())
+      property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (property.user && property.user.name.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   });
+  
 
   const columns = [
     {
       title: 'Property Name',
-      dataIndex: 'propertyName',
+      dataIndex: 'title',
       key: 'propertyName',
     },
     {
       title: 'Property ID',
-      dataIndex: 'propertyId',
+      dataIndex: 'id',
       key: 'propertyId',
     },
     {
@@ -80,13 +84,15 @@ export default function PropertyList() {
     },
     {
       title: 'Added By',
-      dataIndex: 'addedBy',
+      dataIndex: 'user', // Access the 'user' object
       key: 'addedBy',
+      render: (user) => user.name, // Render the 'name' property of the 'user' object
     },
     {
       title: 'Created On',
-      dataIndex: 'createdOn',
+      dataIndex: 'user', // Assuming 'createdOn' is stored in the 'created_at' property
       key: 'createdOn',
+      render: (user) => moment(user.created_at).format('MMMM Do, YYYY, h:mm:ss a'),
     },
     {
       title: 'Status',
@@ -94,10 +100,10 @@ export default function PropertyList() {
       key: 'status',
     },
     {
-      title: 'User Verified',
-      dataIndex: 'userVerified',
-      key: 'userVerified',
-      render: (verified) => (verified ? 'Yes' : 'No'),
+      title: 'Verified',
+      dataIndex: ['user', 'verified'], // Nested property path
+      key: 'Verified',
+      render: (verified) => (verified ? 'Yes' : 'No'), // Render 'Yes' if true, 'No' if false
     },
     {
       title: 'Actions',
@@ -114,9 +120,20 @@ export default function PropertyList() {
       ),
     },
   ];
+ 
   useEffect(() => {
-    // You can fetch data from your API here and update the properties state
-    setProperties(sampleProperties);
+    // Fetch guests from the API when the component mounts
+    axiosInstance
+      .get("/allHomes")
+      .then((response) => {
+        setProperties(response.data.data);
+        console.log(response.data.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching guests:", error);
+        setLoading(false);
+      });
   }, []);
   
 
@@ -138,8 +155,25 @@ export default function PropertyList() {
               style={{ width: 200, marginBottom: '1rem' }}
             />
             <div className='overflow-x-auto'>
-            <Table columns={columns} dataSource={filteredProperties} />
+            {loading ? (
+                <div className="flex justify-center h-52 items-center">
+                  <Spin
+                    indicator={
+                      <LoadingOutlined
+                        style={{
+                          fontSize: 24,
+                        }}
+                        spin
+                      />
+                    }
+                  />
+                </div>
+              ) : (
+            <Table columns={columns} dataSource={filteredProperties}
+            rowKey={(record) => record.id} // Set the rowKey to the guest's id
+            />
 
+            )}
             </div>
           </div>
         </div>
