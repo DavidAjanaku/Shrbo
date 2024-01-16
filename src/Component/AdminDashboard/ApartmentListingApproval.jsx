@@ -83,6 +83,11 @@ export default function ApartmentListingApproval() {
       // Hide the decline modal and update the apartment status if needed
       hideDeclineModal();
 
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+      // Reload the page
+      window.location.reload();
+
       // Optionally, you can update the local state to reflect the declined status
       setApartments((prevApartments) =>
         prevApartments.map((apt) =>
@@ -197,9 +202,9 @@ export default function ApartmentListingApproval() {
           <Button type="danger" onClick={() => showDeclineModal(record.id)}>
             Decline
           </Button>
-          <Link to="/">
-            <Button type="default">View Details</Button>
-          </Link>
+          <Link to={`/HostHome/${record.id}`}>
+  <Button type="default">View Details</Button>
+</Link>
         </div>
       ),
     },

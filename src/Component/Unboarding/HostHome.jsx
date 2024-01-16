@@ -1,13 +1,13 @@
-import React, { useState,useRef,useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash } from "react-icons/fa";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
 import AddressForm from "../AddressFrom";
 import Axios from "../../Axios";
 import { data } from "autoprefixer";
-import { useStateContext } from "../../ContextProvider/ContextProvider"
+import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { Link } from "react-router-dom";
-export default function HostHomes({ match }) {
+export default function HostHome({ match }) {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [step, setStep] = useState(0);
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -32,11 +32,13 @@ export default function HostHomes({ match }) {
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [houseDescriptionDetails, setHouseDescriptionDetails] = useState("");
   const [enteredAddress, setEnteredAddress] = useState("");
-  const [selectedHouseDescriptions, setSelectedHouseDescriptions] = useState([]);
+  const [selectedHouseDescriptions, setSelectedHouseDescriptions] = useState(
+    []
+  );
 
-  const {token} = useStateContext();
-  
-  const goLogin=useRef(null);
+  const { token } = useStateContext();
+
+  const goLogin = useRef(null);
 
   const [formData, setFormData] = useState({
     welcomeTypes: [],
@@ -69,9 +71,6 @@ export default function HostHomes({ match }) {
         console.log("Error fetching hosthome details:", error);
       });
   }, [id]);
-  
-
- 
 
   const handleTimeChange = (e) => {
     setSelectedTime(e.target.value);
@@ -138,7 +137,7 @@ export default function HostHomes({ match }) {
         bathrooms: guestDetails.bathrooms,
         amenities: [...selectedAmenities],
         hosthomephotos: photoSrcArray,
-        hosthomevideo: videoBase64 ? videoBase64.toString() : '', // Convert to string
+        hosthomevideo: videoBase64 ? videoBase64.toString() : "", // Convert to string
         title: houseTitle,
         hosthomedescriptions: selectedHouseDescriptions,
         description: houseDescriptionDetails,
@@ -154,27 +153,24 @@ export default function HostHomes({ match }) {
         cancelPolicy: selectedPolicy,
         securityDeposit: securityDeposit,
       };
-      console.log('Form submitted successfully', formDetails);
+      console.log("Form submitted successfully", formDetails);
 
       // Example Axios post request
-      await Axios.post('/hosthomes', formDetails);
+      await Axios.post("/hosthomes", formDetails);
 
-      console.log('Form submitted successfully', formDetails);
+      console.log("Form submitted successfully", formDetails);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     } finally {
       setIsSubmitting(false); // Set the loader state back to false, whether the submission was successful or not
     }
   };
-  
 
   const handleNext = () => {
-    if(token){
+    if (token) {
       setStep(step + 1);
-    }
-    else{
+    } else {
       goLogin.current.click();
-
     }
   };
 
@@ -221,15 +217,11 @@ export default function HostHomes({ match }) {
     bathrooms: 0,
   });
 
- 
-
   const [discounts, setDiscounts] = useState({
     newListingPromotion: false,
     weeklyDiscount: false,
     monthlyDiscount: false,
   });
-
- 
 
   const propertyTypes = [
     { id: "house", label: "House", icon: <FaHome /> },
@@ -577,7 +569,10 @@ export default function HostHomes({ match }) {
       );
     } else {
       // If no, add it
-      setSelectedHouseDescriptions((prevSelected) => [...prevSelected, selectedId]);
+      setSelectedHouseDescriptions((prevSelected) => [
+        ...prevSelected,
+        selectedId,
+      ]);
     }
   };
 
@@ -597,8 +592,6 @@ export default function HostHomes({ match }) {
   const handleInstantBookSelection = (selectedId) => {
     setSelectedInstantBookType(selectedId);
   };
-
-  
 
   const handleCancellationPolicySelection = (policyId) => {
     const selectedPolicy = cancellationPolicies.find(
@@ -643,8 +636,7 @@ export default function HostHomes({ match }) {
 
   const handleHostTypeSelection = (typeId) => {
     setSelectedHostType(typeId);
-  }
-
+  };
 
   const handleCautionTypeSelection = (id) => {
     setSelectedCautionTypes((prevSelectedTypes) => {
@@ -657,8 +649,6 @@ export default function HostHomes({ match }) {
       }
     });
   };
-  
-
 
   const addressFields = [
     { id: "street", label: "Street Address" },
@@ -675,21 +665,14 @@ export default function HostHomes({ match }) {
     zipcode: "",
   });
 
-
-  
-  
-  
-  
-  
-
   const handleImageUpload = (e) => {
     const files = e.target.files;
     const newImages = [];
-  
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const reader = new FileReader();
-  
+
       reader.onload = (event) => {
         newImages.push({ id: Date.now(), src: event.target.result });
         if (newImages.length === files.length) {
@@ -697,16 +680,13 @@ export default function HostHomes({ match }) {
           setUploadedImages((prevImages) => [...prevImages, ...newImages]);
         }
       };
-  
+
       reader.readAsDataURL(file);
     }
-  
+
     // Reset the file input field
     setFileInputKey(fileInputKey + 1);
   };
-  
-  
-  
 
   const handleImageDelete = (id) => {
     const updatedImages = uploadedImages.filter((image) => image.id !== id);
@@ -833,7 +813,7 @@ export default function HostHomes({ match }) {
                       <div
                         key={type.id}
                         className={`property-type h-24 w-32 m-3 flex ${
-                          selectedHouseType === type.id
+                          apartment?.property_type === type.id
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
@@ -866,7 +846,7 @@ export default function HostHomes({ match }) {
                       <div
                         key={type.id}
                         className={`property-type m-3 flex ${
-                          selectedPrivacyType === type.id
+                          apartment?.guest_choice === type.id
                             ? "bg-orange-500 text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
@@ -886,8 +866,10 @@ export default function HostHomes({ match }) {
 
       case 4:
         return (
-      <AddressForm onAddressChange={handleAddressChange} />
-
+          <AddressForm
+            onAddressChange={handleAddressChange}
+            defaultAddress={apartment?.address}
+          />
         );
 
       case 5:
@@ -918,7 +900,7 @@ export default function HostHomes({ match }) {
                       <input
                         type="button"
                         className="w-8 text-center"
-                        value={guestDetails.guests}
+                        value={apartment.guest}
                       />
                       <button
                         type="button"
@@ -945,7 +927,7 @@ export default function HostHomes({ match }) {
                       <input
                         type="button"
                         className="w-8 text-center"
-                        value={guestDetails.bedrooms}
+                        value={apartment.bedroom}
                       />
                       <button
                         onClick={() => handleIncrement("bedrooms")}
@@ -972,7 +954,7 @@ export default function HostHomes({ match }) {
                       <input
                         type="number"
                         className="w-8 text-center"
-                        value={guestDetails.beds}
+                        value={apartment.beds}
                       />
                       <button
                         type="button"
@@ -993,13 +975,14 @@ export default function HostHomes({ match }) {
                         type="button"
                         onClick={() => handleDecrement("bathrooms")}
                         className="bg-gray-200 text-gray-700 rounded-full px-2"
+                        disabled
                       >
                         -
                       </button>
                       <input
                         type="button"
                         className="w-8 text-center"
-                        value={guestDetails.bathrooms}
+                        value={apartment.bathrooms}
                       />
                       <button
                         type="button"
@@ -1016,88 +999,105 @@ export default function HostHomes({ match }) {
           </div>
         );
 
-      case 6:
-        return (
-          <div className=" mx-auto  flex justify-center p-4">
-            <div className="  overflow-auto">
-              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
-                <h1 className="text-6xl">
-                  Tell guests what your place has to offer{" "}
-                </h1>
-                <p className="text-gray-400 mt-10 text-lg">
-                  You can add more amenities after you publish your listing.
-                </p>
-              </div>
-              <div className="pb-32">
-                <div className=" space-y-4">
-                  <h3 className="text-xl font-semibold">Amenities </h3>
-                  <div className="flex flex-wrap   w-full">
-                    {amenities.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`property-type h-24  w-32 m-3   flex ${
-                          selectedAmenities.includes(type.id) // Change this line
-                            ? "bg-orange-300 border-2 border-black text-white"
-                            : "bg-gray-200 text-black"
-                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleAmenitySelection(type.id)}
-                      >
-                        <span className="mr-2 text-2xl">{type.icon}</span>
-                        {type.id}
+        case 6:
+            return (
+              <div className="mx-auto flex justify-center p-4">
+                <div className="overflow-auto">
+                  <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
+                    <h1 className="text-6xl">Tell guests what your place has to offer</h1>
+                    <p className="text-gray-400 mt-10 text-lg">
+                      You can add more amenities after you publish your listing.
+                    </p>
+                  </div>
+                  <div className="pb-32">
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-semibold">Amenities</h3>
+                      <div className="flex flex-wrap w-full">
+                        {amenities.map((type) => (
+                          <div
+                            key={type.id}
+                            className={`property-type h-24 w-32 m-3 flex ${
+                              apartment?.amenities.some((amenity) => amenity.offer === type.id)
+                                ? "bg-orange-300 border-2 border-black text-white"
+                                : "bg-gray-200 text-black"
+                            } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                            onClick={() => handleAmenitySelection(type.id)}
+                          >
+                            <span className="mr-2 text-2xl">{type.icon}</span>
+                            {type.id}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 7:
-        return (
-          <div className=" mx-auto flex justify-center p-4">
-            <div className="overflow-auto">
-              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
-                <h1 className="text-6xl">Add some photos of your house</h1>
-                <p className="text-gray-400 mt-10">
-                  You can add more or make changes later.
-                </p>
-              </div>
-              <div className="pb-32">
-                <div className="text-center">
-                  <div className="border-2 border-dashed border-gray-300 p-8 my-6">
-                    <p className="text-gray-400 mb-4">Drag your photos here</p>
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      key={fileInputKey}
-                    />
-                  </div>
-                  <p className="text-gray-400">Choose at least 5 photos</p>
-                </div>
-                <div className="flex flex-wrap mt-6">
-                  {uploadedImages.map((image) => (
-                    <div key={image.id} className="relative  p-2">
-                      <img
-                        src={image.src}
-                        alt="House"
-                        className="w-64 object-cover h-64"
-                      />
-                      <button
-                        onClick={() => handleImageDelete(image.id)}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
-                      >
-                        <FaTrash />
-                      </button>
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        );
+            );
+          
+            case 7:
+                return (
+                  <div className="mx-auto flex justify-center p-4">
+                    <div className="overflow-auto">
+                      <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
+                        <h1 className="text-6xl">Add some photos of your house</h1>
+                        <p className="text-gray-400 mt-10">
+                          You can add more or make changes later.
+                        </p>
+                      </div>
+                      <div className="pb-32">
+                        <div className="text-center">
+                          <div className="border-2 border-dashed border-gray-300 p-8 my-6">
+                            <p className="text-gray-400 mb-4">Drag your photos here</p>
+                            <input
+                              type="file"
+                              multiple
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              key={fileInputKey}
+                            />
+                          </div>
+                          <p className="text-gray-400">Choose at least 5 photos</p>
+                        </div>
+                        <div className="flex flex-wrap mt-6">
+                          {uploadedImages.map((image) => (
+                            <div key={image.id} className="relative p-2">
+                              <img
+                                src={image.src}
+                                alt="House"
+                                className="w-64 object-cover h-64"
+                              />
+                              <button
+                                onClick={() => handleImageDelete(image.id)}
+                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
+                          ))}
+                          {/* Display existing photos from fetched data */}
+                          {Array.isArray(apartment?.hosthomephotos) &&
+                            apartment.hosthomephotos.map((photo) => (
+                              <div key={photo.id} className="relative p-2">
+                                <img
+                                  src={photo.url}
+                                  alt="House"
+                                  className="w-64 object-cover h-64"
+                                />
+                                <button
+                                  onClick={() => handleExistingPhotoDelete(photo.id)}
+                                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
+                                >
+                                  <FaTrash />
+                                </button>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              
+              
 
       case 8: // Step for hosting type and property features
         return (
@@ -1123,16 +1123,13 @@ export default function HostHomes({ match }) {
                 {selectedVideo && (
                   <div className="mt-4">
                     <p className="text-lg font-semibold mb-2">
-                      Selected Video: {selectedVideo.name}
+                      Selected Video: {apartment.hosthomevideo}
                     </p>
                     <p className="text-slate-500">
                       Size: {(selectedVideo.size / (1024 * 1024)).toFixed(2)} MB
                     </p>
                     <video controls className="mt-2">
-                      <source
-                        src={URL.createObjectURL(selectedVideo)}
-                        type="video/mp4"
-                      />
+                      <source src={apartment.hosthomevideo} type="video/mp4" />
                     </video>
                     <button
                       onClick={handleRemoveVideo}
@@ -1198,20 +1195,20 @@ export default function HostHomes({ match }) {
               <div className="pb-32">
                 <div className=" ">
                   <div className="flex flex-wrap   w-full">
-                  {houseDescription.map((type) => (
-        <div
-          key={type.id}
-          className={`property-type h-24 w-32 m-3 flex ${
-            selectedHouseDescriptions.includes(type.id)
-              ? "bg-orange-300 border-2 border-black text-white"
-              : "bg-gray-200 text-black"
-          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-          onClick={() => handleHouseDescriptionSelection(type.id)}
-        >
-          <span className="mr-2 text-2xl">{type.icon}</span>
-          {type.id}
-        </div>
-      ))}
+                    {houseDescription.map((type) => (
+                      <div
+                        key={type.id}
+                        className={`property-type h-24 w-32 m-3 flex ${
+                          selectedHouseDescriptions.includes(type.id)
+                            ? "bg-orange-300 border-2 border-black text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() => handleHouseDescriptionSelection(type.id)}
+                      >
+                        <span className="mr-2 text-2xl">{type.icon}</span>
+                        {type.id}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1266,20 +1263,20 @@ export default function HostHomes({ match }) {
               <div className="pb-32">
                 <div className="space-y-4">
                   <div className="flex flex-wrap w-full">
-                  {instantBook.map((type) => (
-        <div
-          key={type.id}
-          className={`property-type m-3 flex ${
-            selectedInstantBookType === type.id
-              ? "bg-orange-300 border-2 border-black text-white"
-              : "bg-gray-200 text-black"
-          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-          onClick={() => handleInstantBookSelection(type.id)}
-        >
-          <span className="mr-2 text-2xl">{type.icon}</span>
-          {type.description}
-        </div>
-      ))}
+                    {instantBook.map((type) => (
+                      <div
+                        key={type.id}
+                        className={`property-type m-3 flex ${
+                          selectedInstantBookType === type.id
+                            ? "bg-orange-300 border-2 border-black text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() => handleInstantBookSelection(type.id)}
+                      >
+                        <span className="mr-2 text-2xl">{type.icon}</span>
+                        {type.description}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1312,7 +1309,6 @@ export default function HostHomes({ match }) {
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => {
                           handleWelcomeVisibilitySelection(type.id);
-                         
                         }}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
@@ -1375,7 +1371,6 @@ export default function HostHomes({ match }) {
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => {
                           handleDiscountSelection(type.id);
-                         
                         }}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
@@ -1400,22 +1395,22 @@ export default function HostHomes({ match }) {
                   You can change it anytime.
                 </p>
               </div>
-            <div className="flex">
-            {Object.keys(HouseRules).map((rule) => (
-                <div
-                  key={rule}
-                  className={`property-type  m-3   flex ${
-                    selectedRules.includes(rule)
-                      ? "bg-orange-300 border-2 border-black text-white"
-                      : "bg-gray-200 text-black"
-                  } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                  onClick={() => handleRuleSelection(rule)}
-                >
-                  <span className="mr-2 text-2xl">{rule}</span>
-                  {HouseRules[rule]}
-                </div>
-              ))}
-            </div>
+              <div className="flex">
+                {Object.keys(HouseRules).map((rule) => (
+                  <div
+                    key={rule}
+                    className={`property-type  m-3   flex ${
+                      selectedRules.includes(rule)
+                        ? "bg-orange-300 border-2 border-black text-white"
+                        : "bg-gray-200 text-black"
+                    } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                    onClick={() => handleRuleSelection(rule)}
+                  >
+                    <span className="mr-2 text-2xl">{rule}</span>
+                    {HouseRules[rule]}
+                  </div>
+                ))}
+              </div>
 
               <div className="md:flex md:justify-center md:flex-col">
                 <h1 className="text-2xl">Additional Rules</h1>
@@ -1480,21 +1475,20 @@ export default function HostHomes({ match }) {
               <div className="pb-32">
                 <div className=" space-y-4">
                   <div className="flex flex-wrap   w-full">
-                  {caution.map((type) => (
-  <div
-    key={type.id}
-    className={`property-type  m-3   flex ${
-      selectedCautionTypes.includes(type.id)
-        ? "bg-orange-300 border-2 border-black text-white"
-        : "bg-gray-200 text-black"
-    } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-    onClick={() => handleCautionTypeSelection(type.id)}
-  >
-    <span className="mr-2 text-2xl">{type.icon}</span>
-    {type.id}
-  </div>
-))}
-
+                    {caution.map((type) => (
+                      <div
+                        key={type.id}
+                        className={`property-type  m-3   flex ${
+                          selectedCautionTypes.includes(type.id)
+                            ? "bg-orange-300 border-2 border-black text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() => handleCautionTypeSelection(type.id)}
+                      >
+                        <span className="mr-2 text-2xl">{type.icon}</span>
+                        {type.id}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1590,11 +1584,11 @@ export default function HostHomes({ match }) {
       case 20:
         return (
           <div className=" mx-auto  flex justify-center p-4">
-                   {isSubmitting && (
-        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-400 bg-opacity-80 z-50">
-          <p className="text-xl text-gray-800">Loading...</p>
-        </div>
-      )}
+            {isSubmitting && (
+              <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-400 bg-opacity-80 z-50">
+                <p className="text-xl text-gray-800">Loading...</p>
+              </div>
+            )}
 
             <div className="  overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
@@ -1659,7 +1653,7 @@ export default function HostHomes({ match }) {
           </button>
         )}
       </div>
-      <Link ref={goLogin} to={"/Login"}/>
+      <Link ref={goLogin} to={"/Login"} />
     </form>
   );
 }
