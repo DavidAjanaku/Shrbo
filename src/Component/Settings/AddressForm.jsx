@@ -32,6 +32,7 @@ function AddressForm({ onCancel, onSave }) {
         <option value="">Select a Country</option>
         <option value="USA">United States</option>
         <option value="Canada">Canada</option>
+        <option value="Nigeria">Nigeria</option>
         {/* Add more country options */}
       </select>
  <br />

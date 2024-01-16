@@ -77,7 +77,7 @@ const LogIn=()=>{
         console.error('Error:', error);
         
         if(error.response.data.message){
-          openNotificationWithIcon("error",error.response.data.message);
+          openNotificationWithIcon("error",error.response.data.errors);
 
         }else{
 

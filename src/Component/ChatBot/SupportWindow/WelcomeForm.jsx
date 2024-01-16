@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {styles} from '../Style';
 import Avatar from "../Avatar";
+import {Link }from 'react-router-dom'
 const WelcomeForm = (props) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -26,9 +27,7 @@ const WelcomeForm = (props) => {
     console.log('Submitted:', { name, email });
   };
 
-  const toggleLoginForm = () => {
-    setIsLoginFormVisible(!isLoginFormVisible);
-  };
+ 
 
   return (
     <div className=" mx-auto   bg-white rounded shadow-md"  style={{
@@ -59,9 +58,9 @@ const WelcomeForm = (props) => {
       
         <p className="text-gray-300 px-6 mb-4 relative" >
           If you have an account,{' '}
-          <span className="text-blue-500 cursor-pointer underline" onClick={toggleLoginForm}>
+          <Link className="text-blue-500 cursor-pointer underline"  to={'/Login'} >
             log in here.
-          </span>{' '}
+          </Link>{' '}
           Otherwise, provide your details to get started.
         </p>
      

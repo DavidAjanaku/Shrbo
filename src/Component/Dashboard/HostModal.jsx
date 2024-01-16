@@ -19,6 +19,8 @@ export default function HostModal({ isOpen, onClose }) {
 
       console.log("logout",response);
       localStorage.removeItem("Shbro");
+      localStorage.removeItem("A_Status");
+      localStorage.removeItem("H_Status");
       // setIsLoggedIn(false);
       window.location.href ="/";
     });

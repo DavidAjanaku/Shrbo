@@ -10,7 +10,7 @@ export default function Header() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { user, token,adminStatus,host } = useStateContext();
+  const { user, token,adminStatus,host,setAdminStatus,setHost,setUser } = useStateContext();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   
   const [notifications, setNotifications] = useState([
@@ -154,6 +154,8 @@ export default function Header() {
  
        console.log("logout",response);
        localStorage.removeItem("Shbro");
+       localStorage.removeItem("A_Status");
+       localStorage.removeItem("H_Status");
        setIsLoggedIn(false);
        window.location.reload();
      });
@@ -164,6 +166,28 @@ export default function Header() {
 
 
  } 
+
+ 
+//  useEffect(() => {
+//   const fetchUserData = async () => {
+//     try {
+//       // Make a request to get the user data
+//       const response = await axios.get('/user'); // Adjust the endpoint based on your API
+     
+
+//       // Set the user data in state
+//       setUser(response.data);
+//       setHost(response.data.host);
+//       setAdminStatus(response.data.adminStatus);
+    
+
+//     } catch (error) {
+//       console.error('Error fetching user data:', error);
+//     } 
+//   };
+
+//   fetchUserData();
+// }, []); 
   
 
 
@@ -194,11 +218,11 @@ export default function Header() {
           {token&& <Link to="/ChatAndNotifcationTab" className="text-white hover:text-gray-300 ml-4">
             Inbox
           </Link>}
-         {(host!=0&&token)&&  <Link to="/Hosting" className={` hover:text-gray-300 ml-4 ${(host!=0&&token)?"block text-white":"hidden"}`}>
+         {(host==1&&token)&&  <Link to="/Hosting" className={` hover:text-gray-300 ml-4 ${(host!=0&&token)?"block text-white":"hidden"}`}>
             Switch to Host
           </Link>}
         {(host==0||!host) && <Link to="/HostHomes" className="text-white hover:text-gray-300 ml-4"  >Shrbo your place</Link>}
-        { (adminStatus!=null) && <Link to="/AdminAnalytical" className="text-white hover:text-gray-300 ml-4">
+        { (adminStatus=="admin") && <Link to="/AdminAnalytical" className="text-white hover:text-gray-300 ml-4">
            Dashboard
           </Link>}
          { !token&&<Link  to="/Login" className="text-white hover:text-gray-300 ml-4"   >Login</Link>}
@@ -233,14 +257,14 @@ export default function Header() {
                 >
                   Create a new Listings
                 </Link>
-               {(host!=0)&& <Link
+               {(host==1)&& <Link
                   to="/Hosting"
                   className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
                 >
                   Manage Listings
                 </Link>
                 }
-               {(host!=0)&& <Link
+               {(host==1)&& <Link
                   to="/Listings"
                   className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
                 >

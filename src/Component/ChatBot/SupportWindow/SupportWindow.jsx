@@ -5,6 +5,7 @@ import ChatEngine from "./ChatEngine";
 import SupportHeader from "./SupportHeader";
 import OptionWindow from "./OptionWindow";
 import WelcomeForm from "./WelcomeForm";
+import { useStateContext } from "../../../ContextProvider/ContextProvider";
 
 
 
@@ -29,8 +30,12 @@ import WelcomeForm from "./WelcomeForm";
 
 
 const SupportWindow = (props) => {
-    const [user,setUser]=useState(null);
+    const [_user,_setUser]=useState(null);
     const [chat,setChat]=useState(null);
+    const {user,token}=useStateContext();
+
+   
+    
    
     return (
         <div className="transition-5 cursor-default bg-slate-800 z-[1000] bottom-0  overflow-hidden md:rounded-xl fixed h-full w-full md:w-[400px] md:h-[550px] lg:h-[560px] md:bottom-3 md:right-6 md:max-h-[calc(100% - 48px)] md:max-w-[calc(100% - 48px)] " style={{
@@ -47,7 +52,7 @@ const SupportWindow = (props) => {
          {/* <OptionWindow/> */}
 
 
-         {props.selectedOption==="Live chat"&&<WelcomeForm visible={user===null || chat===null} setUser={(user)=>setUser(user)}
+         {props.selectedOption==="Live chat"&&<WelcomeForm visible={_user===null || chat===null} setUser={(user)=>_setUser(user)}
                 setChat={(chat)=>setChat(chat)}/>}
 
 
@@ -62,9 +67,9 @@ const SupportWindow = (props) => {
 
         {props.botMessage&&
            <ChatEngine
-           visible={props.selectedOption==="Live chat"?!(user===null || chat===null):true}
+           visible={props.selectedOption==="Live chat"?!(_user===null || chat===null):true}
            chat={chat}
-           user={user}
+           user={_user}
            botMessage={props.botMessage}
            selectedOption={props.selectedOption}
            />

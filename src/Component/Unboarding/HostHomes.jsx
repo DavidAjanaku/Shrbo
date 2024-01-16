@@ -897,7 +897,7 @@ export default function HostHomes() {
                       <input
                         type="button"
                         className="w-8 text-center"
-                        value={guestDetails.guests}
+                        defaultValue={guestDetails.guests}
                       />
                       <button
                         type="button"
@@ -924,7 +924,7 @@ export default function HostHomes() {
                       <input
                         type="button"
                         className="w-8 text-center"
-                        value={guestDetails.bedrooms}
+                        defaultValue={guestDetails.bedrooms}
                       />
                       <button
                         onClick={() => handleIncrement("bedrooms")}
@@ -949,9 +949,9 @@ export default function HostHomes() {
                         -
                       </button>
                       <input
-                        type="number"
+                        type="button"
                         className="w-8 text-center"
-                        value={guestDetails.beds}
+                        defaultValue={guestDetails.beds}
                       />
                       <button
                         type="button"
@@ -978,7 +978,7 @@ export default function HostHomes() {
                       <input
                         type="button"
                         className="w-8 text-center"
-                        value={guestDetails.bathrooms}
+                        defaultValue={guestDetails.bathrooms}
                       />
                       <button
                         type="button"
