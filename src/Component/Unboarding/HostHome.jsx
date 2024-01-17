@@ -456,14 +456,14 @@ export default function HostHome({ match }) {
 
   const HostType = [
     {
-      id: "              I'm hosting as a private individual      ",
+      id: "I'm hosting as a private individual",
       label: "An entire place",
       icon: <FaHome />,
       description:
         "Get reservations faster when you welcome anyone from the Shbro community.",
     },
     {
-      id: "              I'm hosting as a business  ",
+      id: "I'm hosting as a business",
       label: "A room",
       icon: <FaHotel />,
       description:
@@ -694,109 +694,8 @@ export default function HostHome({ match }) {
   };
   const renderContent = () => {
     switch (step) {
+    
       case 0:
-        return (
-          <div className=" mx-auto  flex justify-center p-4 ">
-            <div className=" ">
-              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-28">
-                <h1 className="text-6xl">It’s easy to get started on Shbro</h1>
-              </div>
-              <div className="">
-                <div>
-                  <div className="flex border-b-[1px] pb-2 my-4">
-                    <div className="text-2xl mr-2">1</div>
-                    <div className="flex flex-col">
-                      <h2 className="font-medium text-2xl mb-3">
-                        Tell us about your place
-                      </h2>
-                      <h3>
-                        Share some basic info, like where it is and how many
-                        guests can stay.
-                      </h3>
-                    </div>
-                    <div>
-                      <img
-                        className="w-32"
-                        src="https://a0.muscache.com/4ea/air/v2/pictures/da2e1a40-a92b-449e-8575-d8208cc5d409.jpg"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <div className="flex border-b-[1px] pb-2 my-4">
-                    <div className="text-2xl mr-2">2</div>
-                    <div className="flex flex-col">
-                      <h2 className="font-medium text-2xl mb-3">
-                        Make it stand out
-                      </h2>
-                      <h3>
-                        Add 5 or more photos plus a title and description—we’ll
-                        help you out.
-                      </h3>
-                    </div>
-                    <div>
-                      <img
-                        className="w-32"
-                        src="https://a0.muscache.com/4ea/air/v2/pictures/da2e1a40-a92b-449e-8575-d8208cc5d409.jpg"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <div className="flex pb-32 my-4">
-                    <div className="text-2xl mr-2">3</div>
-                    <div className="flex flex-col  w-[100%]">
-                      <h2 className="font-medium text-2xl mb-3 ">Publish</h2>
-                      <h3 className="">
-                        Choose if you'd like to start with an experienced guest,
-                        set a starting price, and publish your listing.
-                      </h3>
-                    </div>
-                    <div>
-                      <img
-                        className="w-32"
-                        src="https://a0.muscache.com/4ea/air/v2/pictures/da2e1a40-a92b-449e-8575-d8208cc5d409.jpg"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      case 1:
-        return (
-          <div className=" mx-auto  flex justify-center p-4">
-            <div className="  overflow-auto">
-              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
-                <h1 className="text-6xl">It’s easy to get started on Shbro</h1>
-              </div>
-              <div className="">
-                <div>
-                  <div className=" pb-2 my-4">
-                    <div className="text-2xl mr-2">Step 1</div>
-                    <div className="flex flex-col">
-                      <h2 className="font-medium text-2xl mb-3">
-                        Tell us about your place
-                      </h2>
-                      <h3>
-                        Share some basic info, like where it is and how many
-                        guests can stay.
-                      </h3>
-                    </div>
-                  </div>
-                  <div>
-                    <img
-                      className="w-64"
-                      src="https://a0.muscache.com/4ea/air/v2/pictures/da2e1a40-a92b-449e-8575-d8208cc5d409.jpg"
-                      alt=""
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      case 2:
         return (
           <div className=" mx-auto  flex justify-center p-4">
             <div className="  overflow-auto">
@@ -830,7 +729,7 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 3:
+      case 1:
         return (
           <div className=" mx-auto  flex justify-center p-4">
             <div className="  overflow-auto">
@@ -864,7 +763,7 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 4:
+      case 2:
         return (
           <AddressForm
             onAddressChange={handleAddressChange}
@@ -872,7 +771,7 @@ export default function HostHome({ match }) {
           />
         );
 
-      case 5:
+      case 3:
         return (
           <div className=" mx-auto flex justify-center p-4">
             <div className="overflow-auto">
@@ -999,110 +898,112 @@ export default function HostHome({ match }) {
           </div>
         );
 
-        case 6:
-            return (
-              <div className="mx-auto flex justify-center p-4">
-                <div className="overflow-auto">
-                  <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
-                    <h1 className="text-6xl">Tell guests what your place has to offer</h1>
-                    <p className="text-gray-400 mt-10 text-lg">
-                      You can add more amenities after you publish your listing.
-                    </p>
-                  </div>
-                  <div className="pb-32">
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-semibold">Amenities</h3>
-                      <div className="flex flex-wrap w-full">
-                        {amenities.map((type) => (
-                          <div
-                            key={type.id}
-                            className={`property-type h-24 w-32 m-3 flex ${
-                              apartment?.amenities.some((amenity) => amenity.offer === type.id)
-                                ? "bg-orange-300 border-2 border-black text-white"
-                                : "bg-gray-200 text-black"
-                            } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                            onClick={() => handleAmenitySelection(type.id)}
-                          >
-                            <span className="mr-2 text-2xl">{type.icon}</span>
-                            {type.id}
-                          </div>
-                        ))}
+      case 4:
+        return (
+          <div className="mx-auto flex justify-center p-4">
+            <div className="overflow-auto">
+              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
+                <h1 className="text-6xl">
+                  Tell guests what your place has to offer
+                </h1>
+                <p className="text-gray-400 mt-10 text-lg">
+                  You can add more amenities after you publish your listing.
+                </p>
+              </div>
+              <div className="pb-32">
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold">Amenities</h3>
+                  <div className="flex flex-wrap w-full">
+                    {amenities.map((type) => (
+                      <div
+                        key={type.id}
+                        className={`property-type h-24 w-32 m-3 flex ${
+                          apartment?.amenities.some(
+                            (amenity) => amenity.offer === type.id
+                          )
+                            ? "bg-orange-300 border-2 border-black text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() => handleAmenitySelection(type.id)}
+                      >
+                        <span className="mr-2 text-2xl">{type.icon}</span>
+                        {type.id}
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
-            );
-          
-            case 7:
-                return (
-                  <div className="mx-auto flex justify-center p-4">
-                    <div className="overflow-auto">
-                      <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
-                        <h1 className="text-6xl">Add some photos of your house</h1>
-                        <p className="text-gray-400 mt-10">
-                          You can add more or make changes later.
-                        </p>
-                      </div>
-                      <div className="pb-32">
-                        <div className="text-center">
-                          <div className="border-2 border-dashed border-gray-300 p-8 my-6">
-                            <p className="text-gray-400 mb-4">Drag your photos here</p>
-                            <input
-                              type="file"
-                              multiple
-                              accept="image/*"
-                              onChange={handleImageUpload}
-                              key={fileInputKey}
-                            />
-                          </div>
-                          <p className="text-gray-400">Choose at least 5 photos</p>
-                        </div>
-                        <div className="flex flex-wrap mt-6">
-                          {uploadedImages.map((image) => (
-                            <div key={image.id} className="relative p-2">
-                              <img
-                                src={image.src}
-                                alt="House"
-                                className="w-64 object-cover h-64"
-                              />
-                              <button
-                                onClick={() => handleImageDelete(image.id)}
-                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
-                              >
-                                <FaTrash />
-                              </button>
-                            </div>
-                          ))}
-                          {/* Display existing photos from fetched data */}
-                          {Array.isArray(apartment?.hosthomephotos) &&
-                            apartment.hosthomephotos.map((photo) => (
-                              <div key={photo.id} className="relative p-2">
-                                <img
-                                  src={photo.url}
-                                  alt="House"
-                                  className="w-64 object-cover h-64"
-                                />
-                                <button
-                                  onClick={() => handleExistingPhotoDelete(photo.id)}
-                                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
-                                >
-                                  <FaTrash />
-                                </button>
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              
-              
+            </div>
+          </div>
+        );
 
-      case 8: // Step for hosting type and property features
+      case 5:
         return (
-          <div className=" mx-auto  flex justify-center p-4">
-            <div className="  overflow-auto">
+          <div className="mx-auto flex justify-center p-4">
+            <div className="overflow-auto">
+              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
+                <h1 className="text-6xl">Add some photos of your house</h1>
+                <p className="text-gray-400 mt-10">
+                  You can add more or make changes later.
+                </p>
+              </div>
+              <div className="pb-32">
+                <div className="text-center">
+                  <div className="border-2 border-dashed border-gray-300 p-8 my-6">
+                    <p className="text-gray-400 mb-4">Drag your photos here</p>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      key={fileInputKey}
+                    />
+                  </div>
+                  <p className="text-gray-400">Choose at least 5 photos</p>
+                </div>
+                <div className="flex flex-wrap mt-6">
+                  {uploadedImages.map((image) => (
+                    <div key={image.id} className="relative p-2">
+                      <img
+                        src={image.src}
+                        alt="Houses"
+                        className="w-64 object-cover h-64"
+                      />
+                      <button
+                        onClick={() => handleImageDelete(image.id)}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  ))}
+                  {/* Display existing photos from fetched data */}
+                  {Array.isArray(apartment?.hosthomephotos) &&
+                    apartment.hosthomephotos.map((photo) => (
+                      <div key={photo.id} className="relative p-2">
+                        <img
+                          src={photo}
+                          alt="Houses"
+                          className="w-64 object-cover h-64"
+                        />
+                        <button
+                          onClick={() => handleExistingPhotoDelete(photo.id)}
+                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 6: // Step for hosting type and property features
+        return (
+          <div className="mx-auto flex justify-center p-4">
+            <div className="overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
                 <h1 className="text-6xl">Upload Video Apartment on Shbro</h1>
                 <p className="text-gray-400 mt-10">
@@ -1123,7 +1024,7 @@ export default function HostHome({ match }) {
                 {selectedVideo && (
                   <div className="mt-4">
                     <p className="text-lg font-semibold mb-2">
-                      Selected Video: {apartment.hosthomevideo}
+                      Selected Video: {selectedVideo.name}
                     </p>
                     <p className="text-slate-500">
                       Size: {(selectedVideo.size / (1024 * 1024)).toFixed(2)} MB
@@ -1139,12 +1040,28 @@ export default function HostHome({ match }) {
                     </button>
                   </div>
                 )}
+
+                {/* Display existing video from fetched data */}
+                {apartment.hosthomevideo && (
+                  <div className="mt-4">
+                    <p className="text-lg font-semibold mb-2">
+                      Existing Video: <br />
+                      <p className="break-words"> {apartment.hosthomevideo}</p>
+                    </p>
+                    <video controls className="mt-2">
+                      <source src={apartment.hosthomevideo} type="video/mp4" />
+                    </video>
+                    <button className="bg-red-500 text-white py-2 px-4 mt-4 rounded-full hover:bg-red-600">
+                      Remove Video
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         );
 
-      case 9: // Step for adding a house title
+      case 7: // Step for adding a house title
         const maxCharacterCount = 32;
         const currentCharacterCount = houseTitle.length;
         const remainingCharacterCount =
@@ -1165,7 +1082,7 @@ export default function HostHome({ match }) {
                   type="text"
                   className="border rounded-lg px-4 py-2 w-2/3 text-lg w-full"
                   placeholder="Enter a title for your house"
-                  value={houseTitle}
+                  value={apartment.title}
                   onChange={(e) => {
                     const inputText = e.target.value;
                     if (inputText.length <= maxCharacterCount) {
@@ -1181,7 +1098,7 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 10:
+      case 8:
         return (
           <div className=" mx-auto  flex justify-center p-4">
             <div className="  overflow-auto">
@@ -1199,7 +1116,9 @@ export default function HostHome({ match }) {
                       <div
                         key={type.id}
                         className={`property-type h-24 w-32 m-3 flex ${
-                          selectedHouseDescriptions.includes(type.id)
+                          apartment?.hosthomedescriptions.some(
+                            (description) => description.description === type.id
+                          )
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
@@ -1216,7 +1135,7 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 11:
+      case 9:
         const maxCharCount = 500;
         const currentCharCount = houseDescriptionDetails.length;
         const remainingCharCount = maxCharCount - currentCharCount;
@@ -1235,7 +1154,7 @@ export default function HostHome({ match }) {
                   type="text"
                   className="border rounded-lg px-4 py-2 h-[400px] text-lg w-full"
                   placeholder="Enter a description for your house"
-                  value={houseDescriptionDetails}
+                  value={apartment.description}
                   onChange={(e) => {
                     const inputText = e.target.value;
                     if (inputText.length <= maxCharCount) {
@@ -1251,40 +1170,39 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 12:
-        return (
-          <div className="mx-auto flex justify-center p-4">
-            <div className="overflow-auto">
-              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
-                <h1 className="text-6xl">
-                  Decide how you’ll confirm reservations
-                </h1>
-              </div>
-              <div className="pb-32">
-                <div className="space-y-4">
-                  <div className="flex flex-wrap w-full">
-                    {instantBook.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`property-type m-3 flex ${
-                          selectedInstantBookType === type.id
-                            ? "bg-orange-300 border-2 border-black text-white"
-                            : "bg-gray-200 text-black"
-                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleInstantBookSelection(type.id)}
-                      >
-                        <span className="mr-2 text-2xl">{type.icon}</span>
-                        {type.description}
-                      </div>
-                    ))}
+        case 10:
+          return (
+            <div className="mx-auto flex justify-center p-4">
+              <div className="overflow-auto">
+                <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
+                  <h1 className="text-6xl">Decide how you’ll confirm reservations</h1>
+                </div>
+                <div className="pb-32">
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap w-full">
+                      {instantBook.map((type) => (
+                        <div
+                          key={type.id}
+                          className={`property-type m-3 flex ${
+                            apartment?.reservation === type.id
+                              ? "bg-orange-300 border-2 border-black text-white"
+                              : "bg-gray-200 text-black"
+                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                          onClick={() => handleInstantBookSelection(type.id)}
+                        >
+                          <span className="mr-2 text-2xl">{type.icon}</span>
+                          {type.description}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
+          );
+        
 
-      case 13:
+      case 11:
         return (
           <div className=" mx-auto  flex justify-center p-4">
             <div className="  overflow-auto">
@@ -1303,7 +1221,7 @@ export default function HostHome({ match }) {
                       <div
                         key={type.id}
                         className={`property-type  m-3   flex ${
-                          visiblities.includes(type.id)
+                          apartment?.reservations.some((reservation)=> reservation.reservation ===type.id)
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
@@ -1322,7 +1240,7 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 14:
+      case 12:
         return (
           <div className=" mx-auto  flex justify-center p-4">
             <div className="  overflow-auto">
@@ -1338,7 +1256,7 @@ export default function HostHome({ match }) {
                     type="number"
                     className="border rounded-lg px-4 py-2 w-full text-lg"
                     placeholder="Price per night"
-                    value={housePrice}
+                    value={apartment.price}
                     onChange={(e) => setHousePrice(e.target.value)}
                   />
                 </div>
@@ -1347,7 +1265,7 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 15: // Step for adding discounts
+      case 13: // Step for adding discounts
         return (
           <div className=" mx-auto  flex justify-center p-4">
             <div className="  overflow-auto">
@@ -1361,23 +1279,23 @@ export default function HostHome({ match }) {
               <div className="pb-32">
                 <div className=" ">
                   <div className="flex flex-wrap   w-full">
-                    {houseDiscount.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`property-type  m-3   flex ${
-                          selectedDiscounts.includes(type.id)
-                            ? "bg-orange-300 border-2 border-black text-white"
-                            : "bg-gray-200 text-black"
-                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => {
-                          handleDiscountSelection(type.id);
-                        }}
-                      >
-                        <span className="mr-2 text-2xl">{type.icon}</span>
-                        {type.id}
-                        <div>{type.description}</div>
-                      </div>
-                    ))}
+                  {houseDiscount.map((type) => (
+              <div
+                key={type.id}
+                className={`property-type m-3 flex ${
+                  apartment?.discounts.some((discount) => discount.discount === type.discount)
+                    ? "bg-orange-300 border-2 border-black text-white"
+                    : "bg-gray-200 text-black"
+                } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                onClick={() => {
+                  handleDiscountSelection(type.id);
+                }}
+              >
+                <span className="mr-2 text-2xl">{type.icon}</span>
+                {type.id}
+                <div>{type.description}</div>
+              </div>
+            ))}
                   </div>
                 </div>
               </div>
@@ -1385,60 +1303,61 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 16: // Step for hosting type and property features
-        return (
-          <div className="mx-auto flex justify-center p-4">
-            <div className="overflow-auto">
-              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
-                <h1 className="text-6xl">Rules</h1>
-                <p className="text-gray-400 mt-10">
-                  You can change it anytime.
-                </p>
-              </div>
-              <div className="flex">
-                {Object.keys(HouseRules).map((rule) => (
-                  <div
-                    key={rule}
-                    className={`property-type  m-3   flex ${
-                      selectedRules.includes(rule)
-                        ? "bg-orange-300 border-2 border-black text-white"
-                        : "bg-gray-200 text-black"
-                    } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                    onClick={() => handleRuleSelection(rule)}
-                  >
-                    <span className="mr-2 text-2xl">{rule}</span>
-                    {HouseRules[rule]}
-                  </div>
+    case 14: // Step for hosting type and property features
+  const additionalRulesFromApartment = apartment?.rules.map((r) => r.rule) || [];
+
+  return (
+    <div className="mx-auto flex justify-center p-4">
+      <div className="overflow-auto">
+        <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
+          <h1 className="text-6xl">Rules</h1>
+          <p className="text-gray-400 mt-10">
+            You can change it anytime.
+          </p>
+        </div>
+        <div className="flex">
+          {Object.keys(HouseRules).map((rule) => (
+            <div
+              key={rule}
+              className={`property-type m-3 flex ${
+                apartment?.rules.some((r) => r.rule === rule)
+                  ? "bg-orange-300 border-2 border-black text-white"
+                  : "bg-gray-200 text-black"
+              } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+              onClick={() => handleRuleSelection(rule)}
+            >
+              <span className="mr-2 text-2xl">{rule}</span>
+              {HouseRules[rule]}
+            </div>
+          ))}
+        </div>
+
+        <div className="md:flex md:justify-center md:flex-col">
+          <h1 className="text-2xl">Additional Rules</h1>
+        </div>
+        <div className="pb-32">
+          <div className="space-y-4">
+            <div className="flex flex-wrap w-full">
+             
+            </div>
+          </div>
+          {additionalRulesFromApartment.length > additionalRules.length && (
+            <div className="px-4">
+              <ul className="list-disc">
+                {/* Display additional rules only if there are more in the apartment object */}
+                {additionalRulesFromApartment.slice(additionalRules.length).map((rule, index) => (
+                  <li key={index}>{rule}</li>
                 ))}
-              </div>
-
-              <div className="md:flex md:justify-center md:flex-col">
-                <h1 className="text-2xl">Additional Rules</h1>
-              </div>
-              <div className="pb-32">
-                <div className="space-y-4">
-                  <div className="flex flex-wrap w-full">
-                    <textarea
-                      className="property-type m-3 bg-gray-200 text-black px-4 py-2 rounded-md w-full"
-                      placeholder="Add additional rules as bullet points (one rule per line)..."
-                      onChange={(e) => setAdditionalRules(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="px-4">
-                  <ul className="list-disc">
-                    {/* Split the text into lines and create list items */}
-                    {additionalRules.split("\n").map((rule, index) => (
-                      <li key={index}>{rule}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              </ul>
             </div>
-          </div>
-        );
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
-      case 17: // Step for hosting type and property features
+
+      case 15: // Step for hosting type and property features
         return (
           <div className=" mx-auto  flex justify-center p-4">
             <div className="  overflow-auto">
@@ -1452,7 +1371,7 @@ export default function HostHome({ match }) {
                       <div
                         key={type.id}
                         className={`property-type  m-3   flex ${
-                          selectedHostType === type.id
+                          apartment.host_type === type.id
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
@@ -1496,7 +1415,7 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 18: // Step for hosting type and property features
+      case 16: // Step for hosting type and property features
         return (
           <div className=" mx-auto   flex justify-center p-4">
             <div className="  overflow-auto">
@@ -1523,24 +1442,17 @@ export default function HostHome({ match }) {
                     onChange={handleTimeChange}
                     className="mt-1 p-2 border rounded-md w-full"
                   >
-                    <option value="12:00 PM">12:00 PM</option>
-                    <option value="1:00 PM">1:00 PM</option>
-                    <option value="2:00 PM">2:00 PM</option>
+                    <option value={apartment.checkInTime}>2:00 PM</option>
                     {/* Add more time options as needed */}
                   </select>
                 </div>
-                <button
-                  onClick={handleSave}
-                  className="bg-orange-400 text-white py-2 px-4 rounded-full hover:bg-orange-600"
-                >
-                  Save Check-In Time
-                </button>
+               
               </div>
             </div>
           </div>
         );
 
-      case 19:
+      case 17:
         return (
           <div className="mx-auto md:w-3/4 flex justify-center p-4">
             <div className="overflow-auto">
@@ -1558,7 +1470,7 @@ export default function HostHome({ match }) {
                       <div
                         key={policy.id}
                         className={`property-type   m-3   flex ${
-                          selectedPolicy === policy.label
+                          apartment?.cancelPolicy === policy.label
                             ? "bg-orange-500 text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
@@ -1581,7 +1493,7 @@ export default function HostHome({ match }) {
             </div>
           </div>
         );
-      case 20:
+      case 18:
         return (
           <div className=" mx-auto  flex justify-center p-4">
             {isSubmitting && (
@@ -1607,7 +1519,7 @@ export default function HostHome({ match }) {
                     type="number"
                     className="border rounded-lg px-4 py-2 w-full text-lg"
                     placeholder="Security Deposit"
-                    value={securityDeposit}
+                    value={apartment.securityDeposit}
                     onChange={(e) => setSecurityDeposit(e.target.value)}
                   />
                 </div>
@@ -1634,7 +1546,7 @@ export default function HostHome({ match }) {
             Previous
           </button>
         )}
-        {step < 20 && (
+        {step < 18 && (
           <button
             type="button" // Add this line to prevent form submission
             onClick={handleNext}
@@ -1643,13 +1555,12 @@ export default function HostHome({ match }) {
             Next
           </button>
         )}
-        {step === 20 && (
+        {step === 18 && (
           <button
             type="button" // Add this line to prevent form submission
-            onClick={handleSubmit}
             className="text-white text-center bg-orange-400 w-full p-4"
           >
-            Submit
+            Go to Host page
           </button>
         )}
       </div>

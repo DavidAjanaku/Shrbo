@@ -1,6 +1,6 @@
 import React, { useState,useRef,useEffect } from "react";
 import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash } from "react-icons/fa";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import AddressForm from "../AddressFrom";
 import Axios from "../../Axios";
@@ -115,6 +115,9 @@ export default function HostHomes({ match }) {
   const [housePrice, setHousePrice] = useState(""); // Add this line for the house price
   const [securityDeposit, setSecurityDeposit] = useState("");
 
+  const navigate = useNavigate();
+
+
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true); // Set the loader state to true
@@ -159,9 +162,15 @@ export default function HostHomes({ match }) {
       // Example Axios post request
       await Axios.post('/hosthomes', formDetails);
 
+       // Redirect to the homepage after successful submission
+       navigate('/');
       console.log('Form submitted successfully', formDetails);
     } catch (error) {
       console.error('Error submitting form:', error);
+      if (error.response && error.response.status === 401) {
+        // Redirect to the hosting page or any other appropriate page for unauthenticated users
+        navigate('/hosting');
+      }
     } finally {
       setIsSubmitting(false); // Set the loader state back to false, whether the submission was successful or not
     }

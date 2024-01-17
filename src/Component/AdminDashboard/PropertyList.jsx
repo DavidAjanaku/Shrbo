@@ -1,55 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import AdminHeader from './AdminNavigation/AdminHeader';
-import AdminSidebar from './AdminSidebar';
-import { Table, Button, Input, Modal,Spin } from 'antd';
-import { ExclamationCircleOutlined , LoadingOutlined} from '@ant-design/icons';
-import { Link } from 'react-router-dom';
-import axiosInstance from "../../Axios"
-import moment from 'moment';
+import React, { useState, useEffect } from "react";
+import AdminHeader from "./AdminNavigation/AdminHeader";
+import AdminSidebar from "./AdminSidebar";
+import { Table, Button, Input, Modal, Spin, notification } from "antd";
+import { ExclamationCircleOutlined, LoadingOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
+import axiosInstance from "../../Axios";
+import moment from "moment";
 
 const { confirm } = Modal;
 
 export default function PropertyList() {
   const [properties, setProperties] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-
-  // Sample data for demonstration purposes
-  const sampleProperties = [
-    {
-      key: 1, // Add a unique key for each property
-      id: 1,
-      propertyName: 'Cozy Apartment',
-      propertyId: 'ABC123',
-      price: '$120 per night',
-      addedBy: 'John Doe',
-      createdOn: '2023-10-01',
-      status: 'published',
-      userVerified: true,
-    },
-    {
-      key: 2, // Add a unique key for each property
-      id: 2,
-      propertyName: 'Luxury Villa',
-      propertyId: 'XYZ789',
-      price: '$350 per night',
-      addedBy: 'Jane Smith',
-      createdOn: '2023-09-15',
-      status: 'unpublished',
-      userVerified: false,
-    },
-    // Add more property listings as needed
-  ];
 
   const showConfirm = (propertyId) => {
     confirm({
-      title: 'Do you want to delete this property?',
+      title: "Do you want to delete this property?",
       icon: <ExclamationCircleOutlined />,
       onOk() {
-        // Implement the logic to delete the property with the given propertyId
-        // Update the properties state after deletion
-        const updatedProperties = properties.filter((property) => property.id !== propertyId);
-        setProperties(updatedProperties);
+        console.log(propertyId);
+        axiosInstance
+          .delete(`/hosthomes/${propertyId}`)
+          .then(() => {
+            const updatedProperties = properties.filter(
+              (property) => property.id !== propertyId
+            );
+            setProperties(updatedProperties);
+
+            notification.success({
+              message: "Property Deleted",
+              description: "This property has been successfully deleted.",
+            });
+          })
+          .catch((error) => {
+            console.error("Error deleting property:", error);
+
+            notification.error({
+              message: "Error Deleting Property",
+              description: "Failed to delete the property. Please try again later.",
+            });
+          });
       },
     });
   };
@@ -61,58 +52,60 @@ export default function PropertyList() {
   const filteredProperties = properties.filter((property) => {
     return (
       property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (property.user && property.user.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      (property.user &&
+        property.user.name.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   });
-  
 
   const columns = [
     {
-      title: 'Property Name',
-      dataIndex: 'title',
-      key: 'propertyName',
+      title: "Property Name",
+      dataIndex: "title",
+      key: "propertyName",
     },
     {
-      title: 'Property ID',
-      dataIndex: 'id',
-      key: 'propertyId',
+      title: "Property ID",
+      dataIndex: "id",
+      key: "propertyId",
     },
     {
-      title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
     },
     {
-      title: 'Added By',
-      dataIndex: 'user', // Access the 'user' object
-      key: 'addedBy',
+      title: "Added By",
+      dataIndex: "user", // Access the 'user' object
+      key: "addedBy",
       render: (user) => user.name, // Render the 'name' property of the 'user' object
     },
     {
-      title: 'Created On',
-      dataIndex: 'user', // Assuming 'createdOn' is stored in the 'created_at' property
-      key: 'createdOn',
-      render: (user) => moment(user.created_at).format('MMMM Do, YYYY, h:mm:ss a'),
+      title: "Created On",
+      dataIndex: "user", // Assuming 'createdOn' is stored in the 'created_at' property
+      key: "createdOn",
+      render: (user) =>
+        moment(user.created_at).format("MMMM Do, YYYY, h:mm:ss a"),
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
     },
     {
-      title: 'Verified',
-      dataIndex: ['user', 'verified'], // Nested property path
-      key: 'Verified',
-      render: (verified) => (verified ? 'Yes' : 'No'), // Render 'Yes' if true, 'No' if false
+      title: "Verified",
+      dataIndex: ["user", "verified"], // Nested property path
+      key: "Verified",
+      render: (verified) => (verified ? "Yes" : "No"), // Render 'Yes' if true, 'No' if false
     },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: "Actions",
+      key: "actions",
       render: (text, record) => (
         <div>
-          <Button type="primary">Edit</Button>
+          <Link to={`/HostHome/${record.id}`}>
+            <Button type="primary">View Details</Button>
+          </Link>
           &nbsp;
-
           <Button type="danger" onClick={() => showConfirm(record.id)}>
             Delete
           </Button>
@@ -120,7 +113,7 @@ export default function PropertyList() {
       ),
     },
   ];
- 
+
   useEffect(() => {
     // Fetch guests from the API when the component mounts
     axiosInstance
@@ -135,7 +128,6 @@ export default function PropertyList() {
         setLoading(false);
       });
   }, []);
-  
 
   return (
     <div className="bg-gray-100 h-[100vh]">
@@ -152,10 +144,10 @@ export default function PropertyList() {
               placeholder="Search by Property Name or Added By"
               value={searchQuery}
               onChange={handleSearch}
-              style={{ width: 200, marginBottom: '1rem' }}
+              style={{ width: 200, marginBottom: "1rem" }}
             />
-            <div className='overflow-x-auto'>
-            {loading ? (
+            <div className="overflow-x-auto">
+              {loading ? (
                 <div className="flex justify-center h-52 items-center">
                   <Spin
                     indicator={
@@ -169,11 +161,12 @@ export default function PropertyList() {
                   />
                 </div>
               ) : (
-            <Table columns={columns} dataSource={filteredProperties}
-            rowKey={(record) => record.id} // Set the rowKey to the guest's id
-            />
-
-            )}
+                <Table
+                  columns={columns}
+                  dataSource={filteredProperties}
+                  rowKey={(record) => record.id} // Set the rowKey to the guest's id
+                />
+              )}
             </div>
           </div>
         </div>

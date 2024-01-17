@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminNavigation/AdminHeader";
-import bellIcon from "../../assets/svg/bell-icon.svg"
+import axoisInstance from "../../Axios";
+import { notification } from "antd";
+
 
 export default function EditHomepage() {
-  const [image, setImage] = useState(""); // State for the homepage image URL
-  const [title, setTitle] = useState(""); // State for the title text
-  const [subtitle, setSubtitle] = useState(""); // State for the subtitle text
+  const [image, setImage] = useState("");
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0]; // Get the selected file
+    const file = e.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result); // Set the image state to the base64 string
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -24,20 +29,53 @@ export default function EditHomepage() {
     setSubtitle(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submit button clicked");
-    console.log("Submitted Details:");
-    console.log("Homepage Image:", image);
-    console.log("Title Text:", title);
-    console.log("Subtitle Text:", subtitle);
+
+    try {
+      const formData = new FormData();
+      formData.append("image", image); // Use the base64 string directly
+      formData.append("title", title);
+      formData.append("subtitle", subtitle);
+      console.log(formData);
+
+      // Make the Axios POST request to your API endpoint
+      const response = await axoisInstance.post("/homepage", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Response:", response.data);
+
+      // Show a success notification
+      notification.success({
+        message: "Submission Successful",
+        description: "Your changes have been saved successfully.",
+      });
+
+      // Handle success, e.g., show a success message or redirect to another page
+      // ...
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+      // Reload the page
+      window.location.reload();
+
+    } catch (error) {
+      // Handle error, e.g., show an error message
+      console.error("Error:", error.response.data);
+      notification.error({
+        message: "Submission Failed",
+        description: "Failed to save changes. Please try again.",
+      });
+    }
   };
 
   return (
     <div className="bg-gray-100 h-[100vh]">
-<AdminHeader/>
+      <AdminHeader />
       <div className="flex">
-        <div className="hidden  md:block bg-orange-400 text-white w-1/5 h-[100vh] p-4">
+        <div className="hidden md:block bg-orange-400 text-white w-1/5 h-[100vh] p-4">
           <AdminSidebar />
         </div>
 
@@ -53,21 +91,20 @@ export default function EditHomepage() {
                   type="file"
                   accept="image/*"
                   className="mt-1 p-2 border rounded w-full"
+                  name="image"
                   onChange={handleImageChange}
                 />
               </div>
 
-                {image ? (
-                       <img
-                       src={image}
-                       alt="Selected Image"
-                       className="mb-4 w-48 rounded-md"
-                     />
-                ):(
-                    <div className="text-gray-600 mb-4">No image selected</div>
-
-                )}
-           
+              {image ? (
+                <img
+                  src={image}
+                  alt="Selected Image"
+                  className="mb-4 w-48 rounded-md"
+                />
+              ) : (
+                <div className="text-gray-600 mb-4">No image selected</div>
+              )}
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
