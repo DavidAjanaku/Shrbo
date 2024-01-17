@@ -120,7 +120,7 @@ export default function PropertyList() {
       .get("/allHomes")
       .then((response) => {
         setProperties(response.data.data);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setLoading(false);
       })
       .catch((error) => {

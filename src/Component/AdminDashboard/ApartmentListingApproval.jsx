@@ -27,8 +27,8 @@ export default function ApartmentListingApproval() {
       .get("/notVerified")
       .then((response) => {
         setApartments(response.data.data);
-        console.log(response.data.data);
-        console.log(apartments);
+        // console.log(response.data.data);
+        // console.log(apartments);
         setLoading(false);
       })
 

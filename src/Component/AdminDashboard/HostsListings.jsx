@@ -52,7 +52,7 @@ export default function HostsListings() {
       .get("/hosts")
       .then((response) => {
         setHosts(response.data.data);
-        console.log(response.data.data); // Update this line
+        // console.log(response.data.data); 
         setLoading(false);
       })
       .catch((error) => {
@@ -394,7 +394,8 @@ export default function HostsListings() {
                 <Table
                   columns={columns}
                   dataSource={filteredHosts}
-                  rowKey={(record) => record.id} // Set the rowKey to the guest's id
+                  rowKey={(record) => `${record.user.id}`}
+// Set the rowKey to the guest's id
                 />
               )}
             </div>
