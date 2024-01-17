@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash } from "react-icons/fa";
+import { LoadingOutlined } from "@ant-design/icons";
+
+import { Spin } from "antd";
 import { useParams } from "react-router-dom";
 
 import AddressForm from "../AddressFrom";
@@ -35,6 +38,7 @@ export default function HostHome({ match }) {
   const [selectedHouseDescriptions, setSelectedHouseDescriptions] = useState(
     []
   );
+  const [isLoading, setIsLoading] = useState(true);
 
   const { token } = useStateContext();
 
@@ -62,6 +66,8 @@ export default function HostHome({ match }) {
   useEffect(() => {
     const apartmentId = id;
 
+    setIsLoading(true); // Set loading to true when starting to fetch data
+
     Axios.get(`/hosthomes/${apartmentId}`)
       .then((response) => {
         setApartment(response.data.data);
@@ -69,6 +75,9 @@ export default function HostHome({ match }) {
       })
       .catch((error) => {
         console.log("Error fetching hosthome details:", error);
+      })
+      .finally(() => {
+        setIsLoading(false); // Set loading to false regardless of success or error
       });
   }, [id]);
 
@@ -694,38 +703,53 @@ export default function HostHome({ match }) {
   };
   const renderContent = () => {
     switch (step) {
-    
       case 0:
         return (
-          <div className=" mx-auto  flex justify-center p-4">
-            <div className="  overflow-auto">
-              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
-                <h1 className="text-6xl">
-                  Which of these best describes your place?
-                </h1>
+          <div className="mx-auto flex justify-center p-4">
+            {isLoading ? (
+              <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bottom-0  z-50">
+                <Spin
+                  indicator={
+                    <LoadingOutlined
+                      style={{
+                        fontSize: 50,
+                      }}
+                      spin
+                    />
+                  }
+                />
               </div>
-              <div className="pb-32">
-                <div className=" space-y-4">
-                  <h3 className="text-xl ">Property Types</h3>
-                  <div className="flex flex-wrap   w-full">
-                    {propertyTypes.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`property-type h-24 w-32 m-3 flex ${
-                          apartment?.property_type === type.id
-                            ? "bg-orange-300 border-2 border-black text-white"
-                            : "bg-gray-200 text-black"
-                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleTypeSelection(type.id)}
-                      >
-                        <span className="mr-2 text-2xl">{type.icon}</span>
-                        {type.label}
-                      </div>
-                    ))}
+            ) : (
+              // Render your component once data is loaded
+              <div className="overflow-auto">
+                <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
+                  <h1 className="text-6xl">
+                    Which of these best describes your place?
+                  </h1>
+                </div>
+                <div className="pb-32">
+                  <div className="space-y-4">
+                    <h3 className="text-xl">Property Types</h3>
+                    <div className="flex flex-wrap w-full">
+                      {propertyTypes.map((type) => (
+                        <div
+                          key={type.id}
+                          className={`property-type h-24 w-32 m-3 flex ${
+                            apartment?.property_type === type.id
+                              ? "bg-orange-300 border-2 border-black text-white"
+                              : "bg-gray-200 text-black"
+                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                          onClick={() => handleTypeSelection(type.id)}
+                        >
+                          <span className="mr-2 text-2xl">{type.icon}</span>
+                          {type.label}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         );
 
@@ -1170,37 +1194,38 @@ export default function HostHome({ match }) {
           </div>
         );
 
-        case 10:
-          return (
-            <div className="mx-auto flex justify-center p-4">
-              <div className="overflow-auto">
-                <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
-                  <h1 className="text-6xl">Decide how you’ll confirm reservations</h1>
-                </div>
-                <div className="pb-32">
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap w-full">
-                      {instantBook.map((type) => (
-                        <div
-                          key={type.id}
-                          className={`property-type m-3 flex ${
-                            apartment?.reservation === type.id
-                              ? "bg-orange-300 border-2 border-black text-white"
-                              : "bg-gray-200 text-black"
-                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                          onClick={() => handleInstantBookSelection(type.id)}
-                        >
-                          <span className="mr-2 text-2xl">{type.icon}</span>
-                          {type.description}
-                        </div>
-                      ))}
-                    </div>
+      case 10:
+        return (
+          <div className="mx-auto flex justify-center p-4">
+            <div className="overflow-auto">
+              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
+                <h1 className="text-6xl">
+                  Decide how you’ll confirm reservations
+                </h1>
+              </div>
+              <div className="pb-32">
+                <div className="space-y-4">
+                  <div className="flex flex-wrap w-full">
+                    {instantBook.map((type) => (
+                      <div
+                        key={type.id}
+                        className={`property-type m-3 flex ${
+                          apartment?.reservation === type.id
+                            ? "bg-orange-300 border-2 border-black text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() => handleInstantBookSelection(type.id)}
+                      >
+                        <span className="mr-2 text-2xl">{type.icon}</span>
+                        {type.description}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
-          );
-        
+          </div>
+        );
 
       case 11:
         return (
@@ -1221,7 +1246,9 @@ export default function HostHome({ match }) {
                       <div
                         key={type.id}
                         className={`property-type  m-3   flex ${
-                          apartment?.reservations.some((reservation)=> reservation.reservation ===type.id)
+                          apartment?.reservations.some(
+                            (reservation) => reservation.reservation === type.id
+                          )
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
@@ -1279,23 +1306,25 @@ export default function HostHome({ match }) {
               <div className="pb-32">
                 <div className=" ">
                   <div className="flex flex-wrap   w-full">
-                  {houseDiscount.map((type) => (
-              <div
-                key={type.id}
-                className={`property-type m-3 flex ${
-                  apartment?.discounts.some((discount) => discount.discount === type.discount)
-                    ? "bg-orange-300 border-2 border-black text-white"
-                    : "bg-gray-200 text-black"
-                } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                onClick={() => {
-                  handleDiscountSelection(type.id);
-                }}
-              >
-                <span className="mr-2 text-2xl">{type.icon}</span>
-                {type.id}
-                <div>{type.description}</div>
-              </div>
-            ))}
+                    {houseDiscount.map((type) => (
+                      <div
+                        key={type.id}
+                        className={`property-type m-3 flex ${
+                          apartment?.discounts.some(
+                            (discount) => discount.discount === type.discount
+                          )
+                            ? "bg-orange-300 border-2 border-black text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() => {
+                          handleDiscountSelection(type.id);
+                        }}
+                      >
+                        <span className="mr-2 text-2xl">{type.icon}</span>
+                        {type.id}
+                        <div>{type.description}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1303,59 +1332,60 @@ export default function HostHome({ match }) {
           </div>
         );
 
-    case 14: // Step for hosting type and property features
-  const additionalRulesFromApartment = apartment?.rules.map((r) => r.rule) || [];
+      case 14: // Step for hosting type and property features
+        const additionalRulesFromApartment =
+          apartment?.rules.map((r) => r.rule) || [];
 
-  return (
-    <div className="mx-auto flex justify-center p-4">
-      <div className="overflow-auto">
-        <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
-          <h1 className="text-6xl">Rules</h1>
-          <p className="text-gray-400 mt-10">
-            You can change it anytime.
-          </p>
-        </div>
-        <div className="flex">
-          {Object.keys(HouseRules).map((rule) => (
-            <div
-              key={rule}
-              className={`property-type m-3 flex ${
-                apartment?.rules.some((r) => r.rule === rule)
-                  ? "bg-orange-300 border-2 border-black text-white"
-                  : "bg-gray-200 text-black"
-              } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-              onClick={() => handleRuleSelection(rule)}
-            >
-              <span className="mr-2 text-2xl">{rule}</span>
-              {HouseRules[rule]}
-            </div>
-          ))}
-        </div>
+        return (
+          <div className="mx-auto flex justify-center p-4">
+            <div className="overflow-auto">
+              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
+                <h1 className="text-6xl">Rules</h1>
+                <p className="text-gray-400 mt-10">
+                  You can change it anytime.
+                </p>
+              </div>
+              <div className="flex">
+                {Object.keys(HouseRules).map((rule) => (
+                  <div
+                    key={rule}
+                    className={`property-type m-3 flex ${
+                      apartment?.rules.some((r) => r.rule === rule)
+                        ? "bg-orange-300 border-2 border-black text-white"
+                        : "bg-gray-200 text-black"
+                    } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                    onClick={() => handleRuleSelection(rule)}
+                  >
+                    <span className="mr-2 text-2xl">{rule}</span>
+                    {HouseRules[rule]}
+                  </div>
+                ))}
+              </div>
 
-        <div className="md:flex md:justify-center md:flex-col">
-          <h1 className="text-2xl">Additional Rules</h1>
-        </div>
-        <div className="pb-32">
-          <div className="space-y-4">
-            <div className="flex flex-wrap w-full">
-             
+              <div className="md:flex md:justify-center md:flex-col">
+                <h1 className="text-2xl">Additional Rules</h1>
+              </div>
+              <div className="pb-32">
+                <div className="space-y-4">
+                  <div className="flex flex-wrap w-full"></div>
+                </div>
+                {additionalRulesFromApartment.length >
+                  additionalRules.length && (
+                  <div className="px-4">
+                    <ul className="list-disc">
+                      {/* Display additional rules only if there are more in the apartment object */}
+                      {additionalRulesFromApartment
+                        .slice(additionalRules.length)
+                        .map((rule, index) => (
+                          <li key={index}>{rule}</li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          {additionalRulesFromApartment.length > additionalRules.length && (
-            <div className="px-4">
-              <ul className="list-disc">
-                {/* Display additional rules only if there are more in the apartment object */}
-                {additionalRulesFromApartment.slice(additionalRules.length).map((rule, index) => (
-                  <li key={index}>{rule}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
+        );
 
       case 15: // Step for hosting type and property features
         return (
@@ -1446,7 +1476,6 @@ export default function HostHome({ match }) {
                     {/* Add more time options as needed */}
                   </select>
                 </div>
-               
               </div>
             </div>
           </div>
