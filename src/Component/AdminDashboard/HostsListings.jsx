@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
-import { Table, Input, Select, Modal, Space, Dropdown, Spin } from "antd";
+import { Table, Input, Select, Modal, Space, Dropdown, Spin, notification } from "antd";
 import { ExclamationCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import axoisInstance from "../../Axios";
 import moment from "moment";
@@ -71,6 +71,115 @@ export default function HostsListings() {
       },
     });
   };
+  
+
+  const handleBanHost = async (record) => {
+    if (record && record.user && record.user.id) {
+      const hostIdString = record.user.id.toString();
+      console.log(hostIdString);
+      const hostId = record.user.id;
+      console.log("Host ID:", hostId);
+      const messageObject = { message: "DD" };
+  
+      const isBanned = record.user.banned;
+      const endpoint = isBanned ? `/unbanGuest/${hostIdString}` : `/banGuest/${hostIdString}`;
+  
+      try {
+        await axoisInstance.put(endpoint, messageObject);
+  
+        const updatedHosts = hosts.map((host) =>
+          host.id === hostId ? { ...host, user: { ...host.user, banned: !isBanned } } : host
+        );
+
+        notification.success({
+          message: isBanned ? "Host UnBanned" : "Host Banned",
+          description: `The host has been successfully ${
+            isBanned ? "UnBanned" : "Banned"
+          }.`,
+        });
+  
+        setHosts(updatedHosts);
+  
+        // Wait for 1 second before reloading the page
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+        // Reload the page
+        window.location.reload();
+      } catch (error) {
+        console.error("Error changing host ban status:", error);
+        notification.error({
+          message: `Error ${isBanned ? "UnBanning" : "Banning"} Host`,
+          description: `Failed to ${
+            isBanned ? "unabn" : "ban"
+          } the host. Please try again later.`,
+        });
+      }
+    } else {
+      console.error("Invalid record:", record);
+    }
+  };
+
+  const handleSuspendHost = async (record) => {
+    if (record && record.user && record.user.id) {
+      const hostIdString = record.user.id.toString();
+      console.log(hostIdString);
+      const hostId = record.user.id;
+      console.log("Host ID:", hostId);
+      const messageObject = { message: "DD" };
+  
+      // Use isSuspended to determine the action
+      const isSuspended = record.user.suspend;
+      const endpoint = isSuspended
+        ? `/unsuspendGuest/${hostIdString}`
+        : `/suspendGuest/${hostIdString}`;
+  
+      try {
+        await axoisInstance.put(endpoint, messageObject);
+  
+        const updatedHosts = hosts.map((host) =>
+          host.id === hostId ? { ...host, user: { ...host.user, suspend: !isSuspended } } : host
+        );
+
+        notification.success({
+          message: isSuspended ? "Host Unsuspended" : "Host Suspended",
+          description: `The host has been successfully ${
+            isSuspended ? "Unsuspended" : "Suspended"
+          }.`,
+        });
+  
+        setHosts(updatedHosts);
+  
+        // Wait for 1 second before reloading the page
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+        // Reload the page
+        window.location.reload();
+      } catch (error) {
+        console.error("Error changing host suspend status:", error);
+        notification.error({
+          message: `Error ${isSuspended ? "Unsuspending" : "Suspending"} Host`,
+          description: `Failed to ${
+            isSuspended ? "unsuspend" : "suspend"
+          } the host. Please try again later.`,
+        });
+      }
+    } else {
+      console.error("Invalid record:", record);
+    }
+  };
+  
+  
+  
+
+  const getBanLabel = (record) => {
+    return record.user.banned === null ? "Ban" : "Unban";
+  };
+
+  const getSuspendLabel = (record) => {
+    return record.user.suspend === null ? "Suspend" : "Unsuspend";
+  };
+  
+  
 
   const columns = [
     {
@@ -132,9 +241,27 @@ export default function HostsListings() {
       render: (text, record) => (
         <div>
           <Dropdown
-            menu={{
-              items,
-            }}
+              menu={{
+                items: [
+                  {
+                    label: <div>{getBanLabel(record)}</div>,
+                    key: "0",
+                    onClick: () => handleBanHost(record),
+                  },
+                  {
+                    label: <div>{getSuspendLabel(record)}</div>,
+                    key: "1",
+                    onClick: () => handleSuspendHost(record),
+                  },
+                  {
+                    type: "divider",
+                  },
+                  {
+                    label: <div>No idea</div>,
+                    key: "3",
+                  },
+                ],
+              }}
             trigger={["click"]}
           >
             <a onClick={(e) => e.preventDefault()}>
@@ -179,8 +306,10 @@ export default function HostsListings() {
 
   const items = [
     {
-      label: <div>Ban</div>,
+      label: <div>{getBanLabel}</div>,
       key: "0",
+      onClick: (record) => handleBanHost(record),
+
     },
     {
       label: <div>Suspend</div>,

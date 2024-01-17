@@ -24,13 +24,31 @@ export default function GuestsListings() {
 
   const [filters, setFilters] = useState({
     verified: "Any",
+    ban: "Any",
+    suspended: "Any",
   });
 
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleFilterChange = (value) => {
     setFilters({
+      ...filters,
+
       verified: value,
+    });
+  };
+
+  const handleBanFilterChange = (value) => {
+    setFilters({
+      ...filters,
+      ban: value,
+    });
+  };
+
+  const handleSuspendedFilterChange = (value) => {
+    setFilters({
+      ...filters,
+      suspended: value,
     });
   };
 
@@ -345,13 +363,13 @@ export default function GuestsListings() {
   
 
   const filteredGuests = guests.filter((guest) => {
-    const { verified } = filters;
+    const { verified, ban, suspended } = filters;
 
     // Check if the guest is verified or not based on the selected filter
     const matchesVerified =
       verified === "Any" ||
       (verified === "Verified" && guest.verified === "Verified") ||
-      (verified === "Not Verified" && guest.verified !== "Verified");
+      (verified === "Not Verified" && guest.verified !== "Verified"); 
 
     const matchesSearch =
       (guest.name &&
@@ -359,8 +377,19 @@ export default function GuestsListings() {
       (guest.email &&
         guest.email.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return matchesVerified && matchesSearch;
-  });
+        const matchesBan =
+        ban === "Any" ||
+        (ban === "Yes" && (guest.banned !== null ? guest.banned : false)) ||
+        (ban === "No" && (guest.banned !== null ? !guest.banned : true));
+      
+      const matchesSuspended =
+        suspended === "Any" ||
+        (suspended === "Yes" && (guest.suspend !== null ? guest.suspend : false)) ||
+        (suspended === "No" && (guest.suspend !== null ? !guest.suspend : true));
+      
+
+          return matchesVerified && matchesBan && matchesSuspended && matchesSearch;
+        });
 
   return (
     <div className="bg-gray-100 h-[100vh]">
@@ -390,6 +419,26 @@ export default function GuestsListings() {
                 <Select.Option value="Any">Any</Select.Option>
                 <Select.Option value="Verified">Verified</Select.Option>
                 <Select.Option value="Not Verified">Not Verified</Select.Option>
+              </Select>
+
+              <Select
+                style={{ width: 120 }}
+                value={filters.ban}
+                onChange={handleBanFilterChange}
+              >
+                <Select.Option value="Any">Any</Select.Option>
+                <Select.Option value="Yes">Banned</Select.Option>
+                <Select.Option value="No">Not Banned</Select.Option>
+              </Select>
+
+              <Select
+                style={{ width: 120 }}
+                value={filters.suspended}
+                onChange={handleSuspendedFilterChange}
+              >
+                <Select.Option value="Any">Any</Select.Option>
+                <Select.Option value="Yes">Suspended</Select.Option>
+                <Select.Option value="No">Not Suspended</Select.Option>
               </Select>
             </div>
             <div className="overflow-x-auto">
