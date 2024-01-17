@@ -64,6 +64,7 @@ import LogIn from "./Views/Login";
 import SignUp from "./Views/SignUp";
 import AuthGoogle from "./Views/AuthGoogle";
 import axios from "./Axios"
+import HostHome from "./Component/Unboarding/HostHome";
 function App() {
       // View Count (register visitors)
   
@@ -112,6 +113,8 @@ function App() {
         <Route path="/ManageListings" element={<ManageListings />} />
         <Route path="/UsersShow" element={<UsersShow />} />
         <Route path="/HostHomes" element={<HostHomes />} />
+        <Route path="/HostHome/:id" element={<HostHome />} />
+
         <Route path="/Hosting" element={<Hosting />} />
         <Route path="/ConfirmDetails" element={<ConfirmDetails />} />
         <Route path="/Listings" element={<Listings />} />
