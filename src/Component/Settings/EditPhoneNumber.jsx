@@ -1,5 +1,6 @@
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/material.css'
+import 'react-phone-number-input/style.css'
+import PhoneInput, {isValidPhoneNumber } from 'react-phone-number-input';
+
 
 import React, { useState } from "react";
 
@@ -8,26 +9,17 @@ const EditPhoneNumber = ({ onCancel, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if(phoneNumber.length===0){
+      return
+    }
   
     onSave({ phoneNumber });
   };
 
   return (
     <form name="legalName" onSubmit={handleSubmit}>
-     <PhoneNumberValidation phoneNumber={phoneNumber} setPhoneNumber={(a)=>{setPhoneNumber(a)}}/>
-   
-      <div className="text-right">
-        <button
-          type="button"
-          className="text-gray-500 mr-4"
-          onClick={onCancel}
-        >
-          Cancel
-        </button>
-        <button type="submit" className="bg-orange-400 text-white rounded-md py-2 px-4">
-          Save
-        </button>
-      </div>
+     <PhoneNumberValidation phoneNumber={phoneNumber} onCancel={onCancel} setPhoneNumber={(a)=>{setPhoneNumber(a)}}/>
     </form>
   );
 };
@@ -38,7 +30,7 @@ export default EditPhoneNumber;
 
 
 
-const PhoneNumberValidation = ({phoneNumber,setPhoneNumber}) => {
+const PhoneNumberValidation = ({phoneNumber,setPhoneNumber,onCancel}) => {
   // const [phoneNumber, setPhoneNumber] = useState('');
   const [valid, setValid] = useState(true);
 
@@ -55,32 +47,40 @@ const PhoneNumberValidation = ({phoneNumber,setPhoneNumber}) => {
 
   return (
     <div>
-      <label>
+      <div >
+
+      <div className=' w-80'>
         {/* Phone Number: */}
         <PhoneInput
-          country={'ng'}
-          enableSearch
+            defaultCountry="NG"
+            className=' h-10'
           placeholder={'00-000-00'}
-          countryCodeEditable={false}
+          international
+          countryCallingCodeEditable={false}
           value={phoneNumber}
           onChange={handleChange}
-          inputProps={{
-            required: true,
-          }}
-          isValid={(value, country) => {
-            if (value.match(/12345/)) {
-              return 'Invalid value: '+value+', '+country.name;
-            } else if (value.match(/1234/)) {
-              return false;
-            } else {
-              return true;
-            }
-          }}
-        />
-      </label>
-      {!valid && (
-        <p>Please enter a valid phone number.</p>
-      )}
+        
+          error={phoneNumber ? (isValidPhoneNumber(phoneNumber) ? undefined : 'Invalid phone number') : 'Phone number required'}
+          />
+      </div>
+      {!(phoneNumber && isValidPhoneNumber(phoneNumber)&&valid) && (
+        <p className=' text-red-600'>Please enter a valid phone number.</p>
+        )}
+
+        </div>
+
+      <div className="text-right">
+        <button
+          type="button"
+          className="text-gray-500 mr-4"
+          onClick={onCancel}
+        >
+          Cancel
+        </button>
+        <button disabled={(phoneNumber && isValidPhoneNumber(phoneNumber))?false:true} type="submit" className="bg-orange-400 disabled:cursor-not-allowed text-white rounded-md py-2 px-4">
+          Save
+        </button>
+      </div>
     </div>
   );
 };

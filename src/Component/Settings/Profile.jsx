@@ -11,6 +11,7 @@ import Footer from "../Navigation/Footer";
 import GoBackButton from "../GoBackButton";
 import axios from '../../Axios';
 import { useStateContext } from "../../ContextProvider/ContextProvider";
+import { message,notification } from 'antd';
 
 
 export default function Profile() {
@@ -18,6 +19,7 @@ export default function Profile() {
   const [isEditingEmailName, setIsEditingEmailName] = useState(false);
   const [isEditingPhoneNumber, setIsEditingPhoneNumber] = useState(false);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [isEditingEmergency, setIsEditingEmergency] = useState(false);
   const {user,setUser,setHost,setAdminStatus}=useStateContext();
   const [reRender,setRerender]=useState(false)
 
@@ -69,7 +71,7 @@ export default function Profile() {
     // }
 
     const data={
-      email:updatedEmailAddress
+      email:updatedEmailAddress.email
     }
 
     updateData(data)
@@ -89,16 +91,44 @@ export default function Profile() {
     // } catch (error) {
     //   console.error('Error making PUT request', error);
     // }
-    let stringNumber = updatedPhoneNumber.toString();
+    // let stringNumber = updatedPhoneNumber.toString();
 
     const data={
-      phone:stringNumber
+      phone:updatedPhoneNumber.phoneNumber
     }
 
     updateData(data)
 
     setIsEditingPhoneNumber(false);
   };
+
+  const handleSaveEmergency = (updatedPhoneNumber) => {
+    console.log("Email Address Updated:", updatedPhoneNumber);
+
+    // try {
+    //   const response= await axios.put(`/userDetail/${user.id}`,{
+    //     phone:updatedPhoneNumber
+    //   }
+    //   );
+    //   console.log('PUT request successful for Number', response.data);
+    // } catch (error) {
+    //   console.error('Error making PUT request', error);
+    // }
+    // let stringNumber = updatedPhoneNumber.toString();
+
+    const data={
+      emergency_no:updatedPhoneNumber.phoneNumber
+    }
+
+    updateData(data)
+
+    setIsEditingEmergency(false)
+  };
+
+
+
+
+
 
   const handleSaveAddress = (updatedAddress) => {
     console.log("Address Updated:", updatedAddress);
@@ -128,13 +158,25 @@ export default function Profile() {
 
     setIsEditingAddress(false);
   };
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type,error) => {
+      api[type]({
+      message: type==="error"?'Error':"Succesfull",
+      description:error,
+      placement:'topRight',
+      className:'bg-green'
+  });
+  };
 
   const updateData=async(data)=>{
     try {
       const response= await axios.put(`/userDetail/${user.id}`,data);
       console.log('PUT request successful for Email', response.data);
+      message.success("Updated Successfuly")
     } catch (error) {
       console.error('Error making PUT request', error);
+      openNotificationWithIcon("error",error.response.data);
+      return;
     }finally{
       setRerender(true);
     }
@@ -164,7 +206,7 @@ export default function Profile() {
     },
     {
       title: "Government ID",
-      value: user.goverment_id||"Not provided",
+      value: (user.government_id===null ?"Not provided":(user.verified==="Not Verified"?"Pending Verification":"Veified")),
       action: "Add",
       link: "/AddGovvernmentId",
     },
@@ -177,7 +219,7 @@ export default function Profile() {
     {
       title: "Emergency contact",
       value: user.emergency_no||"Not provided",
-      action: "Add",
+      action: "Edit",
       link: "/add-emergency-contact",
     },
   ];
@@ -207,9 +249,11 @@ export default function Profile() {
     fetchUserData();
   }, [reRender]); 
 
+  console.log("governMentID",user.government_id)
 
   return (
     <div>
+      {contextHolder}
       <div className="pb-48">
       <Header/>
       <div className="max-w-2xl mx-auto  p-4">
@@ -251,6 +295,18 @@ export default function Profile() {
                 />
               </div>
             )}
+ 
+         {isEditingEmergency&& (
+              <div className="max-w-2xl mx-auto p-4 shadow-md">
+                <h2 className="text-2xl font-medium mb-4">Edit Phone Number</h2>
+                <EditPhoneNumber
+                  onCancel={() => setIsEditingEmergency(false)}
+                  onSave={handleSaveEmergency}
+                />
+              </div>
+            )}
+
+
 
             {isEditingAddress && (
               <div className="max-w-2xl mx-auto p-4 shadow-md">
@@ -275,7 +331,7 @@ export default function Profile() {
                     </section>
                   </div>
                   <div className="">
-                    <label className={` ${(detail.value=="Not provided")?"text-red-500":"text-black"} `} >{detail.value}</label>
+                    <label className={` ${(detail.value=="Not provided"||detail.value=="Pending Verification")?"text-red-500":"text-black"} `} >{detail.value}</label>
                   </div>
                 </div>
          {!(detail.title=="Email address"&&user.google_id)?
@@ -290,21 +346,32 @@ export default function Profile() {
                           setIsEditingEmailName(false);
                           setIsEditingPhoneNumber(false);
                           setIsEditingAddress(false);
+                          setIsEditingEmergency(false);
                         } else if (detail.link === "/edit-email") {
                           setIsEditingEmailName(true);
                           setIsEditingLegalName(false);
                           setIsEditingPhoneNumber(false);
                           setIsEditingAddress(false);
+                          setIsEditingEmergency(false);
                         } else if (detail.link === "/edit-phone-number") {
                           setIsEditingPhoneNumber(true);
                           setIsEditingLegalName(false);
                           setIsEditingEmailName(false);
                           setIsEditingAddress(false);
+                          setIsEditingEmergency(false);
                         } else if (detail.link === "/edit-address") {
                           setIsEditingAddress(true);
                           setIsEditingLegalName(false);
                           setIsEditingEmailName(false);
                           setIsEditingPhoneNumber(false);
+                          setIsEditingEmergency(false);
+                        }else if(detail.link==="/add-emergency-contact"){
+                          setIsEditingEmergency(true);
+                          setIsEditingAddress(false);
+                          setIsEditingLegalName(false);
+                          setIsEditingEmailName(false);
+                          setIsEditingPhoneNumber(false);
+
                         }
                       }}
                     >

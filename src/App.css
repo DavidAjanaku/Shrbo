@@ -515,3 +515,11 @@ The slider*/
 
 
 
+/* Add border styles to your input */
+.PhoneInputInput {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}

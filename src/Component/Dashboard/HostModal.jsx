@@ -8,7 +8,7 @@ import HostingCard from "../HostingCard";
 import SupportCard from "../SupportCard";
 import axios from "../../Axios"
 
-export default function HostModal({ isOpen, onClose }) {
+export default function HostModal({ isOpen, onClose,userData }) {
   const [profilePicture, setProfilePicture] = useState(defaultProfile);
 
   
@@ -22,7 +22,7 @@ export default function HostModal({ isOpen, onClose }) {
       localStorage.removeItem("A_Status");
       localStorage.removeItem("H_Status");
       // setIsLoggedIn(false);
-      window.location.href ="/";
+      window.location.replace('/');
     });
   } catch (error) {
 
@@ -52,7 +52,7 @@ export default function HostModal({ isOpen, onClose }) {
                         <div
                           className="cursor-pointer bg-slate-200"
                           style={{
-                            backgroundImage: `url(${profilePicture})`,
+                            backgroundImage: `url(${`https://shortletbooking.com/${userData.profilePicture}`||profilePicture})`,
                             backgroundSize: "cover",
                             backgroundPosition: "center",
                             width: "100px",
@@ -60,19 +60,12 @@ export default function HostModal({ isOpen, onClose }) {
                             borderRadius: "50%",
                           }}
                         >
-                          {!profilePicture && (
-                            <img
-                              src={defaultProfile}
-                              alt="Default Profile"
-                              width="100"
-                              height="100"
-                            />
-                          )}
+                      
                         </div>
                       </label>
                     </div>
                     <div>
-                      <h1 className="text-white text-2xl">Welcome Endo</h1>
+                      <h1 className="text-white text-2xl">Welcome {userData.name.split(' ')[0]||""}</h1>
                     </div>
                   </Link>
                 </div>

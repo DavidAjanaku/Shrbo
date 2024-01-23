@@ -1,11 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from '../Axios'
+import { useStateContext } from "../ContextProvider/ContextProvider";
 
-const WishlistModal = ({ onToggleFavorite, onClose, closable }) => {
+const WishlistModal = ({ onToggleFavorite, onClose, closable,listingId }) => {
   const [selectedWishlist, setSelectedWishlist] = useState("");
   const [newWishlist, setNewWishlist] = useState("");
   const [isAdded, setIsAdded] = useState(false);
+  const [wishlistContainer,setWishlistContainer]=useState([]);
+  const {user}=useStateContext();
+
+
+  useEffect(()=>{
+    axios.get("/getUserWishlistContainers").then(response=>{
+      setWishlistContainer(response.data.userWishlist);
+      console.log("wishlist",response.data);
+
+    }).catch(error=>{
+      console.log("wishlist",error)
+    });
+
+  },[]);
+  
 
   useEffect(() => {
     if (isAdded) {
@@ -20,20 +37,52 @@ const WishlistModal = ({ onToggleFavorite, onClose, closable }) => {
     }
   }, [isAdded, selectedWishlist, newWishlist]);
 
-  const toggleFav = () => {
-    toast.success("Added to Wishlist", {
-      position: toast.POSITION.TOP_CENTER,
-    });
+  const toggleFav = (type) => {
+    if(type==="success"){
+      toast.success("Added to Wishlist", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+
+    }else if(type==="error"){
+      toast.error("Error Adding to Wishlist", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
   };
 
   const handleCancel = () => {
     onClose();
   };
 
-  const handleAddToWishlist = () => {
-    toggleFav();
-    handleCancel();
+  const handleAddToWishlist = async() => {
+
+      if(newWishlist===""&&selectedWishlist===""){
+        return
+      }
+
+    const data={
+      containername:newWishlist?newWishlist:"",
+      wishcontainerid:selectedWishlist?selectedWishlist:"",
+      hosthomeid:listingId,
+    }
+
+    console.log(data)
+
+    await axios.post(`/createWishlist/${user.id}`,data).then(response=>{
+      toggleFav("success");
+      handleCancel();
+
+    }).catch(error=>{
+      console.log('ADDing to Wishlist',error)
+      
+      toggleFav("error");
+    });
+
   };
+
+
+  
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[9999]">
@@ -49,19 +98,27 @@ const WishlistModal = ({ onToggleFavorite, onClose, closable }) => {
         )}
         <h2 className="text-xl font-bold mb-4">Select or Create Wishlist</h2>
         <form>
-          <label className="block mb-2">
-            Select Wishlist:
-            <select
-              className="w-full p-2 border rounded"
-              value={selectedWishlist}
-              onChange={(e) => setSelectedWishlist(e.target.value)}
-            >
-              <option value="">-- Select Wishlist --</option>
-              <option value="wishlist1">Wishlist 1</option>
-              <option value="wishlist2">Wishlist 2</option>
-            </select>
-          </label>
-          <label className="block mb-2">
+        {wishlistContainer && (
+  <label className="block mb-2">
+    Select Wishlist:
+    <select
+      className="w-full p-2 border rounded"
+      value={selectedWishlist}
+      onChange={(e) => setSelectedWishlist(e.target.value)}
+    >
+      <option value="">-- Select Wishlist --</option>
+      {/* <option value="wishlist1">Wishlist 1</option>
+      <option value="wishlist2">Wishlist 2</option> */}
+      {wishlistContainer.map((cont) => (
+        <option key={cont.id} value={cont.id}>
+          {cont.name}
+        </option>
+      ))}
+    </select>
+  </label>
+)}
+
+        {selectedWishlist==="" && <label className="block mb-2">
             Create New Wishlist:
             <input
               type="text"
@@ -69,7 +126,7 @@ const WishlistModal = ({ onToggleFavorite, onClose, closable }) => {
               value={newWishlist}
               onChange={(e) => setNewWishlist(e.target.value)}
             />
-          </label>
+          </label>}
           <div className="flex justify-between">
             <button
               type="button"

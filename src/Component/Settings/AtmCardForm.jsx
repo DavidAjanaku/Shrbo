@@ -3,7 +3,7 @@ import axios from '../../Axios'
 import { message} from 'antd';
 import {LoadingOutlined}  from '@ant-design/icons';
 import {styles} from '../ChatBot/Style'
-const ATMCardForm = ({ close,userId }) => {
+const ATMCardForm = ({ close,userId,refresh }) => {
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCVV] = useState('');
@@ -68,10 +68,16 @@ const ATMCardForm = ({ close,userId }) => {
           message.success(`Your card was added successfully`);
           setLoading(false);
           close(false);
+          refresh();
     }).catch(err=>{
       console.error('Error  creating card:', err);
-      setError(err.response.data.message);
-      message.error(err.response.data.message);
+      if(err.response.data.message){
+        setError(err.response.data.message);
+        message.error(err.response.data.message);
+      }else{
+        setError(err.response.data);
+        message.error(err.response.data);
+      }
       setLoading(false);
     });
 

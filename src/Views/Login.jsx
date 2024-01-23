@@ -44,7 +44,7 @@ const LogIn=()=>{
         api[type]({
         message: type==="error"?'Error':"Succesfull",
         description:error,
-        placement:'bottom',
+        placement:'topRight',
         className:'bg-green'
     });
     };
@@ -68,7 +68,7 @@ const LogIn=()=>{
           setUser(response.data.user);
           setToken(response.data.token);
           console.log(response.data);
-          goHome.current.click();
+          window.location.replace('/');
 
         
 
@@ -77,7 +77,7 @@ const LogIn=()=>{
         console.error('Error:', error);
         
         if(error.response.data.message){
-          openNotificationWithIcon("error",error.response.data.errors);
+          openNotificationWithIcon("error",error.response.data.message);
 
         }else{
 

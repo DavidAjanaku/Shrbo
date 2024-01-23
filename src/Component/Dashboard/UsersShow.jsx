@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import defaultProfile from "../../assets/svg/avatar-icon.svg";
 import CustomModal from "../CustomModal";
 import { FaCamera } from "react-icons/fa"; // Import the camera icon
 import Header from "../Navigation/Header";
 import Footer from "../Navigation/Footer";
-
+import { useStateContext } from "../../ContextProvider/ContextProvider";
+import axios from '../../Axios'
+import { message,notification } from 'antd';
 export default function usersShow() {
+  const {user,setUser,setHost,setAdminStatus,host}=useStateContext();
   const navigate = useNavigate();
+ 
 
   // Takes you back to previous page
   const handleGoBack = () => {
@@ -37,15 +41,43 @@ export default function usersShow() {
     if (selectedImage) {
       // Use FileReader to read the selected image and update the profilePicture state
       const reader = new FileReader();
-      reader.onload = () => {
-        setProfilePicture(reader.result);
+      reader.onload = (e) => {
+         const base64String = e.target.result;
+         setProfilePicture(base64String);
       };
       reader.readAsDataURL(selectedImage);
     }
   };
 
-  const handleSubmit = (event) => {
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type,error) => {
+      api[type]({
+      message: type==="error"?'Error':"Succesfull",
+      description:error,
+      placement:'topRight',
+      className:'bg-green'
+  });
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    if(profilePicture===defaultProfile){
+      return
+    }
+
+      try {
+        const response= await axios.put(`/userDetail/${user.id}`,{profilePicture:profilePicture});
+        console.log('PUT request successful for Email', response.data);
+        message.success("Updated Successfuly")
+        closeModal()
+      } catch (error) {
+        console.error('Error making PUT request', error);
+        openNotificationWithIcon("error",error.response.data);
+        return;
+      }finally{
+        setRerender(true);
+      }
+    
     console.log("Form Data:", formData);
     // You can now do something with the form data, such as sending it to an API.
   };
@@ -59,8 +91,39 @@ export default function usersShow() {
     });
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Make a request to get the user data
+        const response = await axios.get('/user'); // Adjust the endpoint based on your API
+        
+
+        // Set the user data in state
+        setUser(response.data);
+        setHost(response.data.host);
+        setAdminStatus(response.data.adminStatus);
+
+      
+        
+      
+
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        // Set loading to false regardless of success or error
+        // setLoading(false);
+        
+      }
+    };
+
+    fetchUserData();
+  }, []); 
+
+
+
   return (
     <div>
+      {contextHolder}
       <Header />
       <div className="p-4 ">
         <div className="flex justify-between  md:hidden" >
@@ -92,28 +155,20 @@ export default function usersShow() {
                       <div
                         className="cursor-pointer bg-slate-200"
                         style={{
-                          backgroundImage: `url(${profilePicture})`,
+                          backgroundImage: `url(${`https://shortletbooking.com/${user.profilePicture}`||profilePicture})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
                           width: "150px",
                           height: "150px",
                           borderRadius: "50%",
                         }}
-                      >
-                        {!profilePicture && (
-                          <img
-                            src={defaultProfile}
-                            alt="Default Profile"
-                            width="100"
-                            height="100"
-                          />
-                        )}
+                      >     
                       </div>
                     </label>
                   </div>
                   <div className="text-white  text-center">
-                    <h1 className="text-2xl">Welcome Endo</h1>
-                    <span>Guest</span>
+                    <h1 className="text-2xl">Welcome {user.name||"user"}</h1>
+                    <span>{host===0||host==null?"Guest":"Host"}</span>
                   </div>
                 </div>
               </div>
@@ -122,7 +177,7 @@ export default function usersShow() {
             <section className="mt-10 md:shadow-lg md:p-5 md:border md:rounded-xl">
               <div className="my-10">
                 <h1 className="text-2xl font-medium">
-                  Endo's confirmed Information
+                 {user.name.split(' ')[0]}'s confirmed Information
                 </h1>
 
                 <div className="my-2">
@@ -138,11 +193,11 @@ export default function usersShow() {
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                     </svg>
                     <div>
-                      <p>Email Address: example@email.com</p>
+                      <p>Email Address: {user.email}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  {user.phone&&<div className="flex items-center space-x-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -154,12 +209,35 @@ export default function usersShow() {
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                     </svg>
                     <div>
-                      <p>Phone Number: example@email.com</p>
+                      <p>Phone Number:{user.phone}</p>
                     </div>
-                  </div>
+                  </div>}
+
+
+                  {!(user.verified==="Not Verified")?<div className="flex items-center space-x-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="green"
+                    >
+                      <path d="M0 0h24v24H0z" fill="none" />
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                    </svg>
+                    <div>
+                      <p>Identity Verified</p>
+                    </div>
+                  </div>:""}
+
+                          
+
+
+                  
                 </div>
               </div>
-              <div className="my-10">
+              
+              {(user.verified==="Not Verified")?<div className="my-10">
                 <h1 className="text-2xl font-medium">Verify your identity</h1>
 
                 <div className="">
@@ -177,7 +255,7 @@ export default function usersShow() {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </div>:""}
             </section>
           </div>
 
@@ -223,7 +301,7 @@ export default function usersShow() {
                       <div
                         className="cursor-pointer bg-slate-200"
                         style={{
-                          backgroundImage: `url(${profilePicture})`,
+                          backgroundImage: `url(${`https://shortletbooking.com/${user.profilePicture}`||profilePicture})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
                           width: "150px",

@@ -157,7 +157,7 @@ export default function Header() {
        localStorage.removeItem("A_Status");
        localStorage.removeItem("H_Status");
        setIsLoggedIn(false);
-       window.location.reload();
+       window.location.replace('/');
      });
    } catch (error) {
 

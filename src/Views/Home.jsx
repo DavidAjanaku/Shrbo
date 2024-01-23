@@ -27,7 +27,7 @@ export default function Home() {
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
-  const { setUser, setToken, token,setHost,setAdminStatus } = useStateContext();
+  const { setUser, setToken, token,setHost,setAdminStatus,user } = useStateContext();
   const [loading, setLoading] = useState(true);
   const [homeImage,setHomeImage]=useState("");
   const [homeTitle,setHomeTitle]=useState("");
@@ -90,14 +90,14 @@ export default function Home() {
         console.log('Response Data:', response.data);
   
         // Set the user data in state
-        setUser(response.data);
+        setUser(response.data.user);
         console.log('User Data:', response.data);
   
         // Set the host value in state context
-        setHost(response.data.host);
+        setHost(response.data.user.host);
         console.log('Host:', response.data.host);
         setToken(ustoken);
-        setAdminStatus(response.data.adminStatus);
+        setAdminStatus(response.data.user.adminStatus);
 
         // Log 'yes' to the console
         console.log('yes');
@@ -501,7 +501,7 @@ export default function Home() {
             <CategoryHeader />
           </div>
 
-          <Listings />
+          <Listings user={user} />
           <div className="pb-48 w-[90%] mx-auto ">
             <h1 className="text-center text-4xl mb-10">
               Learn About the Major Cities

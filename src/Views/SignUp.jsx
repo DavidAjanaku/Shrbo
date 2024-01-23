@@ -70,8 +70,13 @@ const SignUp = () => {
       // Handle the error
       console.error("Error:", error);
 
-      // Show error notification
-      openNotificationWithIcon("error", error.response.data.message);
+      if(error.response.data.message){
+        openNotificationWithIcon("error",error.response.data.message);
+
+      }else{
+
+        openNotificationWithIcon("error",error.response.data);
+      }
     }
   };
 

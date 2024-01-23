@@ -10,6 +10,10 @@ import verve from '../../assets/Verve-Logo.png';
 import visa from '../../assets/Visa-Payment-Card.png';
 import masterCard from '../../assets/mastercard.png';
 import { message, Popconfirm ,Tag } from 'antd';
+import {LoadingOutlined}  from '@ant-design/icons';
+import {styles} from '../ChatBot/Style'
+
+
 
 
 
@@ -18,6 +22,7 @@ export default function Payments() {
   const [isConfirmDeactivation, setIsConfirmDeactivation] = useState(false);
   const [isCardRemoved, setIsCardRemoved] = useState(false);
   const {user,setUser,setHost,setAdminStatus}=useStateContext();
+  const [loading,setLoading]=useState(false);
   const [paymentDetails, setPaymentDetails] = useState([
     // {
     //   title: "MasterCard ****4567",
@@ -65,6 +70,7 @@ export default function Payments() {
     await axios.delete(`/deleteUserCard/${cardId}/${user.id}`).then(response=>{
       console.log(response);
       message.success(`Card ${type} deleted successfully`);
+      fetchUserCards();
     }).catch(error=>{
       console.error("Failed to delete Card",error);
       message.error(`An Error Occured while trying to delte Card ${type}`)
@@ -80,6 +86,7 @@ export default function Payments() {
     await axios.get(`/selectCard/${cardId}/${user.id}`).then(response=>{
       console.log(response);
       message.success(`Card ${type} Selected successfully`);
+      fetchUserCards();
     }).catch(err=>{
       console.error("Failed to delete Card",err);
       message.error(`An Error Occured while trying to Select Card ${type}`)
@@ -124,39 +131,41 @@ export default function Payments() {
   }, []); 
 
   useEffect(() => {
-    // Fetch user cards
-    const fetchUserCards = async () => {
-      try {
-        const response = await axios.get(`/getUserCards/${user.id}`);
-        console.log('cards', response.data);
-  
-        const newDetails = response.data.data.map((card) => {
-          const formattedCreatedAt = new Date(card.created_at).toLocaleString();
-          return {
-            title: `${card.cardtype} ****${card.card_number.slice(-4)}`,
-            value: `Expiration: ${card.expiry_data.slice(0, 2)}/${card.expiry_data.slice(2)}`,
-            action: "Remove Payment Method",
-            link: "",
-            id: card.id,
-            card: true,
-            card_type: card.cardtype,
-            created_at: formattedCreatedAt,
-            selected:card.Selected,
-          };
-        });
-          setPaymentDetails(newDetails);
-       
-          
-      } catch (error) {
-        console.error('Error fetching user cards:', error);
-      }
-    };
-  
+   
     if (user.id) {
       fetchUserCards();
     }
   }, [user.id]);
   
+   // Fetch user cards
+   const fetchUserCards = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/getUserCards/${user.id}`);
+      console.log('cards', response.data);
+
+      const newDetails = response.data.data.map((card) => {
+        const formattedCreatedAt = new Date(card.created_at).toLocaleString();
+        return {
+          title: `${card.cardtype} ****${card.card_number.slice(-4)}`,
+          value: `Expiration: ${card.expiry_data.slice(0, 2)}/${card.expiry_data.slice(2)}`,
+          action: "Remove Payment Method",
+          link: "",
+          id: card.id,
+          card: true,
+          card_type: card.cardtype,
+          created_at: formattedCreatedAt,
+          selected:card.Selected,
+        };
+      });
+        setPaymentDetails(newDetails);
+        setLoading(false);
+     
+        
+    } catch (error) {
+      console.error('Error fetching user cards:', error);
+    }
+  };
 
 
   const determine_card =(type)=>{
@@ -165,7 +174,7 @@ export default function Payments() {
         cardUrl=visa;
       }else if(type=="Verve"){
         cardUrl=verve;
-      }else if(type=="Mastercard"){
+      }else if(type=="Master"){
         cardUrl=masterCard;
       }
 
@@ -179,6 +188,36 @@ export default function Payments() {
 
   return (
     <div>
+      <div
+                className="transition-3"
+                style={{
+                    ...styles.loadingDiv,
+                    ...{
+                        zIndex:loading? '10':'-1',
+                        display:loading? "block" :"none",
+                        opacity:loading? '0.33':'0',
+                    }
+                }}
+
+            />
+            <LoadingOutlined 
+                className="transition-3"
+                style={{
+                    ...styles.loadingIcon,
+                    ...{
+                        zIndex:loading? '10':'-1',
+                        display:loading? "block" :"none",
+                        opacity:loading? '1':'0',
+                        fontSize:'82px',
+                        top:'calc(50% - 41px)',
+                        left:'calc(50% - 41px)',
+
+
+                    }
+                
+                
+                }}
+            />
       <div className="max-w-2xl mx-auto p-4">
         <GoBackButton/>
         <SettingsNavigation title="Payments & payouts" text="Payments & payouts" />
@@ -186,14 +225,14 @@ export default function Payments() {
 
         <div>
         <p className="text-gray-400 font-normal text-base my-4">Manage your payment methods and view your transaction history.
-</p>
+        </p>
 
           <div className="tab">
 
             {isChangePassword && (
               <div className="max-w-2xl mx-auto p-4">
                 <h2 className="text-2xl font-medium mb-4">Payment Card</h2>
-                <ATMCardForm userId={user.id} close={ (bool)=>{setIsChangePassword(bool)} } />
+                <ATMCardForm userId={user.id} close={ (bool)=>{setIsChangePassword(bool)} } refresh={()=>{fetchUserCards()}} />
               </div>
             )}
             {detailsArray.map((detail, index) => (

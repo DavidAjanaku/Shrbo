@@ -4,6 +4,12 @@ const EditEmailAddress = ({ onCancel, onSave }) => {
   const [email, setEmail] = useState("");
 
   const handleSubmit = (e) => {
+
+   if(email===""){
+     return
+
+   } 
+
     e.preventDefault();
 
     onSave({ email });

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
 function AddressForm({ onCancel, onSave }) {
-  const [country, setCountry] = useState("");
-  const [street, setStreet] = useState("");
-  const [zipCode, setZipCode] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
+  const [country, setCountry] = useState();
+  const [street, setStreet] = useState();
+  const [zipCode, setZipCode] = useState();
+  const [state, setState] = useState();
+  const [city, setCity] = useState();
 
   const handleSaveAddress = (e) => {
     e.preventDefault();
@@ -16,6 +16,11 @@ function AddressForm({ onCancel, onSave }) {
       state,
       city,
     };
+
+    if(addressData.length===0){
+      return
+    }
+
     onSave(addressData);
   };
 

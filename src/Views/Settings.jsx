@@ -83,7 +83,7 @@ export default function Settings() {
 
       <div className="pb-32">
         {isHostModalOpen && (
-          <HostModal isOpen={true} onClose={() => setHostModalOpen(false)} />
+          <HostModal isOpen={true} onClose={() => setHostModalOpen(false)} userData={user} />
         )}
 
         <div className="max-w-2xl md:mx-auto mx-9">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import Rating from "./Ratings";
@@ -6,7 +6,8 @@ import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import WishlistModal from "../../Views/WishListModal";
-const Listings = () => {
+import axios from '../../Axios'
+const Listings = ({user}) => {
   const [listings, setListings] = useState([
     {
       id: 1,
@@ -142,7 +143,9 @@ const Listings = () => {
       })
     );
   };
-  
+
+
+
   
   
 
@@ -172,7 +175,7 @@ const Listings = () => {
                     listing.isFavorite ? "yellow-500" : ""
                   } text-white font-bold py-2 px-4 rounded`}
                 >
-                  <div
+                 {user.name&&<div
                     className={`border border-gray-400 rounded-full p-1 ${
                       listing.isFavorite ? "bg-white" : ""
                     }`}
@@ -186,7 +189,7 @@ const Listings = () => {
                     >
                       <path d="M12 21.35l-1.45-1.32C5.4 16.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C15.09 3.81 16.76 3 18.5 3 21.58 3 24 5.42 24 8.5c0 3.78-3.4 7.86-8.55 11.54L12 21.35z" />
                     </svg>
-                  </div>
+                  </div>}
                 </button>
                 <img src={picture} alt={`Apartment in ${listing.location}`} />
               </div>

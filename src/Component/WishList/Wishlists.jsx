@@ -61,7 +61,7 @@ const Wishlists=()=>{
               
             </div>
           </div>
-          <BottomNavigation/>
+      
       </div>
     );
 
