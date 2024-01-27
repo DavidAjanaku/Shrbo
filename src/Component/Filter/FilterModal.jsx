@@ -5,7 +5,7 @@ import FilterIcon from "../../assets/svg/sliders-icon.svg";
 import close from "../../assets/svg/close-line-icon.svg"
 
 
-export default function FilterModal() {
+export default function FilterModal({search,clearAll}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedBedroom, setSelectedBedroom] = useState(null);
@@ -99,6 +99,8 @@ export default function FilterModal() {
     setSelectedAmenities([]);
     setValues([Min, Max]);
     setShowAllAmenities(false);
+    clearAll();
+    toggleModal()
   };
 
   const handleSubmit = (e) => {
@@ -112,13 +114,16 @@ export default function FilterModal() {
       priceRange: values,
     };
     console.log(selectedFilters);
+
+    search(selectedFilters,toggleModal);
+
   };
 
   return (
     <div className="flex">
       <button
         onClick={toggleModal}
-        className="border text-black font-bold p-2 px-4  space-x-3 text-white rounded-full  flex items-center justify-between"
+        className="border  font-bold p-2 px-4  space-x-3 text-white rounded-full  flex items-center justify-between"
       >
         <div className=" w-4">
           <img src={FilterIcon} alt="" />
@@ -176,7 +181,7 @@ export default function FilterModal() {
                     <h3 className="text-2xl">Rooms & Beds</h3>
 
                     <div className="room-options ">
-                      <h3 className="text-xl">Beds</h3>
+                      <h3 className="text-xl text-slate-700">Beds</h3>
                       <div className="flex space-x-3 flex-wrap">
                         {["Any", 1, 2, 3, 4, 5, 6, 7, "8+"].map((num) => (
                           <div
@@ -210,7 +215,7 @@ export default function FilterModal() {
                     </div>
 
                     <div className="room-options">
-                      <h3 className="text-xl">Bedrooms</h3>
+                      <h3 className="text-xl text-slate-700">Bedrooms</h3>
                       <div className="flex space-x-3 flex-wrap">
                         {["Any", 1, 2, 3, 4, 5, 6, 7, "8+"].map((num) => (
                           <div
@@ -244,7 +249,7 @@ export default function FilterModal() {
                     </div>
 
                     <div className="room-options">
-                      <h3 className="text-xl">Bathrooms</h3>
+                      <h3 className="text-xl text-slate-700">Bathrooms</h3>
                       <div className="flex space-x-3 flex-wrap">
                         {["Any", 1, 2, 3, 4, 5, 6, 7, "8+"].map((num) => (
                           <div
@@ -278,7 +283,7 @@ export default function FilterModal() {
                     </div>
 
                     <div className=" space-y-4">
-                      <h3 className="text-xl font-semibold">Property Types</h3>
+                      <h3 className="text-xl font-semibold ">Property Types</h3>
                       <div className="flex flex-wrap   w-full">
                         {propertyTypes.map((type) => (
                           <div

@@ -66,27 +66,7 @@ import AuthGoogle from "./Views/AuthGoogle";
 import axios from "./Axios"
 import HostHome from "./Component/Unboarding/HostHome";
 function App() {
-      // View Count (register visitors)
-  
-  useEffect(()=>{
-   
-    const viewCount =async ()=>{
 
-      await axios.get('/view-count').then(response=>{
-  
-        console.log("view-Count",response);
-  
-  
-  
-      }).catch(error=>{
-          console.error(error);
-      });
-    }  
-  
-  viewCount();
-   
-
-  },[]);
 
 
   return (
@@ -110,6 +90,8 @@ function App() {
         <Route path="/Trip" element={<Trip />} />
         <Route path="/WishList" element={<WishList />} />
         <Route path="/WishlistsSet" element={<WishlistsSet />} />
+        <Route path="/WishlistsSet/:wishList/:id" element={<WishlistsSet />} />
+
         <Route path="/ManageListings" element={<ManageListings />} />
         <Route path="/UsersShow" element={<UsersShow />} />
         <Route path="/HostHomes" element={<HostHomes />} />

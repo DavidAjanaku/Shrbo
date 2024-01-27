@@ -155,7 +155,7 @@ export default function usersShow() {
                       <div
                         className="cursor-pointer bg-slate-200"
                         style={{
-                          backgroundImage: `url(${`https://shortletbooking.com/${user.profilePicture}`||profilePicture})`,
+                          backgroundImage: `url(${user.profilePicture?`https://shortletbooking.com/${user.profilePicture}`:profilePicture})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
                           width: "150px",
@@ -177,7 +177,7 @@ export default function usersShow() {
             <section className="mt-10 md:shadow-lg md:p-5 md:border md:rounded-xl">
               <div className="my-10">
                 <h1 className="text-2xl font-medium">
-                 {user.name.split(' ')[0]}'s confirmed Information
+                 {user.name?user.name.split(' ')[0]:"user"}'s confirmed Information
                 </h1>
 
                 <div className="my-2">
@@ -214,7 +214,7 @@ export default function usersShow() {
                   </div>}
 
 
-                  {!(user.verified==="Not Verified")?<div className="flex items-center space-x-2">
+                  {!(user.verified==="Not Verified"||user.verified===null)?<div className="flex items-center space-x-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -237,7 +237,7 @@ export default function usersShow() {
                 </div>
               </div>
               
-              {(user.verified==="Not Verified")?<div className="my-10">
+              {(user.verified==="Not Verified"||user.verified===null)?<div className="my-10">
                 <h1 className="text-2xl font-medium">Verify your identity</h1>
 
                 <div className="">
@@ -301,7 +301,7 @@ export default function usersShow() {
                       <div
                         className="cursor-pointer bg-slate-200"
                         style={{
-                          backgroundImage: `url(${`https://shortletbooking.com/${user.profilePicture}`||profilePicture})`,
+                          backgroundImage: `url(${user.profilePicture?`https://shortletbooking.com/${user.profilePicture}`:profilePicture})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
                           width: "150px",

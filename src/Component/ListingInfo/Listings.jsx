@@ -7,7 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import WishlistModal from "../../Views/WishListModal";
 import axios from '../../Axios'
-const Listings = ({user}) => {
+const Listings = ({user,homes}) => {
   const [listings, setListings] = useState([
     {
       id: 1,
@@ -19,7 +19,7 @@ const Listings = ({user}) => {
       location: "1004 Victoria Island",
       price: "$150 per night",
       date: "22/08/2023",
-      kilometres: "22miles away",
+      title: "22miles away",
       rating: 4.8,
       link: "/ListingInfoMain",
     },
@@ -33,7 +33,7 @@ const Listings = ({user}) => {
       location: "2b, Admiralty Road",
       price: "$120 per night",
       date: "22/08/2023",
-      kilometres: "22miles away",
+      title: "22miles away",
       rating: 4.2,
       link: "/ListingInfoMain",
     },
@@ -47,7 +47,7 @@ const Listings = ({user}) => {
       location: "Eva Pearl Lekki",
       price: "$200 per night",
       date: "22/08/2023",
-      kilometres: "22miles away",
+      title: "22miles away",
       rating: 4.0,
       link: "/ListingInfoMain",
     },
@@ -62,7 +62,7 @@ const Listings = ({user}) => {
       location: "Mountain Retreat",
       price: "$200 per night",
       date: "22/08/2023",
-      kilometres: "22miles away",
+      title: "22miles away",
       rating: 4.8,
       link: "/ListingInfoMain",
     },
@@ -76,7 +76,7 @@ const Listings = ({user}) => {
       location: "1004 Victoria Island",
       price: "$150 per night",
       date: "22/08/2023",
-      kilometres: "22miles away",
+      title: "22miles away",
       rating: 4.8,
       link: "/ListingInfoMain",
     },
@@ -90,7 +90,7 @@ const Listings = ({user}) => {
       location: "2b, Admiralty Road",
       price: "$120 per night",
       date: "22/08/2023",
-      kilometres: "22miles away",
+      title: "22miles away",
       rating: 4.8,
       link: "/ListingInfoMain",
     },
@@ -105,7 +105,7 @@ const Listings = ({user}) => {
       location: "2b, Admiralty Road",
       price: "$120 per night",
       date: "22/08/2023",
-      kilometres: "22miles away",
+      title: "22miles away",
       rating: 4.8,
       link: "/ListingInfoMain",
     },
@@ -120,7 +120,7 @@ const Listings = ({user}) => {
       location: "2b, Admiralty Road",
       price: "$120 per night",
       date: "22/08/2023",
-      kilometres: "22miles away",
+      title: "22miles away",
       rating: 4.8,
       link: "/ListingInfoMain",
     },
@@ -130,8 +130,10 @@ const Listings = ({user}) => {
   const [selectedListingId, setSelectedListingId] = useState(null);
 
 
-  const toggleFavorite = (id) => {
-    setModalOpen(true);
+  const toggleFavorite = (id,fav) => {
+    if(fav!=true){
+      setModalOpen(true);
+    }
     setSelectedListingId(id);
     setListings((prevListings) =>
       prevListings.map((listing) => {
@@ -144,6 +146,31 @@ const Listings = ({user}) => {
     );
   };
 
+  const closeModal=()=>{
+
+    setModalOpen(false)
+    setListings((prevListings) =>
+    prevListings.map((listing) => {
+      if (listing.id === selectedListingId) {
+        const isFavorite =listing.isFavorite&&!listing.isFavorite;
+        return { ...listing, isFavorite };
+      }
+      return listing;
+    })
+  );
+
+  }
+
+  useEffect(()=>{
+    if(homes){
+
+      setListings(homes);
+    }
+
+  },[homes]);
+
+ 
+
 
 
   
@@ -155,20 +182,21 @@ const Listings = ({user}) => {
      {isModalOpen && (
   <WishlistModal
     listingId={selectedListingId}
-    onClose={() => setModalOpen(false)}
+    added={()=>setModalOpen(false)}
+    onClose={closeModal}
     onToggleFavorite={(wishlist) => toggleFavorite(selectedListingId, wishlist)}
   />
 )}
       {listings.map((listing) => (
         <div
           key={listing.id}
-          className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden  m-4 cursor-pointer"
+          className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden   m-4 cursor-pointer"
         >
-          <Carousel>
+          <Carousel >
             {listing.pictures.map((picture, index) => (
               <div key={index}>
                 <button
-                  onClick={() => toggleFavorite(listing.id)}
+                  onClick={() => toggleFavorite(listing.id,listing.isFavorite)}
                   className={`flex items-center absolute outline-none bg-${
                     listing.isFavorite ? "yellow-400" : ""
                   } hover:bg-${
@@ -198,11 +226,11 @@ const Listings = ({user}) => {
           <Link to={listing.link}>
             <div className=" py-4">
               <div className="font-medium text-base mb-2">
-                {listing.location}
+                {listing.title}
               </div>
               <Rating rating={listing.rating} />
 
-              <p className="text-gray-400 text-base">{listing.kilometres}</p>
+              <p className="text-gray-400 text-base">{listing.location}</p>
 
               <p className="text-gray-400 text-base">{listing.date}</p>
               <p className="font-medium text-gray-700 text-base">

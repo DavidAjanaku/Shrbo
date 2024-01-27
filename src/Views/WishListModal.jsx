@@ -4,13 +4,13 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from '../Axios'
 import { useStateContext } from "../ContextProvider/ContextProvider";
 
-const WishlistModal = ({ onToggleFavorite, onClose, closable,listingId }) => {
+const WishlistModal = ({ added, onClose, closable,listingId }) => {
   const [selectedWishlist, setSelectedWishlist] = useState("");
   const [newWishlist, setNewWishlist] = useState("");
   const [isAdded, setIsAdded] = useState(false);
   const [wishlistContainer,setWishlistContainer]=useState([]);
   const {user}=useStateContext();
-
+  
 
   useEffect(()=>{
     axios.get("/getUserWishlistContainers").then(response=>{
@@ -70,11 +70,11 @@ const WishlistModal = ({ onToggleFavorite, onClose, closable,listingId }) => {
 
     await axios.post(`/createWishlist/${user.id}`,data).then(response=>{
       toggleFav("success");
-      handleCancel();
+      added()
 
     }).catch(error=>{
       console.log('ADDing to Wishlist',error)
-      
+      handleCancel()
       toggleFav("error");
     });
 
@@ -99,23 +99,23 @@ const WishlistModal = ({ onToggleFavorite, onClose, closable,listingId }) => {
         <h2 className="text-xl font-bold mb-4">Select or Create Wishlist</h2>
         <form>
         {wishlistContainer && (
-  <label className="block mb-2">
-    Select Wishlist:
-    <select
-      className="w-full p-2 border rounded"
-      value={selectedWishlist}
-      onChange={(e) => setSelectedWishlist(e.target.value)}
-    >
-      <option value="">-- Select Wishlist --</option>
-      {/* <option value="wishlist1">Wishlist 1</option>
-      <option value="wishlist2">Wishlist 2</option> */}
-      {wishlistContainer.map((cont) => (
-        <option key={cont.id} value={cont.id}>
-          {cont.name}
-        </option>
-      ))}
-    </select>
-  </label>
+            <label className="block mb-2">
+              Select Wishlist:
+              <select
+                className="w-full p-2 border rounded"
+                value={selectedWishlist}
+                onChange={(e) => setSelectedWishlist(e.target.value)}
+              >
+                <option value="">-- Select Wishlist --</option>
+                {/* <option value="wishlist1">Wishlist 1</option>
+                <option value="wishlist2">Wishlist 2</option> */}
+                {wishlistContainer.map((cont) => (
+                  <option key={cont.id} value={cont.id}>
+                    {cont.name}
+                  </option>
+                ))}
+              </select>
+         </label>
 )}
 
         {selectedWishlist==="" && <label className="block mb-2">

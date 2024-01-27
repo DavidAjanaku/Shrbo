@@ -7,6 +7,7 @@ import PaginationExample from "../PaginationExample";
 import Footer from "../Navigation/Footer";
 import Header from "../Navigation/Header";
 import BottomNavigation from "../Navigation/BottomNavigation";
+import HostHeader from "../Navigation/HostHeader";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -175,7 +176,7 @@ export default function Listings() {
 
   return (
     <div>
-      <Header/>
+      <HostHeader/>
       <div className="md:flex-col md:w-[80vw] md:mx-auto md:my-10 p-4 md:p-10">
       <div className="flex justify-between items-center mb-10">
         <div>

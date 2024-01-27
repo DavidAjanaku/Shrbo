@@ -88,7 +88,7 @@ export default function Payments() {
       message.success(`Card ${type} Selected successfully`);
       fetchUserCards();
     }).catch(err=>{
-      console.error("Failed to delete Card",err);
+      console.error("Failed to Selected Card",err);
       message.error(`An Error Occured while trying to Select Card ${type}`)
     })
 
@@ -208,7 +208,7 @@ export default function Payments() {
                         zIndex:loading? '10':'-1',
                         display:loading? "block" :"none",
                         opacity:loading? '1':'0',
-                        fontSize:'82px',
+                        fontSize:'42px',
                         top:'calc(50% - 41px)',
                         left:'calc(50% - 41px)',
 
@@ -288,7 +288,7 @@ export default function Payments() {
                 </>:
                 <div className=" min-[640px]:justify-between min-[640px]:items-start min-[640px]:flex py-5 px-6 bg-[rgb(249,250,251)] rounded-md w-full relative" >
                   <h4 className=" absolute w-[1px] h-[1px] p-0 -m-[1px] overflow-hidden whitespace-nowrap ">{detail.card_type}</h4>
-                   {(detail.selected=="Selected")&&<Tag bordered={true} color="success" className=" min-[640px]:text-[10px] max-[639px]:right-2 min-[640px]:left-3 min-[640px]:bottom-1   absolute min-[640px]:leading-4   ">
+                   {(detail.selected=="Selected")&&<Tag bordered={true} color="success" className=" min-[640px]:text-[10px] max-[639px]:right-2 min-[640px]:left-3 min-[640px]:bottom-1 absolute min-[640px]:leading-4   ">
                       selected 
                     </Tag>}
                   <div className=" min-[640px]:items-start min-[640px]:flex cursor-pointer " onClick={()=>{selectCard(detail.id,detail.title)}}>

@@ -6,7 +6,8 @@ import { Button, Result,notification} from 'antd';
 import axios from '../../../Axios'
 import { useStateContext } from "../../../ContextProvider/ContextProvider";
 import { Link } from "react-router-dom";
-
+import {styles} from '../../ChatBot/Style';
+import {LoadingOutlined}  from '@ant-design/icons';
 
 const { Option } = Select;
 
@@ -21,7 +22,7 @@ export default function AddGovernmentId() {
   const [succesfull,setSuccesfull]=useState();
   const {user,setUser,setHost,setAdminStatus}=useStateContext(false);
   const videoRef = useRef(null);
-
+  const [loading,setLoading]=useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -159,10 +160,13 @@ const capturePhoto = async () => {
       const data={
         government_id:fileImage,     
         verification_type:`${selectedDocument}`,
-        live_photo:uploadedImage ,
+        live_photo:uploadedImage,
       }
   
       updateData(data);
+    }else{
+      
+      openNotificationWithIcon("error","No Field Should be Left Empty ")
     }
 
 
@@ -179,6 +183,7 @@ const capturePhoto = async () => {
   };
 
   const updateData=async(data)=>{
+    setLoading(true);
     try {
       const response= await axios.put(`/userDetail/${user.id}`,data);
       console.log('PUT request successful for Email', response.data);
@@ -194,6 +199,7 @@ const capturePhoto = async () => {
         openNotificationWithIcon("error",error.response.data)
       }
     }finally{
+      setLoading(false);
     }
   }
 
@@ -207,7 +213,7 @@ const capturePhoto = async () => {
          status="success"
          className=" md:h-screen flex flex-col items-center justify-center "
          title={<div className=" md:text-3xl">Successfully Updated Your Government ID!</div>}
-         subTitle={<div className=" md:text-base">Your ID card has been Submitted successfully and would be Reviewed by Shrbo Team, you would receive an Email when this is done.</div>}
+         subTitle={<div className=" md:text-base">Your ID card has been Submitted successfully and would be Reviewed by Shrbo Team, you will receive an Email when this is done.</div>}
          extra={[
               <div    key={"Console"} className=" w-full flex justify-center items-center">
              <Link
@@ -216,9 +222,10 @@ const capturePhoto = async () => {
              className="flex  justify-center rounded-md border
              px-3 py-1.5 text-sm text-white bg-slate-700 transition-colors  hover:bg-slate-600
              leading-6 shadow-sm 
+              hover:text-white
              focus-visible:outline focus-visible:outline-2 
              focus-visible:outline-offset-2 
-             focus-visible:outline-orange-400 "
+            //  focus-visible:outline-orange-400 "
              >
              
              Go to Account
@@ -233,6 +240,44 @@ const capturePhoto = async () => {
      
           :
       <>
+          {loading?
+
+              <>
+              <div
+                className="transition-3"
+                style={{
+                    ...styles.loadingDiv,
+                    ...{
+                        zIndex:loading? '10':'-1',
+                        display:loading? "block" :"none",
+                        opacity:loading? '0.33':'0',
+                    }
+                }}
+
+            />
+            <LoadingOutlined 
+                className="transition-3"
+                style={{
+                    ...styles.loadingIcon,
+                    ...{
+                        zIndex:loading? '10':'-1',
+                        display:loading? "block" :"none",
+                        opacity:loading? '1':'0',
+                        fontSize:'42px',
+                        top:'calc(50% - 41px)',
+                        left:'calc(50% - 41px)',
+
+
+                    }
+                
+                
+                }}
+            />
+            </>
+            :
+            
+        <>
+      
       <GoBackButton />
       <SettingsNavigation title="Government Info" text="Government info" />
       <h1 className="text-2xl font-bold">Upload Government ID Card</h1>
@@ -318,6 +363,8 @@ const capturePhoto = async () => {
         >
         Submit
       </button>
+        </>
+          }
         </>
          }
     </div>

@@ -92,7 +92,15 @@ export default function Security() {
         setIsChangePassword(false);
 
       }).catch(err=>{
-        openNotificationWithIcon("error",error.response.data)
+        console.log(err);
+        
+        if(err.response.data.message){
+          openNotificationWithIcon("error",err.response.data.message);
+
+        }else{
+
+          openNotificationWithIcon("error",err.response.data);
+        }
 
       })
 

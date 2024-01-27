@@ -27,13 +27,13 @@ export default function Home() {
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
-  const { setUser, setToken, token,setHost,setAdminStatus,user } = useStateContext();
+  const { setUser, setToken, token, setHost, setAdminStatus, user } = useStateContext();
   const [loading, setLoading] = useState(true);
-  const [homeImage,setHomeImage]=useState("");
-  const [homeTitle,setHomeTitle]=useState("");
-  const [homeSubTitle,setHomeSubTitle]=useState("");
- 
-
+  const [homeImage, setHomeImage] = useState("");
+  const [homeTitle, setHomeTitle] = useState("");
+  const [homeSubTitle, setHomeSubTitle] = useState("");
+  const [listings, setListings] = useState();
+  const [clearFilter,setClearFilter]=useState(false);
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -79,20 +79,20 @@ export default function Home() {
         const verified = params.get('verified');
         const remtoken = params.get('remtoken');
         const ustoken = params.get('ustoken');
-  
+
         // Log out the parameters
         console.log('Verified:', verified);
         console.log('Remtoken:', remtoken);
         console.log('Ustoken:', ustoken);
-  
+
         // Make a request to get the user data with parameters
         const response = await axios.get(`/verify-tokens/${remtoken}/${ustoken}`);
         console.log('Response Data:', response.data);
-  
+
         // Set the user data in state
         setUser(response.data.user);
         console.log('User Data:', response.data);
-  
+
         // Set the host value in state context
         setHost(response.data.user.host);
         console.log('Host:', response.data.host);
@@ -108,11 +108,11 @@ export default function Home() {
         setLoading(false);
       }
     };
-  
+
     // Call the fetchUserData function when the component mounts
     fetchUserData();
   }, []);
-  
+
 
 
   useEffect(() => {
@@ -125,11 +125,11 @@ export default function Home() {
         setUser(response.data);
         console.log(response.data);
         console.log(response.data.host);
-       
-          console.log('yes');
-          setHost(response.data.host);
-          setAdminStatus(response.data.adminStatus);
-      
+
+        console.log('yes');
+        setHost(response.data.host);
+        setAdminStatus(response.data.adminStatus);
+
 
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -140,7 +140,7 @@ export default function Home() {
     };
 
     fetchUserData();
-  }, []); 
+  }, []);
 
 
 
@@ -148,21 +148,21 @@ export default function Home() {
 
   // Home Page Data 
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    const homePageData=async ()=>{
+    const homePageData = async () => {
 
-      await axios.get('/homepage').then(response=>{
+      await axios.get('/homepage').then(response => {
 
-        console.log("HomePage",response.data.data[0]);
-        const homePageData=response.data.data[0];
+        console.log("HomePage", response.data.data[0]);
+        const homePageData = response.data.data[0];
 
         setHomeImage(homePageData.image);
         setHomeTitle(homePageData.title);
         setHomeSubTitle(homePageData.subtitle)
 
 
-      }).catch(error=>{
+      }).catch(error => {
         console.error(error);
       });
 
@@ -172,10 +172,32 @@ export default function Home() {
 
 
 
-  },[]);
+  }, []);
+
+  // View Count (register visitors)
+
+  useEffect(() => {
+
+    const viewCount = async () => {
+
+      await axios.get('/view-count').then(response => {
+
+        console.log("view-Count", response);
 
 
-  
+
+      }).catch(error => {
+        console.error(error);
+      });
+    }
+
+    viewCount();
+
+
+  }, []); 0
+
+
+
 
   useEffect(() => {
     // Simulate fetching house details after 5 seconds
@@ -396,7 +418,81 @@ export default function Home() {
       ],
     },
   ];
- 
+
+
+
+  useEffect(() => {
+
+    axios.get("/hosthomes").then(response => {
+      console.log(response.data.data)
+      const formattedHostHomes = response.data.data.map(item => ({
+        id: item.id,
+        pictures: item.hosthomephotos,
+        location: item.address,
+        price: `₦${item.price} per night`,
+        date: item.created_on,
+        title: item.title,
+        rating: item.rating ? item.rating : 4,
+        link: "/ListingInfoMain",
+        isFavorite: item.addedToWishlist,
+      }));
+
+      setListings(formattedHostHomes);
+
+    }).catch(err => {
+      console.log("Listing", err);
+    })
+
+
+
+
+
+  }, [clearFilter]);
+
+
+  const filterData = async (data,close) => {
+
+      // data.priceRange[0]
+    const main={
+      price: "",
+      bedrooms: data.selectedRoom,
+      beds: data.selectedBedroom,
+      bathrooms:data.selectedBathroom,
+      property_type: data.selectedTypes,
+      amenities: data.selectedAmenities,
+
+    }
+    console.log(main)
+
+    await axios.post('/filterHomepage',main).then(response => { 
+
+      const formattedHostHomes = response.data.data.map(item => ({
+        id: item.id,
+        pictures: item.hosthomephotos,
+        location: item.address,
+        price: `₦${item.price} per night`,
+        date: item.created_on,
+        title: item.title,
+        rating: item.rating ? item.rating : 4,
+        link: "/ListingInfoMain",
+        isFavorite: item.addedToWishlist,
+      }));
+
+      setListings(formattedHostHomes);
+      console.log("filter",response.data.data);
+
+      close();
+
+
+    }).catch(err=>{
+      console.log(err)
+    });
+
+  }
+
+
+
+
   const settings = {
     dots: true,
     infinite: true,
@@ -422,106 +518,105 @@ export default function Home() {
 
   return (
     <div>
-       {loading ? (
+      {loading ? (
         <div>
 
           <div className="h-screen flex justify-center items-center">
-          <div className="containerrr"><div className="cube"></div></div>
+            <div className="containerrr"><div className="cube"></div></div>
 
-          <img src={Logo} className="h-20 absolute" alt="" />
+            <img src={Logo} className="h-20 absolute" alt="" />
           </div>
         </div>
       ) : (
         <>
-<Header />
-      {/* <Hamburger /> */}
-       
-      <BottomNavigation />
-      <div
-        className={` md:w-2/5 mx-auto flex justify-center fixed z-[999] left-0 right-0 transition-all ${
-          isSearchButtonFixed ? "top-0" : "mt-6"
-        }`}
-      >
-        <div className="bg-orange-400 z-50 w-[90%] md:w-full flex items-center justify-between  py-3 px-5 rounded-full mt-6 text-white shadow-2xl">
-          <button onClick={openModal} className="flex  items-center w-3/4">
-            <div className="w-[20%]">
-              <img src={searchIcon} className="w-6" alt="" />
+          <Header />
+          {/* <Hamburger /> */}
+
+          <BottomNavigation />
+          <div
+            className={` md:w-2/5 mx-auto flex justify-center fixed z-[999] left-0 right-0 transition-all ${isSearchButtonFixed ? "top-0" : "mt-6"
+              }`}
+          >
+            <div className="bg-orange-400 z-50 w-[90%] md:w-full flex items-center justify-between  py-3 px-5 rounded-full mt-6 text-white shadow-2xl">
+              <button onClick={openModal} className="flex  items-center w-3/4">
+                <div className="w-[20%]">
+                  <img src={searchIcon} className="w-6" alt="" />
+                </div>
+                <div className="w-[100%] text-start">
+                  <div className="">
+                    <div className="text-base font-medium">Anywhere</div>
+                    <div className=" text-[12px] flex">
+                      <div className="">Any week</div>
+                      <div className="mx-4">Add guests</div>
+                    </div>
+                  </div>
+                </div>
+              </button>
+              <div>
+                <FilterModal search={filterData} clearAll={()=>{setClearFilter((prevClearFilter)=>!prevClearFilter)}} />
+              </div>
             </div>
-            <div className="w-[100%] text-start">
-              <div className="">
-                <div className="text-base font-medium">Anywhere</div>
-                <div className=" text-[12px] flex">
-                  <div className="">Any week</div>
-                  <div className="mx-4">Add guests</div>
+
+
+            <Modal isOpen={isModalOpen} onClose={closeModal} />
+          </div>
+          <div className="pageHeader"></div>
+          <div className="storeFrontHomeage">
+            <div>
+              <link rel="preload" as="image" href={"https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh"} />
+
+              <div className="hero-pattern relative bg-cover bg-center md:h-[70vh] h-[100vh] "
+                style={{ backgroundImage: `url(${homeImage})` }}
+              >
+                <div className="h-full flex flex-col justify-center items-center">
+                  <h1 className="text-white md:text-6xl text-5xl lg:text-6xl p-4 text-center z-50">
+                    {/* Unlock Comfort, Discover Adventure with Shrbo. */} {homeTitle}
+                  </h1>
+                  <div className="z-50">
+                    <p className="z-50 text-white  md:text-base text-center text-sm px-10">
+                      {/* Welcome to Shrbo, where comfort meets adventure. Find your
+                  perfect home away from home and embark on memorable journeys,
+                  one stay at a time. */}  {homeSubTitle}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </button>
-          <div>
-            <FilterModal />
-          </div>
-        </div>
-        
-
-        <Modal isOpen={isModalOpen} onClose={closeModal} />
-      </div>
-      <div className="pageHeader"></div>
-      <div className="storeFrontHomeage">
-        <div>
-        <link rel="preload" as="image" href={"https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh" }/>
-
-          <div className="hero-pattern relative bg-cover bg-center md:h-[70vh] h-[100vh] " 
-            style={{ backgroundImage: `url(${homeImage})` }}
-          >
-            <div className="h-full flex flex-col justify-center items-center">
-              <h1 className="text-white md:text-6xl text-5xl lg:text-6xl p-4 text-center z-50">
-                {/* Unlock Comfort, Discover Adventure with Shrbo. */} {homeTitle}
-              </h1>
-              <div className="z-50">
-                <p className="z-50 text-white  md:text-base text-center text-sm px-10">
-                  {/* Welcome to Shrbo, where comfort meets adventure. Find your
-                  perfect home away from home and embark on memorable journeys,
-                  one stay at a time. */}  {homeSubTitle}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          {/* <p>
+            <div>
+              {/* <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. A, iste
             porro beatae asperiores sapiente dolorum dolor quod voluptatibus
             odit, numquam quasi illo doloremque harum aut rem eaque nesciunt,
             reiciendis nihil?
           </p> */}
-        </div>
+            </div>
 
-        <section className=" mx-auto justify-center w-[95%] md:w-[80%]">
-          <div className="justify-center flex">
-            <CategoryHeader />
-          </div>
+            <section className=" mx-auto justify-center w-[95%] md:w-[80%]">
+              <div className="justify-center flex">
+                <CategoryHeader />
+              </div>
 
-          <Listings user={user} />
-          <div className="pb-48 w-[90%] mx-auto ">
-            <h1 className="text-center text-4xl mb-10">
-              Learn About the Major Cities
-            </h1>
-            <Slider {...settings}>
-              {cities.map((city, index) => (
-                <CityCard key={index} {...city} />
-              ))}
-            </Slider>
+              <Listings user={user} homes={listings} />
+              <div className="pb-48 w-[90%] mx-auto ">
+                <h1 className="text-center text-4xl mb-10">
+                  Learn About the Major Cities
+                </h1>
+                <Slider {...settings}>
+                  {cities.map((city, index) => (
+                    <CityCard key={index} {...city} />
+                  ))}
+                </Slider>
+              </div>
+            </section>
+            <RateHouseModal
+              isOpen={isRateHouseModalOpen}
+              onClose={closeRateHouseModal}
+              houseDetails={houseDetails}
+            />
           </div>
-        </section>
-        <RateHouseModal
-          isOpen={isRateHouseModalOpen}
-          onClose={closeRateHouseModal}
-          houseDetails={houseDetails}
-        />
-      </div>
-      <ChatSupport />
-      <Footer />
-      </>
+          <ChatSupport />
+          <Footer />
+        </>
       )}
 
     </div>
