@@ -124,12 +124,8 @@ const UserVerificationDashboard = () => {
               User Verification Dashboard
             </h1>
 
-            <div className="flex space-x-4">
-              <input
-                placeholder="Filter by name"
-                value={filters.name}
-                onChange={(e) => handleFilterChange("name", e.target.value)}
-              />
+            <div className="flex space-x-4 mb-5">
+             
               <DatePicker
                 placeholder="Filter by date"
                 format="YYYY-MM-DD"
@@ -139,7 +135,6 @@ const UserVerificationDashboard = () => {
                 }
               />
             </div>
-            <Button onClick={applyFilters}>Apply Filters</Button>
 
             <div className="bg-white p-4 rounded shadow">
               {loading ? (
