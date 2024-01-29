@@ -10,7 +10,7 @@ import CustomModal from "../CustomModal";
 import {FlagOutlined} from '@ant-design/icons';
 
 
-export default function ListingForm() {
+export default function ListingForm({ price, reservations, reservation, guest }) {
   function showModal(e) {
     e.preventDefault();
     setIsModalVisible(true);
@@ -83,9 +83,8 @@ export default function ListingForm() {
                 <div className=" gap-2 justify-start flex-wrap flex-row items-center flex">
                   <div>
                     <span aria-hidden="true">
-                      <div className=" font-medium text-xl box-border">
-                        $110
-                      </div>
+                    <div className=" font-medium text-xl box-border">₦{Number(price).toLocaleString()}</div>
+
                     </span>
                   </div>
                   <div className=" font-normal text-start text-xs">
