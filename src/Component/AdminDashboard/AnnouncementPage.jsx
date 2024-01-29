@@ -3,13 +3,38 @@ import { Form, Input, Button, message } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import { styles } from "../ChatBot/Style";
+import Axois from "../../Axios"
 
 const AnnouncementPage = () => {
   const [form] = Form.useForm();
 
-  const handleSubmit = (values) => {
-    message.success("Announcement sent successfully to all users");
-    form.resetFields();
+  const handleSubmit = async (values) => {
+    try {
+      // Make a request to the API endpoint
+      await Axois.post("/sendEmail", {
+        message: values.announcement,
+        usertype: values.target,
+      });
+
+      let targetMessage = "";
+      if (values.target === "Guest") {
+        targetMessage = "Announcement sent successfully to guests";
+      } else if (values.target === "Host") {
+        targetMessage = "Announcement sent successfully to hosts";
+      } else if (values.target === "All") {
+        targetMessage = "Announcement sent successfully to all users";
+      } else {
+        targetMessage = "Please select a valid target audience";
+      }
+
+      message.success(targetMessage);
+
+      // Reset form fields
+      form.resetFields();
+    } catch (error) {
+      // Display error message
+      message.error("Failed to send announcement");
+    }
   };
 
   return (
@@ -33,6 +58,8 @@ const AnnouncementPage = () => {
               ]}
             >
               <select className="p-2">
+              <option value="Select">Select</option>
+
                 <option value="Guest">Guest</option>
                 <option value="Host">Host</option>
                 <option value="All">All</option>

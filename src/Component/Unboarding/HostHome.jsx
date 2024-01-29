@@ -979,6 +979,7 @@ export default function HostHome({ match }) {
                       type="file"
                       multiple
                       accept="image/*"
+                      disabled
                       onChange={handleImageUpload}
                       key={fileInputKey}
                     />
@@ -986,36 +987,27 @@ export default function HostHome({ match }) {
                   <p className="text-gray-400">Choose at least 5 photos</p>
                 </div>
                 <div className="flex flex-wrap mt-6">
-                  {uploadedImages.map((image) => (
-                    <div key={image.id} className="relative p-2">
-                      <img
-                        src={image.src}
-                        alt="Houses"
-                        className="w-64 object-cover h-64"
-                      />
-                      <button
-                        onClick={() => handleImageDelete(image.id)}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  ))}
+                {uploadedImages.map((image) => (
+  <div key={image.id} className="relative p-2">
+    <img
+      src={image.src}
+      alt="Houses"
+      className="w-64 object-cover h-64"
+    />
+  
+  </div>
+))}
+
                   {/* Display existing photos from fetched data */}
                   {Array.isArray(apartment?.hosthomephotos) &&
                     apartment.hosthomephotos.map((photo) => (
-                      <div key={photo.id} className="relative p-2">
+                      <div key={photo.id}className="relative p-2">
                         <img
                           src={photo}
                           alt="Houses"
                           className="w-64 object-cover h-64"
                         />
-                        <button
-                          onClick={() => handleExistingPhotoDelete(photo.id)}
-                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
-                        >
-                          <FaTrash />
-                        </button>
+                       
                       </div>
                     ))}
                 </div>
@@ -1041,6 +1033,7 @@ export default function HostHome({ match }) {
                   accept="video/*"
                   onChange={handleVideoUpload}
                   className="mb-4"
+                  disabled
                 />
                 <p className="text-slate-500">Maximum file size: 20MB</p>
                 <p className="text-slate-500">Maximum duration: 1 minute</p>
@@ -1056,12 +1049,7 @@ export default function HostHome({ match }) {
                     <video controls className="mt-2">
                       <source src={apartment.hosthomevideo} type="video/mp4" />
                     </video>
-                    <button
-                      onClick={handleRemoveVideo}
-                      className="bg-red-500 text-white py-2 px-4 mt-4 rounded-full hover:bg-red-600"
-                    >
-                      Remove Video
-                    </button>
+                   
                   </div>
                 )}
 
@@ -1075,9 +1063,7 @@ export default function HostHome({ match }) {
                     <video controls className="mt-2">
                       <source src={apartment.hosthomevideo} type="video/mp4" />
                     </video>
-                    <button className="bg-red-500 text-white py-2 px-4 mt-4 rounded-full hover:bg-red-600">
-                      Remove Video
-                    </button>
+                   
                   </div>
                 )}
               </div>
@@ -1292,27 +1278,34 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 13: // Step for adding discounts
+        case 13: // Step for adding discounts
         return (
-          <div className=" mx-auto  flex justify-center p-4">
-            <div className="  overflow-auto">
+          <div className="mx-auto flex justify-center p-4">
+            <div className="overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
                 <h1 className="text-6xl">Add discounts</h1>
-                <p>
-                  Help your place stand out to get booked faster and earn your
-                  first reviews.
-                </p>
+                <p>Help your place stand out to get booked faster and earn your first reviews.</p>
               </div>
               <div className="pb-32">
-                <div className=" ">
-                  <div className="flex flex-wrap   w-full">
-                    {houseDiscount.map((type) => (
+                <div className="flex flex-wrap w-full">
+                  {houseDiscount.map((type) => {
+                    const cleanedTypeId = type.id.trim(); // Remove extra spaces
+
+                    const isSelected = apartment?.discounts.some(
+                      (discount) => discount.discount.trim() === cleanedTypeId
+                    );
+                  
+                    const matchingDiscount = apartment?.discounts.find(
+                      (discount) => discount.discount.trim() === cleanedTypeId
+                    );
+      
+                  
+      
+                    return (
                       <div
                         key={type.id}
                         className={`property-type m-3 flex ${
-                          apartment?.discounts.some(
-                            (discount) => discount.discount === type.discount
-                          )
+                          isSelected
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
@@ -1324,13 +1317,15 @@ export default function HostHome({ match }) {
                         {type.id}
                         <div>{type.description}</div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
         );
+      
+      
 
       case 14: // Step for hosting type and property features
         const additionalRulesFromApartment =
