@@ -14,13 +14,14 @@ import Listings from '../ListingInfo/Listings';
 import { toast, ToastContainer } from "react-toastify";
 import { useParams } from 'react-router-dom';
 import axios from '../../Axios'
-
+import { useStateContext } from "../../ContextProvider/ContextProvider";
 
 
 const WishlistsSet = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [textField, setTextField] = useState(null);
-  const [wishTitle,setWishTitle]=useState();
+  const [wishTitle, setWishTitle] = useState();
+  const {user}=useStateContext();
   const [listings, setListings] = useState([
 
     {
@@ -85,7 +86,7 @@ const WishlistsSet = () => {
           date: item.hosthomes.created_on,
           title: item.hosthomes.title,
           rating: item.hosthomes.rating ? item.hosthomes.rating : 4,
-          link: "/ListingInfoMain",
+          link: `/ListingInfoMain/${item.hosthomes.id}`,
           isFavorite: item.hosthomes.addedToWishlist,
         }));
         if (formattedHostHomes && formattedHostHomes != "undefined") {
@@ -101,27 +102,28 @@ const WishlistsSet = () => {
       });
       setWishTitle(wishList)
     }
+
   }, []);
 
 
 
-  const handleRename=async(e)=>{
+  const handleRename = async (e) => {
     e.preventDefault();
 
-    const data={
-      name:textField,
+    const data = {
+      name: textField,
     }
 
     setWishTitle(textField);
 
-    await axios.put(`/editUserWishlistContainerName/${id}`,data).then(response=>{
+    await axios.put(`/editUserWishlistContainerName/${id}`, data).then(response => {
 
       toast.success('Renamed Wishlist', {
         position: toast.POSITION.TOP_CENTER,
       });
 
       // window.location.href=`/WishlistsSet/${encodeURIComponent(textField)}/${id}`;
-    }).catch(err=>{
+    }).catch(err => {
 
 
       toast.error("Couldn't Rename Wishlist", {
@@ -152,7 +154,7 @@ const WishlistsSet = () => {
         // title: 'Confirm',
         content: 'Are you sure you want to delete ? ',
         icon: <ExclamationCircleOutlined />,
-        okText: <span onClick={()=>{handleDeleteContainer()}} className='  '> Delete </span>,
+        okText: <span onClick={() => { handleDeleteContainer() }} className='  '> Delete </span>,
         cancelText: <span className=''>Keep</span>,
         style: { top: '40%' },
 
@@ -189,68 +191,68 @@ const WishlistsSet = () => {
   };
 
 
-  
-const items = [
-  {
-    label:
-      <button className=" cursor-pointer p-0 m-0 transition-transform transparent 
+
+  const items = [
+    {
+      label:
+        <button className=" cursor-pointer p-0 m-0 transition-transform transparent 
     border-none  relative outline-none touch-manipulation inline-block   ">
-        <div className=" flex items-center justify-between  ">
-          <span className=" mr-1">
-            <svg aria-hidden="true"
-              width="20px"
-              height="20px"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path fillRule="evenodd"
-                d="m5.21 18.93.15-.01 4-.8c.14-.03.27-.1.38-.2l11.18-11.2a.75.75 0 0 0 0-1.05l-3.2-3.2a.77.77 0 0 0-1.05 
+          <div className=" flex items-center justify-between  ">
+            <span className=" mr-1">
+              <svg aria-hidden="true"
+                width="20px"
+                height="20px"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path fillRule="evenodd"
+                  d="m5.21 18.93.15-.01 4-.8c.14-.03.27-.1.38-.2l11.18-11.2a.75.75 0 0 0 0-1.05l-3.2-3.2a.77.77 0 0 0-1.05 
             0L5.47 13.66c-.1.1-.17.24-.2.38l-.8 4a.75.75 0 0 0 .74.9zM17.2 4.06l2.13 2.14-1.46 1.46-2.1-2.17 1.43-1.43zM6.7 
             14.56l8-8 2.11 2.16-7.97 7.97-2.67.54.53-2.67zm14.09 5.69H9.21a.75.75 0 1 0 0 1.5h11.58a.75.75 0 0 0 0-1.5zm-15 
             0H3.21a.75.75 0 1 0 0 1.5h2.58a.75.75 0 0 0 0-1.5z"
-                clipRule="evenodd"></path>
-            </svg>
-          </span>
+                  clipRule="evenodd"></path>
+              </svg>
+            </span>
 
-          <label className=" text-sm font-medium">Rename</label>
-        </div>
-      </button>
+            <label className=" text-sm font-medium">Rename</label>
+          </div>
+        </button>
 
-    ,
-    key: '0',
-  },
-  {
-    label:
-      <button  className=" cursor-pointer p-0 m-0 transition-transform transparent 
+      ,
+      key: '0',
+    },
+    {
+      label:
+        <button className=" cursor-pointer p-0 m-0 transition-transform transparent 
      border-none  relative outline-none touch-manipulation inline-block   ">
-        <div className=" flex items-center justify-between ">
-          <span className=" mr-1">
-            <svg aria-hidden="true"
-              width="20px"
-              height="20px"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M20.75 5h-4.88v-.25a2.25 2.25 0 0 0-2.24-2.25h-3.26a2.25 2.25 0 0 0-2.24 
+          <div className=" flex items-center justify-between ">
+            <span className=" mr-1">
+              <svg aria-hidden="true"
+                width="20px"
+                height="20px"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M20.75 5h-4.88v-.25a2.25 2.25 0 0 0-2.24-2.25h-3.26a2.25 2.25 0 0 0-2.24 
                   2.25V5H3.25a.75.75 0 0 0 0 1.5h14.81l-1.07 
                   12.81a.76.76 0 0 1-.74.69h-8.5a.76.76 0 0 1-.74-.69L6.1 8.56a.75.75 0 0 0-1.5.13l.9 
                    10.75a2.26 2.26 0 0 0 2.25 2.06h8.49c1.16 0 2.14-.9 2.24-2.06L19.57 6.5h1.18a.75.75 0 1 0 0-1.5zM9.62 
                   5v-.25a.75.75 0 0 1 .76-.75h3.24a.75.75 0 0 1 .76.75V5H9.62z"></path>
-              <path d="M10.88 16.38v-6.25a.75.75 0 1 0-1.5 0v6.24a.75.75 0 1 0 1.5 0zm3.74 0v-6.25a.75.75 0 1 0-1.5
+                <path d="M10.88 16.38v-6.25a.75.75 0 1 0-1.5 0v6.24a.75.75 0 1 0 1.5 0zm3.74 0v-6.25a.75.75 0 1 0-1.5
                        0v6.24a.75.75 0 1 0 1.5 0z"></path>
-            </svg>
-          </span>
+              </svg>
+            </span>
 
-          <label  className=" text-sm font-medium">Delete</label>
-        </div>
-      </button>
-    ,
-    key: '1',
-  },
-  {
-    type: 'divider',
-  },
-];
+            <label className=" text-sm font-medium">Delete</label>
+          </div>
+        </button>
+      ,
+      key: '1',
+    },
+    {
+      type: 'divider',
+    },
+  ];
 
 
 
@@ -309,7 +311,7 @@ const items = [
   const SavedItems = listings.map(group => (
     <div
       key={group.id}
-      className=" md:max-w-[18rem] rounded overflow-hidden  m-4 cursor-pointer"
+      className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden   m-4 cursor-pointer"
     >
       <Carousel>
         {group.pictures.map((picture, index) => (
@@ -334,7 +336,7 @@ const items = [
                 </svg>
               </div>
             </button>
-            <img className=' h-full object-cover' src={picture} alt={`Apartment in ${group.location}`} />
+            <img className=' h-[180px] object-cover' src={picture} alt={`Apartment in ${group.location}`} />
           </div>
         ))}
       </Carousel>
@@ -362,14 +364,16 @@ const items = [
         if (listing.id === id) {
           if (!listing.isFavorite) {
             // Show a toast notification when added to wishlist
-            toast.success('Added to Wishlist', {
-              position: toast.POSITION.TOP_CENTER,
-            });
+            handleAddToWishlist(user.id);
+            // toast.success('Added to Wishlist', {
+            //   position: toast.POSITION.TOP_CENTER,
+            // });
           } else {
             // Show a toast notification when removed from wishlist
-            toast.success('Removed from Wishlist', {
-              position: toast.POSITION.TOP_CENTER,
-            });
+            handleDeleteWishList();
+            // toast.success('Removed from Wishlist', {
+            //   position: toast.POSITION.TOP_CENTER,
+            // });
           }
           return { ...listing, isFavorite: !listing.isFavorite };
         }
@@ -379,19 +383,19 @@ const items = [
   };
 
 
-  const handleDeleteContainer=async()=>{
+  const handleDeleteContainer = async () => {
     console.log('hey');
 
-    await axios.delete(`/deleteUserWishlistContainer/${id}`).then(response=>{
+    await axios.delete(`/deleteUserWishlistContainer/${id}`).then(response => {
       console.log(response);
-      
+
       toast.success('Wishlist deleted Successfuly', {
         position: toast.POSITION.TOP_CENTER,
       });
 
-      window.location.href='/wishlist';
+      window.location.href = '/wishlist';
 
-    }).catch(err=>{
+    }).catch(err => {
       console.error(err);
 
       toast.error(" Couldn't delete Wishlist", {
@@ -401,6 +405,58 @@ const items = [
 
 
   }
+
+   const handleDeleteWishList=async()=>{
+      await axios.delete(`/removeFromWishlist/${id}`).then(response=>{
+
+        console.log(response);
+
+        toast.success('Wishlist deleted Successfuly', {
+          position: toast.POSITION.TOP_CENTER,
+        });
+
+
+      }).catch(err => {
+        console.error(err);
+  
+        toast.error(" Couldn't delete Wishlist", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      });
+
+
+   }
+
+
+
+   
+  const handleAddToWishlist = async(listingId) => {
+
+  
+
+  const data={
+    containername:wishList,
+    wishcontainerid:id,
+    hosthomeid:listingId,
+  }
+
+  console.log(data)
+
+  await axios.post(`/createWishlist/${user.id}`,data).then(response=>{
+    toast.success('Wishlist Added Successfuly', {
+      position: toast.POSITION.TOP_CENTER,
+    });
+
+  }).catch(error=>{
+    console.log('ADDing to Wishlist',error)
+
+    toast.error(" Couldn't Add to Wishlist", {
+      position: toast.POSITION.TOP_CENTER,
+    });
+    
+  });
+
+};
 
 
 
@@ -439,16 +495,16 @@ const items = [
                     </button>
                   </div>
 
-                  <div className=" block md:hidden ">
-                    <div className="    ">
-                      <h1>
-                        <span className=" text-xl break-words block  font-semibold  md:text-3xl" >
+                  <div className="block md:hidden w-[40%] md:w-full md:whitespace-normal whitespace-nowrap  ">
+                    <div className="">
+                      <h1 className=' text-ellipsis overflow-hidden  '>
+                        <span className="text-xl    font-semibold md:text-3xl">
                           {wishTitle ? wishTitle : "Bed & breakfasts 2021"}
                         </span>
                       </h1>
                     </div>
-
                   </div>
+
 
                   <div className="  items-center justify-end flex" >
                     <button className=" cursor-pointer p-0 m-0 transition-transform transparent 
@@ -492,26 +548,26 @@ const items = [
                     <Popup isModalVisible={isModalVisible} handleCancel={handleCancel} title={" Rename Wishlist "} className={" top-[40%] md:max-w-[400px] "} >
                       <div className=' pb-6 pt-3 block box-border '>
                         <form onSubmit={handleRename}>
-                        <div className=' font-normal text-base m-0 rounded-md   border w-full flex relative min-h-[56px]'>
-                          <label className=' p-0 relative flex-1 '>
-                            <div className=' p-0 font-normal text-base m-0 left-3 right-3 -translate-y-2 transform absolute top-[18px] '>
-                              <div className=' whitespace-nowrap overflow-hidden max-w-full text-ellipsis '>Name</div>
-                            </div>
-                            <div className=' box-border block'>
-                              <div className=' flex opacity-100'>
-                                <input maxLength="50" className=' p-0 border-none mt-[26px] mr-3 mb-[6px] ml-3 w-full   ' onChange={onTextChange} />
+                          <div className=' font-normal text-base m-0 rounded-md   border w-full flex relative min-h-[56px]'>
+                            <label className=' p-0 relative flex-1 '>
+                              <div className=' p-0 font-normal text-base m-0 left-3 right-3 -translate-y-2 transform absolute top-[18px] '>
+                                <div className=' whitespace-nowrap overflow-hidden max-w-full text-ellipsis '>Name</div>
                               </div>
-                            </div>
-                          </label>
-                        </div>
-                        <div className=' mt-2 grid-cols-1 grid box-border'>
-                          <div className=' text-sm font-bold block  box-border '>max 50 characters</div>
-                        </div>
-                        <hr className=' my-4 ' />
-                        <div className=' flex items-center justify-between text-base  '>
-                          <button type='button' className=' -mr-[10px] text-center cursor-pointer font-semibold text-base rounded-lg border-none p-[10px] underline -ml-[10px]' onClick={handleCancel}>Cancel</button>
-                          <button type='submit' className='  text-center cursor-pointer font-semibold text-base rounded-lg border-none p-[10px] bg-orange-500 text-white'>Save</button>
-                        </div>
+                              <div className=' box-border block'>
+                                <div className=' flex opacity-100'>
+                                  <input maxLength="50" className=' p-0 border-none mt-[26px] mr-3 mb-[6px] ml-3 w-full   ' onChange={onTextChange} />
+                                </div>
+                              </div>
+                            </label>
+                          </div>
+                          <div className=' mt-2 grid-cols-1 grid box-border'>
+                            <div className=' text-sm font-bold block  box-border '>max 50 characters</div>
+                          </div>
+                          <hr className=' my-4 ' />
+                          <div className=' flex items-center justify-between text-base  '>
+                            <button type='button' className=' -mr-[10px] text-center cursor-pointer font-semibold text-base rounded-lg border-none p-[10px] underline -ml-[10px]' onClick={handleCancel}>Cancel</button>
+                            <button type='submit' className='  text-center cursor-pointer font-semibold text-base rounded-lg border-none p-[10px] bg-orange-500 text-white'>Save</button>
+                          </div>
 
                         </form>
 
@@ -597,7 +653,7 @@ export default WishlistsSet;
 
 
 
-const MyDropdown = ({ children, click ,items}) => {
+const MyDropdown = ({ children, click, items }) => {
 
   const onClick = click;
 

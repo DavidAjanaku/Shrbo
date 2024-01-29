@@ -3,7 +3,7 @@ import HostHeader from './Navigation/HostHeader';
 import Footer from './Navigation/Footer';
 import BottomNavigation from './Navigation/BottomNavigation';
 
-const DamageReportForm = () => {
+const ReportDamage = () => {
   const [damageDescription, setDamageDescription] = useState('');
   const [photos, setPhotos] = useState([]);
   const [receipts, setReceipts] = useState('');
@@ -97,4 +97,4 @@ const DamageReportForm = () => {
   );
 };
 
-export default DamageReportForm;
+export default ReportDamage;
