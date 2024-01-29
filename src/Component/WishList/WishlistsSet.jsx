@@ -21,6 +21,7 @@ const WishlistsSet = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [textField, setTextField] = useState(null);
   const [wishTitle, setWishTitle] = useState();
+  const [loading, setLoading] = useState(true);
   const {user}=useStateContext();
   const [listings, setListings] = useState([
 
@@ -99,7 +100,7 @@ const WishlistsSet = () => {
       }).catch(err => {
         console.error(err)
 
-      });
+      }).finally(()=>setLoading(false));
       setWishTitle(wishList)
     }
 
@@ -255,6 +256,33 @@ const WishlistsSet = () => {
   ];
 
 
+  const SkeletonLoader =listings.map(group=>(
+    <div
+    key={group.id}
+    className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden   m-4 cursor-pointer  "
+  >
+   
+        <div className=''>
+         
+          <div className=' h-[180px] w-full rounded-xl object-cover skeleton-loader text-transparent'  />
+        </div>
+ 
+
+      <div className=" py-4">
+        <div className="font-medium text-base mb-2 skeleton-loader text-transparent">dddddddddd</div>
+        {/* <Rating rating={group.rating} /> */}
+            <br></br>
+        <p className="text-gray-400 text-base skeleton-loader text-transparent">dddddddddddddddddddd</p>
+        {/* <p className="text-gray-400 text-base skeleton-loader text-transparent">dddddddddd</p> */}
+            <br></br>
+        <p className="font-medium text-gray-700 text-base skeleton-loader text-transparent">dddddddd</p>
+      </div>
+  
+  </div>
+
+));
+
+
 
   // const wishlist_groups = [
   //   {
@@ -336,7 +364,7 @@ const WishlistsSet = () => {
                 </svg>
               </div>
             </button>
-            <img className=' h-[180px] object-cover' src={picture} alt={`Apartment in ${group.location}`} />
+            <img className=' h-[210px] md:h-[180px] object-cover' src={picture} alt={`Apartment in ${group.location}`} />
           </div>
         ))}
       </Carousel>
@@ -495,7 +523,7 @@ const WishlistsSet = () => {
                     </button>
                   </div>
 
-                  <div className="block md:hidden w-[40%] md:w-full md:whitespace-normal whitespace-nowrap  ">
+                  <div className=" flex justify-center items-center md:hidden w-[40%] md:w-full md:whitespace-normal whitespace-nowrap  ">
                     <div className="">
                       <h1 className=' text-ellipsis overflow-hidden  '>
                         <span className="text-xl    font-semibold md:text-3xl">
@@ -523,7 +551,7 @@ const WishlistsSet = () => {
                     </button>
 
                     <label className=" pr-6"></label>
-                    <MyDropdown click={handleMenu} items={items} >
+                  {!loading&&<MyDropdown click={handleMenu} items={items} >
                       <button className=" cursor-pointer p-0 m-0 transition-transform transparent 
                                         border-none  relative outline-none touch-manipulation inline-block   ">
                         <div className=" flex items-center justify-between underline ">
@@ -543,7 +571,7 @@ const WishlistsSet = () => {
                           <label className=" text-sm font-medium">Menu</label>
                         </div>
                       </button>
-                    </MyDropdown>
+                    </MyDropdown>}
 
                     <Popup isModalVisible={isModalVisible} handleCancel={handleCancel} title={" Rename Wishlist "} className={" top-[40%] md:max-w-[400px] "} >
                       <div className=' pb-6 pt-3 block box-border '>
@@ -587,9 +615,14 @@ const WishlistsSet = () => {
               <div className="hidden md:block md:mt-3 z-[1] box-border">
                 <div className=" mx-6 pt-3 md:pt-0 md:mx-10 lg:mx-6 ">
                   <h1>
-                    <span className=" text-2xl break-words block box-border font-semibold  md:text-3xl" >
+                    {!loading?<span className=" text-2xl break-words block box-border font-semibold  md:text-3xl" >
                       {wishTitle ? wishTitle : "Bed & breakfasts 2021"}
                     </span>
+                    :
+                    <span className=" text-2xl w-[30%] h-9  break-words block box-border font-semibold  md:text-3xl skeleton-loader text-transparent" >
+                      "Bed & breakfasts 2021
+                    </span>}
+
                   </h1>
                 </div>
 
@@ -597,14 +630,14 @@ const WishlistsSet = () => {
 
               {/*  */}
               <div className=" top-10 pt-6 px-6 sticky md:relative  z-[1] min-[744px]:top-0 min-[744px]:px-10 min-[950px]:px-6 bg-white   ">
-                <h2 className=" block box-border text-2xl md:pl-4  font-medium  ">Your saved items</h2>
+               {!loading?<h2 className=" block box-border text-2xl md:pl-4  font-medium  ">Your saved items</h2> :<label className=" block ml-6 w-fit box-border text-2xl md:pl-4  font-medium skeleton-loader text-transparent ">Your saved items</label>}
               </div>
 
 
               {/* Saved Items */}
 
               <div className=" mt[-4px] block box-border">
-                <div className=" pb-6 block box-border  md:pb-10">
+               {!loading? <div className=" pb-6 block box-border  md:pb-10">
                   <div className=" pe-6 ps-6 lg:ps-6 lg:pe-6 md:ps-10 md:pe-10 ">
                     <div className=" gap-10 grid  gap-x-6 gap-y-10 auto-rows-fr  grid-cols-1 min-[551px]:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 min-[1240px]:grid-cols-3    ">
 
@@ -613,6 +646,17 @@ const WishlistsSet = () => {
                   </div>
 
                 </div>
+                :
+
+                <div className=" pb-6 block box-border  md:pb-10">
+                  <div className=" pe-6 ps-6 lg:ps-6 lg:pe-6 md:ps-10 md:pe-10 ">
+                    <div className=" gap-10 grid  gap-x-6 gap-y-10 auto-rows-fr  grid-cols-1 min-[551px]:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 min-[1240px]:grid-cols-3    ">
+
+                      {SkeletonLoader}
+                    </div>
+                  </div>
+
+                </div>}
 
 
               </div>
@@ -625,9 +669,13 @@ const WishlistsSet = () => {
 
           <div className=" flex-auto box-border hidden flex-grow flex-shrink   lg:flex  ">
             <div className=" w-full h-screen sticky top-0 pb-[-80px] block  ">
-              <div className=" relative w-full h-full">
+             {!loading? <div className=" relative w-full h-full">
                 <Map></Map>
               </div>
+              :
+              <div className=" relative w-full h-full skeleton-loader">
+                
+              </div>}
             </div>
           </div>
 

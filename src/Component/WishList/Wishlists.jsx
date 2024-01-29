@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 import WishlistsSet from "./WishlistsSet";
 import BottomNavigation from "../Navigation/BottomNavigation";
 
-const Wishlists=({wishlists})=>{
+const Wishlists=({wishlists,loading})=>{
 
   const wishlist_groups= [
     { id: 11,title:"1 bed",saves:1,url:"https://a0.muscache.com/im/pictures/airflow/Hosting-778167635492331048/original/dcf9d96a-d764-472a-9bdc-da6251467660.jpg?im_w=720"},
@@ -13,6 +13,9 @@ const Wishlists=({wishlists})=>{
     ...wishlists
     
   ];
+
+
+
 
   const wishlist=wishlist_groups.map(group=>(
     <Link to={group.link||"/WishlistsSet"} key={group.id}>
@@ -33,6 +36,24 @@ const Wishlists=({wishlists})=>{
       </Link>
   ));
 
+  const SkeletonLoader =wishlist_groups.map(group=>(
+        <div className=" skeleton-loader text-transparent " >
+          <div className=" overflow-hidden aspect-video rounded-[0.25em] block ">
+            <div className="  h-full start-0 end-0  m-0 p-0 block  ">
+              {/* <img className=" absolute  min-h-full opacity-100 transition block object-cover align-middle overflow-hidden   " src=""></img> */}
+            </div>
+            <div className=" h-full w-full  items-end box-border flex flex-row  ">
+              <div className=" pt-10 px-3 pb-3 start-0 end-0 m-0  box-border  block  ">
+                    <h3 className=" box-border block "></h3>
+                    <div className=" text-xs font-normal "></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+   
+  ));
+
   
 
 
@@ -50,11 +71,18 @@ const Wishlists=({wishlists})=>{
                     </div>
                   </div>
                 </section>
-                <section>
+               {!loading? <section>
                   <div className="grid xl:grid-cols-4 gap-6 overflow-hidden    md:grid-cols-3 my-6   lg:gap-4 md:gap-4 grid-cols-1   ">
                       {wishlist}
                   </div>
-                </section>
+                </section>:
+                <section>
+                <div className="grid xl:grid-cols-4 gap-6 overflow-hidden    md:grid-cols-3 my-6   lg:gap-4 md:gap-4 grid-cols-1   ">
+                 {SkeletonLoader}
+                </div>
+              </section>
+                
+               }
 
               </div>
 

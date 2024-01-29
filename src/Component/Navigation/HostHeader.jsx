@@ -127,6 +127,13 @@ export default function HostHeader() {
                 >
                    Get help with a safety issue
                 </Link>
+                <Link
+                  to="/ReportDamage"
+                  className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
+                
+                >
+                   Report Damages
+                </Link>
 
                 <Link
                   to="/logout"

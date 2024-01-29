@@ -28,6 +28,7 @@ export default function Home() {
   const { setUser, setToken, token, setHost, setAdminStatus, user } =
     useStateContext();
   const [loading, setLoading] = useState(true);
+  const [listingLoading, setListingLoading] = useState(true);
   const [homeImage, setHomeImage] = useState("");
   const [homeTitle, setHomeTitle] = useState("");
   const [homeSubTitle, setHomeSubTitle] = useState("");
@@ -420,10 +421,12 @@ export default function Home() {
       })
       .catch((err) => {
         console.log("Listing", err);
-      });
+      }).finally(()=>setListingLoading(false));
   }, [clearFilter]);
 
+
   const filterData = async (data, close) => {
+    setListingLoading(true);
     // data.priceRange[0]
     const main = {
       min_price:data.priceRange[0] ,
@@ -458,7 +461,7 @@ export default function Home() {
       })
       .catch((err) => {
         console.log(err);
-      });
+      }).finally(()=>setListingLoading(false));
   };
 
   const settings = {
@@ -579,7 +582,7 @@ export default function Home() {
                 <CategoryHeader />
               </div>
 
-              <Listings user={user} homes={listings} />
+              <Listings user={user} homes={listings} loading={listingLoading} />
               <div className="pb-48 w-[90%] mx-auto ">
                 <h1 className="text-center text-4xl mb-10">
                   Learn About the Major Cities
