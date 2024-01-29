@@ -75,7 +75,7 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/ListingInfoMain" element={<ListingInfoMain />} />
+        <Route path="/ListingInfoMain/:id" element={<ListingInfoMain />} />
         <Route path="/RequestBook" element={<RequestBook />} />
         <Route path="/Settings" element={<Settings />} />
         <Route path="/Profile" element={<Profile />} />

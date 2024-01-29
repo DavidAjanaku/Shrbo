@@ -16,24 +16,23 @@ import CityCard from "../Component/CityCard";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import axios from '../Axios'
-import Logo from "../assets/logo.png"
+import axios from "../Axios";
+import Logo from "../assets/logo.png";
 import { useStateContext } from "../ContextProvider/ContextProvider";
-
-
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
-  const { setUser, setToken, token, setHost, setAdminStatus, user } = useStateContext();
+  const { setUser, setToken, token, setHost, setAdminStatus, user } =
+    useStateContext();
   const [loading, setLoading] = useState(true);
   const [homeImage, setHomeImage] = useState("");
   const [homeTitle, setHomeTitle] = useState("");
   const [homeSubTitle, setHomeSubTitle] = useState("");
   const [listings, setListings] = useState();
-  const [clearFilter,setClearFilter]=useState(false);
+  const [clearFilter, setClearFilter] = useState(false);
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -76,33 +75,35 @@ export default function Home() {
       try {
         // Extract the parameters from the URL
         const params = new URLSearchParams(window.location.search);
-        const verified = params.get('verified');
-        const remtoken = params.get('remtoken');
-        const ustoken = params.get('ustoken');
+        const verified = params.get("verified");
+        const remtoken = params.get("remtoken");
+        const ustoken = params.get("ustoken");
 
         // Log out the parameters
-        console.log('Verified:', verified);
-        console.log('Remtoken:', remtoken);
-        console.log('Ustoken:', ustoken);
+        console.log("Verified:", verified);
+        console.log("Remtoken:", remtoken);
+        console.log("Ustoken:", ustoken);
 
         // Make a request to get the user data with parameters
-        const response = await axios.get(`/verify-tokens/${remtoken}/${ustoken}`);
-        console.log('Response Data:', response.data);
+        const response = await axios.get(
+          `/verify-tokens/${remtoken}/${ustoken}`
+        );
+        console.log("Response Data:", response.data);
 
         // Set the user data in state
         setUser(response.data.user);
-        console.log('User Data:', response.data);
+        console.log("User Data:", response.data);
 
         // Set the host value in state context
         setHost(response.data.user.host);
-        console.log('Host:', response.data.host);
+        console.log("Host:", response.data.host);
         setToken(ustoken);
         setAdminStatus(response.data.user.adminStatus);
 
         // Log 'yes' to the console
-        console.log('yes');
+        console.log("yes");
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       } finally {
         // Set loading to false regardless of success or error
         setLoading(false);
@@ -113,26 +114,22 @@ export default function Home() {
     fetchUserData();
   }, []);
 
-
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         // Make a request to get the user data
-        const response = await axios.get('/user'); // Adjust the endpoint based on your API
+        const response = await axios.get("/user"); // Adjust the endpoint based on your API
 
         // Set the user data in state
         setUser(response.data);
         console.log(response.data);
         console.log(response.data.host);
 
-        console.log('yes');
+        console.log("yes");
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
-
-
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       } finally {
         // Set loading to false regardless of success or error
         setLoading(false);
@@ -142,62 +139,45 @@ export default function Home() {
     fetchUserData();
   }, []);
 
-
-
-
-
-  // Home Page Data 
+  // Home Page Data
 
   useEffect(() => {
-
     const homePageData = async () => {
+      await axios
+        .get("/homepage")
+        .then((response) => {
+          console.log("HomePage", response.data.data[0]);
+          const homePageData = response.data.data[0];
 
-      await axios.get('/homepage').then(response => {
-
-        console.log("HomePage", response.data.data[0]);
-        const homePageData = response.data.data[0];
-
-        setHomeImage(homePageData.image);
-        setHomeTitle(homePageData.title);
-        setHomeSubTitle(homePageData.subtitle)
-
-
-      }).catch(error => {
-        console.error(error);
-      });
-
-    }
+          setHomeImage(homePageData.image);
+          setHomeTitle(homePageData.title);
+          setHomeSubTitle(homePageData.subtitle);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
 
     homePageData();
-
-
-
   }, []);
 
   // View Count (register visitors)
 
   useEffect(() => {
-
     const viewCount = async () => {
-
-      await axios.get('/view-count').then(response => {
-
-        console.log("view-Count", response);
-
-
-
-      }).catch(error => {
-        console.error(error);
-      });
-    }
+      await axios
+        .get("/view-count")
+        .then((response) => {
+          console.log("view-Count", response);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
 
     viewCount();
-
-
-  }, []); 0
-
-
-
+  }, []);
+  0;
 
   useEffect(() => {
     // Simulate fetching house details after 5 seconds
@@ -419,79 +399,66 @@ export default function Home() {
     },
   ];
 
-
-
   useEffect(() => {
+    axios
+      .get("/hosthomes")
+      .then((response) => {
+        console.log(response.data.data);
+        const formattedHostHomes = response.data.data.map((item) => ({
+          id: item.id,
+          pictures: item.hosthomephotos,
+          location: item.address,
+          price: `₦${item.price} per night`,
+          date: item.created_on,
+          title: item.title,
+          rating: item.rating ? item.rating : 4,
+          link: "/ListingInfoMain",
+          isFavorite: item.addedToWishlist,
+        }));
 
-    axios.get("/hosthomes").then(response => {
-      console.log(response.data.data)
-      const formattedHostHomes = response.data.data.map(item => ({
-        id: item.id,
-        pictures: item.hosthomephotos,
-        location: item.address,
-        price: `₦${item.price} per night`,
-        date: item.created_on,
-        title: item.title,
-        rating: item.rating ? item.rating : 4,
-        link: "/ListingInfoMain",
-        isFavorite: item.addedToWishlist,
-      }));
-
-      setListings(formattedHostHomes);
-
-    }).catch(err => {
-      console.log("Listing", err);
-    })
-
-
-
-
-
+        setListings(formattedHostHomes);
+      })
+      .catch((err) => {
+        console.log("Listing", err);
+      });
   }, [clearFilter]);
 
-
-  const filterData = async (data,close) => {
-
-      // data.priceRange[0]
-    const main={
+  const filterData = async (data, close) => {
+    // data.priceRange[0]
+    const main = {
       price: "",
       bedrooms: data.selectedRoom,
       beds: data.selectedBedroom,
-      bathrooms:data.selectedBathroom,
+      bathrooms: data.selectedBathroom,
       property_type: data.selectedTypes,
       amenities: data.selectedAmenities,
+    };
+    console.log(main);
 
-    }
-    console.log(main)
+    await axios
+      .post("/filterHomepage", main)
+      .then((response) => {
+        const formattedHostHomes = response.data.data.map((item) => ({
+          id: item.id,
+          pictures: item.hosthomephotos,
+          location: item.address,
+          price: `₦${item.price} per night`,
+          date: item.created_on,
+          title: item.title,
+          rating: item.rating ? item.rating : 4,
+          link: "/ListingInfoMain",
+          isFavorite: item.addedToWishlist,
+        }));
 
-    await axios.post('/filterHomepage',main).then(response => { 
+        setListings(formattedHostHomes);
+        console.log("filter", response.data.data);
 
-      const formattedHostHomes = response.data.data.map(item => ({
-        id: item.id,
-        pictures: item.hosthomephotos,
-        location: item.address,
-        price: `₦${item.price} per night`,
-        date: item.created_on,
-        title: item.title,
-        rating: item.rating ? item.rating : 4,
-        link: "/ListingInfoMain",
-        isFavorite: item.addedToWishlist,
-      }));
-
-      setListings(formattedHostHomes);
-      console.log("filter",response.data.data);
-
-      close();
-
-
-    }).catch(err=>{
-      console.log(err)
-    });
-
-  }
-
-
-
+        close();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const settings = {
     dots: true,
@@ -520,9 +487,10 @@ export default function Home() {
     <div>
       {loading ? (
         <div>
-
           <div className="h-screen flex justify-center items-center">
-            <div className="containerrr"><div className="cube"></div></div>
+            <div className="containerrr">
+              <div className="cube"></div>
+            </div>
 
             <img src={Logo} className="h-20 absolute" alt="" />
           </div>
@@ -534,8 +502,9 @@ export default function Home() {
 
           <BottomNavigation />
           <div
-            className={` md:w-2/5 mx-auto flex justify-center fixed z-[999] left-0 right-0 transition-all ${isSearchButtonFixed ? "top-0" : "mt-6"
-              }`}
+            className={` md:w-2/5 mx-auto flex justify-center fixed z-[999] left-0 right-0 transition-all ${
+              isSearchButtonFixed ? "top-0" : "mt-6"
+            }`}
           >
             <div className="bg-orange-400 z-50 w-[90%] md:w-full flex items-center justify-between  py-3 px-5 rounded-full mt-6 text-white shadow-2xl">
               <button onClick={openModal} className="flex  items-center w-3/4">
@@ -553,30 +522,43 @@ export default function Home() {
                 </div>
               </button>
               <div>
-                <FilterModal search={filterData} clearAll={()=>{setClearFilter((prevClearFilter)=>!prevClearFilter)}} />
+                <FilterModal
+                  search={filterData}
+                  clearAll={() => {
+                    setClearFilter((prevClearFilter) => !prevClearFilter);
+                  }}
+                />
               </div>
             </div>
-
 
             <Modal isOpen={isModalOpen} onClose={closeModal} />
           </div>
           <div className="pageHeader"></div>
           <div className="storeFrontHomeage">
             <div>
-              <link rel="preload" as="image" href={"https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh"} />
+              <link
+                rel="preload"
+                as="image"
+                href={
+                  "https://forever.travel-assets.com/flex/flexmanager/images/2022/12/09/Exterior-Cabin_Privacy_Wrigley_VRBO_APFT2__Vancouver__Therin_8256x3960.jpg?impolicy=fcrop&w=1040&h=580&q=mediumHigh"
+                }
+              />
 
-              <div className="hero-pattern relative bg-cover bg-center md:h-[70vh] h-[100vh] "
+              <div
+                className="hero-pattern relative bg-cover bg-center md:h-[70vh] h-[100vh] "
                 style={{ backgroundImage: `url(${homeImage})` }}
               >
                 <div className="h-full flex flex-col justify-center items-center">
                   <h1 className="text-white md:text-6xl text-5xl lg:text-6xl p-4 text-center z-50">
-                    {/* Unlock Comfort, Discover Adventure with Shrbo. */} {homeTitle}
+                    {/* Unlock Comfort, Discover Adventure with Shrbo. */}{" "}
+                    {homeTitle}
                   </h1>
                   <div className="z-50">
                     <p className="z-50 text-white  md:text-base text-center text-sm px-10">
                       {/* Welcome to Shrbo, where comfort meets adventure. Find your
                   perfect home away from home and embark on memorable journeys,
-                  one stay at a time. */}  {homeSubTitle}
+                  one stay at a time. */}{" "}
+                      {homeSubTitle}
                     </p>
                   </div>
                 </div>
@@ -618,7 +600,6 @@ export default function Home() {
           <Footer />
         </>
       )}
-
     </div>
   );
 }

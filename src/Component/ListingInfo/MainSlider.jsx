@@ -1,7 +1,9 @@
-import React, { useState,useRef } from 'react';
+import React, { useState,useRef, useEffect } from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/themes/splide-default.min.css';
 import room from "../../assets/room.jpeg";
+import { useParams } from "react-router-dom";
+
 import kitchen from "../../assets/room2.jpeg";
 import video from "../../assets/videos/luxuryInteriror.mp4";
 import apartment from "../../assets/apartment2.jpeg";
@@ -11,6 +13,8 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import close from "../../assets/svg/close-line-icon 2.svg"
 // import './MainSlider.css'; // Import your custom CSS file
+import Axios from "../../Axios";
+
 
 const modalStyles = {
   overlay: {
@@ -48,27 +52,38 @@ const modalStyles = {
 };
 
 const MainSlider = (props) => {
+  const { id } = useParams(); // Get the ID parameter from the route
+
+  const [listingDetails, setListingDetails] = useState(null);
+
+
+useEffect(() => {
+  const fetchListingDetails = async () => {
+    try {
+      const response = await Axios.get(`showGuestHome/${id}`);
+      setListingDetails(response.data.data);
+      console.log(response.data.data);
+    } catch (error) {
+      console.error("Error fetching listing details:", error);
+      // Handle error, show error message, etc.
+    }
+  };
+
+  fetchListingDetails();
+}, [id]);
+
+const hosthomephotos = listingDetails?.hosthomephotos || [];
+const hosthomevideo = listingDetails?.hosthomevideo || null;
+
   const pics = [
     {
       id: "video",
       min: video,
     },
-    {
-      id: 2,
-      min: kitchen,
-    },
-    {
-      id: 3,
-      min: room,
-    },
-    {
-      id: 4,
-      min: kitchen,
-    },
-    {
-      id: 5,
-      min: room,
-    },
+    ...hosthomephotos.map((photo, index) => ({
+      id: index + 1, // Use index + 1 as id
+      min: photo,
+    })),
   ];
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -78,6 +93,7 @@ const MainSlider = (props) => {
     setSelectedImage(imageSrc);
     setSelectedImageIndex(index);
   };
+
 
   const closeImageModal = () => {
     setSelectedImage(null);
@@ -106,7 +122,7 @@ const MainSlider = (props) => {
               <div className="h-full   w-full cursor-pointer">
                 <div className="relative h-full">
               <img
-                src={kitchen}
+                src={hosthomephotos[0]}
                 alt="Video Thumbnail"
                 onClick={togglePlay}
                 className="cursor-pointer w-auto object-cover  h-auto min-h-full min-w-full "
@@ -114,7 +130,7 @@ const MainSlider = (props) => {
             {isPlaying ? (
               <div  className="absolute top-0 bottom-8 inset-0 flex items-center h-full w-full justify-center">
                 <video
-                 src={slide.min}
+                 src={hosthomevideo}
                   controls
                 
                   ref={videoRef}
@@ -174,65 +190,63 @@ const MainSlider = (props) => {
 
   return (
     <div className='w-full md:hidden '>
-      <Splide
-        ref={(slider) => (props.slider1.current = slider)}
-        className="main-slider"
-        options={{
-          perPage: 1,
-          perMove: 1,
-          arrows: false,
-          rewind: true,
-          pagination: false,
-          mediaQuery: 'min',
-          breakpoints: {
-            767: {
-              destroy: true,
-            },
+    <Splide
+      ref={(slider) => (props.slider1.current = slider)}
+      className="main-slider"
+      options={{
+        perPage: 1,
+        perMove: 1,
+        arrows: false,
+        rewind: true,
+        pagination: false,
+        mediaQuery: 'min',
+        breakpoints: {
+          767: {
+            destroy: true,
           },
-        }}
-      >
-        {slides}
-      </Splide>
+        },
+      }}
+    >
+      {slides}
+    </Splide>
 
-      <Modal
-        isOpen={selectedImage !== null}
-        onRequestClose={closeImageModal}
-        style={modalStyles}
-        ariaHideApp={false}
-        
-      >
-          <button className="close-button text-white" onClick={closeImageModal}>
-            <img src={close} className='w-4' alt="" />
-          </button>
-        <div className="modal-content" style={modalStyles.modalContent}>
-          {selectedImage && (
-            <div style={modalStyles.modalImageContainer}>
-              <Carousel
-                showArrows={true}
-                emulateTouch={true}
-                selectedItem={selectedImageIndex} // Set the initial selected item
-              >
-                {pics.map((pic, index) => (
-                  <div key={pic.id}>
-                    {pic.id !== 'video' ? (
-                      <img src={pic.min} alt={`Image ${index}`} />
-                    ) : (
-                      <video
-                        src={pic.min}
-                        alt="Video"
-                        
-                        controls
-                        playsInline
-                      />
-                    )}
-                  </div>
-                ))}
-              </Carousel>
-            </div>
-          )}
-        </div>
-      </Modal>
-    </div>
+    <Modal
+      isOpen={selectedImage !== null}
+      onRequestClose={closeImageModal}
+      style={modalStyles}
+      ariaHideApp={false}
+    >
+      <button className="close-button text-white" onClick={closeImageModal}>
+        <img src={close} className='w-4' alt="" />
+      </button>
+      <div className="modal-content" style={modalStyles.modalContent}>
+        {selectedImage && (
+          <div style={modalStyles.modalImageContainer}>
+            <Carousel
+              showArrows={true}
+              emulateTouch={true}
+              selectedItem={selectedImageIndex}
+            >
+              {pics.map((pic, index) => (
+                <div key={pic.id}>
+                  {pic.id !== 'video' ? (
+                    <img src={pic.min} alt={`Image ${index}`} />
+                  ) : (
+                    <video
+                      src={hosthomevideo}
+                      alt="Video"
+                      controls
+                      playsInline
+                    />
+                  )}
+                </div>
+              ))}
+            </Carousel>
+          </div>
+        )}
+      </div>
+    </Modal>
+  </div>
   );
 };
 

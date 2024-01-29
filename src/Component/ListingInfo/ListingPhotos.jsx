@@ -11,7 +11,7 @@ import { Carousel } from "react-responsive-carousel"; // Import Carousel from re
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import Carousel styles
 import close from "../../assets/svg/close-line-icon 2.svg";
 
-const ListingPhotos = () => {
+const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -30,6 +30,9 @@ const ListingPhotos = () => {
   const handleWindowSizeChange = () => {
     setWidth(window.innerWidth);
   };
+  const imageUrlss = hosthomephotos || []; // Use hosthomephotos prop or provide a default empty array
+
+  console.log(imageUrlss);
 
   useEffect(() => {
     handleWindowSizeChange();
@@ -59,26 +62,23 @@ const ListingPhotos = () => {
   ];
 
   const imageUrls = [kitchen, room, apartment1, kitchen, apartment]; // Add more image URLs as needed
+  const videoUrl = hosthomevideo || null;
 
   // Define the number of images to display on the page
   const imagesPerPage = 4;
-  const imagesToDisplay = imageUrls.slice(0, imagesPerPage);
+  const imagesToDisplay = imageUrlss.slice(0, imagesPerPage);
 
   return (
     <div className="w-full flex flex-wrap flex-col-reverse md:flex-row h-full">
       <section className="w-full mt-5">
         <div className="text-3xl font-semibold inline break-words">
-          <p>Penthouse in La Juarez</p>
+          <p>{title}</p>
         </div>
 
         <div className="flex mt-1">
           <div className="w-[70%]">
-            {labels.map((label, index) => (
-              <React.Fragment key={index}>
-                {index > 0 && <span className="p-1 font-bold">.</span>}
-                <label className="text-base">{label}</label>
-              </React.Fragment>
-            ))}
+          <label className="text-base">{address}</label>
+
           </div>
 
           <div className="w-[30%] hidden md:flex items justify-end gap-5">
@@ -122,34 +122,21 @@ const ListingPhotos = () => {
           <div className="h-full   w-full cursor-pointer">
             <div className="relative">
           <img
-            src={kitchen}
+            src={imageUrlss[0]}
             alt="Video Thumbnail"
             onClick={togglePlay}
-            className="cursor-pointer"
+            className="cursor-pointer w-full h-[500px]"
             />
         {isPlaying ? (
           <div className="absolute top-0 bottom-8 inset-0 flex items-center h-full w-full justify-center">
-            <video
-              src={video}
-              controls
-              ref={videoRef}
-              autoPlay
-              className=" w-auto object-cover  h-auto min-h-full min-w-full  "
-            ></video>
-            {/* <div className="absolute inset-0 opacity-0 flex hover:opacity-100  items-center justify-center">
-                <div
-                  className="bg-black bg-opacity-50 text-white p-4 rounded-full cursor-pointer"
-                  onClick={togglePlay}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg"  width="48"
-                              height="48" viewBox="0 0 100 100">
-                  <rect x="30" y="20" width="10" height="60" fill="white" />
-                  <rect x="60" y="20" width="10" height="60" fill="white" />
-                </svg>
-
-
-                </div>
-        </div> */}
+             <video
+            src={videoUrl}
+            controls
+            ref={videoRef}
+            autoPlay={isPlaying}
+            className="w-full h-[500px]  object-cover"
+          ></video>
+           
           </div>
           
         ) : (
@@ -199,7 +186,7 @@ const ListingPhotos = () => {
         <div className="absolute xl:bottom-7 xl:right-8 md:right-6 md:bottom-[10%]">
           <button
             className="bg-black/80 hover:bg-black/90 p-2 xl:w-36 md:w-32 rounded"
-            onClick={() => showModal(imageUrls[0], 0)}
+            onClick={() => showModal(imageUrlss[0], 0)}
           >
             <div className="flex">
               <span className="mx-1">
@@ -271,7 +258,7 @@ const ListingPhotos = () => {
                 background: "black",
               }}
             >
-              {imageUrls.map((imageUrl, index) => (
+              {imageUrlss.map((imageUrl, index) => (
                 <div
                   key={index}
                   style={{

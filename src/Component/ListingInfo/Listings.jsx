@@ -219,11 +219,11 @@ const Listings = ({user,homes}) => {
                     </svg>
                   </div>}
                 </button>
-                <img src={picture} alt={`Apartment in ${listing.location}`} />
+                <img src={picture} className="h-[250px] object-cover " alt={`Apartment in ${listing.location}`} />
               </div>
             ))}
           </Carousel>
-          <Link to={listing.link}>
+          <Link to={`/ListingInfoMain/${listing.id}`}>
             <div className=" py-4">
               <div className="font-medium text-base mb-2">
                 {listing.title}

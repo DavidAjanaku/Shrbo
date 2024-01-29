@@ -1,33 +1,44 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";
 import room from "../../assets/room.jpeg";
 import kitchen from "../../assets/room2.jpeg";
 import video from "../../assets/videos/luxuryInteriror.mp4";
+import Axios from "../../Axios";
+import { useParams } from "react-router-dom";
 
 const ThumbnailSlider = (props) => {
+  const { id } = useParams(); // Get the ID parameter from the route
+
+  const [listingDetails, setListingDetails] = useState(null);
+
+  useEffect(() => {
+    const fetchListingDetails = async () => {
+      try {
+        const response = await Axios.get(`showGuestHome/${id}`);
+        setListingDetails(response.data.data);
+        console.log(response.data.data);
+      } catch (error) {
+        console.error("Error fetching listing details:", error);
+        // Handle error, show error message, etc.
+      }
+    };
   
+    fetchListingDetails();
+  }, [id]);
+  
+  const hosthomephotos = listingDetails?.hosthomephotos || [];
+
+
   const pics = [
     {
       id: "video",
       min: video,
     },
-    {
-      id: 2,
-      min: kitchen,
-    },
-    {
-      id: 3,
-      min: room,
-    },
-    {
-      id: 4,
-      min: kitchen,
-    },
-    {
-      id: 5,
-      min: room,
-    },
+     ...hosthomephotos.map((photo, index) => ({
+      id: index + 1, // Use index + 1 as id
+      min: photo,
+    })),
   ];
 
   const slides = pics.map((slide) => (
