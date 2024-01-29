@@ -14,6 +14,8 @@ const { Option } = Select;
 
 export default function Listings() {
   const [selectedListings, setSelectedListings] = useState([]);
+  const [isEditButtonVisible, setIsEditButtonVisible] = useState(false);
+
   const [filters, setFilters] = useState({
     rooms: "Any",
     beds: "Any",
@@ -96,8 +98,11 @@ export default function Listings() {
     if (selectedListings.includes(listingId)) {
       setSelectedListings(selectedListings.filter((id) => id !== listingId));
     } else {
-      setSelectedListings([...selectedListings, listingId]);
+      setSelectedListings([listingId]);
     }
+
+    // Update the state to determine whether to show the "Edit" button
+    setIsEditButtonVisible(selectedListings.length === 0);
   };
 
   const handleFilterChange = (event) => {
@@ -196,6 +201,12 @@ export default function Listings() {
             icon={<DeleteOutlined />}
           >
             Delete
+          </Button>
+        )}
+          {/* Conditionally render the "Edit" button */}
+          {isEditButtonVisible && (
+          <Button type="primary">
+            <Link to={`/hosthomes/${selectedListings[0]}`}>Edit</Link>
           </Button>
         )}
       </div>
