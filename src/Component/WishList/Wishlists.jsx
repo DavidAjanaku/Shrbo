@@ -22,7 +22,7 @@ const Wishlists=({wishlists,loading})=>{
         <div className=" rounded-[0.25em] overflow-hidden  relative bg-cover" >
           <div className=" overflow-hidden aspect-video relative rounded-[0.25em] block ">
             <div className=" absolute h-full start-0 end-0  m-0 p-0 block  ">
-              <img className=" absolute  min-h-full opacity-100 transition block object-cover align-middle overflow-hidden   " src={group.url}></img>
+              <img className=" absolute  min-h-full opacity-100 transition w-full block object-cover align-middle overflow-hidden   " src={group.url}></img>
             </div>
             <div className=" h-full w-full  items-end box-border flex flex-row  ">
               <div className=" pt-10 px-3 pb-3 start-0 end-0 m-0 absolute box-border  block bg-gray-400/40 text-white">
