@@ -6,6 +6,7 @@ import axios from '../Axios';
 
 const WishList=()=>{
     const [wishlists,setWishLists]=useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(()=>{
 
@@ -27,7 +28,7 @@ const WishList=()=>{
         }).catch(err=>{
             console.error(err);
 
-        });
+        }).finally(()=>setLoading(false));
 
     },[]);
 
@@ -35,7 +36,7 @@ const WishList=()=>{
     <div>
         <Header/>
          <div className=" block h-full px-6 md:px-10 xl:px-20 max-w-7xl  m-auto  ">
-          <Wishlists wishlists={wishlists}/>
+          <Wishlists wishlists={wishlists} loading={loading}/>
     
         </div>
      <BottomNavigation/>

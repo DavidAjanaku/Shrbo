@@ -12,6 +12,8 @@ import masterCard from '../../assets/mastercard.png';
 import { message, Popconfirm ,Tag } from 'antd';
 import {LoadingOutlined}  from '@ant-design/icons';
 import {styles} from '../ChatBot/Style'
+import AccountNumberForm from "./ProfileCardSettings/AccountNumberForm";
+import { data } from "autoprefixer";
 
 
 
@@ -19,10 +21,13 @@ import {styles} from '../ChatBot/Style'
 
 export default function Payments() {
   const [isChangePassword, setIsChangePassword] = useState(false);
+  const [isChangeAccountNumber, setIsChangeAccountNumber] = useState(false);
   const [isConfirmDeactivation, setIsConfirmDeactivation] = useState(false);
   const [isCardRemoved, setIsCardRemoved] = useState(false);
   const {user,setUser,setHost,setAdminStatus}=useStateContext();
   const [loading,setLoading]=useState(false);
+  const [acLoading,setAcLoading]=useState(false);
+  const [accountDetails, setAccountDetails] = useState([])
   const [paymentDetails, setPaymentDetails] = useState([
     // {
     //   title: "MasterCard ****4567",
@@ -48,6 +53,13 @@ export default function Payments() {
 
 
   const detailsArray = [
+    {
+      title: "Refund Account details",
+      value: "Add Bank Details for Refund",
+      action: "Add",
+      link: "/edit-name",
+    },  
+    ...accountDetails,
     {
       title: "Payment Cards",
       value: "Add New Payment Method",
@@ -182,6 +194,65 @@ export default function Payments() {
 
   }
 
+  const handleAccountNumber=async(data)=>{
+
+    const details={
+      account_number:data.accountNumber,
+      bank_name:data.bankName,
+      account_name:data.fullName,
+    }
+
+    await axios.post(`/createUserBankinfo/${user.id}`,details).then((response)=>{
+
+      console.log(response);
+      message.success(`Account Details added successfully`);
+      fetchUserCards();
+    }).catch(error=>{
+      console.error("Failed to add Account detais",error);
+      message.error(`An Error Occured while trying to add Account detais ${type}`)
+    }).finally(()=>{
+      setAcLoading(false)
+      setIsChangeAccountNumber(false);
+    });
+
+
+  }
+
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Make a request to get the user data
+        const response = await axios.get(`/getUserBankInfos/${user.id}`); 
+        // Adjust the endpoint based on your API
+        console.log(response.data);
+
+        const data={
+          title:response.data.data[0].bank_name ,
+          value: response.data.data[0].account_number,
+          action:response.data.data[0].account_name,
+
+        }
+
+        setAccountDetails([data]);
+        
+
+        
+
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        // Set loading to false regardless of success or error
+        // setLoading(false);
+      
+      }
+    };
+ 
+
+      fetchUserData();
+   
+  }, []); 
+
 
 
 
@@ -235,6 +306,13 @@ export default function Payments() {
                 <ATMCardForm userId={user.id} close={ (bool)=>{setIsChangePassword(bool)} } refresh={()=>{fetchUserCards()}} />
               </div>
             )}
+            {isChangeAccountNumber && (
+              <div className="max-w-2xl mx-auto p-4">
+                <h2 className="text-2xl font-medium mb-4">Account Details</h2>
+                 <AccountNumberForm close={(bool)=>{setIsChangeAccountNumber(bool)}} loading={acLoading} Submit={(val)=>{handleAccountNumber(val)}} />
+              </div>
+            )}
+
             {detailsArray.map((detail, index) => (
               <div
                 className="flex justify-between items-center py-5 border-b"
@@ -254,14 +332,22 @@ export default function Payments() {
                   </div>
                 </div>
                 <div>
-                  {detail.action === "Add" ? (
+                  {detail.action === "Add" ? 
+                  <>
+                  {(detail.title==="Payment Cards")? 
                     <button
                       className="underline"
-                      onClick={() => setIsChangePassword(true)}
+                      onClick={() => {setIsChangePassword(true);setIsChangeAccountNumber(false)}}
                     >
                       {detail.action}
-                    </button>
-                  ) : detail.action === "Remove" ? (
+                    </button>:  <button
+                      className="underline"
+                      onClick={() => {setIsChangeAccountNumber(true);setIsChangePassword(false)}}
+                    >
+                      {detail.action}
+                    </button>}
+                  </>
+                   : detail.action === "Remove" ? (
                     <>
                       <button className="underline" onClick={removeCard}>
                         {detail.action}

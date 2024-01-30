@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState,useEffect } from "react";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import Rating from "./Ratings";
@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import WishlistModal from "../../Views/WishListModal";
-import axios from "../../Axios";
-const Listings = ({ user, homes }) => {
+import axios from '../../Axios'
+const Listings = ({user,homes,loading}) => {
   const [listings, setListings] = useState([
     {
       id: 1,
@@ -129,8 +129,9 @@ const Listings = ({ user, homes }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedListingId, setSelectedListingId] = useState(null);
 
-  const toggleFavorite = (id, fav) => {
-    if (fav != true) {
+
+  const toggleFavorite = (id,fav) => {
+    if(fav!=true){
       setModalOpen(true);
     }
     setSelectedListingId(id);
@@ -145,108 +146,138 @@ const Listings = ({ user, homes }) => {
     );
   };
 
-  const closeModal = () => {
-    setModalOpen(false);
-    setListings((prevListings) =>
-      prevListings.map((listing) => {
-        if (listing.id === selectedListingId) {
-          const isFavorite = listing.isFavorite && !listing.isFavorite;
-          return { ...listing, isFavorite };
-        }
-        return listing;
-      })
-    );
-  };
+  const closeModal=()=>{
 
-  useEffect(() => {
-    if (homes) {
+    setModalOpen(false)
+    setListings((prevListings) =>
+    prevListings.map((listing) => {
+      if (listing.id === selectedListingId) {
+        const isFavorite =listing.isFavorite&&!listing.isFavorite;
+        return { ...listing, isFavorite };
+      }
+      return listing;
+    })
+  );
+
+  }
+
+  useEffect(()=>{
+    if(homes){
+
       setListings(homes);
     }
-  }, [homes]);
+
+  },[homes]);
+
+
+  const SkeletonLoader =listings.map(group=>(
+    <div
+    key={group.id}
+    className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden   m-4 cursor-pointer  "
+  >
+   
+        <div className=''>
+         
+          <div className=' h-[250px] w-[270px] rounded-xl object-cover skeleton-loader text-transparent'  />
+        </div>
+ 
+
+      <div className=" py-4">
+        <div className="font-medium text-base mb-2 skeleton-loader text-transparent">dddddddddd</div>
+        {/* <Rating rating={group.rating} /> */}
+            <br></br>
+        <p className="text-gray-400 text-base skeleton-loader text-transparent">dddddddddddddddddddd</p>
+        {/* <p className="text-gray-400 text-base skeleton-loader text-transparent">dddddddddd</p> */}
+            <br></br>
+        <p className="font-medium text-gray-700 text-base skeleton-loader text-transparent">dddddddd</p>
+      </div>
+  
+  </div>
+
+));
+
+
+    const Listings=listings.map((listing) => (
+      <div
+        key={listing.id}
+        className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden   m-4 cursor-pointer"
+      >
+        <Carousel >
+          {listing.pictures.map((picture, index) => (
+            <div key={index}>
+              <button
+                onClick={() => toggleFavorite(listing.id,listing.isFavorite)}
+                className={`flex items-center absolute outline-none bg-${
+                  listing.isFavorite ? "yellow-400" : ""
+                } hover:bg-${
+                  listing.isFavorite ? "yellow-500" : ""
+                } text-white font-bold py-2 px-4 rounded`}
+              >
+               {user.name&&<div
+                  className={`border border-gray-400 rounded-full p-1 ${
+                    listing.isFavorite ? "bg-white" : ""
+                  }`}
+                >
+                  <svg
+                    className={`w-5 h-5 fill-current ${
+                      listing.isFavorite ? "text-red-600" : "text-white"
+                    }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 21.35l-1.45-1.32C5.4 16.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C15.09 3.81 16.76 3 18.5 3 21.58 3 24 5.42 24 8.5c0 3.78-3.4 7.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                </div>}
+              </button>
+              <img src={picture} className="h-[250px] object-cover " alt={`Apartment in ${listing.location}`} />
+            </div>
+          ))}
+        </Carousel>
+        <Link to={`/ListingInfoMain/${listing.id}`}>
+          <div className=" py-4">
+            <div className="font-medium text-base mb-2">
+              {listing.title}
+            </div>
+            <Rating rating={listing.rating} />
+
+            <p className="text-gray-400 text-base">{listing.location}</p>
+
+            <p className="text-gray-400 text-base">{listing.date}</p>
+            <p className="font-medium text-gray-700 text-base">
+              {listing.price}
+            </p>
+          </div>
+        </Link>
+        <ToastContainer  />
+      </div>
+    ))
+
+ 
+
+
+
+  
+  
 
   return (
-    <div>
-      <div className="flex flex-wrap justify-center mt-10 mb-32">
-        {isModalOpen && (
-          <WishlistModal
-            listingId={selectedListingId}
-            added={() => setModalOpen(false)}
-            onClose={closeModal}
-            onToggleFavorite={(wishlist) =>
-              toggleFavorite(selectedListingId, wishlist)
-            }
-          />
-        )}
-        {listings.map((listing) => (
-          <div
-            key={listing.id}
-            className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden   m-4 cursor-pointer"
-          >
-            <Carousel>
-              {listing.pictures.map((picture, index) => (
-                <div key={index}>
-                  <button
-                    onClick={() =>
-                      toggleFavorite(listing.id, listing.isFavorite)
-                    }
-                    className={`flex items-center absolute outline-none bg-${
-                      listing.isFavorite ? "yellow-400" : ""
-                    } hover:bg-${
-                      listing.isFavorite ? "yellow-500" : ""
-                    } text-white font-bold py-2 px-4 rounded`}
-                  >
-                    {user.name && (
-                      <div
-                        className={`border border-gray-400 rounded-full p-1 ${
-                          listing.isFavorite ? "bg-white" : ""
-                        }`}
-                      >
-                        <svg
-                          className={`w-5 h-5 fill-current ${
-                            listing.isFavorite ? "text-red-600" : "text-white"
-                          }`}
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 21.35l-1.45-1.32C5.4 16.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C15.09 3.81 16.76 3 18.5 3 21.58 3 24 5.42 24 8.5c0 3.78-3.4 7.86-8.55 11.54L12 21.35z" />
-                        </svg>
-                      </div>
-                    )}
-                  </button>
-                  <img
-                    src={picture}
-                    className="h-[250px] object-cover "
-                    alt={`Apartment in ${listing.location}`}
-                  />
-                </div>
-              ))}
-            </Carousel>
-            <Link to={`/ListingInfoMain/${listing.id}`}>
-              <div className=" py-4">
-                <div className="font-medium text-base mb-2">
-                  {listing.title}
-                </div>
-                <Rating rating={listing.rating} />
-
-                <p className="text-gray-400 text-base">{listing.location}</p>
-
-                <p className="text-gray-400 text-base">{listing.date}</p>
-                <p className="font-medium text-gray-700 text-base">
-                  {listing.price}
-                </p>
-              </div>
-            </Link>
-            <ToastContainer />
-          </div>
-        ))}{" "}
-        <br />
-      </div>
-      <div className="flex justify-center mb-10">
-        <button className="py-2 px-4 bg-gray-800 block text-white rounded-full">
-          Show more listings
-        </button>
-      </div>
+   <div>
+     <div className="flex flex-wrap justify-center mt-10 mb-32">
+     {isModalOpen && (
+  <WishlistModal
+    listingId={selectedListingId}
+    added={()=>setModalOpen(false)}
+    onClose={closeModal}
+    onToggleFavorite={(wishlist) => toggleFavorite(selectedListingId, wishlist)}
+  />
+)}
+     {!loading?Listings: SkeletonLoader}
+      <br/>
     </div>
+<div className="flex justify-center mb-10">
+<button className="py-2 px-4 bg-gray-800 block text-white rounded-full">Show more listings</button>
+
+</div>
+   </div>
   );
 };
 

@@ -10,9 +10,11 @@ const LogIn=()=>{
     const [email,setEmail]=useState('');
     const [password,setPassword]=useState('');
     const [googleUrl,setGoogleUrl]=useState('');
+    const [error,setError]=useState('');
     // const [userData,setUserData]=useState([]);
    
     const goHome=useRef();
+    const goActivate=useRef();
     // const [token,setToken]=useState([]);
     const { setUser, setToken } = useStateContext();
 
@@ -69,7 +71,7 @@ const LogIn=()=>{
           setToken(response.data.token);
           console.log(response.data);
           window.location.replace('/');
-
+          setError("");
         
 
         }
@@ -78,18 +80,28 @@ const LogIn=()=>{
         
         if(error.response.data.message){
           openNotificationWithIcon("error",error.response.data.message);
+         
 
         }else{
 
           openNotificationWithIcon("error",error.response.data);
+          setError(error.response.data);
         }
         
       }
       // console.log(userData);
       // console.log(token)
 
+      if(error==="Your account has been deactivated"){
+        goActivate.current.click();
+ 
+     }
+ 
+
     }
 
+
+   
  
 
 
@@ -182,9 +194,9 @@ const LogIn=()=>{
             </div>
 
             <div className="text-sm  text-right">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                  <Link to="/ForgotPassword" className="font-semibold text-indigo-600 hover:text-indigo-500">
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
 
             <div>
@@ -214,6 +226,8 @@ const LogIn=()=>{
 
           </label>
         </div>
+
+        <Link to={"/ReactivateAccount"} ref={goActivate} className=" hidden"></Link>
 
       </div>
     

@@ -59,12 +59,14 @@ import PrivacyPolicy from "./Views/PrivacyPolicy";
 import DamagesIncidentals from "./Views/DamagesIncidentals";
 import UserVerificationDashboard from "./Component/AdminDashboard/UserVerificationDashboard";
 import ServiceChargeSettings from "./Component/AdminDashboard/AdminNavigation/ServiceChargeSettings";
-import DamageReportForm from "./Component/DamageReportForm";
 import LogIn from "./Views/Login";
 import SignUp from "./Views/SignUp";
 import AuthGoogle from "./Views/AuthGoogle";
-import axios from "./Axios"
+// import axios from "./Axios"
 import HostHome from "./Component/Unboarding/HostHome";
+import ForgotPassword from "./Component/SignupLogin/ForgotPassword";
+import ReactivateAccount from "./Component/SignupLogin/ReactivateAccount";
+import ReportDamage from "./Component/ReportDamages";
 function App() {
 
 
@@ -155,6 +157,7 @@ function App() {
         <Route path="/Login" element={<LogIn/>}/>
         <Route path="/Signup" element={<SignUp/>}/>
         <Route path="/auth/google" element={<AuthGoogle/>} />
+        <Route path="/ForgotPassword" element={<ForgotPassword/>}/>
 
 
         <Route path="/DamagesAndIncidentals" element={<DamagesIncidentals />} />
@@ -167,7 +170,9 @@ function App() {
           element={<ServiceChargeSettings />}
         />
 
-        <Route path="/DamageReportForm" element={<DamageReportForm />} />
+        <Route path="/ReportDamage" element={<ReportDamage/>}/>
+
+        <Route path="/ReactivateAccount" element={<ReactivateAccount/>}/>
       </Routes>
       </ContextProvider>
     </Router>
