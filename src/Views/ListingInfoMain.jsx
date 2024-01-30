@@ -54,20 +54,36 @@ const ListingInfoMain = () => {
 
         <div className="w-full flex">
           <div className=" w-full md:w-[58.3333%] relative">
-            <HostedBy />
+            <HostedBy
+              property_type={listingDetails?.property_type}
+              bathrooms={listingDetails?.bathrooms}
+              beds={listingDetails?.beds}
+              bedroom={listingDetails?.bedroom}
+              cancelPolicy={listingDetails?.cancelPolicy}
+              guest_choice={listingDetails?.guest_choice}
+              guest={listingDetails?.guest}
+              hostHomeDescriptions={listingDetails?.hosthomedescriptions} // Pass the array as a prop
+            />{" "}
             <div className="  md:hidden relative mr-0 ">
               <ListingForm />
             </div>
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
             <HostProfilePreview />
-
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
-            <AboutProperty />
+            <AboutProperty
+              description={listingDetails?.description}
+              address={listingDetails?.address}
+            />
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
             <HouseRules />
           </div>
           <div className=" md:ml-[8.33333%] md:w-[33.33333%] hidden md:block relative mr-0 ">
-            <ListingForm />
+          <ListingForm
+  price={listingDetails?.price}
+  reservations={listingDetails?.reservations}
+  reservation={listingDetails?.reservation}
+  guest={listingDetails?.guest}
+/>
           </div>
         </div>
         <Amenities />

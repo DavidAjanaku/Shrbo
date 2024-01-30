@@ -395,7 +395,6 @@ export default function HostsListings() {
                   columns={columns}
                   dataSource={filteredHosts}
                   rowKey={(record) => `${record.user.id}`}
-// Set the rowKey to the guest's id
                 />
               )}
             </div>
