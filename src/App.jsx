@@ -67,6 +67,7 @@ import HostHome from "./Component/Unboarding/HostHome";
 import ForgotPassword from "./Component/SignupLogin/ForgotPassword";
 import ReactivateAccount from "./Component/SignupLogin/ReactivateAccount";
 import ReportDamage from "./Component/ReportDamages";
+import EditHostHomes from "./Component/Unboarding/EditHostHomes";
 function App() {
 
 
@@ -98,6 +99,7 @@ function App() {
         <Route path="/UsersShow" element={<UsersShow />} />
         <Route path="/HostHomes" element={<HostHomes />} />
         <Route path="/HostHome/:id" element={<HostHome />} />
+        <Route path="/EditHostHomes/:id" element={<EditHostHomes />} />
 
         <Route path="/Hosting" element={<Hosting />} />
         <Route path="/ConfirmDetails" element={<ConfirmDetails />} />

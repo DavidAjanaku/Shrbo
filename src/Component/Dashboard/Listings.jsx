@@ -213,7 +213,7 @@ export default function Listings() {
           {/* Conditionally render the "Edit" button */}
           {isEditButtonVisible && (
             <Button type="primary">
-              <Link to={`/Hosthome/${selectedListings[0]}`}>Edit Apartment</Link>
+              <Link to={`/EditHostHomes/${selectedListings[0]}`}>Edit Apartment</Link>
             </Button>
           )}
         </div>
