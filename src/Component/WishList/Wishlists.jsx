@@ -36,8 +36,8 @@ const Wishlists=({wishlists,loading})=>{
       </Link>
   ));
 
-  const SkeletonLoader =wishlist_groups.map(group=>(
-        <div className=" skeleton-loader text-transparent " >
+  const SkeletonLoader =wishlist_groups.map((group,index)=>(
+        <div key={index} className=" skeleton-loader text-transparent " >
           <div className=" overflow-hidden aspect-video rounded-[0.25em] block ">
             <div className="  h-full start-0 end-0  m-0 p-0 block  ">
               {/* <img className=" absolute  min-h-full opacity-100 transition block object-cover align-middle overflow-hidden   " src=""></img> */}
