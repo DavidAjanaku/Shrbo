@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Table, Input, Select, Button } from "antd";
+import { Table, Input, Select, Button, notification } from "antd";
 import { SearchOutlined, DeleteOutlined } from "@ant-design/icons";
 import Modal from "react-modal";
 import PaginationExample from "../PaginationExample";
@@ -150,11 +150,47 @@ export default function Listings() {
     setSelectedHouseId(null);
   };
 
-  const handleDeleteButtonClick = () => {
-    // Implement your delete logic here based on selectedHouseId
-    // After deletion, close the modal
-    closeDeleteModal();
+  const handleDeleteButtonClick = async () => {
+    try {
+      // Send a DELETE request to delete the host home
+      await Axois.delete(`/hosthomes/${selectedHouseId}`);
+    
+      // After successful deletion, close the modal
+      closeDeleteModal();
+    
+      // Fetch updated listings
+      await fetchListings();
+    
+      // Show success notification
+      notification.success({
+        message: "Deleted successfully",
+        description: "The listing has been deleted successfully.",
+        placement: "topRight",
+        duration: 0, // Make the notification persist until manually closed
+        btn: (
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => {
+              notification.destroy(); // Close the notification when the button is clicked
+              window.location.reload();
+            }}
+          >
+            Close
+          </Button>
+        ),
+      });
+  
+    } catch (error) {
+      console.error("Error deleting the listing:", error);
+      // Handle errors as needed (e.g., display an error message to the user)
+      notification.error({
+        message: "Error deleting",
+        description: "There was an error deleting the listing. Please try again.",
+      });
+    }
   };
+  
 
   // Define your listings data
 
@@ -371,7 +407,7 @@ export default function Listings() {
         >
           <h2>Delete Confirmation</h2>
           <p>
-            Are you sure you want to delete the listing "{selectedHouseTitle}"?
+            Are you sure you want to delete the apartment?
           </p>
           <div className="flex justify-between mt-4">
             <Button type="danger" onClick={handleDeleteButtonClick}>
