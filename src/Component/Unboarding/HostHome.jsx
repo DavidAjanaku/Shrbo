@@ -1072,7 +1072,7 @@ export default function HostHome({ match }) {
         );
 
       case 7: // Step for adding a house title
-        const maxCharacterCount = 32;
+        const maxCharacterCount = 50;
         const currentCharacterCount = houseTitle.length;
         const remainingCharacterCount =
           maxCharacterCount - currentCharacterCount;
@@ -1146,7 +1146,7 @@ export default function HostHome({ match }) {
         );
 
       case 9:
-        const maxCharCount = 500;
+        const maxCharCount = 750;
         const currentCharCount = houseDescriptionDetails.length;
         const remainingCharCount = maxCharCount - currentCharCount;
 

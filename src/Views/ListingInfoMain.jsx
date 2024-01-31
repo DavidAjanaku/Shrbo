@@ -78,12 +78,12 @@ const ListingInfoMain = () => {
             <HouseRules />
           </div>
           <div className=" md:ml-[8.33333%] md:w-[33.33333%] hidden md:block relative mr-0 ">
-          <ListingForm
-  price={listingDetails?.price}
-  reservations={listingDetails?.reservations}
-  reservation={listingDetails?.reservation}
-  guest={listingDetails?.guest}
-/>
+            <ListingForm
+              price={listingDetails?.price}
+              reservations={listingDetails?.reservations}
+              reservation={listingDetails?.reservation}
+              guest={listingDetails?.guest}
+            />
           </div>
         </div>
         <Amenities />

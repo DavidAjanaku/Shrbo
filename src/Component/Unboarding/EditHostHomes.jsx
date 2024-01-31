@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash } from "react-icons/fa";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import { Spin } from "antd";
 import { useParams } from "react-router-dom";
@@ -67,7 +67,6 @@ export default function HostHome({ match }) {
     securityDeposit: 0,
   });
   const navigate = useNavigate();
-
 
   const [apartment, setApartment] = useState(null);
 
@@ -154,24 +153,19 @@ export default function HostHome({ match }) {
     try {
       setIsSubmitting(true); // Set the loader state to true
 
-      const photoBase64Array = apartment.hosthomephotos
-  ? await Promise.all(apartment.hosthomephotos.map(async (photo) => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        const photoBlob = new Blob([photo], { type: "image/jpeg" }); // Adjust the type based on your image format
-        reader.onload = (event) => resolve(event.target.result);
-        reader.readAsDataURL(photoBlob); // Read the Blob as Data URL
-      });
-    }))
-  : [];
+      const photoBase64Array = uploadedImages.map((image) => image.src);
+      console.log(photoBase64Array);
+
       const videoBase64 = apartment.hosthomevideo
-      ? await new Promise((resolve) => {
-          const reader = new FileReader();
-          const videoBlob = new Blob([apartment.hosthomevideo], { type: "video/mp4" }); // Create a Blob from the video data
-          reader.onload = (event) => resolve(event.target.result);
-          reader.readAsDataURL(videoBlob); // Read the Blob as Data URL
-        })
-      : null;
+        ? await new Promise((resolve) => {
+            const reader = new FileReader();
+            const videoBlob = new Blob([apartment.hosthomevideo], {
+              type: "video/mp4",
+            }); // Create a Blob from the video data
+            reader.onload = (event) => resolve(event.target.result);
+            reader.readAsDataURL(videoBlob); // Read the Blob as Data URL
+          })
+        : null;
 
       const selectedDescriptions = apartment.hosthomedescriptions.map(
         (item) => item.description
@@ -186,7 +180,6 @@ export default function HostHome({ match }) {
       const selectedDiscounts = apartment.discounts.map(
         (item) => item.discount
       );
-  
 
       const formDetails = {
         property_type: apartment.property_type,
@@ -201,27 +194,26 @@ export default function HostHome({ match }) {
         hosthomevideo: videoBase64, // Use the Object URL
         title: apartment.title,
         hosthomedescriptions: selectedDescriptions,
-        description: apartment.description,
-        reservations: selectedReservations,
-        reservation: apartment.reservation,
-        price: apartment.price,
+        description: houseDescriptionDetails,
+        reservations: selectedWelcomeVisibility,
+        reservation: selectedInstantBookType,
+        price: housePrice,
         discounts: selectedDiscounts,
         rules: selectedRules,
         additionalRules: apartment.additionalRules,
-        host_type: apartment.host_type,
+        host_type: selectedHostType,
         notice: selectedCautionTypes,
         checkin: selectedTime,
-        cancelPolicy: apartment.cancelPolicy,
+        cancelPolicy: selectedCancellationPolicy,
         securityDeposit: securityDeposit,
-    };
+      };
       console.log("Form submitted successfully", formDetails);
 
       // Example Axios post request
       await Axios.post("/hosthomes", formDetails);
 
       console.log("Form submitted successfully", formDetails);
-      navigate('/hosting');
-
+      navigate("/hosting");
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {
@@ -644,21 +636,24 @@ export default function HostHome({ match }) {
       return [...array, itemId];
     }
   };
-  const handleHouseDescriptionSelection = (selectedId) => {
-    // Check if the selectedId is already in the array
-    if (selectedHouseDescriptions.includes(selectedId)) {
-      // If yes, remove it
-      setSelectedHouseDescriptions((prevSelected) =>
-        prevSelected.filter((id) => id !== selectedId)
-      );
-    } else {
-      // If no, add it
-      setSelectedHouseDescriptions((prevSelected) => [
-        ...prevSelected,
-        selectedId,
-      ]);
-    }
+  const handleHouseDescriptionSelection = (selectedType) => {
+    // Check if the selectedType is already in the descriptions array
+    const isAlreadySelected = apartment?.hosthomedescriptions.some(
+      (description) => description.description === selectedType
+    );
+  
+    // If it's already selected, remove it. Otherwise, add it.
+    setApartment((prev) => {
+      const updatedDescriptions = isAlreadySelected
+        ? prev.hosthomedescriptions.filter(
+            (description) => description.description !== selectedType
+          )
+        : [...prev.hosthomedescriptions, { description: selectedType }];
+  
+      return { ...prev, hosthomedescriptions: updatedDescriptions };
+    });
   };
+  
 
   useEffect(() => {
     // Set initially selected visibility from API
@@ -701,7 +696,11 @@ export default function HostHome({ match }) {
     setSelectedCancellationPolicy(selectedPolicy);
   };
 
-  const handleDiscountSelection = (selectedId, isSelected, matchingDiscount) => {
+  const handleDiscountSelection = (
+    selectedId,
+    isSelected,
+    matchingDiscount
+  ) => {
     if (isSelected) {
       // Deselect the discount if it was selected
       setApartment((prev) => ({
@@ -723,21 +722,19 @@ export default function HostHome({ match }) {
       }));
     }
   };
-  
 
   const handleRuleSelection = (rule) => {
     setSelectedRules((prevSelectedRules) => {
       const updatedRules = prevSelectedRules.includes(rule)
         ? prevSelectedRules.filter((selectedRule) => selectedRule !== rule)
         : [...prevSelectedRules, rule];
-  
+
       // Update additionalRules state
       setAdditionalRules(updatedRules);
-  
+
       return updatedRules;
     });
   };
-  
 
   const handleHouseTypeSelection = (typeId) => {
     setSelectedHouseType(typeId);
@@ -751,8 +748,8 @@ export default function HostHome({ match }) {
       const newSelectedTypes = prevSelectedTypes.includes(id)
         ? prevSelectedTypes.filter((type) => type !== id)
         : [...prevSelectedTypes, id];
-  
-      console.log('Selected Caution Types:', newSelectedTypes);
+
+      console.log("Selected Caution Types:", newSelectedTypes);
       return newSelectedTypes;
     });
   };
@@ -775,32 +772,31 @@ export default function HostHome({ match }) {
   const handleImageUpload = async (e) => {
     const files = e.target.files;
     const newImages = [];
-  
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const reader = new FileReader();
-  
+
       reader.onload = async (event) => {
         const base64Image = event.target.result;
         newImages.push({ id: Date.now(), src: base64Image });
-  
+
         if (newImages.length === files.length) {
           // Directly update the hosthomephotos array in the state
           setUploadedImages((prevImages) => [...prevImages, ...newImages]);
-  
+
           // If you need to submit the form immediately after all images are converted,
           // you can call handleSubmit here.
           // await handleSubmit();
         }
       };
-  
+
       reader.readAsDataURL(file);
     }
-  
+
     // Reset the file input field
     setFileInputKey(fileInputKey + 1);
   };
-  
 
   const handleImageDelete = (id) => {
     // Filter out the deleted image from uploadedImages state
@@ -1211,7 +1207,7 @@ export default function HostHome({ match }) {
         );
 
       case 7: // Step for adding a house title
-        const maxCharacterCount = 32;
+        const maxCharacterCount = 50;
         const currentCharacterCount = apartment.title.length;
         const remainingCharacterCount =
           maxCharacterCount - currentCharacterCount;
@@ -1293,7 +1289,7 @@ export default function HostHome({ match }) {
         );
 
       case 9:
-        const maxCharCount = 500;
+        const maxCharCount = 750;
         const currentCharCount = houseDescriptionDetails.length;
         const remainingCharCount = maxCharCount - currentCharCount;
 

@@ -170,7 +170,7 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
             {imagesToDisplay.map((imageUrl, index) => (
               <div
                 key={index}
-                className="h-full overflow-hidden rounded-xl"
+                className="h-[250px] overflow-hidden rounded-xl"
                 onClick={() => showModal(imageUrl, index)}
               >
                 <img

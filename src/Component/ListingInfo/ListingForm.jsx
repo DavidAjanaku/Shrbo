@@ -1,4 +1,4 @@
-import React, { useState,useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import DateIcon from "../../assets/svg/date-icon.svg";
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,10 +7,15 @@ import { Link } from "react-router-dom";
 import Popup from "../../hoc/Popup";
 import ReportListing from "./ReportListing";
 import CustomModal from "../CustomModal";
-import {FlagOutlined} from '@ant-design/icons';
+import { FlagOutlined } from "@ant-design/icons";
+import { useParams } from "react-router-dom";
+import Axios from "../../Axios";
 
-
-export default function ListingForm({ price, reservations, reservation, guest }) {
+export default function ListingForm({
+  reservations,
+  reservation,
+  guest,
+}) {
   function showModal(e) {
     e.preventDefault();
     setIsModalVisible(true);
@@ -27,9 +32,10 @@ export default function ListingForm({ price, reservations, reservation, guest })
   const [children, setChildren] = useState(0);
   const [pets, setPets] = useState(0);
   const [infants, setInfants] = useState(0);
-
+  const [price, setPrice] = useState(null); // Initialize with a default value if needed
 
   const [form] = Form.useForm(); // Define the form variable
+  const [listingDetails, setListingDetails] = useState(null);
 
   const showMessageModal = () => {
     setMessageModalVisible(true);
@@ -52,13 +58,27 @@ export default function ListingForm({ price, reservations, reservation, guest })
     // Close the message modal
     setMessageModalVisible(false);
   };
-  
-  
-  
+  const { id } = useParams(); // Get the ID parameter from the route
+
+  useEffect(() => {
+    const fetchListingDetails = async () => {
+      try {
+        const response = await Axios.get(`showGuestHome/${id}`);
+        setListingDetails(response.data.data);
+        console.log(response.data.data);
+        setPrice(response.data.data.price); // Adjust this line based on your API response structure
+
+      } catch (error) {
+        console.error("Error fetching listing details:", error);
+        // Handle error, show error message, etc.
+      }
+    };
+
+    fetchListingDetails();
+  }, [id]);
 
   function handleCancel() {
     setIsModalVisible(false);
-
   }
 
   const handleCheckIn = (date) => {
@@ -67,7 +87,7 @@ export default function ListingForm({ price, reservations, reservation, guest })
   const handlecheckOut = (date) => {
     setCheckOutDate(date);
   };
-
+  console.log("Price:", price);
 
   return (
     <div className=" block w-full h-full">
@@ -83,8 +103,12 @@ export default function ListingForm({ price, reservations, reservation, guest })
                 <div className=" gap-2 justify-start flex-wrap flex-row items-center flex">
                   <div>
                     <span aria-hidden="true">
-                    <div className=" font-medium text-xl box-border">₦{Number(price).toLocaleString()}</div>
-
+                      <div className="font-medium text-xl box-border">
+                        ₦
+                        {isNaN(Number(price))
+                          ? "Invalid Price"
+                          : Number(price).toLocaleString()}
+                      </div>
                     </span>
                   </div>
                   <div className=" font-normal text-start text-xs">
@@ -245,20 +269,20 @@ export default function ListingForm({ price, reservations, reservation, guest })
                     </div>
                   </div>
                   <div className="p-2">
-                  <Link to="/RequestBook">
-                <button
-                  type="button"
-                  className="block w-full h-11 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
+                    <Link to="/RequestBook">
+                      <button
+                        type="button"
+                        className="block w-full h-11 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
                             text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
                             focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
                             focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
                             dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]]"
-                >
-                  Book
-                </button>
-              </Link>
+                      >
+                        Book
+                      </button>
+                    </Link>
                   </div>
                 </Popup>
               </div>
@@ -297,86 +321,82 @@ export default function ListingForm({ price, reservations, reservation, guest })
             </div>
           </form>
         </div>
-        
-      <div className=" font-normal text-sm box-border flex items-end justify-center break-words pt-3  pl-3    ">
-                  {/* <span> see full price</span> */}
-                  <button
-                    type="button"
-                    className=" whitespace-nowrap break-normal underline flex gap-1  items-center  cursor-pointer "
-                    onClick={()=>setIsReportModalVisible(true)}
-                  >
-                 <FlagOutlined className="" />
-                  <span> report a problem with this listing</span>
-                  </button>
-                </div>
-          <Popup
-            isModalVisible={isReportModalVisible}
-            handleCancel={()=>setIsReportModalVisible(false)}
-            centered={true}  
-            // width={"600px"}                  
-       
-          >
-            <ReportListing/>
-          </Popup>
 
-          {/* <CustomModal isOpen={isReportModalVisible} onClose={()=>setIsReportModalVisible(false)}   >
+        <div className=" font-normal text-sm box-border flex items-end justify-center break-words pt-3  pl-3    ">
+          {/* <span> see full price</span> */}
+          <button
+            type="button"
+            className=" whitespace-nowrap break-normal underline flex gap-1  items-center  cursor-pointer "
+            onClick={() => setIsReportModalVisible(true)}
+          >
+            <FlagOutlined className="" />
+            <span> report a problem with this listing</span>
+          </button>
+        </div>
+        <Popup
+          isModalVisible={isReportModalVisible}
+          handleCancel={() => setIsReportModalVisible(false)}
+          centered={true}
+          // width={"600px"}
+        >
+          <ReportListing />
+        </Popup>
+
+        {/* <CustomModal isOpen={isReportModalVisible} onClose={()=>setIsReportModalVisible(false)}   >
           <ReportListing/>
           </CustomModal> */}
-      
-        
       </div>
 
-
-        
-    
-      
       {/* Message Modal */}
       <Modal
-          title="Message Host"
-          open={messageModalVisible}
-          onCancel={() => setMessageModalVisible(false)}
-          footer={[
-            <Button key="cancel" onClick={() => setMessageModalVisible(false)}>
-              Cancel
-            </Button>,
-            <Button key="send" type="primary"  onClick={sendMessage}>
-              Send
-            </Button>,
-          ]}
-        >
-        <Form
-  onFinish={sendMessage}
-  form={form}
-  initialValues={{ message: "" }}
->
-  {messageSent ? (
-    <p>Message sent successfully</p>
-  ) : (
-    <>
-      <Form.Item
-        name="message"
-        rules={[
-          {
-            required: true,
-            message: "Please enter your message",
-          },
+        title="Message Host"
+        open={messageModalVisible}
+        onCancel={() => setMessageModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setMessageModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button key="send" type="primary" onClick={sendMessage}>
+            Send
+          </Button>,
         ]}
       >
-        <Input.TextArea
-          placeholder="Type your message here..."
-          style={{ width: "100%", minHeight: "100px" }}
-        />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" className="bg-orange-400 hover:bg-orange-600" htmlType="submit">
-          Send
-        </Button>
-      </Form.Item>
-    </>
-  )}
-</Form>
-
-        </Modal>
+        <Form
+          onFinish={sendMessage}
+          form={form}
+          initialValues={{ message: "" }}
+        >
+          {messageSent ? (
+            <p>Message sent successfully</p>
+          ) : (
+            <>
+              <Form.Item
+                name="message"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter your message",
+                  },
+                ]}
+              >
+                <Input.TextArea
+                  placeholder="Type your message here..."
+                  style={{ width: "100%", minHeight: "100px" }}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  className="bg-orange-400 hover:bg-orange-600"
+                  htmlType="submit"
+                >
+                  Send
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form>
+      </Modal>
     </div>
   );
 }
@@ -483,8 +503,6 @@ export default function ListingForm({ price, reservations, reservation, guest })
 //   );
 // }
 
-
-
 function MyDropdown({ adults, children, pets, infants }) {
   const [adultCount, setAdultCount] = useState(adults);
   const [childCount, setChildCount] = useState(children);
@@ -547,7 +565,6 @@ function MyDropdown({ adults, children, pets, infants }) {
           </Button>
           <span>{childCount}</span>
           <Button
-          
             shape="circle"
             onClick={() => handleIncrease(setChildCount, childCount)}
           >
@@ -609,7 +626,6 @@ function MyDropdown({ adults, children, pets, infants }) {
       trigger={["click"]}
       onOpenChange={handleSubmit}
       open={visible}
-     
       dropdownRender={(menu) => (
         <div className=" bg-white">
           <Space className="p-2 flex-col w-full shadow-md">
@@ -632,9 +648,17 @@ function MyDropdown({ adults, children, pets, infants }) {
           className=" block m-2 ml-3 cursor-pointer overflow-hidden text-ellipsis text-start whitespace-nowrap text-base font-normal w-full min-w-full     "
         >
           <span className="block">Guests</span>
-           <span className="text-gray-500">
-               {(adultCount + childCount>1?`${adultCount + childCount} guests`:`${adultCount + childCount} guest`) }  {infantCount!=0&& (infantCount>1?`,${infantCount} infants`:`,${infantCount} infant`)}   {petCount!=0&& (petCount>1?`,${petCount} pets`:`,${petCount} pet`)} 
-           </span>
+          <span className="text-gray-500">
+            {adultCount + childCount > 1
+              ? `${adultCount + childCount} guests`
+              : `${adultCount + childCount} guest`}{" "}
+            {infantCount != 0 &&
+              (infantCount > 1
+                ? `,${infantCount} infants`
+                : `,${infantCount} infant`)}{" "}
+            {petCount != 0 &&
+              (petCount > 1 ? `,${petCount} pets` : `,${petCount} pet`)}
+          </span>
         </button>
       </Space>
     </Dropdown>
