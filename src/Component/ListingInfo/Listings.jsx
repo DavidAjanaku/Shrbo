@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import WishlistModal from "../../Views/WishListModal";
 import axios from '../../Axios'
 const Listings = ({user,homes,loading}) => {
+  const [isDeleted,setDeleted]=useState(true);
   const [listings, setListings] = useState([
     {
       id: 1,
@@ -130,9 +131,28 @@ const Listings = ({user,homes,loading}) => {
   const [selectedListingId, setSelectedListingId] = useState(null);
 
 
-  const toggleFavorite = (id,fav) => {
+  const toggleFavorite = async(id,fav) => {
     if(fav!=true){
       setModalOpen(true);
+    
+    }else{
+      await axios.delete(`/removeFromWishlist/${id}`).then(response=>{
+
+        console.log(response);
+
+        toast.success('Wishlist deleted Successfuly', {
+          position: toast.POSITION.TOP_CENTER,
+        });
+
+
+      }).catch(err => {
+        console.error(err);
+        setDeleted(!isDeleted);
+  
+        toast.error(" Couldn't delete Wishlist", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      }); 
     }
     setSelectedListingId(id);
     setListings((prevListings) =>
@@ -144,6 +164,7 @@ const Listings = ({user,homes,loading}) => {
         return listing;
       })
     );
+   
   };
 
   const closeModal=()=>{
@@ -167,7 +188,7 @@ const Listings = ({user,homes,loading}) => {
       setListings(homes);
     }
 
-  },[homes]);
+  },[homes,isDeleted]);
 
 
   const SkeletonLoader =listings.map(group=>(

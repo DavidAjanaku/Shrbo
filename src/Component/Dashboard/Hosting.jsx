@@ -8,11 +8,15 @@ import HostBottomNavigation from "./HostBottomNavigation";
 import Notificationbell from "../../assets/bell-icon.png";
 import InfoCard from "../InfoCard";
 import AlertCard from "../AlertCard";
+import { useStateContext } from "../../ContextProvider/ContextProvider";
+import axios from "../../Axios";
 
 export default function Hosting() {
   const [activeTab, setActiveTab] = useState("checkingOut");
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const { setUser, setToken, token, setHost, setAdminStatus, user } = useStateContext();
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
+  const [tips, setTips] = useState([]);
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -94,6 +98,51 @@ export default function Hosting() {
   const closeBellDropdown = () => {
     setIsBellDropdownOpen(false);
   };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Make a request to get the user data
+        const response = await axios.get("/user"); // Adjust the endpoint based on your API
+
+        // Set the user data in state
+        setUser(response.data);
+        setHost(response.data.host);
+        setAdminStatus(response.data.adminStatus);
+
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        // Set loading to false regardless of success or error
+
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserTips = async () => {
+      try {
+        // Make a request to get the user data
+        const response = await axios.get("/userTips"); // Adjust the endpoint based on your API
+
+        setTips(response.data);
+
+
+
+
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        // Set loading to false regardless of success or error
+
+      }
+    };
+
+    fetchUserTips();
+  }, []);
+
 
   useEffect(() => {
     const handleDocumentClick = (event) => {
@@ -521,7 +570,7 @@ export default function Hosting() {
             )}
           </div>
           <div className="flex flex-wrap my-4 items-center justify-between">
-            <h1 className="text-3xl font-medium my-7">Welcome back, Endo</h1>
+            <h1 className="text-3xl font-medium my-7">Welcome back, {user.name}</h1>
             <Link to="/Reservations">All Reservations(3)</Link>
           </div>
 
@@ -530,6 +579,18 @@ export default function Hosting() {
               Recommended for you
             </div>
             <div className="flex space-x-5  w-full overflow-scroll example">
+              {tips.map(tip => (
+
+                <AlertCard
+                  title={"Verify your identity"||tip.title}
+                  description={tip.message}
+                  link={tip.url}
+                
+                  // houseTitle={"Fully Furnished Apartment at Carrington 32 road"}
+                />
+
+              ))}
+
               <AlertCard
                 title="Verify your identity"
                 description="Required to publish"
@@ -543,7 +604,7 @@ export default function Hosting() {
                 description="It looks like the photo of your id is in black and white. Please make sure your camera is set to take color photos and try again."
                 link="/AddGovvernmentId"
 
-                // image={exclammationMark}
+              // image={exclammationMark}
               />
               <InfoCard
                 title="QUICK LINK"
@@ -565,51 +626,46 @@ export default function Hosting() {
           </div>
           <div className="tab-container space-x-4 flex  overflow-x-auto whitespace-nowrap example">
             <div
-              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${
-                activeTab === "checkingOut"
+              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "checkingOut"
                   ? "active bg-orange-300 text-white"
                   : ""
-              }`}
+                }`}
               onClick={() => handleTabClick("checkingOut")}
             >
               Checking out (4)
             </div>
             <div
-              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${
-                activeTab === "currentlyHosting"
+              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "currentlyHosting"
                   ? "active bg-orange-300 text-white"
                   : ""
-              }`}
+                }`}
               onClick={() => handleTabClick("currentlyHosting")}
             >
               Currently hosting (3)
             </div>
             <div
-              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${
-                activeTab === "arrivingSoon"
+              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "arrivingSoon"
                   ? "active bg-orange-300 text-white"
                   : ""
-              }`}
+                }`}
               onClick={() => handleTabClick("arrivingSoon")}
             >
               Arriving soon (12)
             </div>
             <div
-              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${
-                activeTab === "upcoming"
+              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "upcoming"
                   ? "active bg-orange-300 text-white"
                   : ""
-              }`}
+                }`}
               onClick={() => handleTabClick("upcoming")}
             >
               Upcoming (22)
             </div>
             <div
-              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${
-                activeTab === "pendingReview"
+              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "pendingReview"
                   ? "active bg-orange-300 text-white"
                   : ""
-              }`}
+                }`}
               onClick={() => handleTabClick("pendingReview")}
             >
               Pending review (4)
@@ -651,12 +707,12 @@ export default function Hosting() {
                 description="As a new Host, you get one-tap access to a specially trained support team."
               />
               <Link to="/DamageReportForm">
-              <SuperHostGuidanceCard
-                title="Report Property Damage"
-                description="If a guest has caused any damage to your apartment, please reach out to our specialized support team immediately. Use the 'Contact Support' option to report the incident and provide details about the damage. Our team is here to assist you in resolving the issue and ensuring a smooth resolution process."
-              />
+                <SuperHostGuidanceCard
+                  title="Report Property Damage"
+                  description="If a guest has caused any damage to your apartment, please reach out to our specialized support team immediately. Use the 'Contact Support' option to report the incident and provide details about the damage. Our team is here to assist you in resolving the issue and ensuring a smooth resolution process."
+                />
               </Link>
-            
+
             </div>
           </div>
         </div>

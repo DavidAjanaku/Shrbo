@@ -38,6 +38,7 @@ const WishlistsSet = () => {
       title: "22miles away",
       rating: 4.8,
       link: "/ListingInfoMain",
+      isFavorite:true,
     },
     {
       id: 2,
@@ -52,6 +53,7 @@ const WishlistsSet = () => {
       title: "22miles away",
       rating: 4.2,
       link: "/ListingInfoMain",
+      isFavorite:true,
     },
     {
       id: 3,
@@ -66,6 +68,7 @@ const WishlistsSet = () => {
       title: "22miles away",
       rating: 4.0,
       link: "/ListingInfoMain",
+      isFavorite:true,
     },
 
   ]);
@@ -104,7 +107,43 @@ const WishlistsSet = () => {
       setWishTitle(wishList)
     }
 
+    // return ()=>{
+    //   try {
+    //     if(listings.length!=0){
+    //       let favCount=0;
+    //       listings.map(listing=>{
+    //         if(listing.isFavorite===true){
+    //           favCount++;
+    //         }
+    //       });
+    //       if(favCount===0){
+    //           handleDeleteContainer();
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.log("delete Error",error)
+        
+    //   }
+    // }
+
   }, []);
+
+
+  const fetchContainers=async()=>{
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -132,11 +171,12 @@ const WishlistsSet = () => {
       });
       setWishTitle(wishList);
     });
-
+    
     handleCancel()
-
+    
   }
-
+  
+  
 
 
 
@@ -178,7 +218,86 @@ const WishlistsSet = () => {
 
   }
 
+  const toggleFavorite = (id) => {
+    setListings((prevListings) =>
+      prevListings.map((listing) => {
+        if (listing.id === id) {
+          if (!listing.isFavorite) {
+            // Show a toast notification when added to wishlist
+            // handleAddToWishlist(id);
+            // toast.success('Added to Wishlist', {
+            //   position: toast.POSITION.TOP_CENTER,
+            // });
+          } else {
+            // Show a toast notification when removed from wishlist
+            handleDeleteWishList(id);
+            // toast.success('Removed from Wishlist', {
+            //   position: toast.POSITION.TOP_CENTER,
+            // });
+          }
+          return { ...listing, isFavorite: !listing.isFavorite };
+        }
+        return listing;
+      })
+    );
+  };
 
+
+  const handleDeleteContainer = async () => {
+
+
+    await axios.delete(`/deleteUserWishlistContainer/${id}`).then(response => {
+      console.log(response);
+
+      toast.success('Wishlist deleted Successfuly', {
+        position: toast.POSITION.TOP_CENTER,
+      });
+
+      window.location.replace('/wishlist');
+
+
+    }).catch(err => {
+      console.error(err);
+
+      toast.error(" Couldn't delete Wishlist", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    });
+
+
+  }
+
+   const handleDeleteWishList=async(id)=>{
+      console.log(id);
+
+      await axios.delete(`/removeFromWishlist/${id}`).then(response=>{
+
+        // console.log(response);
+        
+        toast.success('Wishlist deleted Successfuly', {
+          position: toast.POSITION.TOP_CENTER,
+        });
+        
+        const updatedArray = listings.filter(item => item.id !== id);
+        if(updatedArray.length===0){
+            handleDeleteContainer();
+        }
+        setListings(updatedArray)
+
+      }).catch(err => {
+        console.error(err);
+  
+        toast.error(" Couldn't delete Wishlist", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      });
+
+
+   }
+
+
+
+   
 
 
 
@@ -384,107 +503,6 @@ const WishlistsSet = () => {
   ));
 
 
-
-
-  const toggleFavorite = (id) => {
-    setListings((prevListings) =>
-      prevListings.map((listing) => {
-        if (listing.id === id) {
-          if (!listing.isFavorite) {
-            // Show a toast notification when added to wishlist
-            handleAddToWishlist(user.id);
-            // toast.success('Added to Wishlist', {
-            //   position: toast.POSITION.TOP_CENTER,
-            // });
-          } else {
-            // Show a toast notification when removed from wishlist
-            handleDeleteWishList();
-            // toast.success('Removed from Wishlist', {
-            //   position: toast.POSITION.TOP_CENTER,
-            // });
-          }
-          return { ...listing, isFavorite: !listing.isFavorite };
-        }
-        return listing;
-      })
-    );
-  };
-
-
-  const handleDeleteContainer = async () => {
-    console.log('hey');
-
-    await axios.delete(`/deleteUserWishlistContainer/${id}`).then(response => {
-      console.log(response);
-
-      toast.success('Wishlist deleted Successfuly', {
-        position: toast.POSITION.TOP_CENTER,
-      });
-
-      window.location.href = '/wishlist';
-
-    }).catch(err => {
-      console.error(err);
-
-      toast.error(" Couldn't delete Wishlist", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-    });
-
-
-  }
-
-   const handleDeleteWishList=async()=>{
-      await axios.delete(`/removeFromWishlist/${id}`).then(response=>{
-
-        console.log(response);
-
-        toast.success('Wishlist deleted Successfuly', {
-          position: toast.POSITION.TOP_CENTER,
-        });
-
-
-      }).catch(err => {
-        console.error(err);
-  
-        toast.error(" Couldn't delete Wishlist", {
-          position: toast.POSITION.TOP_CENTER,
-        });
-      });
-
-
-   }
-
-
-
-   
-  const handleAddToWishlist = async(listingId) => {
-
-  
-
-  const data={
-    containername:wishList,
-    wishcontainerid:id,
-    hosthomeid:listingId,
-  }
-
-  console.log(data)
-
-  await axios.post(`/createWishlist/${user.id}`,data).then(response=>{
-    toast.success('Wishlist Added Successfuly', {
-      position: toast.POSITION.TOP_CENTER,
-    });
-
-  }).catch(error=>{
-    console.log('ADDing to Wishlist',error)
-
-    toast.error(" Couldn't Add to Wishlist", {
-      position: toast.POSITION.TOP_CENTER,
-    });
-    
-  });
-
-};
 
 
 
