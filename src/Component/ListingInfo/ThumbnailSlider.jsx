@@ -29,15 +29,14 @@ const ThumbnailSlider = (props) => {
   
   const hosthomephotos = listingDetails?.hosthomephotos || [];
 
-
   const pics = [
     {
       id: "video",
       min: video,
     },
-     ...hosthomephotos.map((photo, index) => ({
-      id: index + 1, // Use index + 1 as id
-      min: photo,
+    ...hosthomephotos.map((photo, index) => ({
+      id: index + 1,
+      min: photo.images, // Access the 'images' property of the 'photo' object
     })),
   ];
 
