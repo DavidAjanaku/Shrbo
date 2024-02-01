@@ -28,7 +28,7 @@ const Testimonial = ({ reviews }) => {
 
   if (reviews.length === 0) {
     content = (
-      <div className="text-center">
+      <div className="text-center h-20 flex justify-center items-center">
         <p>No reviews yet.</p>
       </div>
     );
@@ -167,7 +167,7 @@ const Testimonial = ({ reviews }) => {
                 dir="ltr"
                 className="text-2xl font-semibold"
               >
-  {reviews.length > 0 ? averageRating.toFixed(1) : '0'}
+                {reviews.length > 0 ? averageRating.toFixed(1) : "0"}
               </span>
               <hr className="border-0 border-t-2 border-black block mt-5 w-1 text-3xl "></hr>
               <div className="flex flex-col md:flexc">
