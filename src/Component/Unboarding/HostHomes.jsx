@@ -1,11 +1,12 @@
-import React, { useState,useRef,useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash } from "react-icons/fa";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from "react-router-dom";
+import { Modal } from "antd";
 
 import AddressForm from "../AddressFrom";
 import Axios from "../../Axios";
 import { data } from "autoprefixer";
-import { useStateContext } from "../../ContextProvider/ContextProvider"
+import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { Link } from "react-router-dom";
 export default function HostHomes({ match }) {
   const [selectedTypes, setSelectedTypes] = useState([]);
@@ -23,20 +24,28 @@ export default function HostHomes({ match }) {
   const [selectedHostType, setSelectedHostType] = useState(null);
   const [selectedCautionTypes, setSelectedCautionTypes] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isStepValid, setIsStepValid] = useState(true);
+  const [isAmenitySelected, setIsAmenitySelected] = useState(false);
+  const [uploadedImageCount, setUploadedImageCount] = useState(0);
 
   const [visiblities, setVisiblities] = useState([]);
   const [selectedDiscounts, setSelectedDiscounts] = useState([]);
   const [selectedRules, setSelectedRules] = useState([]);
   const [selectedCautionType, setSelectedCautionType] = useState([]);
-
+  const [isGuestsSelected, setIsGuestsSelected] = useState(false);
+  const [isBedroomsSelected, setIsBedroomsSelected] = useState(false);
+  const [isBedsSelected, setIsBedsSelected] = useState(false);
+  const [isBathroomsSelected, setIsBathroomsSelected] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [houseDescriptionDetails, setHouseDescriptionDetails] = useState("");
   const [enteredAddress, setEnteredAddress] = useState("");
-  const [selectedHouseDescriptions, setSelectedHouseDescriptions] = useState([]);
+  const [selectedHouseDescriptions, setSelectedHouseDescriptions] = useState(
+    []
+  );
 
-  const {token} = useStateContext();
-  
-  const goLogin=useRef(null);
+  const { token } = useStateContext();
+
+  const goLogin = useRef(null);
 
   const [formData, setFormData] = useState({
     welcomeTypes: [],
@@ -69,9 +78,6 @@ export default function HostHomes({ match }) {
         console.log("Error fetching hosthome details:", error);
       });
   }, [id]);
-  
-
- 
 
   const handleTimeChange = (e) => {
     setSelectedTime(e.target.value);
@@ -117,7 +123,6 @@ export default function HostHomes({ match }) {
 
   const navigate = useNavigate();
 
-
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true); // Set the loader state to true
@@ -141,7 +146,7 @@ export default function HostHomes({ match }) {
         bathrooms: guestDetails.bathrooms,
         amenities: [...selectedAmenities],
         hosthomephotos: photoSrcArray,
-        hosthomevideo: videoBase64 ? videoBase64.toString() : '', // Convert to string
+        hosthomevideo: videoBase64 ? videoBase64.toString() : "", // Convert to string
         title: houseTitle,
         hosthomedescriptions: selectedHouseDescriptions,
         description: houseDescriptionDetails,
@@ -157,33 +162,261 @@ export default function HostHomes({ match }) {
         cancelPolicy: selectedPolicy,
         securityDeposit: securityDeposit,
       };
-      console.log('Form submitted successfully', formDetails);
+      console.log("Form submitted successfully", formDetails);
 
       // Example Axios post request
-      await Axios.post('/hosthomes', formDetails);
+      await Axios.post("/hosthomes", formDetails);
 
-       // Redirect to the homepage after successful submission
-       navigate('/');
-      console.log('Form submitted successfully', formDetails);
+      // Redirect to the homepage after successful submission
+      navigate("/");
+      console.log("Form submitted successfully", formDetails);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
       if (error.response && error.response.status === 401) {
         // Redirect to the hosting page or any other appropriate page for unauthenticated users
-        navigate('/hosting');
+        navigate("/hosting");
       }
     } finally {
       setIsSubmitting(false); // Set the loader state back to false, whether the submission was successful or not
     }
   };
-  
 
   const handleNext = () => {
-    if(token){
-      setStep(step + 1);
-    }
-    else{
-      goLogin.current.click();
+    let isValid = true;
 
+    switch (step) {
+      case 2:
+        if (!selectedHouseType) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content: "Please select a house type.",
+          });
+          break;
+        }
+        break;
+
+      case 3:
+        if (!selectedPrivacyType) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content: "Please select a privacy type.",
+          });
+          break;
+        }
+        break;
+      case 5:
+        if (
+          !isGuestsSelected ||
+          !isBedroomsSelected ||
+          !isBedsSelected ||
+          !isBathroomsSelected
+        ) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please select at least one guest, one bedroom, one bed, and one bathroom before proceeding to the next step.",
+          });
+        }
+        break;
+
+      case 6:
+        if (selectedAmenities.length === 0) {
+          isValid = false;
+          setIsAmenitySelected(false);
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please select at least one amenity before proceeding to the next step.",
+          });
+        } else {
+          setIsAmenitySelected(true);
+        }
+        break;
+
+      case 7:
+        if (uploadedImageCount < 5) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please upload at least 5 photos before proceeding to the next step.",
+          });
+        }
+        break;
+
+      case 8:
+        if (!selectedVideo) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please upload a video before proceeding to the next step.",
+          });
+        }
+        break;
+
+      case 9:
+        if (houseTitle.trim() === "") {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please enter a title for your house before proceeding to the next step.",
+          });
+        }
+        break;
+
+      case 10:
+        if (selectedHouseDescriptions.length === 0) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please choose at least two highlight for your house before proceeding to the next step.",
+          });
+        }
+        break;
+
+      case 11:
+        if (
+          houseDescriptionDetails.length === 0 ||
+          houseDescriptionDetails.length > 750
+        ) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please enter a description within the character limit (1-750 characters) before proceeding to the next step.",
+          });
+        }
+        break;
+      case 12:
+        if (!selectedInstantBookType) {
+          isValid = false;
+          break;
+        }
+        break;
+
+      case 13:
+        if (visiblities.length === 0) {
+          isValid = false;
+          break;
+        }
+        break;
+
+      case 14:
+        // Check if housePrice is not a valid number or is less than or equal to 0
+        if (isNaN(housePrice) || housePrice.length <= 4) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please enter a valid price before proceeding to the next step",
+          });
+          break;
+        }
+        break;
+
+      case 15:
+        // Check if at least one discount is selected
+        if (selectedDiscounts.length === 0) {
+          isValid = false;
+          break;
+        }
+        break;
+
+      case 16:
+        // Check if at least one house rule is selected
+        if (selectedRules.length === 0) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content: "Please select at least one house rule.",
+          });
+          break;
+        }
+
+        // Check if the additional rules textarea is not empty
+        if (!additionalRules.trim()) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content: "Please provide additional rules.",
+          });
+          break;
+        }
+        break;
+
+      case 17:
+        // Check if a hosting type is selected
+        if (!selectedHostType) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content: "Please select a hosting type.",
+          });
+          break;
+        }
+
+        // Check if at least one caution type is selected
+        if (selectedCautionTypes.length === 0) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content: "Please select at least one caution type.",
+          });
+          break;
+        }
+        break;
+
+      case 19:
+        // Check if a cancellation policy is selected
+        if (!selectedPolicy) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content: "Please select a cancellation policy.",
+          });
+        }
+        break;
+
+      case 20:
+        // Check if the security deposit is within a valid range and has a valid length (you can adjust the range and length as needed)
+        const isValidSecurityDeposit =
+          securityDeposit === "" ||
+          (parseFloat(securityDeposit) >= 0 &&
+            parseFloat(securityDeposit) <= 1000 &&
+            securityDeposit.length <= 10); // Adjust the length as needed
+
+        if (!isValidSecurityDeposit) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please enter a valid security deposit amount (or leave it blank) with a maximum length of 10 characters.",
+          });
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    if (!isValid) {
+      // Modal.error({
+      //   title: "Validation Error",
+      //   content: "Please select an option before proceeding to the next step.",
+      // });
+      return;
+    }
+
+    if (token) {
+      setStep((prevStep) => prevStep + 1);
+    } else {
+      goLogin.current.click();
     }
   };
 
@@ -196,6 +429,23 @@ export default function HostHomes({ match }) {
       ...prevDetails,
       [field]: prevDetails[field] + 1,
     }));
+
+    switch (field) {
+      case "guests":
+        setIsGuestsSelected(true);
+        break;
+      case "bedrooms":
+        setIsBedroomsSelected(true);
+        break;
+      case "beds":
+        setIsBedsSelected(true);
+        break;
+      case "bathrooms":
+        setIsBathroomsSelected(true);
+        break;
+      default:
+        break;
+    }
   };
 
   const handleDecrement = (field) => {
@@ -203,6 +453,24 @@ export default function HostHomes({ match }) {
       ...prevDetails,
       [field]: Math.max(0, prevDetails[field] - 1),
     }));
+
+    // Set corresponding state variable based on the field
+    switch (field) {
+      case "guests":
+        setIsGuestsSelected(true);
+        break;
+      case "bedrooms":
+        setIsBedroomsSelected(true);
+        break;
+      case "beds":
+        setIsBedsSelected(true);
+        break;
+      case "bathrooms":
+        setIsBathroomsSelected(true);
+        break;
+      default:
+        break;
+    }
   };
 
   const [hostingType, setHostingType] = useState("private");
@@ -230,15 +498,11 @@ export default function HostHomes({ match }) {
     bathrooms: 0,
   });
 
- 
-
   const [discounts, setDiscounts] = useState({
     newListingPromotion: false,
     weeklyDiscount: false,
     monthlyDiscount: false,
   });
-
- 
 
   const propertyTypes = [
     { id: "house", label: "House", icon: <FaHome /> },
@@ -592,7 +856,10 @@ export default function HostHomes({ match }) {
       );
     } else {
       // If no, add it
-      setSelectedHouseDescriptions((prevSelected) => [...prevSelected, selectedId]);
+      setSelectedHouseDescriptions((prevSelected) => [
+        ...prevSelected,
+        selectedId,
+      ]);
     }
   };
 
@@ -612,8 +879,6 @@ export default function HostHomes({ match }) {
   const handleInstantBookSelection = (selectedId) => {
     setSelectedInstantBookType(selectedId);
   };
-
-  
 
   const handleCancellationPolicySelection = (policyId) => {
     const selectedPolicy = cancellationPolicies.find(
@@ -658,8 +923,7 @@ export default function HostHomes({ match }) {
 
   const handleHostTypeSelection = (typeId) => {
     setSelectedHostType(typeId);
-  }
-
+  };
 
   const handleCautionTypeSelection = (id) => {
     setSelectedCautionTypes((prevSelectedTypes) => {
@@ -672,8 +936,6 @@ export default function HostHomes({ match }) {
       }
     });
   };
-  
-
 
   const addressFields = [
     { id: "street", label: "Street Address" },
@@ -690,38 +952,32 @@ export default function HostHomes({ match }) {
     zipcode: "",
   });
 
-
-  
-  
-  
-  
-  
-
   const handleImageUpload = (e) => {
     const files = e.target.files;
     const newImages = [];
-  
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const reader = new FileReader();
-  
+
       reader.onload = (event) => {
         newImages.push({ id: Date.now(), src: event.target.result });
         if (newImages.length === files.length) {
           // Directly update the hosthomephotos array in the state
           setUploadedImages((prevImages) => [...prevImages, ...newImages]);
+
+          // Update the uploaded image count
+          setUploadedImageCount((prevCount) => prevCount + newImages.length);
+          console.log(uploadedImageCount);
         }
       };
-  
+
       reader.readAsDataURL(file);
     }
-  
+
     // Reset the file input field
     setFileInputKey(fileInputKey + 1);
   };
-  
-  
-  
 
   const handleImageDelete = (id) => {
     const updatedImages = uploadedImages.filter((image) => image.id !== id);
@@ -900,10 +1156,7 @@ export default function HostHomes({ match }) {
         );
 
       case 4:
-        return (
-      <AddressForm onAddressChange={handleAddressChange} />
-
-        );
+        return <AddressForm onAddressChange={handleAddressChange} />;
 
       case 5:
         return (
@@ -1213,20 +1466,20 @@ export default function HostHomes({ match }) {
               <div className="pb-32">
                 <div className=" ">
                   <div className="flex flex-wrap   w-full">
-                  {houseDescription.map((type) => (
-        <div
-          key={type.id}
-          className={`property-type h-24 w-32 m-3 flex ${
-            selectedHouseDescriptions.includes(type.id)
-              ? "bg-orange-300 border-2 border-black text-white"
-              : "bg-gray-200 text-black"
-          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-          onClick={() => handleHouseDescriptionSelection(type.id)}
-        >
-          <span className="mr-2 text-2xl">{type.icon}</span>
-          {type.id}
-        </div>
-      ))}
+                    {houseDescription.map((type) => (
+                      <div
+                        key={type.id}
+                        className={`property-type h-24 w-32 m-3 flex ${
+                          selectedHouseDescriptions.includes(type.id)
+                            ? "bg-orange-300 border-2 border-black text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() => handleHouseDescriptionSelection(type.id)}
+                      >
+                        <span className="mr-2 text-2xl">{type.icon}</span>
+                        {type.id}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1235,7 +1488,7 @@ export default function HostHomes({ match }) {
         );
 
       case 11:
-        const maxCharCount = 500;
+        const maxCharCount = 750;
         const currentCharCount = houseDescriptionDetails.length;
         const remainingCharCount = maxCharCount - currentCharCount;
 
@@ -1281,20 +1534,20 @@ export default function HostHomes({ match }) {
               <div className="pb-32">
                 <div className="space-y-4">
                   <div className="flex flex-wrap w-full">
-                  {instantBook.map((type) => (
-        <div
-          key={type.id}
-          className={`property-type m-3 flex ${
-            selectedInstantBookType === type.id
-              ? "bg-orange-300 border-2 border-black text-white"
-              : "bg-gray-200 text-black"
-          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-          onClick={() => handleInstantBookSelection(type.id)}
-        >
-          <span className="mr-2 text-2xl">{type.icon}</span>
-          {type.description}
-        </div>
-      ))}
+                    {instantBook.map((type) => (
+                      <div
+                        key={type.id}
+                        className={`property-type m-3 flex ${
+                          selectedInstantBookType === type.id
+                            ? "bg-orange-300 border-2 border-black text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() => handleInstantBookSelection(type.id)}
+                      >
+                        <span className="mr-2 text-2xl">{type.icon}</span>
+                        {type.description}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1327,7 +1580,6 @@ export default function HostHomes({ match }) {
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => {
                           handleWelcomeVisibilitySelection(type.id);
-                         
                         }}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
@@ -1390,7 +1642,6 @@ export default function HostHomes({ match }) {
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => {
                           handleDiscountSelection(type.id);
-                         
                         }}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
@@ -1415,22 +1666,22 @@ export default function HostHomes({ match }) {
                   You can change it anytime.
                 </p>
               </div>
-            <div className="flex">
-            {Object.keys(HouseRules).map((rule) => (
-                <div
-                  key={rule}
-                  className={`property-type  m-3   flex ${
-                    selectedRules.includes(rule)
-                      ? "bg-orange-300 border-2 border-black text-white"
-                      : "bg-gray-200 text-black"
-                  } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                  onClick={() => handleRuleSelection(rule)}
-                >
-                  <span className="mr-2 text-2xl">{rule}</span>
-                  {HouseRules[rule]}
-                </div>
-              ))}
-            </div>
+              <div className="flex">
+                {Object.keys(HouseRules).map((rule) => (
+                  <div
+                    key={rule}
+                    className={`property-type  m-3   flex ${
+                      selectedRules.includes(rule)
+                        ? "bg-orange-300 border-2 border-black text-white"
+                        : "bg-gray-200 text-black"
+                    } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                    onClick={() => handleRuleSelection(rule)}
+                  >
+                    <span className="mr-2 text-2xl">{rule}</span>
+                    {HouseRules[rule]}
+                  </div>
+                ))}
+              </div>
 
               <div className="md:flex md:justify-center md:flex-col">
                 <h1 className="text-2xl">Additional Rules</h1>
@@ -1495,21 +1746,20 @@ export default function HostHomes({ match }) {
               <div className="pb-32">
                 <div className=" space-y-4">
                   <div className="flex flex-wrap   w-full">
-                  {caution.map((type) => (
-  <div
-    key={type.id}
-    className={`property-type  m-3   flex ${
-      selectedCautionTypes.includes(type.id)
-        ? "bg-orange-300 border-2 border-black text-white"
-        : "bg-gray-200 text-black"
-    } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-    onClick={() => handleCautionTypeSelection(type.id)}
-  >
-    <span className="mr-2 text-2xl">{type.icon}</span>
-    {type.id}
-  </div>
-))}
-
+                    {caution.map((type) => (
+                      <div
+                        key={type.id}
+                        className={`property-type  m-3   flex ${
+                          selectedCautionTypes.includes(type.id)
+                            ? "bg-orange-300 border-2 border-black text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() => handleCautionTypeSelection(type.id)}
+                      >
+                        <span className="mr-2 text-2xl">{type.icon}</span>
+                        {type.id}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1605,11 +1855,11 @@ export default function HostHomes({ match }) {
       case 20:
         return (
           <div className=" mx-auto  flex justify-center p-4">
-                   {isSubmitting && (
-        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-400 bg-opacity-80 z-50">
-          <p className="text-xl text-gray-800">Loading...</p>
-        </div>
-      )}
+            {isSubmitting && (
+              <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-400 bg-opacity-80 z-50">
+                <p className="text-xl text-gray-800">Loading...</p>
+              </div>
+            )}
 
             <div className="  overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
@@ -1659,7 +1909,9 @@ export default function HostHomes({ match }) {
           <button
             type="button" // Add this line to prevent form submission
             onClick={handleNext}
-            className="text-white text-center  bg-orange-400 w-full p-4"
+            className={`text-white text-center bg-orange-400 w-full p-4 ${
+              !isStepValid && "opacity-50 cursor-not-allowed"
+            }`}
           >
             Next
           </button>
@@ -1674,7 +1926,7 @@ export default function HostHomes({ match }) {
           </button>
         )}
       </div>
-      <Link ref={goLogin} to={"/Login"}/>
+      <Link ref={goLogin} to={"/Login"} />
     </form>
   );
 }
