@@ -229,7 +229,7 @@ export default function HostHomes({ match }) {
           Modal.error({
             title: "Validation Error",
             content:
-              "Please select at least one amenity before proceeding to the next step.",
+              "Please select at least one amenity before proceeding to the next step. it is recommended you select up to 10 amenities to boost your apartment",
           });
         } else {
           setIsAmenitySelected(true);
@@ -990,7 +990,7 @@ export default function HostHomes({ match }) {
           <div className=" mx-auto  flex justify-center p-4 ">
             <div className=" ">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-28">
-                <h1 className="text-6xl">It’s easy to get started on Shbro</h1>
+                <h1 className="text-6xl">It’s easy to get started on Shortlet Bookings</h1>
               </div>
               <div className="">
                 <div>
