@@ -489,7 +489,13 @@ export default function HostHomes({ match }) {
   ];
 
   const HouseRules = {
-    guests: "2 guests maximum",
+    maximum: "2 Ideal for couples or solo travelers.",
+    singleGuest: "3 Perfect for a comfortable stay for one person.",
+    groupGuest: "5 Suitable for small groups or families.",
+    sevenGuests: "7 Ideal for larger groups or families.",
+    eightGuests: "8 Perfect for larger groups or gatherings.",
+    nineGuests: "9 Spacious enough for a comfortable stay for up to 9 guests.",
+    tenGuests: "10 Accommodates larger groups or families perfectly.",
     pets: "No pets",
     events: "No parties or events",
     smoking: "No smoking",

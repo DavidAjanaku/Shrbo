@@ -75,7 +75,13 @@ const ListingInfoMain = () => {
               address={listingDetails?.address}
             />
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
-            <HouseRules />
+            <HouseRules
+              checkin={listingDetails?.checkin}
+              guest={listingDetails?.guest}
+              cancelPolicy={listingDetails?.cancelPolicy}
+              rules={listingDetails?.rules}
+              // Add other relevant props here
+            />
           </div>
           <div className=" md:ml-[8.33333%] md:w-[33.33333%] hidden md:block relative mr-0 ">
             <ListingForm
