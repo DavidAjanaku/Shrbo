@@ -92,7 +92,7 @@ const ListingInfoMain = () => {
             />
           </div>
         </div>
-        <Amenities />
+        <Amenities  amenities={listingDetails?.amenities}/>
         <Testimonial />
         <ListingMap />
 

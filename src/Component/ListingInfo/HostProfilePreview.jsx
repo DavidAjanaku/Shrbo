@@ -1,12 +1,44 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { StarOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import Axios from "../../Axios";
+import { useParams } from "react-router-dom";
 
 const HostProfilePreview = () => {
+  const { id } = useParams(); // Get the ID parameter from the route
+  const [listingDetails, setListingDetails] = useState(null);
+
+  useEffect(() => {
+    const fetchListingDetails = async () => {
+      try {
+        const response = await Axios.get(`showGuestHome/${id}`);
+        setListingDetails(response.data.data);
+        console.log(response.data.data);
+        setPrice(response.data.data.price); // Adjust this line based on your API response structure
+      } catch (error) {
+        console.error("Error fetching listing details:", error);
+        // Handle error, show error message, etc.
+      }
+    };
+
+    fetchListingDetails();
+  }, [id]);
+
+  const userProfilePicture = listingDetails?.user?.profilePicture || "";
+  const userRating = listingDetails?.user?.rating || 0;
+  const userReviews = listingDetails?.user?.reviews || 0;
+  const successfulCheckOut = listingDetails?.user?.successfulCheckOut || 0;
+  const totalHomes = listingDetails?.user?.totalHomes || 0;
+  const yearsOfHosting = listingDetails?.user?.yearsOfHosting || "N/A";
+  const userName = listingDetails?.user?.name || '';
+
   const host_info = [
-    { id: 1, text: "No deals---yet!" },
+    {
+      id: 1,
+      text: `A total of ${successfulCheckOut} bookings have been made for this apartment`,
+    },
     // { id: 2,text:"Quick to Respond"},
-    { id: 3, text: " 5 other hostings" },
+    { id: 3, text: `${yearsOfHosting} of hosting` },
 
     // it should have a "url" object aswell for Svg images
     // the host info required here is Max 3 nothing more
@@ -20,7 +52,7 @@ const HostProfilePreview = () => {
             rounded-lg border lg:py-2 lg:px-6  "
     >
       <div className="   ">
-        <svg
+        {/* <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           width="24px"
@@ -32,7 +64,7 @@ const HostProfilePreview = () => {
                 1 0 0,0 19,4C18.5,4 18.12,4.34 18,4.79C18.63,5.33 19,6.13 19,7H13A3,3 0 0,1 16,4C16.06,4 16.11,
                 4 16.17,4C16.58,2.84 17.69,2 19,2A3,3 0 0,1 22,5V14H21V14M19,14H5V15A3,3 0 0,0 8,18H16A3,3 0 0,0 19,15V14Z"
           />
-        </svg>
+        </svg> */}
       </div>
       <div className="  overflow-hidden text-ellipsis box-border block  ">
         <div className=" text-base  overflow-clip    font-semibold ">
@@ -53,16 +85,15 @@ const HostProfilePreview = () => {
             <div className=" flex-grow flex flex-col items-center justify-center gap-2 relative ">
               {/* add bg position */}
               <div
-                className=" relative box-border block h-[85px] w-[85px] 
-                            bg-[url('https://a0.muscache.com/im/pictures/user/82130759-fbba-4012-ac60-51d5b0e4801e.jpg?im_w=240')] 
-                            bg-center rounded-[50%] bg-cover bg-no-repeat   "
+                className=" relative box-border block h-[85px] w-[85px] bg-cover bg-no-repeat bg-center rounded-[50%]"
+                style={{ backgroundImage: `url(${userProfilePicture})` }}
               >
                 <CheckCircleOutlined className=" text-white text-xl bg-orange-500 rounded-[50px] absolute bottom-0 right-0   " />
               </div>
               <div className=" items-center flex flex-col max-w-[153px] box-border">
                 <div className="w-[153px] h-auto font-bold text-center flex-grow-0 flex-shrink-0 ">
-                  <span className=" text-2xl m-0 break-keep inline-block ">
-                    Christi-Anna
+                  <span className=" text-xl m-0  w-full ">
+                  {userName}
                   </span>
                 </div>
                 <span className=" text-sm font-semibold gap-1 items-center flex">
@@ -74,7 +105,7 @@ const HostProfilePreview = () => {
             <div className=" flex flex-row gap-3 self-center items-center justify-center w-full box-border font-bold ">
               <div className=" flex flex-col gap-[2px]  items-center  text-center justify-center text-3xl">
                 <span className=" flex gap-[2px] items-center  box-border font-bold text-xl">
-                  52
+                  {userReviews}
                 </span>
                 <span className=" text-xs font-semibold">Reviews</span>
               </div>
@@ -82,7 +113,7 @@ const HostProfilePreview = () => {
               <div className=" flex flex-col gap-[2px]  items-center  justify-center text-3xl">
                 <span className=" flex gap-[2px] items-center box-border font-bold text-xl">
                   <div className=" flex flex-row items-center gap-[2px]">
-                    4.9
+                    {userRating}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -105,9 +136,11 @@ const HostProfilePreview = () => {
               <hr className=" mt-8  border-0 border-t-2  w-[20px]  block  text-3xl "></hr>
               <div className=" flex flex-col gap-[2px]  items-center text-center justify-center   text-3xl">
                 <span className=" flex gap-[2px]  items-center box-border font-bold text-xl">
-                  2
+                  {totalHomes}
                 </span>
-                <span className=" text-xs font-semibold ">Years hosting</span>
+                <span className=" text-xs font-semibold ">
+                  Apartments <br /> Hosted
+                </span>
               </div>
               {/* <hr className=" m-0 border-0 border-t-2 w-full  block  text-3xl ">
                             </hr> */}
