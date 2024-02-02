@@ -402,7 +402,7 @@ export default function Home() {
 
   useEffect(() => {
     axios
-      .get("/hosthomes")
+      .get(token?"/hosthomesForAuthUser":"/hosthomesForUnAuthUser")
       .then((response) => {
         console.log(response.data.data);
         const formattedHostHomes = response.data.data.map((item) => ({
