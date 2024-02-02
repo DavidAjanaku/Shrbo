@@ -9,8 +9,8 @@ import Header from "../Navigation/Header";
 import BottomNavigation from "../Navigation/BottomNavigation";
 import HostHeader from "../Navigation/HostHeader";
 import Axois from "../../Axios";
-import { Pagination,Spin } from "antd"; // Import Pagination component from Ant Design
-import {  LoadingOutlined } from "@ant-design/icons";
+import { Pagination, Spin } from "antd"; // Import Pagination component from Ant Design
+import { LoadingOutlined } from "@ant-design/icons";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -80,10 +80,14 @@ export default function Listings() {
       key: "hosthomephotos",
       render: (hosthomephotos) => (
         <img
-          src={hosthomephotos && hosthomephotos.length > 0 ? hosthomephotos[0] : ""}
-          alt="Listing"
-          className="w-14 h-14 object-cover rounded-lg"
-        />
+      src={
+        hosthomephotos && hosthomephotos.length > 0
+          ? hosthomephotos[0].images
+          : ""
+      }
+      alt="Listing"
+      className="w-14 h-14 object-cover rounded-lg"
+    />
       ),
     },
     {
@@ -154,13 +158,13 @@ export default function Listings() {
     try {
       // Send a DELETE request to delete the host home
       await Axois.delete(`/hosthomes/${selectedHouseId}`);
-    
+
       // After successful deletion, close the modal
       closeDeleteModal();
-    
+
       // Fetch updated listings
       await fetchListings();
-    
+
       // Show success notification
       notification.success({
         message: "Deleted successfully",
@@ -180,17 +184,16 @@ export default function Listings() {
           </Button>
         ),
       });
-  
     } catch (error) {
       console.error("Error deleting the listing:", error);
       // Handle errors as needed (e.g., display an error message to the user)
       notification.error({
         message: "Error deleting",
-        description: "There was an error deleting the listing. Please try again.",
+        description:
+          "There was an error deleting the listing. Please try again.",
       });
     }
   };
-  
 
   // Define your listings data
 
@@ -249,7 +252,9 @@ export default function Listings() {
           {/* Conditionally render the "Edit" button */}
           {isEditButtonVisible && (
             <Button type="primary">
-              <Link to={`/EditHostHomes/${selectedListings[0]}`}>Edit Apartment</Link>
+              <Link to={`/EditHostHomes/${selectedListings[0]}`}>
+                Edit Apartment
+              </Link>
             </Button>
           )}
         </div>
@@ -316,8 +321,8 @@ export default function Listings() {
               <Option value="2">2 Baths</Option>
               <Option value="3">3 Baths</Option>
 
-<Option value="4">4 Baths</Option>
-<Option value="5">5 Baths</Option>
+              <Option value="4">4 Baths</Option>
+              <Option value="5">5 Baths</Option>
               {/* Add other options */}
             </Select>
           </div>
@@ -353,44 +358,43 @@ export default function Listings() {
           </div>
         </div>
         <div className="overflow-auto example shadow-md">
-        {loading ? ( // Display Spin component when loading is true
-           <div className="flex justify-center h-52 items-center">
-           <Spin
-             indicator={
-               <LoadingOutlined
-                 style={{
-                   fontSize: 24,
-                 }}
-                 spin
-               />
-             }
-           />
-         </div>
+          {loading ? ( // Display Spin component when loading is true
+            <div className="flex justify-center h-52 items-center">
+              <Spin
+                indicator={
+                  <LoadingOutlined
+                    style={{
+                      fontSize: 24,
+                    }}
+                    spin
+                  />
+                }
+              />
+            </div>
           ) : (
-        <Table
-            columns={columns}
-            dataSource={displayedListings.map((listing) => ({
-              ...listing,
-              key: listing.id, // Add a unique key
-            }))}
-            rowSelection={{
-              type: "checkbox",
-              selectedRowKeys: selectedListings,
-              onChange: (selectedRowKeys) =>
-                setSelectedListings(selectedRowKeys),
-            }}
-            pagination={false} // Hide internal pagination
-            
-          />
+            <Table
+              columns={columns}
+              dataSource={displayedListings.map((listing) => ({
+                ...listing,
+                key: listing.id, // Add a unique key
+              }))}
+              rowSelection={{
+                type: "checkbox",
+                selectedRowKeys: selectedListings,
+                onChange: (selectedRowKeys) =>
+                  setSelectedListings(selectedRowKeys),
+              }}
+              pagination={false} // Hide internal pagination
+            />
           )}
         </div>
         <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={filteredListings.length}
-            onChange={handlePageChange}
-            className="mt-4"
-          />
+          current={currentPage}
+          pageSize={pageSize}
+          total={filteredListings.length}
+          onChange={handlePageChange}
+          className="mt-4"
+        />
 
         <Modal
           isOpen={deleteModalIsOpen}
@@ -406,9 +410,7 @@ export default function Listings() {
           }}
         >
           <h2>Delete Confirmation</h2>
-          <p>
-            Are you sure you want to delete the apartment?
-          </p>
+          <p>Are you sure you want to delete the apartment?</p>
           <div className="flex justify-between mt-4">
             <Button type="danger" onClick={handleDeleteButtonClick}>
               Confirm

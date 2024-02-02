@@ -30,9 +30,11 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
   const handleWindowSizeChange = () => {
     setWidth(window.innerWidth);
   };
-  const imageUrlss = hosthomephotos || []; // Use hosthomephotos prop or provide a default empty array
+  const imageUrls = hosthomephotos || []; // Use hosthomephotos prop or provide a default empty array
 
+  const imageUrlss = imageUrls.map(photo => photo.images);
   console.log(imageUrlss);
+
 
   useEffect(() => {
     handleWindowSizeChange();
@@ -61,7 +63,7 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
     "Ottawa, Ontario, Canada",
   ];
 
-  const imageUrls = [kitchen, room, apartment1, kitchen, apartment]; // Add more image URLs as needed
+  // const imageUrls = [kitchen, room, apartment1, kitchen, apartment]; // Add more image URLs as needed
   const videoUrl = hosthomevideo || null;
 
   // Define the number of images to display on the page

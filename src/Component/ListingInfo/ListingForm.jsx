@@ -11,11 +11,7 @@ import { FlagOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import Axios from "../../Axios";
 
-export default function ListingForm({
-  reservations,
-  reservation,
-  guest,
-}) {
+export default function ListingForm({ reservations, reservation, guest }) {
   function showModal(e) {
     e.preventDefault();
     setIsModalVisible(true);
@@ -67,7 +63,6 @@ export default function ListingForm({
         setListingDetails(response.data.data);
         console.log(response.data.data);
         setPrice(response.data.data.price); // Adjust this line based on your API response structure
-
       } catch (error) {
         console.error("Error fetching listing details:", error);
         // Handle error, show error message, etc.

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash } from "react-icons/fa";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { notification } from "antd";
 
 import { Spin } from "antd";
 import { useParams } from "react-router-dom";
@@ -151,7 +152,9 @@ export default function HostHome({ match }) {
 
   const handleSubmit = async () => {
     try {
-      setIsSubmitting(true); // Set the loader state to true
+      setIsSubmitting(true); 
+
+          console.log("Image URLs from hosthomephotos:", apartment.hosthomephotos.map(photo => photo.images));
 
       const photoBase64Array = uploadedImages.map((image) => image.src);
       console.log(photoBase64Array);
@@ -641,7 +644,7 @@ export default function HostHome({ match }) {
     const isAlreadySelected = apartment?.hosthomedescriptions.some(
       (description) => description.description === selectedType
     );
-  
+
     // If it's already selected, remove it. Otherwise, add it.
     setApartment((prev) => {
       const updatedDescriptions = isAlreadySelected
@@ -649,11 +652,10 @@ export default function HostHome({ match }) {
             (description) => description.description !== selectedType
           )
         : [...prev.hosthomedescriptions, { description: selectedType }];
-  
+
       return { ...prev, hosthomedescriptions: updatedDescriptions };
     });
   };
-  
 
   useEffect(() => {
     // Set initially selected visibility from API
@@ -798,7 +800,7 @@ export default function HostHome({ match }) {
     setFileInputKey(fileInputKey + 1);
   };
 
-  const handleImageDelete = (id) => {
+  const handleImageDeletes = (id) => {
     // Filter out the deleted image from uploadedImages state
     setUploadedImages((prevImages) =>
       prevImages.filter((image) => image.id !== id)
@@ -814,6 +816,41 @@ export default function HostHome({ match }) {
       }
       return prevApartment;
     });
+  };
+
+  const handleImageDelete = async (hostHomephotoId, e) => {
+    try {
+      // Prevent default form submission behavior
+      e.preventDefault();
+
+      // Make DELETE request to delete the image
+      await Axios.delete(`/deleteHostHostHomeImages/${hostHomephotoId}`);
+
+      // After successful deletion, update the state or perform any other necessary actions
+      setUploadedImages((prevImages) =>
+        prevImages.filter((image) => image.id !== hostHomephotoId)
+      );
+
+      // Log the updated state
+      console.log("Updated Uploaded Images:", uploadedImages);
+
+      // Log the updated hosthomephotos state
+      console.log("Updated Hosthome Photos:", apartment.hosthomephotos);
+
+      // Show success notification
+      notification.success({
+        message: "Image Deleted",
+        description: "The image has been successfully deleted.",
+      });
+    } catch (error) {
+      console.error("Error deleting image:", error);
+
+      // Show error notification
+      notification.error({
+        message: "Error Deleting Image",
+        description: "There was an error deleting the image. Please try again.",
+      });
+    }
   };
 
   const renderContent = () => {
@@ -1123,7 +1160,7 @@ export default function HostHome({ match }) {
                         className="w-64 object-cover h-64"
                       />
                       <button
-                        onClick={() => handleImageDelete(image.id)}
+                        onClick={(e) => handleImageDeletes(image.id, e)}
                         className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
                       >
                         <FaTrash />
@@ -1131,23 +1168,23 @@ export default function HostHome({ match }) {
                     </div>
                   ))}
 
-                  {/* Display existing photos from fetched data */}
-                  {Array.isArray(apartment?.hosthomephotos) &&
-                    apartment.hosthomephotos.map((photo) => (
-                      <div key={photo.id} className="relative p-2">
-                        <img
-                          src={photo}
-                          alt="Houses"
-                          className="w-64 object-cover h-64"
-                        />
-                        <button
-                          onClick={() => handleImageDelete(photo.id)}
-                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    ))}
+{Array.isArray(apartment?.hosthomephotos) &&
+  apartment.hosthomephotos.map((photo) => (
+    <div key={photo.id} className="relative p-2">
+      <img
+        src={photo.images}
+        alt="Houses"
+        className="w-64 object-cover h-64"
+      />
+      <button
+        onClick={(e) => handleImageDelete(photo.id, e)}
+        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition duration-300"
+      >
+        <FaTrash />
+      </button>
+    </div>
+  ))}
+
                 </div>
               </div>
             </div>
