@@ -17,6 +17,10 @@ export default function Hosting() {
   const { setUser, setToken, token, setHost, setAdminStatus, user } = useStateContext();
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [tips, setTips] = useState([]);
+  const [upcoming,setUpcoming]=useState([]);
+  const [checking,setChecking]=useState([]);
+  const [pending,setPending]=useState([]);
+  const [arriving,setArriving]=useState([]);
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -143,6 +147,87 @@ export default function Hosting() {
     fetchUserTips();
   }, []);
 
+useEffect(() => {
+ 
+
+  switch (activeTab) {
+    case "upcoming":
+      fetchUpcomingData();
+      break;
+    case "checkingOut":
+      // fetchData("/checkingOut", "checkingOut");
+      break;
+    case "currentlyHosting":
+      // fetchData("/currentlyHosting", "currentlyHosting");
+      break;
+    case "arrivingSoon":
+      fetchArrivingSoon();
+      break;
+    case "pendingReview":
+      fetchPendingReview();
+      break;
+    default:
+      // Handle default case if needed
+      break;
+  }
+}, [activeTab]);
+
+  const fetchUpcomingData= async()=>{
+   await axios.get("/upcomingReservation").then(response=>{
+            const filteredUpcoming=response.data.bookings.map(item=>({
+              
+                name: item.name,
+                checkInDate: item.check_in_date,
+                checkOutDate: item.check_out_date,
+                // amountPaid: "half payment made",
+                time: item.check_out_time,
+                image: item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+            }));
+          setUpcoming(filteredUpcoming);
+          console.log(response.data);
+      }).catch(err=>{
+        console.log("Upcoming",err);
+      });
+
+  }
+
+  const fetchPendingReview=async()=>{
+     try {
+      const response = await axios.get("/getHostPendingReviews");
+      const filteredData = response.data.data.map(item => ({
+        name: item.username,
+        checkInDate: item.check_in,
+        reservationId:item.id,
+        image:item.guestProfilePic?item.guestProfilePic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+      }));
+      setPending(filteredData)
+      console.log("pending", filteredData);
+    } catch (error) {
+      console.log("pending", error);
+    }
+
+
+  }
+
+  const fetchArrivingSoon=async()=>{
+    try {
+      const response = await axios.get("/arrivingSoon");
+      const filteredData = response.data.bookings.map(item => ({
+        name: item.name,
+        date: item.check_in_date,
+        time:item.check_in_time,
+        image:item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+      }));
+      setArriving(filteredData)
+      console.log("Arriving", filteredData);
+    } catch (error) {
+      console.log("Arriving", error);
+    }
+
+
+  }
+
+
 
   useEffect(() => {
     const handleDocumentClick = (event) => {
@@ -244,13 +329,15 @@ export default function Hosting() {
       image:
         "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
     },
+    ...arriving,
   ];
 
   const upcomingReservations = [
     {
       name: "Michael Jackson",
       checkInDate: "Nov 10 2023",
-      amountPaid: "half payment made",
+      checkOutDate: "Nov 10 2023",
+      // amountPaid: "half payment made",
       time: "4:00pm",
       image:
         "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
@@ -258,11 +345,13 @@ export default function Hosting() {
     {
       name: "William",
       checkInDate: "Dec 10 2023",
-      amountPaid: "full payment made",
+      checkOutDate: "Nov 10 2023",
+      // amountPaid: "full payment made",
       time: "4:00pm",
       image:
         "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
     },
+    ...upcoming,
   ];
 
   const pendingReviews = [
@@ -280,7 +369,7 @@ export default function Hosting() {
       image:
         "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
     },
-    // Add more pending review objects here
+    ...pending,
   ];
 
   const renderTabContent = () => {
@@ -453,8 +542,9 @@ export default function Hosting() {
                     </div>
                     <div className="flex items-center gap-2 justify-between mt-5 flex-wrap">
                       <div className="guest-name">
-                        <h1>{reservation.name}</h1>
-                        <p>{reservation.checkInDate}</p>
+                        <h1 className="pb-[2px]">{reservation.name}</h1>
+                        <p className="pb-[2px]">CheckIn: {reservation.checkInDate}</p>
+                        <p>ChecKOut: {reservation.checkOutDate}</p>
                         <p>{reservation.amountPaid}</p>
                       </div>
                       <div className="guest-image">
@@ -650,7 +740,7 @@ export default function Hosting() {
                 }`}
               onClick={() => handleTabClick("arrivingSoon")}
             >
-              Arriving soon (12)
+              Arriving soon ({arrivingSoonReservations.length})
             </div>
             <div
               className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "upcoming"
@@ -659,7 +749,7 @@ export default function Hosting() {
                 }`}
               onClick={() => handleTabClick("upcoming")}
             >
-              Upcoming (22)
+              Upcoming ({upcomingReservations.length})
             </div>
             <div
               className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "pendingReview"
@@ -668,7 +758,7 @@ export default function Hosting() {
                 }`}
               onClick={() => handleTabClick("pendingReview")}
             >
-              Pending review (4)
+              Pending review ({pendingReviews.length})
             </div>
           </div>
           <div className="tab-content">{renderTabContent()}</div>

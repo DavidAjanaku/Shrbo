@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import room from "../../assets/room.jpeg";
 import room2 from "../../assets/room2.jpeg";
 import close from "../../assets/svg/close-line-icon.svg";
-
+import axios from "../../Axios";
 import bedroom from "../../assets/svg/double-bed-icon.svg";
 import bathroom from "../../assets/svg/bathtub-icon.svg";
 import calender from "../../assets/svg/calendar-icon.svg";
@@ -17,6 +17,49 @@ export default function Trip() {
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [comments, setComments] = useState([]);
+  const [trips, setTrips] = useState([]);
+
+  
+  useEffect(()=>{
+    axios.get("/userTrips").then(response=>{
+        const filteredTripsData=response.data.data.map(item=>({
+          id:item.id,
+          destination:item.hosthometitleandloacation,
+          startDate: item.check_in,
+          endDate: item.check_out,
+          notes:
+            "Experience contemporary comfort and security in our chic 2-BD APT at The Drake Homes. Immaculately maintained with round-the-clock security, enjoy good electricity from Eko Electric, backed by an inverter and estate generator. The living room boasts a smart TV, DSTV, and air conditioning, while the bedroom features AC and a TV. Stay connected with Wi-Fi throughout the apartment. Your stylish urban retreat awaits! MINIMUM OF 2 GUESTS.",
+          image:item.hosthomephotos[0],
+          amenities: ["Wi-Fi", "Kitchen", "TV"],
+          hostName: "John Doe",
+          rating: 4.8,
+          bathrooms: item.hosthomebathroom,
+          bedrooms: item.hosthomebedroom,
+          guests: 2,
+          price: item.amountPaid,
+          morePhotos: item.hosthomephotos,
+          contactHost: "/chat",
+          comments: [],
+          checkedIn: item.status,
+          checkingInDate: "",
+          checkingInTime: "",
+
+
+
+        }));
+
+        setTrips(filteredTripsData);
+        console.log(filteredTripsData);
+
+
+    }).catch(error=>{
+      console.log(error);
+    });
+
+
+
+  },[]);
+  
 
   const [selectedTab, setSelectedTab] = useState("All"); // Default to "All" trips
 
@@ -53,7 +96,9 @@ export default function Trip() {
     setIsCancellationModalOpen(false); // Step 2: Close the cancellation modal
   };
 
+
   const tripHistory = [
+    ...trips,
     {
       destination: "Admirality way, Lekki Lagos",
       startDate: "2022-05-15",
@@ -186,8 +231,14 @@ export default function Trip() {
     },
     
   ];
-
+  
   const [filteredTrips, setFilteredTrips] = useState(tripHistory);
+
+
+
+
+
+
 
   const filterTripsByTab = (tab) => {
     if (tab === "All") {

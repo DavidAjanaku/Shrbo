@@ -14,7 +14,7 @@ const AboutProperty = ({ description,address }) => {
         <div className=" text-xl   mb-2 font-semibold">
           <p>{address}</p>
         </div>
-        <div class="w-full">
+        <div class="break-words w-[100%]">
           <span>
           { description }
           </span>
