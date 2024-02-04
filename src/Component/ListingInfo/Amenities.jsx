@@ -82,11 +82,11 @@ const Amenities = ({ amenities }) => {
     TV: <FaTv />,
     Kitchen: <FaUtensilSpoon />,
     Washer: <FaHandsWash />,
-    Airconditioning: <FaSnowflake />,
+    "Air conditioning": <FaSnowflake />,
     // Add icons for the remaining amenities
     "Hot tub": <FaHotTub />,
-    "Fire extinguisher": <FaFire />,
-    "First aid kit": <FaFirstAid />,
+    "fire extinguisher": <FaFireExtinguisher />,
+    "first aid kit": <FaFirstAid />,
     Pool: <FaSwimmingPool />,
     "Free parking on premises": <FaParking />,
     Essentials: <FaSuitcase />,
@@ -114,7 +114,7 @@ const Amenities = ({ amenities }) => {
     Heating: <FaTemperatureHigh />,
     Shampoo: <FaShower />,
     "Hair dryer": <FaShower />,
-    "Smoke Alarm": <FaBell />,
+    "Smoke alarm": <FaBell />,
   };
 
   // Display only the first 10 amenities

@@ -540,13 +540,7 @@ export default function HostHome({ match }) {
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
-    {
-      id: "Smoke Alarm",
-      label: "Smoke Alarm",
-      icon: <FaBell />,
-      description:
-        "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
-    },
+   
     {
       id: "First aid kit",
       label: "First aid kit",
