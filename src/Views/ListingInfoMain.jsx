@@ -68,12 +68,20 @@ const ListingInfoMain = () => {
               <ListingForm />
             </div>
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
-            <HostProfilePreview />
+            <HostProfilePreview
+              userProfilePicture={listingDetails?.user?.profilePicture || ""}
+              userRating={listingDetails?.user?.rating || 0}
+              userReviews={listingDetails?.user?.reviews || 0}
+              successfulCheckOut={listingDetails?.user?.successfulCheckOut || 0}
+              totalHomes={listingDetails?.user?.totalHomes || 0}
+              yearsOfHosting={listingDetails?.user?.yearsOfHosting || "N/A"}
+              userName={listingDetails?.user?.name || ""}
+            />
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
             <AboutProperty
               description={listingDetails?.description}
               address={listingDetails?.address}
-            />
+            /> 
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
             <HouseRules
               checkin={listingDetails?.checkin}
@@ -92,8 +100,8 @@ const ListingInfoMain = () => {
             />
           </div>
         </div>
-        <Amenities  amenities={listingDetails?.amenities}/>
-        <Testimonial  reviews={listingDetails?.reviews}/>
+        <Amenities amenities={listingDetails?.amenities} />
+        <Testimonial reviews={listingDetails?.reviews} />
         <ListingMap />
 
         <BottomNavigation />

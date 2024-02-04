@@ -510,7 +510,24 @@ export default function HostHomes({ match }) {
     { id: "hotel", label: "Hotel", icon: <FaHotel /> },
     { id: "guestHouse", label: "Guest House", icon: <FaBed /> },
     { id: "apartment", label: "Apartment", icon: <FaBuilding /> },
+    { id: "office", label: "Office", icon: <FaBuilding /> },
+    { id: "art", label: "Art", icon: <FaBuilding /> },
+    { id: "cityApartments", label: "City Apartments", icon: <FaBuilding /> },
+    { id: "petFriendlyRetreats", label: "Pet-Friendly Retreats", icon: <FaBuilding /> },
+    { id: "treehouseRetreats", label: "Treehouse Retreats", icon: <FaBuilding /> },
+    { id: "familyFriendlyHomes", label: "Family-Friendly Homes", icon: <FaBuilding /> },
+    { id: "boutiqueVillas", label: "Boutique Villas", icon: <FaBuilding /> },
+    { id: "lakesideSerenity", label: "Lakeside Serenity", icon: <FaBuilding /> },
+    { id: "desertOases", label: "Desert Oases", icon: <FaBuilding /> },
+    { id: "urbanGetaways", label: "Urban Getaways", icon: <FaBuilding /> },
+    { id: "countryside", label: "Countryside", icon: <FaBuilding /> },
+    { id: "luxuryEstate", label: "Luxury Estate", icon: <FaBuilding /> },
+    { id: "trending", label: "Trending", icon: <FaBuilding /> },
+    { id: "beachfrontBliss", label: "Beachfront Bliss", icon: <FaBuilding /> },
+    { id: "mountainRetreats", label: "Mountain Retreats", icon: <FaBuilding /> },
+
   ];
+  
 
   const privacyTypes = [
     {
@@ -1106,7 +1123,7 @@ export default function HostHomes({ match }) {
                     {propertyTypes.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type h-24 w-32 m-3 flex ${
+                        className={`property-type h-26 w-32 m-3 flex ${
                           selectedHouseType === type.id
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"

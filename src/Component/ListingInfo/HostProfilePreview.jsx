@@ -4,33 +4,18 @@ import { StarOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import Axios from "../../Axios";
 import { useParams } from "react-router-dom";
 
-const HostProfilePreview = () => {
-  const { id } = useParams(); // Get the ID parameter from the route
-  const [listingDetails, setListingDetails] = useState(null);
+const HostProfilePreview = ({
+  userProfilePicture,
+  userRating,
+  userReviews,
+  successfulCheckOut,
+  totalHomes,
+  yearsOfHosting,
+  userName,
+}) => {
+ 
 
-  useEffect(() => {
-    const fetchListingDetails = async () => {
-      try {
-        const response = await Axios.get(`showGuestHome/${id}`);
-        setListingDetails(response.data.data);
-        console.log(response.data.data);
-        setPrice(response.data.data.price); // Adjust this line based on your API response structure
-      } catch (error) {
-        console.error("Error fetching listing details:", error);
-        // Handle error, show error message, etc.
-      }
-    };
-
-    fetchListingDetails();
-  }, [id]);
-
-  const userProfilePicture = listingDetails?.user?.profilePicture || "";
-  const userRating = listingDetails?.user?.rating || 0;
-  const userReviews = listingDetails?.user?.reviews || 0;
-  const successfulCheckOut = listingDetails?.user?.successfulCheckOut || 0;
-  const totalHomes = listingDetails?.user?.totalHomes || 0;
-  const yearsOfHosting = listingDetails?.user?.yearsOfHosting || "N/A";
-  const userName = listingDetails?.user?.name || '';
+  
 
   const host_info = [
     {

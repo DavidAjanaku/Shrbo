@@ -57,7 +57,6 @@ const HostedBy = (props) => {
 
   // Perks Like Khalifa view , Cinema etc
 
- 
   const perks_info = [
     {
       id: 1,
@@ -135,7 +134,6 @@ const HostedBy = (props) => {
               <p>{beds} beds</p>
               <p className="">{bedroom} bedrooms</p>
             </div>
-          
           </div>
 
           {/* <div>

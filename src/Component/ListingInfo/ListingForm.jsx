@@ -29,6 +29,15 @@ export default function ListingForm({ reservations, reservation, guest }) {
   const [pets, setPets] = useState(0);
   const [infants, setInfants] = useState(0);
   const [price, setPrice] = useState(null); // Initialize with a default value if needed
+  const [bookedDates, setBookedDates] = useState([]); // Add this line
+  const [totalPrice, setTotalPrice] = useState(null);
+  const [selectedCheckIn, setSelectedCheckIn] = useState(null);
+  const [selectedCheckOut, setSelectedCheckOut] = useState(null);
+  const [hostFee, setHostFee] = useState(0);
+  const [serviceFee, setServiceFee] = useState(0);
+  const [taxFee, setTaxFee] = useState(0);
+  const [totalCost, setTotalCost] = useState(0);
+
 
   const [form] = Form.useForm(); // Define the form variable
   const [listingDetails, setListingDetails] = useState(null);
@@ -63,6 +72,14 @@ export default function ListingForm({ reservations, reservation, guest }) {
         setListingDetails(response.data.data);
         console.log(response.data.data);
         setPrice(response.data.data.price); // Adjust this line based on your API response structure
+
+        // Extract booked dates and convert them to Date objects
+        const bookedDates = response.data.data.bookedDates.map(
+          (date) => new Date(date.check_in)
+        );
+
+        // Set the booked dates to exclude them in the DatePicker
+        setBookedDates(bookedDates);
       } catch (error) {
         console.error("Error fetching listing details:", error);
         // Handle error, show error message, etc.
@@ -78,11 +95,54 @@ export default function ListingForm({ reservations, reservation, guest }) {
 
   const handleCheckIn = (date) => {
     setCheckInDate(date);
+    calculateTotalPrice(date, checkOutDate);
   };
-  const handlecheckOut = (date) => {
+
+  const handleCheckOut = (date) => {
     setCheckOutDate(date);
+    calculateTotalPrice(checkInDate, date);
   };
-  console.log("Price:", price);
+
+  
+
+  const calculateTotalPrice = (checkIn, checkOut) => {
+  
+    // Ensure that checkIn and checkOut are valid dates
+    if (checkIn instanceof Date && checkOut instanceof Date) {
+      const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+      const nightlyPrice = Number(price) || 0; // Convert price to a number, default to 0 if NaN
+      const basePrice = nights * nightlyPrice;
+  
+      // Assuming host fees is 20%, service fee is 5%, and tax is 4%
+      const hostFees = 0.07 * basePrice;
+     const serviceFee = 0.01 * basePrice; // Assign a value to serviceFee
+     const  tax = 0.05 * basePrice;
+  
+      const totalPrice = nights * nightlyPrice;
+     const  TotalPrice = basePrice + hostFees + serviceFee + tax;
+
+      setTotalPrice(totalPrice);
+      setHostFee(hostFees)
+      setServiceFee(serviceFee)
+      setTaxFee(tax)
+      setTotalCost(TotalPrice)
+    } else {
+      // Set a default value when dates are not selected
+      setTotalPrice(null);
+    }
+  };
+  
+  
+
+  const calculateNumberOfNights = () => {
+    if (checkInDate instanceof Date && checkOutDate instanceof Date) {
+      return Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+    }
+    return 1; // Default to 1 night if dates are not selected
+  };
+  let pricePerNight = Number(price).toLocaleString();
+
+  
 
   return (
     <div className=" block w-full h-full">
@@ -100,14 +160,19 @@ export default function ListingForm({ reservations, reservation, guest }) {
                     <span aria-hidden="true">
                       <div className="font-medium text-xl box-border">
                         ₦
-                        {isNaN(Number(price))
-                          ? "Invalid Price"
+                        {totalPrice !== null
+                          ? Number(totalPrice).toLocaleString()
                           : Number(price).toLocaleString()}
                       </div>
                     </span>
                   </div>
-                  <div className=" font-normal text-start text-xs">
-                    per night
+
+                  <div className="font-normal text-start text-xs">
+                    {checkInDate && checkOutDate
+                      ? `for ${calculateNumberOfNights()} ${
+                          calculateNumberOfNights() > 1 ? "nights" : "night"
+                        }`
+                      : "per night"}
                   </div>
                 </div>
               </div>
@@ -119,14 +184,16 @@ export default function ListingForm({ reservations, reservation, guest }) {
         <div>
           <form>
             <div className="grid grid-cols-2 gap-4 p-2">
-              {/* <!--check In name input--> */}
               <div className="border border-gray-300 p-2 rounded-lg shadow-sm relative">
                 <DatePicker
                   selected={checkInDate}
-                  onChange={handleCheckIn}
+                  onChange={(date) => handleCheckIn(date)}
                   placeholderText="Check in"
-                  dateFormat="dd/MM/yyyy" // You can customize the date format
+                  dateFormat="dd/MM/yyyy"
+                  minDate={new Date()}
+                  excludeDates={bookedDates}
                 />
+
                 <img
                   src={DateIcon}
                   className="w-4 absolute transform-[translateY(-50%)]"
@@ -134,15 +201,16 @@ export default function ListingForm({ reservations, reservation, guest }) {
                 />
               </div>
 
-              {/* <!--check out input--> */}
               <div className="border border-gray-300 p-2 rounded-lg shadow-sm">
                 <DatePicker
                   selected={checkOutDate}
-                  onChange={handlecheckOut}
-                  className=""
-                  placeholderText="Check in"
-                  dateFormat="dd/MM/yyyy" // You can customize the date format
+                  onChange={(date) => handleCheckOut(date)}
+                  placeholderText="Check out"
+                  dateFormat="dd/MM/yyyy"
+                  minDate={checkInDate || new Date()} // Use checkInDate as the minimum date
+                  excludeDates={bookedDates}
                 />
+
                 <img src={DateIcon} className="w-4" alt="Check out" />
               </div>
             </div>
@@ -171,23 +239,28 @@ export default function ListingForm({ reservations, reservation, guest }) {
             {/* <!--total before and after tax--> */}
             <div className=" min-h-[1.5rem] w-full   p-3">
               <div className=" border-t py-4 flex flex-col gap-1">
+              {checkInDate && checkOutDate && (
                 <div className=" font-medium text-base box-border flex items-end justify-between break-words    ">
                   <span> Total before tax </span>
                   <div className=" whitespace-nowrap break-normal ">
-                    $566.54
+                  ₦ {Number(totalCost).toLocaleString()}
+
                   </div>
                 </div>
+              )}
 
-                <div className=" font-normal text-sm box-border flex items-end justify-between break-words    ">
-                  <span> see full price</span>
-                  <button
-                    type="button"
-                    className=" whitespace-nowrap break-normal underline text-blue-500 cursor-pointer "
-                    onClick={showModal}
-                  >
-                    price details
-                  </button>
-                </div>
+                {checkInDate && checkOutDate && (
+                  <div className=" font-normal text-sm box-border flex items-end justify-between break-words    ">
+                    <span> see full price</span>
+                    <button
+                      type="button"
+                      className=" whitespace-nowrap break-normal underline text-blue-500 cursor-pointer "
+                      onClick={showModal}
+                    >
+                      price details
+                    </button>
+                  </div>
+                )}
 
                 {/* handles the modal  when price details is clicked  */}
                 <Popup
@@ -205,10 +278,24 @@ export default function ListingForm({ reservations, reservation, guest }) {
                               <div className=" mb-2 box-border block">
                                 <div className=" flex items-end justify-between break-words    ">
                                   <div className=" block box-border">
-                                    <span>$140.00 x 2 nights</span>
+                                    <span>
+                                      {pricePerNight} x{" "}
+                                      {checkInDate && checkOutDate
+                                        ? `for ${calculateNumberOfNights()} ${
+                                            calculateNumberOfNights() > 1
+                                              ? "nights"
+                                              : "night"
+                                          }`
+                                        : "per night"}
+                                    </span>{" "}
                                   </div>
-                                  <div className=" ml-4 whitespace-nowrap block box-border   ">
-                                    $280.00
+
+                                  <div className=" ml-4 whitespace-nowrap block box-border">
+                                    {totalPrice !== null
+                                      ? `₦${Number(
+                                          totalPrice
+                                        ).toLocaleString()}`
+                                      : `₦${pricePerNight}`}
                                   </div>
                                 </div>
                               </div>
@@ -222,19 +309,19 @@ export default function ListingForm({ reservations, reservation, guest }) {
                                           Host Fees
                                         </span>
 
-                                        <div className=" ml-4 ">$194.00</div>
+                                        <div className=" ml-4 ">₦ {Number(hostFee).toLocaleString()}</div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                              <div className=" mb-2 box-border block">
+                              <div className=" mb-2t box-border block">
                                 <div className=" flex items-end justify-between break-words    ">
                                   <div className=" block box-border">
                                     <span>Service Fee</span>
                                   </div>
                                   <div className=" ml-4 whitespace-nowrap block box-border   ">
-                                    $20.00
+                                  ₦ {Number(serviceFee).toLocaleString()}
                                   </div>
                                 </div>
                               </div>
@@ -244,7 +331,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
                                     <span>Tax</span>
                                   </div>
                                   <div className=" ml-4 whitespace-nowrap block box-border   ">
-                                    $18.00
+                                  ₦ {Number(taxFee).toLocaleString()}
                                   </div>
                                 </div>
                               </div>
@@ -254,7 +341,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
                               <div className=" font-bold text-lg flex items-end justify-between break-words    ">
                                 <span> Total </span>
                                 <div className=" whitespace-nowrap break-normal ">
-                                  $566.54
+                                ₦ {Number(totalCost).toLocaleString()}
                                 </div>
                               </div>
                             </div>
