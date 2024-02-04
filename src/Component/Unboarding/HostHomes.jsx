@@ -1,7 +1,60 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash } from "react-icons/fa";
+import {
+  FaHome,
+  FaHotel,
+  FaBed,
+  FaBuilding,
+  FaTrash,
+  FaVideo,
+  FaPalette,
+  FaCity,
+  FaDog,
+  FaTree,
+  FaUserFriends,
+  FaShopify,
+  FaWater,
+  FaLandmark,
+  FaChartBar,
+  FaMountain,
+  FaWifi,
+  FaTv,
+  FaUtensils,
+  FaHandsWash,
+  FaSnowflake,
+  FaParking,
+  FaSwimmingPool,
+  FaHotTub,
+  FaFire,
+  FaBell,
+  FaFirstAid,
+  FaFireExtinguisher,
+  FaSmoking,
+  FaTemperatureHigh,
+  FaSuitcase,
+  FaShower,
+  FaDumbbell,
+  FaWheelchair,
+  FaPaw,
+  FaCoffee,
+  FaBook,
+  FaChessBoard,
+  FaLaptop,
+  FaAirFreshener,
+  FaPaperclip,
+  FaSnowboarding,
+  FaArrowUp,
+  FaObjectGroup,
+  FaWaveSquare,
+  FaHotdog,
+  FaBox,
+  FaUser,
+  FaCamera,
+  FaShieldAlt,
+  FaExclamationTriangle,
+} from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
 import { Modal } from "antd";
+import { FaCloudUploadAlt } from "react-icons/fa";
 
 import AddressForm from "../AddressFrom";
 import Axios from "../../Axios";
@@ -509,6 +562,33 @@ export default function HostHomes({ match }) {
     { id: "hotel", label: "Hotel", icon: <FaHotel /> },
     { id: "guestHouse", label: "Guest House", icon: <FaBed /> },
     { id: "apartment", label: "Apartment", icon: <FaBuilding /> },
+    { id: "office", label: "Office", icon: <FaBuilding /> },
+    { id: "art", label: "Art", icon: <FaPalette /> },
+    { id: "cityApartments", label: "City Apartments", icon: <FaCity /> },
+    {
+      id: "petFriendlyRetreats",
+      label: "Pet-Friendly Retreats",
+      icon: <FaDog />,
+    },
+    { id: "treehouseRetreats", label: "Treehouse Retreats", icon: <FaTree /> },
+    {
+      id: "familyFriendlyHomes",
+      label: "Family-Friendly Homes",
+      icon: <FaUserFriends />,
+    },
+    { id: "boutiqueVillas", label: "Boutique Villas", icon: <FaShopify /> },
+    { id: "lakesideSerenity", label: "Lakeside Serenity", icon: <FaWater /> },
+    { id: "desertOases", label: "Desert Oases", icon: <FaLandmark /> },
+    { id: "urbanGetaways", label: "Urban Getaways", icon: <FaCity /> },
+    { id: "countryside", label: "Countryside", icon: <FaHome /> },
+    { id: "luxuryEstate", label: "Luxury Estate", icon: <FaCity /> },
+    { id: "trending", label: "Trending", icon: <FaChartBar /> },
+    { id: "beachfrontBliss", label: "Beachfront Bliss", icon: <FaLandmark /> },
+    {
+      id: "mountainRetreats",
+      label: "Mountain Retreats",
+      icon: <FaMountain />,
+    },
   ];
 
   const privacyTypes = [
@@ -594,20 +674,20 @@ export default function HostHomes({ match }) {
     {
       id: "              Security camera(s) ",
       label: "An entire place",
-      icon: <FaHome />,
+      icon: <FaCamera />,
       description: "Guests can book automatically.",
     },
     {
       id: "              Weapons      ",
       label: "A room",
-      icon: <FaHotel />,
+      icon: <FaShieldAlt />,
       description: "Guests must ask if they can book.",
     },
 
     {
       id: "              Dangerous Animal      ",
       label: "A room",
-      icon: <FaHotel />,
+      icon: <FaExclamationTriangle />,
       description: "Guests must ask if they can book.",
     },
   ];
@@ -615,106 +695,249 @@ export default function HostHomes({ match }) {
   const amenities = [
     {
       id: "Wifi",
-      label: "An entire place",
-      icon: <FaHome />,
+      label: "Wifi",
+      icon: <FaWifi />,
       description:
         "Get reservations faster when you welcome anyone from the Shbro community.",
     },
     {
       id: "TV",
-      label: "A room",
-      icon: <FaHotel />,
+      label: "TV",
+      icon: <FaTv />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
     {
       id: "Kitchen",
-      label: "A room",
-      icon: <FaHotel />,
+      label: "Kitchen",
+      icon: <FaUtensils />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
     {
       id: "Washer",
-      label: "A room",
-      icon: <FaHotel />,
+      label: "Washer",
+      icon: <FaHandsWash />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
-
     {
       id: "Air conditioning",
-      label: "A room",
-      icon: <FaHotel />,
+      label: "Air conditioning",
+      icon: <FaSnowflake />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
     {
       id: "Free parking on premises",
-      label: "A room",
-      icon: <FaHotel />,
+      label: "Free parking on premises",
+      icon: <FaParking />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
-
     {
       id: "Pool",
-      label: "A room",
-      icon: <FaHotel />,
+      label: "Pool",
+      icon: <FaSwimmingPool />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
     {
       id: "Hot tub",
-      label: "A room",
-      icon: <FaHotel />,
+      label: "Hot tub",
+      icon: <FaHotTub />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
-
     {
       id: "Fire pit",
-      label: "A room",
-      icon: <FaHotel />,
+      label: "Fire pit",
+      icon: <FaFire />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
     {
       id: "Indoor fireplace",
-      label: "A room",
-      icon: <FaHotel />,
+      label: "Indoor fireplace",
+      icon: <FaFire />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
-
     {
       id: "Smoke Alarm",
-      label: "A room",
-      icon: <FaHotel />,
+      label: "Smoke Alarm",
+      icon: <FaBell />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
     {
-      id: "first aid kit",
-      label: "A room",
-      icon: <FaHotel />,
+      id: "First aid kit",
+      label: "First aid kit",
+      icon: <FaFirstAid />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
+    },
+    {
+      id: "Fire extinguisher",
+      label: "Fire extinguisher",
+      icon: <FaFireExtinguisher />,
+      description:
+        "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
+    },
+    {
+      id: "Smoke alarm",
+      label: "Smoke alarm",
+      icon: <FaSmoking />,
+      description:
+        "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
+    },
+    {
+      id: "Heating",
+      label: "Heating",
+      icon: <FaTemperatureHigh />,
+      description:
+        "Ensure your guests stay warm and comfortable during their stay.",
+    },
+    {
+      id: "Essentials",
+      label: "Essentials",
+      icon: <FaSuitcase />,
+      description:
+        "Provide basic amenities such as towels, bed sheets, soap, and toilet paper.",
+    },
+    {
+      id: "Shampoo",
+      label: "Shampoo",
+      icon: <FaShower />,
+      description: "Offer shampoo for guests' convenience during their stay.",
+    },
+    {
+      id: "Hair dryer",
+      label: "Hair dryer",
+      icon: <FaAirFreshener />,
+      description: "Include a hair dryer for guests to use during their stay.",
+    },
+    {
+      id: "Iron",
+      label: "Iron",
+      icon: <FaSnowboarding />,
+      description:
+        "Ensure guests can keep their clothes wrinkle-free with an available iron.",
+    },
+    {
+      id: "Laptop-friendly workspace",
+      label: "Laptop-friendly workspace",
+      icon: <FaLaptop />,
+      description:
+        "Provide a designated workspace for guests who need to work on their laptops.",
+    },
+    {
+      id: "Hangers",
+      label: "Hangers",
+      icon: <FaPaperclip />,
+      description:
+        "Include hangers in the wardrobe for guests to hang their clothes.",
     },
 
     {
-      id: "fire extinguisher",
-      label: "A room",
-      icon: <FaHotel />,
-      description:
-        "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
+      id: "Gym",
+      label: "Gym",
+      icon: <FaDumbbell />,
+      description: "Offer fitness facilities to guests for a healthy stay.",
     },
     {
-      id: "smoke alarm",
-      label: "A room",
-      icon: <FaHotel />,
+      id: "Wheelchair accessible",
+      label: "Wheelchair accessible",
+      icon: <FaWheelchair />,
       description:
-        "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
+        "Ensure accommodation is accessible for guests with mobility challenges.",
+    },
+    {
+      id: "Pets allowed",
+      label: "Pets allowed",
+      icon: <FaPaw />,
+      description:
+        "Welcome guests with pets by allowing them in your accommodation.",
+    },
+    {
+      id: "Smoking allowed",
+      label: "Smoking allowed",
+      icon: <FaSmoking />,
+      description: "Permit smoking in designated areas for guests who smoke.",
+    },
+    {
+      id: "Balcony",
+      label: "Balcony",
+      icon: <FaBuilding />,
+      description:
+        "Offer a private balcony for guests to enjoy outdoor views and fresh air.",
+    },
+    {
+      id: "Elevator",
+      label: "Elevator",
+      icon: <FaArrowUp />,
+      description: "Convenient access to different floors with an elevator.",
+    },
+
+    {
+      id: "Coffee maker",
+      label: "Coffee maker",
+      icon: <FaCoffee />,
+      description:
+        "Provide a coffee maker for guests to enjoy freshly brewed coffee.",
+    },
+    {
+      id: "Tea kettle",
+      label: "Tea kettle",
+      icon: <FaUtensils />,
+      description: "Include a tea kettle for guests who prefer tea.",
+    },
+    {
+      id: "Dishwasher",
+      label: "Dishwasher",
+      icon: <FaHandsWash />,
+      description: "Offer the convenience of a dishwasher for guests' use.",
+    },
+    {
+      id: "Oven",
+      label: "Oven",
+      icon: <FaObjectGroup />,
+      description:
+        "Include an oven for guests who prefer cooking or baking during their stay.",
+    },
+    {
+      id: "Microwave",
+      label: "Microwave",
+      icon: <FaWaveSquare />,
+      description: "Provide a microwave for quick and easy meal preparation.",
+    },
+    {
+      id: "Toaster",
+      label: "Toaster",
+      icon: <FaHotdog />,
+      description:
+        "Include a toaster for guests to prepare their favorite toasted snacks.",
+    },
+    {
+      id: "Refrigerator",
+      label: "Refrigerator",
+      icon: <FaBox />,
+      description:
+        "Offer a refrigerator for guests to store their perishable items.",
+    },
+
+    {
+      id: "Books",
+      label: "Books",
+      icon: <FaBook />,
+      description:
+        "Offer a selection of books for guests to enjoy during their stay.",
+    },
+    {
+      id: "Board games",
+      label: "Board games",
+      icon: <FaChessBoard />,
+      description: "Provide board games for guests to have fun and relax.",
     },
   ];
 
@@ -739,14 +962,14 @@ export default function HostHomes({ match }) {
     {
       id: "              I'm hosting as a private individual      ",
       label: "An entire place",
-      icon: <FaHome />,
+      icon: <FaUser />,
       description:
         "Get reservations faster when you welcome anyone from the Shbro community.",
     },
     {
       id: "              I'm hosting as a business  ",
       label: "A room",
-      icon: <FaHotel />,
+      icon: <FaUserFriends />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
@@ -990,7 +1213,9 @@ export default function HostHomes({ match }) {
           <div className=" mx-auto  flex justify-center p-4 ">
             <div className=" ">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-28">
-                <h1 className="text-6xl">It’s easy to get started on Shortlet Bookings</h1>
+                <h1 className="text-6xl">
+                  It’s easy to get started on Shortlet Bookings
+                </h1>
               </div>
               <div className="">
                 <div>
@@ -1103,7 +1328,7 @@ export default function HostHomes({ match }) {
                     {propertyTypes.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type h-24 w-32 m-3 flex ${
+                        className={`property-type h-26 w-32 m-3 flex ${
                           selectedHouseType === type.id
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
@@ -1303,7 +1528,7 @@ export default function HostHomes({ match }) {
                     {amenities.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type h-24  w-32 m-3   flex ${
+                        className={`property-type h-26  w-32 m-3   flex ${
                           selectedAmenities.includes(type.id) // Change this line
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
@@ -1323,35 +1548,48 @@ export default function HostHomes({ match }) {
 
       case 7:
         return (
-          <div className=" mx-auto flex justify-center p-4">
+          <div className="mx-auto flex justify-center p-4">
             <div className="overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
-                <h1 className="text-6xl">Add some photos of your house</h1>
-                <p className="text-gray-400 mt-10">
+                <h1 className="text-6xl text-center">
+                  Add some photos of your house
+                </h1>
+                <p className="text-gray-400 mt-10 text-center">
                   You can add more or make changes later.
                 </p>
               </div>
               <div className="pb-32">
                 <div className="text-center">
-                  <div className="border-2 border-dashed border-gray-300 p-8 my-6">
-                    <p className="text-gray-400 mb-4">Drag your photos here</p>
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      key={fileInputKey}
-                    />
+                  <div className="p-8 my-6">
+                    <label
+                      htmlFor={fileInputKey}
+                      className="cursor-pointer block w-full max-w-md mx-auto bg-orange-300 text-white rounded-md p-4 text-center transition duration-300 hover:bg-orange-600"
+                    >
+                      <div className="mb-4">
+                        <FaCloudUploadAlt className="text-4xl mx-auto" />
+                      </div>
+                      <p className="mb-2">Click or Drag Photos Here</p>
+                      <p className="text-sm">Choose at least 5 photos</p>
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        key={fileInputKey}
+                        className="hidden"
+                        id={fileInputKey}
+                      />
+                    </label>
                   </div>
                   <p className="text-gray-400">Choose at least 5 photos</p>
                 </div>
                 <div className="flex flex-wrap mt-6">
                   {uploadedImages.map((image) => (
-                    <div key={image.id} className="relative  p-2">
+                    <div key={image.id} className="relative p-2">
                       <img
                         src={image.src}
                         alt="House"
-                        className="w-64 object-cover h-64"
+                        className="w-64 object-cover h-64 rounded-md"
                       />
                       <button
                         onClick={() => handleImageDelete(image.id)}
@@ -1367,56 +1605,76 @@ export default function HostHomes({ match }) {
           </div>
         );
 
-      case 8: // Step for hosting type and property features
+      case 8:
         return (
-          <div className=" mx-auto  flex justify-center p-4">
-            <div className="  overflow-auto">
+          <div className="mx-auto flex justify-center p-4">
+            <div className="overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
                 <h1 className="text-6xl">Upload Video Apartment on Shbro</h1>
-                <p className="text-gray-400 mt-10">
+                <p className="text-gray-400 mt-10 text-center">
                   Gives you a better chance of getting guests
                 </p>
               </div>
-              <div className="bg-white border p-4 rounded-lg shadow-md max-w-md mx-auto mt-8">
-                <h1 className="text-2xl font-semibold mb-4">Upload Video</h1>
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={handleVideoUpload}
-                  className="mb-4"
-                />
-                <p className="text-slate-500">Maximum file size: 20MB</p>
-                <p className="text-slate-500">Maximum duration: 1 minute</p>
-
-                {selectedVideo && (
-                  <div className="mt-4">
-                    <p className="text-lg font-semibold mb-2">
-                      Selected Video: {selectedVideo.name}
+              <div className="grid grid-cols-1 gap-8 max-w-md mx-auto mt-8">
+                <div className="bg-white border p-4 rounded-lg shadow-md">
+                  <h1 className="text-2xl font-semibold mb-4">Upload Video</h1>
+                  <label
+                    htmlFor="videoInput"
+                    className="grid place-items-center bg-orange-300 text-white rounded-md p-4 cursor-pointer transition duration-300 hover:bg-orange-600"
+                  >
+                    <div className="mb-4">
+                      <FaVideo className="text-4xl mx-auto" />
+                    </div>
+                    Click to Upload Video
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={handleVideoUpload}
+                      className="hidden"
+                      id="videoInput"
+                    />
+                  </label>
+                </div>
+                <div className="bg-white border p-4 rounded-lg shadow-md mb-24">
+                  <div>
+                    <p className="text-slate-500 mt-4">
+                      Maximum file size: 20MB
                     </p>
-                    <p className="text-slate-500">
-                      Size: {(selectedVideo.size / (1024 * 1024)).toFixed(2)} MB
-                    </p>
-                    <video controls className="mt-2">
-                      <source
-                        src={URL.createObjectURL(selectedVideo)}
-                        type="video/mp4"
-                      />
-                    </video>
-                    <button
-                      onClick={handleRemoveVideo}
-                      className="bg-red-500 text-white py-2 px-4 mt-4 rounded-full hover:bg-red-600"
-                    >
-                      Remove Video
-                    </button>
+                    <p className="text-slate-500">Maximum duration: 1 minute</p>
                   </div>
-                )}
+                  <div>
+                    {selectedVideo && (
+                      <div className="mt-4">
+                        <p className="text-lg font-semibold mb-2">
+                          Selected Video: {selectedVideo.name}
+                        </p>
+                        <p className="text-slate-500">
+                          Size:{" "}
+                          {(selectedVideo.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                        <video controls className="mt-2">
+                          <source
+                            src={URL.createObjectURL(selectedVideo)}
+                            type="video/mp4"
+                          />
+                        </video>
+                        <button
+                          onClick={handleRemoveVideo}
+                          className="bg-red-500 text-white py-2 px-4 mt-4 rounded-full hover:bg-red-600 transition duration-300"
+                        >
+                          Remove Video
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         );
 
       case 9: // Step for adding a house title
-        const maxCharacterCount = 32;
+        const maxCharacterCount = 50;
         const currentCharacterCount = houseTitle.length;
         const remainingCharacterCount =
           maxCharacterCount - currentCharacterCount;

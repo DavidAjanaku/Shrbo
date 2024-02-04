@@ -1,7 +1,62 @@
 import React, { useState } from "react";
 import Popup from "../../hoc/Popup";
 import PopupFull from "../../hoc/PopupFull";
-
+import {
+  FaHome,
+  FaHotel,
+  FaBed,
+  FaBuilding,
+  FaTrash,
+  FaVideo,
+  FaPalette,
+  FaCity,
+  FaDog,
+  FaTree,
+  FaUserFriends,
+  FaShopify,
+  FaWater,
+  FaLandmark,
+  FaChartBar,
+  FaMountain,
+  FaWifi,
+  FaTv,
+  FaUtensils,
+  FaHandsWash,
+  FaSnowflake,
+  FaParking,
+  FaSwimmingPool,
+  FaHotTub,
+  FaFire,
+  FaBell,
+  FaFirstAid,
+  FaFireExtinguisher,
+  FaSmoking,
+  FaTemperatureHigh,
+  FaSuitcase,
+  FaShower,
+  FaDumbbell,
+  FaWheelchair,
+  FaPaw,
+  FaCoffee,
+  FaBook,
+  FaChessBoard,
+  FaLaptop,
+  FaAirFreshener,
+  FaPaperclip,
+  FaSnowboarding,
+  FaArrowUp,
+  FaObjectGroup,
+  FaWaveSquare,
+  FaHotdog,
+  FaBox,
+  FaUser,
+  FaCamera,
+  FaShieldAlt,
+  FaExclamationTriangle,
+  FaCloudUploadAlt,
+  FaUtensilSpoon,
+  FaSmog,
+} from "react-icons/fa";
 const Amenities = ({ amenities }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [open, setOpen] = useState(false);
@@ -22,28 +77,64 @@ const Amenities = ({ amenities }) => {
     setOpen(false);
   };
 
-  // Extracting offer values from amenities
-  const amenityOffers = amenities.map((amenity) => amenity.offer);
+  const amenityIcons = {
+    Wifi: <FaWifi />,
+    TV: <FaTv />,
+    Kitchen: <FaUtensilSpoon />,
+    Washer: <FaHandsWash />,
+    "Air conditioning": <FaSnowflake />,
+    // Add icons for the remaining amenities
+    "Hot tub": <FaHotTub />,
+    "fire extinguisher": <FaFireExtinguisher />,
+    "first aid kit": <FaFirstAid />,
+    Pool: <FaSwimmingPool />,
+    "Free parking on premises": <FaParking />,
+    Essentials: <FaSuitcase />,
+    Gym: <FaDumbbell />,
+    "Wheelchair accessible": <FaWheelchair />,
+    "Board games": <FaChessBoard />,
+    Books: <FaBook />,
+    Refrigerator: <FaBox />,
+    Toaster: <FaHotdog />,
+    Microwave: <FaWaveSquare />,
+    Oven: <FaObjectGroup />,
+    "Smoking allowed": <FaSmoking />,
+    Balcony: <FaBuilding />,
+    Elevator: <FaArrowUp />,
+    "Coffee maker": <FaCoffee />,
+    "Tea kettle": <FaUtensils />,
+    Dishwasher: <FaHandsWash />,
+    "Pets allowed": <FaPaw />,
+    Hangers: <FaPaperclip />,
+    "Laptop-friendly workspace": <FaLaptop />,
+    Iron: <FaSnowboarding />,
+    "Fire pit": <FaFire />,
+    "Indoor fireplace": <FaFire />,
+    "Smoke alarm": <FaSmog />,
+    Heating: <FaTemperatureHigh />,
+    Shampoo: <FaShower />,
+    "Hair dryer": <FaShower />,
+    "Smoke alarm": <FaBell />,
+  };
 
-  const amenityElements = amenities.map((amenity, index) => (
+  // Display only the first 10 amenities
+  const displayAmenities = amenities.slice(0, 10);
+
+  const amenityElements = displayAmenities.map((amenity, index) => (
     <div key={amenity.id} className="relative px-[6px] w-full md:w-1/2 md:px-2">
-      <div className="flex items-center md:max-w-[83.33%] pb-4 justify-end flex-row-reverse">
-        <div>{amenity.offer}</div>
-        <div className="mr-4 min-w-[24px]">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14px" height="14px">
-            <path
-              d="M12.1,18.55L12,18.65L11.89,18.55C7.14,14.24 4,11.39 4,8.5C4,6.5 5.5,
-                5 7.5,5C9.04,5 10.54,6 11.07,7.36H12.93C13.46,6 14.96,
-                5 16.5,5C18.5,5 20,6.5 20,8.5C20,11.39 16.86,14.24 12.1,18.55M16.5,
-                3C14.76,3 13.09,3.81 12,5.08C10.91,3.81 9.24,3 7.5,3C4.42,3 2,
-                5.41 2,8.5C2,12.27 5.4,15.36 10.55,20.03L12,21.35L13.45,
-                20.03C18.6,15.36 22,12.27 22,8.5C22,5.41 19.58,3 16.5,3Z"
-            />
-          </svg>
-        </div>
-      </div>
+    <div className="flex items-center md:max-w-[83.33%] pb-4 justify-end flex-row-reverse">
+  <div>{amenity.offer}</div>
+  <div className="mr-4 min-w-[24px]">
+  {amenityIcons[amenity.offer] || <FaTv />}
+  </div>
+</div>
+
     </div>
   ));
+
+  const matchingIcons = displayAmenities.map(
+    (amenity) => amenityIcons[amenity.id]
+  );
 
   return (
     <div className="box-border block text-[#222222] font-normal text-base w-full">
@@ -58,34 +149,52 @@ const Amenities = ({ amenities }) => {
             {amenityElements}
           </div>
           <div className="mt-4 md:mt-6">
-            <button
-              type="button"
-              className="rounded-lg hidden md:inline-block relative border transition-shadow py-[13px] px-[23px] text-base font-semibold"
-              onClick={openPopup}
-            >
-              See all {amenities.length} amenities
-            </button>
+            {amenities.length > 10 && (
+              <>
+                <button
+                  type="button"
+                  className="rounded-lg hidden md:inline-block relative border transition-shadow py-[13px] px-[23px] text-base font-semibold"
+                  onClick={openPopup}
+                >
+                  Show more {amenities.length} amenities
+                </button>
 
-            {/* This button shows the drawer instead of Popup and it is only visible on mobile view */}
-            <button
-              type="button"
-              className="rounded-lg inline-block relative border transition-shadow py-[13px] px-[23px] md:hidden text-base font-semibold"
-              onClick={showDrawer}
-            >
-              See all {amenities.length} amenities
-            </button>
+                {/* This button shows the drawer instead of Popup and it is only visible on mobile view */}
+                <button
+                  type="button"
+                  className="rounded-lg inline-block relative border transition-shadow py-[13px] px-[23px] md:hidden text-base font-semibold"
+                  onClick={showDrawer}
+                >
+                  Show more {amenities.length} amenities
+                </button>
+              </>
+            )}
 
             <Popup
               isModalVisible={isPopupOpen}
               handleCancel={closePopup}
               title={"Amenities"}
             >
-              {amenityOffers.join(', ')}
+              {displayAmenities.length > 0 ? (
+                <ul>
+                  {amenities.map((amenity) => (
+                    <li
+                      key={amenity.id}
+                      className="flex items-center space-x-3 py-2"
+                    >
+                      <span className="text-lg">
+                        {amenityIcons[amenity.offer] || <FaTv />}
+                      </span>
+                      <span className="text-lg">{amenity.offer}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No amenities available.</p>
+              )}
             </Popup>
+
             {/* Drawer Popup */}
-            <PopupFull title={"Amenities"} open={open} onClose={onClose}>
-              {amenityOffers.join(', ')}
-            </PopupFull>
           </div>
         </section>
       </div>

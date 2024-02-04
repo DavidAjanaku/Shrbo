@@ -21,14 +21,55 @@ const HouseRulesTab = () => {
   }, []);
 
   if (!listingDetails) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   const rules = listingDetails.rules || [];
   const notices = listingDetails.notices || [];
+  const checkInString = listingDetails.checkin || "";
+  const checkInParts = checkInString.match(/(\d+):(\d+) (AM|PM)/i);
+
+  let checkInTime = null;
+  let checkoutTime = null;
+
+  if (checkInParts && checkInParts.length === 4) {
+    const hours = parseInt(checkInParts[1]);
+    const minutes = parseInt(checkInParts[2]);
+    const period = checkInParts[3].toUpperCase();
+
+    // Convert to 24-hour format
+    const adjustedHours = period === 'PM' && hours < 12 ? hours + 12 : hours;
+
+    checkInTime = new Date(2000, 0, 1, adjustedHours, minutes);
+    checkoutTime = new Date(checkInTime.getTime() + 24 * 60 * 60 * 1000);
+  }
+
+  const formatTime = (time) => {
+    const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+    return new Intl.DateTimeFormat('en-US', options).format(time);
+  };
 
   return (
     <div className="max-w-2xl mx-auto p-4">
+        <div className="mb-4">
+        <h3 className="text-xl font-semibold">Check-in Information</h3>
+        <p className="text-gray-600  mb-2">
+              Please note the check-in and checkout times for your stay.
+            </p>
+        {checkInTime && (
+          <div className=" border-gray-200 ">
+            <p className="text-sm">
+              <strong>Check-in:</strong> {formatTime(checkInTime)}
+            </p>
+            {checkoutTime && (
+              <p className="text-sm mt-2">
+                <strong>Checkout:</strong> {formatTime(checkoutTime)}
+              </p>
+            )}
+           
+          </div>
+        )}
+      </div>
       <h2 className="text-2xl font-bold mb-6">House Rules and Notices</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Display Rules */}
