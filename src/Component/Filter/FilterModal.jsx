@@ -18,8 +18,8 @@ export default function FilterModal({search,clearAll}) {
     setIsModalOpen(!isModalOpen);
   };
 
-  const Min = 100;
-  const Max = 20000;
+  const Min = 5000;
+  const Max = 1000000;
 
   const [values, setValues] = useState([Min, Max]);
 

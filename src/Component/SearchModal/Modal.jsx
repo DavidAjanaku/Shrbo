@@ -12,7 +12,7 @@ import { AutoComplete, Input } from "antd";
 
 const { RangePicker } = DatePicker;
 
-const SearchModal = ({ isOpen, onClose }) => {
+const SearchModal = ({ isOpen, onClose,search }) => {
   const [location, setLocation] = useState("");
   const [checkInDate, setCheckInDate] = useState(null);
   const [checkOutDate, setCheckOutDate] = useState(null);
@@ -21,6 +21,7 @@ const SearchModal = ({ isOpen, onClose }) => {
   const [children, setChildren] = useState(0);
   const [pets, setPets] = useState(0);
   const [infants, setInfants] = useState(0);
+  const [error, setError] = useState(null);
   const [guestCounts, setGuestCounts] = useState({
     adults,
     children,
@@ -73,10 +74,21 @@ const SearchModal = ({ isOpen, onClose }) => {
   const handleSubmit = () => {
     // Check if checkInDate and checkOutDate are valid Date objects
     const formattedCheckInDate =
-      checkInDate instanceof Date ? checkInDate.toLocaleDateString() : "N/A";
+    checkInDate instanceof Date
+    ? checkInDate.toLocaleDateString().split('/').reverse().join('-')
+    : "N/A";
     const formattedCheckOutDate =
-      checkOutDate instanceof Date ? checkOutDate.toLocaleDateString() : "N/A";
+      checkOutDate instanceof Date
+        ? checkOutDate.toLocaleDateString().split('/').reverse().join('-')
+        : "N/A";
+    
+    if(formattedCheckInDate==="N/A"||formattedCheckOutDate==="N/A"){
+      setError("Dates can't be left empty")
 
+      return; //
+    }
+
+      setError("");
     // Create an object with the details you want to log
     const details = {
       location,
@@ -94,9 +106,26 @@ const SearchModal = ({ isOpen, onClose }) => {
 
     // Handle form submission here, e.g., send data to the server
 
+    search(details);
+
     // Close the modal
     onClose();
   };
+
+  const handleCancel = () => {
+
+    setLocation("");
+    setCheckInDate(null);
+    setCheckOutDate(null);
+    setGuestModalVisible(false);
+    setAdults(0);
+    setChildren(0);
+    setPets(0);
+    setInfants(0);
+
+    onClose();
+
+  }
 
   function GuestModal({
     visible,
@@ -267,13 +296,12 @@ const SearchModal = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 z-50 w-full h-[100vh] overflow-auto md:h-full flex items-center justify-center bg-slate-900  bg-opacity-90 ${
-        isOpen ? "visible " : "invisible"
-      }`}
+      className={`fixed top-0 left-0 z-50 w-full h-[100vh] overflow-auto md:h-full flex items-center justify-center bg-slate-900  bg-opacity-90 ${isOpen ? "visible " : "invisible"
+        }`}
     >
       <div className=" relative bg-white p-4  w-full h-[100vh] overflow-auto md:h-[70vh] md:w-[50%] md:rounded-xl">
         <header>
-          <h1 className="text-center text-2xl mb-4">Lorem Ipsum</h1>
+          <h1 className="text-center text-2xl mb-4">Search By Location, Dates and Guests</h1>
         </header>
         <div className=" md:h-2/6">
           <div className="mb-4 border p-4">
@@ -287,9 +315,10 @@ const SearchModal = ({ isOpen, onClose }) => {
             />
           </div>
           <div className="mb-4 overflow-scroll">
-            <Space direction="vertical" size={12}>
+            <Space direction="vertical " size={12}>
               <RangePicker
                 className="custom-picker"
+                disabledDate={(current) => current && current < moment().startOf('day')}
                 value={
                   checkInDate && checkOutDate
                     ? [moment(checkInDate), moment(checkOutDate)]
@@ -308,8 +337,9 @@ const SearchModal = ({ isOpen, onClose }) => {
                 }}
               />
             </Space>
+            
           </div>
-
+          <div className=" text-red-500">{error}</div>
           <div className="mb-4">
             <div
               onClick={() => setGuestModalVisible(true)}
@@ -320,7 +350,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                   displayGuestData.children +
                   displayGuestData.pets +
                   displayGuestData.infants ===
-                0
+                  0
                   ? "Add Guests"
                   : "Guests"}
                 :
@@ -331,15 +361,15 @@ const SearchModal = ({ isOpen, onClose }) => {
                 displayGuestData.pets +
                 displayGuestData.infants >
                 0 && (
-                <>
-                  <div className="mt-5 text-gray-500">
-                    {displayGuestData.adults} Adults,{" "}
-                    {displayGuestData.children} Children,{" "}
-                    {displayGuestData.pets} Pets, {displayGuestData.infants}{" "}
-                    Infants
-                  </div>
-                </>
-              )}
+                  <>
+                    <div className="mt-5 text-gray-500">
+                      {displayGuestData.adults} Adults,{" "}
+                      {displayGuestData.children} Children,{" "}
+                      {displayGuestData.pets} Pets, {displayGuestData.infants}{" "}
+                      Infants
+                    </div>
+                  </>
+                )}
             </div>
 
             <GuestModal
@@ -361,7 +391,7 @@ const SearchModal = ({ isOpen, onClose }) => {
               Check Availability
             </button>
             <button
-              onClick={onClose}
+              onClick={handleCancel}
               className="w-full  text-gray-700 font-semibold py-2 border rounded-lg hover:bg-gray-100 transition duration-300"
             >
               Cancel
