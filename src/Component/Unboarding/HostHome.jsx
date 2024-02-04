@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash } from "react-icons/fa";
+import { FaHome, FaHotel, FaBed, FaBuilding, FaTrash, FaVideo, FaPalette, FaCity, FaDog, FaTree, FaUserFriends, FaShopify, FaWater, FaLandmark, FaChartBar, FaMountain } from "react-icons/fa";
 import { LoadingOutlined } from "@ant-design/icons";
 
 import { Spin } from "antd";
@@ -237,6 +237,22 @@ export default function HostHome({ match }) {
     { id: "hotel", label: "Hotel", icon: <FaHotel /> },
     { id: "guestHouse", label: "Guest House", icon: <FaBed /> },
     { id: "apartment", label: "Apartment", icon: <FaBuilding /> },
+    { id: "office", label: "Office", icon: <FaBuilding /> },
+    { id: "art", label: "Art", icon: <FaPalette /> },
+    { id: "cityApartments", label: "City Apartments", icon: <FaCity /> },
+    { id: "petFriendlyRetreats", label: "Pet-Friendly Retreats", icon: <FaDog /> },
+    { id: "treehouseRetreats", label: "Treehouse Retreats", icon: <FaTree /> },
+    { id: "familyFriendlyHomes", label: "Family-Friendly Homes", icon: <FaUserFriends /> },
+    { id: "boutiqueVillas", label: "Boutique Villas", icon: <FaShopify /> },
+    { id: "lakesideSerenity", label: "Lakeside Serenity", icon: <FaWater /> },
+    { id: "desertOases", label: "Desert Oases", icon: <FaLandmark /> },
+    { id: "urbanGetaways", label: "Urban Getaways", icon: <FaCity /> },
+    { id: "countryside", label: "Countryside", icon: <FaHome /> },
+    { id: "luxuryEstate", label: "Luxury Estate", icon: <FaCity /> },
+    { id: "trending", label: "Trending", icon: <FaChartBar /> },
+    { id: "beachfrontBliss", label: "Beachfront Bliss", icon: <FaLandmark /> },
+    { id: "mountainRetreats", label: "Mountain Retreats", icon: <FaMountain /> },
+
   ];
 
   const privacyTypes = [
