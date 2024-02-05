@@ -371,20 +371,20 @@ export default function HostHome({ match }) {
       id: "house",
       label: "An entire place",
       icon: <FaHome />,
-      description: "Guests have the whole place to themselves.",
+      description: "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.",
     },
     {
       id: "hotel",
       label: "A room",
       icon: <FaHotel />,
-      description: "Guests have the whole place to themselves.",
+      description: "Cozy up in your own private room while sharing common spaces with other guests.",
     },
 
     {
       id: "guestHouse",
       label: "A shared room",
       icon: <FaBed />,
-      description: "Guests have the whole place to themselves.",
+      description: "Rent an entire guest house with all the amenities for an exclusive stay.",
     },
   ];
 

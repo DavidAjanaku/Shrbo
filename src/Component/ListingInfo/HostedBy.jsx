@@ -114,13 +114,15 @@ const HostedBy = (props) => {
       text: guest_choice,
       description: (() => {
         switch (guest_choice) {
-          case "An entire place":
-            return "Guests have the whole place to themselves.";
-          case "A room":
-            return "Guests have the whole place to themselves.";
-          case "A shared room":
-            return "Guests have the whole place to themselves.";
-          default:
+          case "house":
+            return "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.";
+            case "hotel":
+              return "Cozy up in your own private room while sharing common spaces with other guests.";
+              case "A shared room":
+                return "Share a room with other travelers and enjoy a communal living experience.";
+                case "guestHouse":
+                  return "Rent an entire guest house with all the amenities for an exclusive stay.";
+                  default:
             return "Cancellation policy information not available.";
         }
       })(),

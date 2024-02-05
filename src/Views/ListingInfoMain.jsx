@@ -13,6 +13,8 @@ import HouseRules from "../Component/ListingInfo/HouseRules";
 import BottomNavigation from "../Component/Navigation/BottomNavigation";
 import Header from "../Component/Navigation/Header";
 import Axios from "../Axios";
+import { Spin } from 'antd';
+import SkeletonLoader from "../Loader/SkeletonLoader";
 const ListingInfoMain = () => {
   const { id } = useParams(); // Get the ID parameter from the route
   const [listingDetails, setListingDetails] = useState(null);
@@ -35,10 +37,9 @@ const ListingInfoMain = () => {
   if (!listingDetails) {
     // Loading state or return null
     return (
-      <div>
-        {/* You can add a loading spinner or message here */}
-        Loading...
-      </div>
+      <div className="flex justify-center items-center h-[100vh]">
+      <Spin size="large" />
+    </div>
     );
   }
   return (
@@ -81,7 +82,7 @@ const ListingInfoMain = () => {
             <AboutProperty
               description={listingDetails?.description}
               address={listingDetails?.address}
-            /> 
+            />
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
             <HouseRules
               checkin={listingDetails?.checkin}

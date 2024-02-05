@@ -310,3 +310,28 @@
 .selected{
   background: none;
 }
+
+:where(.css-dev-only-do-not-override-3mqfnx).ant-spin-lg .ant-spin-dot{
+ color: orange;
+}
+
+.skeleton-loader {
+  background: linear-gradient(
+    90deg,
+    rgba(219, 219, 219, 0) 0%,
+    rgba(219, 219, 219, 0.5) 50%,
+    rgba(219, 219, 219, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

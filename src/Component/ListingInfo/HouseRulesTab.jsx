@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Axios from "../../Axios";
 import { useParams } from "react-router-dom";
+import { FaPlus } from "react-icons/fa";
 
 const HouseRulesTab = () => {
   const [listingDetails, setListingDetails] = useState(null);
@@ -131,6 +132,14 @@ const HouseRulesTab = () => {
                     </svg>
                   </span>
                 )}
+                 {!rule.rule.toLowerCase().includes("guest") &&
+        !rule.rule.toLowerCase().includes("pets") &&
+        !rule.rule.toLowerCase().includes("events") &&
+        !rule.rule.toLowerCase().includes("smoking") && (
+          <span className="mx-2">
+            <FaPlus/>
+          </span>
+        )}
                 <h4 className="text-md font-medium">{rule.rule}</h4>
               </div>
               {/* <p className="text-sm text-gray-600">{rule.rule}</p> */}

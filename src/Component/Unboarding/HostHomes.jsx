@@ -596,20 +596,23 @@ export default function HostHomes({ match }) {
       id: "house",
       label: "An entire place",
       icon: <FaHome />,
-      description: "Guests have the whole place to themselves.",
+      description:
+        "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.",
     },
     {
       id: "hotel",
       label: "A room",
       icon: <FaHotel />,
-      description: "Guests have the whole place to themselves.",
+      description:
+        "Cozy up in your own private room while sharing common spaces with other guests.",
     },
 
     {
       id: "guestHouse",
       label: "A shared room",
       icon: <FaBed />,
-      description: "Guests have the whole place to themselves.",
+      description:
+        "Rent an entire guest house with all the amenities for an exclusive stay.",
     },
   ];
 
@@ -2052,18 +2055,17 @@ export default function HostHomes({ match }) {
                     onChange={handleTimeChange}
                     className="mt-1 p-2 border rounded-md w-full"
                   >
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+
                     <option value="12:00 PM">12:00 PM</option>
                     <option value="1:00 PM">1:00 PM</option>
                     <option value="2:00 PM">2:00 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="4:00PM">4:00PM</option>
                     {/* Add more time options as needed */}
                   </select>
                 </div>
-                <button
-                  onClick={handleSave}
-                  className="bg-orange-400 text-white py-2 px-4 rounded-full hover:bg-orange-600"
-                >
-                  Save Check-In Time
-                </button>
               </div>
             </div>
           </div>
