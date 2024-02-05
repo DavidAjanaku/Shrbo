@@ -21,6 +21,8 @@ export default function Hosting() {
   const [checking,setChecking]=useState([]);
   const [pending,setPending]=useState([]);
   const [arriving,setArriving]=useState([]);
+  const [hosting,setHosting]=useState([]);
+  const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -149,16 +151,17 @@ export default function Hosting() {
 
 useEffect(() => {
  
+  setLoading(true);
 
   switch (activeTab) {
     case "upcoming":
       fetchUpcomingData();
       break;
     case "checkingOut":
-      // fetchData("/checkingOut", "checkingOut");
+      fetchCheckingOut()
       break;
     case "currentlyHosting":
-      // fetchData("/currentlyHosting", "currentlyHosting");
+      fetchCurrentlyHosting();
       break;
     case "arrivingSoon":
       fetchArrivingSoon();
@@ -167,7 +170,7 @@ useEffect(() => {
       fetchPendingReview();
       break;
     default:
-      // Handle default case if needed
+      setLoading(false);
       break;
   }
 }, [activeTab]);
@@ -187,7 +190,7 @@ useEffect(() => {
           console.log(response.data);
       }).catch(err=>{
         console.log("Upcoming",err);
-      });
+      }).finally(()=>setLoading(false));
 
   }
 
@@ -204,6 +207,8 @@ useEffect(() => {
       console.log("pending", filteredData);
     } catch (error) {
       console.log("pending", error);
+    }finally{
+      setLoading(false);
     }
 
 
@@ -222,11 +227,49 @@ useEffect(() => {
       console.log("Arriving", filteredData);
     } catch (error) {
       console.log("Arriving", error);
+    } finally{
+    setLoading(false);
     }
 
 
   }
 
+  const fetchCurrentlyHosting=async()=>{
+    try {
+      const response = await axios.get("/currentlyHosting");
+      const filteredData = response.data.bookings.map(item => ({
+        name: item.name,
+        date: item.check_in_date+"-"+item.check_out_date,
+        image:item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+      }));
+      setHosting(filteredData)
+      console.log("CurrentlyHosting", filteredData);
+    } catch (error) {
+      console.log("CurrentlyHosting", error);
+    }finally{
+      setLoading(false);
+      }
+  
+  }
+
+  const fetchCheckingOut=async()=>{
+    try {
+      const response = await axios.get("/checkingOut");
+      const filteredData = response.data.bookings.map(item => ({
+        name: item.name,
+        date: item.check_out_date,
+        time: item.check_in_time,
+        image:item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+      }));
+      setChecking(filteredData)
+      console.log("CheckingOut", filteredData);
+    } catch (error) {
+      console.log("CheckingOut", error);
+    }finally{
+      setLoading(false);
+    }
+  
+  }
 
 
   useEffect(() => {
@@ -254,121 +297,124 @@ useEffect(() => {
   }, [isProfileDropdownOpen, isBellDropdownOpen]);
 
   const checkingOut = [
-    {
-      name: "Endo",
-      date: " Oct 22",
-      time: "12:00pm",
+    ...checking,
+    // {
+    //   name: "Endo",
+    //   date: " Oct 22",
+    //   time: "12:00pm",
 
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
-    {
-      name: "Endo",
-      date: "Today",
-      time: "12:00pm",
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
-    {
-      name: "Endo",
-      date: " Oct 22",
-      time: "12:00pm",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
+    // {
+    //   name: "Endo",
+    //   date: "Today",
+    //   time: "12:00pm",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
+    // {
+    //   name: "Endo",
+    //   date: " Oct 22",
+    //   time: "12:00pm",
 
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
-    {
-      name: "Endo",
-      date: " Expired",
-      time: "12:00pm",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
+    // {
+    //   name: "Endo",
+    //   date: " Expired",
+    //   time: "12:00pm",
 
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
   ];
 
   const currentlyHosting = [
-    {
-      name: "Sonia",
-      date: "Sept 22 - Oct 22",
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
-    {
-      name: "Abigail",
-      date: "Sept 22 - Oct 22",
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
-    {
-      name: "Joy",
-      date: "Sept 22 - Oct 22",
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
-    {
-      name: "Soma",
-      date: "Sept 22 - Oct 22",
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
+    ...hosting,
+    // {
+    //   name: "Sonia",
+    //   date: "Sept 22 - Oct 22",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
+    // {
+    //   name: "Abigail",
+    //   date: "Sept 22 - Oct 22",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
+    // {
+    //   name: "Joy",
+    //   date: "Sept 22 - Oct 22",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
+    // {
+    //   name: "Soma",
+    //   date: "Sept 22 - Oct 22",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
   ];
 
   const arrivingSoonReservations = [
-    {
-      name: "John",
-      date: "Oct 25",
-      time: "3:00pm",
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
-    {
-      name: "Alice",
-      date: "Oct 26",
-      time: "2:30pm",
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
+    
+    // {
+    //   name: "John",
+    //   date: "Oct 25",
+    //   time: "3:00pm",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
+    // {
+    //   name: "Alice",
+    //   date: "Oct 26",
+    //   time: "2:30pm",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
     ...arriving,
   ];
 
   const upcomingReservations = [
-    {
-      name: "Michael Jackson",
-      checkInDate: "Nov 10 2023",
-      checkOutDate: "Nov 10 2023",
-      // amountPaid: "half payment made",
-      time: "4:00pm",
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
-    {
-      name: "William",
-      checkInDate: "Dec 10 2023",
-      checkOutDate: "Nov 10 2023",
-      // amountPaid: "full payment made",
-      time: "4:00pm",
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
+    // {
+    //   name: "Michael Jackson",
+    //   checkInDate: "Nov 10 2023",
+    //   checkOutDate: "Nov 10 2023",
+    //   // amountPaid: "half payment made",
+    //   time: "4:00pm",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
+    // {
+    //   name: "William",
+    //   checkInDate: "Dec 10 2023",
+    //   checkOutDate: "Nov 10 2023",
+    //   // amountPaid: "full payment made",
+    //   time: "4:00pm",
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
     ...upcoming,
   ];
 
   const pendingReviews = [
-    {
-      name: "John",
-      checkInDate: "Oct 25, 2023",
-      reservationId: 123,
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
-    {
-      name: "Alice",
-      checkInDate: "Oct 26, 2023",
-      reservationId: 124,
-      image:
-        "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    },
+    // {
+    //   name: "John",
+    //   checkInDate: "Oct 25, 2023",
+    //   reservationId: 123,
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
+    // {
+    //   name: "Alice",
+    //   checkInDate: "Oct 26, 2023",
+    //   reservationId: 124,
+    //   image:
+    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+    // },
     ...pending,
   ];
 
@@ -618,6 +664,25 @@ useEffect(() => {
     }
   };
 
+
+  const SkeletonLoader = Array.from({ length: 3 }).map((group, index) => (
+    <div
+      key={index}
+      className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden  m-4 cursor-pointer  "
+    >
+
+      <div className=''>
+
+        <div className=' h-[170px] w-[260px] rounded-xl object-cover skeleton-loader text-transparent' />
+      </div>
+    </div>
+
+  ));
+
+
+
+
+
   return (
     <div className="pb-20">
       <HostHeader />
@@ -722,7 +787,7 @@ useEffect(() => {
                 }`}
               onClick={() => handleTabClick("checkingOut")}
             >
-              Checking out (4)
+              Checking out ({checkingOut.length})
             </div>
             <div
               className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "currentlyHosting"
@@ -731,7 +796,7 @@ useEffect(() => {
                 }`}
               onClick={() => handleTabClick("currentlyHosting")}
             >
-              Currently hosting (3)
+              Currently hosting ({currentlyHosting.length})
             </div>
             <div
               className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "arrivingSoon"
@@ -761,7 +826,8 @@ useEffect(() => {
               Pending review ({pendingReviews.length})
             </div>
           </div>
-          <div className="tab-content">{renderTabContent()}</div>
+
+        {!loading?<div className="tab-content">{renderTabContent()}</div>:<div className="tab-content flex  space-x-3 w-fit p-4">{SkeletonLoader}</div>}
 
           <div className="my-10 bg-orange-100 p-5">
             <h1 className="mb-5 text-2xl">Share more details</h1>

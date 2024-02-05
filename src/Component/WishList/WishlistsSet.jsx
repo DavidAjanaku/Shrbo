@@ -483,7 +483,7 @@ const WishlistsSet = () => {
                 </svg>
               </div>
             </button>
-            <img className=' h-[210px] md:h-[180px] object-cover' src={picture} alt={`Apartment in ${group.location}`} />
+            <img className=' h-[210px] md:h-[180px] object-cover' src={picture.images} alt={`Apartment in ${group.location}`} />
           </div>
         ))}
       </Carousel>
