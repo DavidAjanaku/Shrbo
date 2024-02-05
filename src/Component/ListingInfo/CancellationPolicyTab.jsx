@@ -29,17 +29,17 @@ const CancellationPolicyTab = () => {
   switch (cancellationPolicy) {
     case "Flexible Cancellation Policy":
       policyText =
-        "We offer a flexible cancellation policy that allows you to cancel your reservation free of charge within 48 hours of booking, provided that the check-in date is at least 10 days away. We believe in giving our guests the freedom to plan their trips without financial stress in the early stages of booking.";
+        "Cancelling within 48 hours of booking is free, and guest will have a full refund of their total booking amount. Cancellation after 48 hours, guest will be refunded 70% of their total booking amount.";
       break;
 
     case "Moderate Cancellation Policy":
       policyText =
-        "If you need to cancel your reservation within 7 days of the check-in date, you are eligible for a refund of 50% of the total booking amount.";
+        "Cancellation after booking, guest will be refunded 70% of their total booking amount.";
       break;
 
     case "Strict Cancellation Policy":
       policyText =
-        "Cancellations made within 5 days of the check-in date are non-refundable";
+        "Cancellation after booking, guest will be refunded 50% of their total booking amount.";
       break;
 
     default:
