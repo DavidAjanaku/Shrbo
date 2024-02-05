@@ -14,7 +14,6 @@ import BottomNavigation from "../Component/Navigation/BottomNavigation";
 import Header from "../Component/Navigation/Header";
 import Axios from "../Axios";
 import { Spin } from 'antd';
-import SkeletonLoader from "../Loader/SkeletonLoader";
 const ListingInfoMain = () => {
   const { id } = useParams(); // Get the ID parameter from the route
   const [listingDetails, setListingDetails] = useState(null);
