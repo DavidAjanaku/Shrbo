@@ -1,4 +1,22 @@
 import React from "react";
+import {
+  FaHome,
+  FaHotel,
+  FaBed,
+  FaBuilding,
+  FaPalette,
+  FaCity,
+  FaDog,
+  FaTree,
+  FaUserFriends,
+  FaShopify,
+  FaWater,
+  FaLandmark,
+  FaChartBar,
+  FaMountain,
+  FaRuler,
+  FaInfoCircle,
+} from "react-icons/fa";
 
 const HostedBy = (props) => {
   const {
@@ -22,45 +40,73 @@ const HostedBy = (props) => {
 
     // it should have a "url" object aswell for Svg images
   ];
+
+  const propertyTypeIcons = {
+    home: <FaHome />,
+    hotel: <FaHotel />,
+    bed: <FaBed />,
+    building: <FaBuilding />,
+    art: <FaPalette />,
+    house: <FaHome />,
+
+    city: <FaCity />,
+    dog: <FaDog />,
+    tree: <FaTree />,
+    userFriends: <FaUserFriends />,
+    shopify: <FaShopify />,
+    water: <FaWater />,
+    landmark: <FaLandmark />,
+    chartBar: <FaChartBar />,
+    mountain: <FaMountain />,
+    guestHouse: <FaBed />,
+    apartment: <FaCity />,
+    office: <FaCity />,
+    art: <FaPalette />,
+    cityApartments: <FaCity />,
+    petFriendlyRetreats: <FaDog />,
+    treehouseRetreats: <FaTree />,
+    familyFriendlyHomes: <FaHome />,
+    boutiqueVillas: <FaShopify />,
+    lakesideSerenity: <FaWater />,
+    desertOases: <FaLandmark />,
+    urbanGetaways: <FaCity />,
+    countryside: <FaHome />,
+    luxuryEstate: <FaCity />,
+    trending: <FaChartBar />,
+    beachfrontBliss: <FaLandmark />,
+    mountainRetreats: <FaMountain />,
+  };
+
+  const propertyTypeIcon = propertyTypeIcons[property_type];
+
   const descriptionItems = hostHomeDescriptions.map((description) => (
     <li key={description.id}>{description.description}</li>
   )); // Rooms Like 2 bedroom, living room, 3 bath room , 2 toilet
   const Rooms = room_info.map((amenity) => (
     <li
-      className="flex flex-nowrap content-normal   flex-col p-4  gap-4 justify-between   
-                lg:justify-normal  lg:items-center  lg:flex-row   min-h-[72px]
-                rounded-3xl border lg:py-4 lg:px-6  "
+      className="flex flex-nowrap content-normal flex-col p-4 gap-4 justify-between   
+              lg:justify-normal  lg:items-center  lg:flex-row   min-h-[56px]
+              rounded-xl border lg:py-4 lg:px-6  "
       key={amenity.id}
     >
-      <div className="   ">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="24px"
-          height="24px"
-        >
-          <path
-            d="M21,14V15C21,16.91 19.93,18.57 18.35,19.41L19,22H17L16.5,20C16.33,20 16.17,
-                    20 16,20H8C7.83,20 7.67,20 7.5,20L7,22H5L5.65,19.41C4.07,18.57 3,16.91 3,15V14H2V12H20V5A1,
-                    1 0 0,0 19,4C18.5,4 18.12,4.34 18,4.79C18.63,5.33 19,6.13 19,7H13A3,3 0 0,1 16,4C16.06,4 16.11,
-                    4 16.17,4C16.58,2.84 17.69,2 19,2A3,3 0 0,1 22,5V14H21V14M19,14H5V15A3,3 0 0,0 8,18H16A3,3 0 0,0 19,15V14Z"
-          />
-        </svg>
-      </div>
+      <div className="   ">{propertyTypeIcons[amenity.text]}</div>
       <div className="  overflow-hidden text-ellipsis box-border block  ">
-        <div className=" text-xs lg:text-sm overflow-clip    font-semibold ">
-          {amenity.text}
+        <div className="text-xs lg:text-sm overflow-clip font-semibold">
+          {amenity.text === "property_type" ? `Property Type: ${property_type}` : ""}
+          {amenity.text === "guest_choice" ? `Guest Choice: ${guest_choice}` : ""}
+         <span className="uppercase"> {amenity.text}</span>
         </div>
       </div>
     </li>
   ));
+  
 
   // Perks Like Khalifa view , Cinema etc
 
   const perks_info = [
     {
       id: 1,
-      text: "  Home Descriptions      ",
+      text: "Home Descriptions",
       description: descriptionItems,
     },
     {
@@ -68,13 +114,15 @@ const HostedBy = (props) => {
       text: guest_choice,
       description: (() => {
         switch (guest_choice) {
-          case "An entire place":
-            return "Guests have the whole place to themselves.";
-          case "A room":
-            return "Guests have the whole place to themselves.";
-          case "A shared room":
-            return "Guests have the whole place to themselves.";
-          default:
+          case "house":
+            return "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.";
+            case "hotel":
+              return "Cozy up in your own private room while sharing common spaces with other guests.";
+              case "A shared room":
+                return "Share a room with other travelers and enjoy a communal living experience.";
+                case "guestHouse":
+                  return "Rent an entire guest house with all the amenities for an exclusive stay.";
+                  default:
             return "Cancellation policy information not available.";
         }
       })(),
@@ -98,28 +146,61 @@ const HostedBy = (props) => {
   ];
 
   const perks = perks_info.map((perk) => (
-    <div key={perk.id} className="flex box-border ">
-      <div className=" shrink-0 min-w-[24px]  block ">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="24px"
-          height="24px"
-        >
-          <path
-            d="M21,14V15C21,16.91 19.93,18.57 18.35,19.41L19,22H17L16.5,20C16.33,20 16.17,
-                    20 16,20H8C7.83,20 7.67,20 7.5,20L7,22H5L5.65,19.41C4.07,18.57 3,16.91 3,15V14H2V12H20V5A1,
-                    1 0 0,0 19,4C18.5,4 18.12,4.34 18,4.79C18.63,5.33 19,6.13 19,7H13A3,3 0 0,1 16,4C16.06,4 16.11,
-                    4 16.17,4C16.58,2.84 17.69,2 19,2A3,3 0 0,1 22,5V14H21V14M19,14H5V15A3,3 0 0,0 8,18H16A3,3 0 0,0 19,15V14Z"
-          />
-        </svg>
+    <div key={perk.id} className="flex items-center box-border ">
+      <div className="shrink-0 min-w-[24px] block">
+        {perk.text === "Home Descriptions" ? (
+          <FaInfoCircle size={24}/> // Icon for home description
+        ) : perk.text === "Cancellation Policy" ? (
+          <FaRuler  size={24}/> // Icon for cancellation policy
+        ) : perk.text === "Hotel" ? (
+          <FaHotel size={24}/> // Icon for Hotel
+        ) : perk.text === "Guest House" ? (
+          <FaBed size={24}/> // Icon for Guest House
+        ) : perk.text === "Apartment" ? (
+          <FaCity size={24}/> // Icon for Apartment
+        ) : perk.text === "Office" ? (
+          <FaBuilding size={24}/> // Icon for Office
+        ) : perk.text === "Art" ? (
+          <FaPalette size={24}/> // Icon for Art
+        ) : perk.text === "City Apartments" ? (
+          <FaCity size={24}/> // Icon for City Apartments
+        ) : perk.text === "Pet-Friendly Retreats" ? (
+          <FaDog size={24}/> // Icon for Pet-Friendly Retreats
+        ) : perk.text === "Treehouse Retreats" ? (
+          <FaTree size={24}/> // Icon for Treehouse Retreats
+        ) : perk.text === "Family-Friendly Homes" ? (
+          <FaHome size={24}/> // Icon for Family-Friendly Homes
+        ) : perk.text === "Boutique Villas" ? (
+          <FaShopify size={24}/> // Icon for Boutique Villas
+        ) : perk.text === "Lakeside Serenity" ? (
+          <FaWater size={24}/> // Icon for Lakeside Serenity
+        ) : perk.text === "Desert Oases" ? (
+          <FaLandmark size={24}/> // Icon for Desert Oases
+        ) : perk.text === "Urban Getaways" ? (
+          <FaCity size={24}/> // Icon for Urban Getaways
+        ) : perk.text === "Countryside" ? (
+          <FaHome size={24}/> // Icon for Countryside
+        ) : perk.text === "Luxury Estate" ? (
+          <FaCity size={24}/> // Icon for Luxury Estate
+        ) : perk.text === "Trending" ? (
+          <FaChartBar size={24}/> // Icon for Trending
+        ) : perk.text === "Beachfront Bliss" ? (
+          <FaLandmark size={24}/> // Icon for Beachfront Bliss
+        ) : perk.text === "Mountain Retreats" ? (
+          <FaMountain size={24}/> // Icon for Mountain Retreats
+        ) : (
+          <FaHome size={24}/> // Default icon
+        )}
       </div>
-      <div className=" ml-4 block ">
-        <div className=" text-base font-[500] ">{perk.text}</div>
-        <div className=" text-sm  ">{perk.description}</div>
+      <div className="ml-4 block">
+        <div className="text-base font-[500]">{perk.text}</div>
+        <div className="text-sm list-none text-gray-400 flex space-x-3">
+          {perk.description}
+        </div>
       </div>
     </div>
   ));
+  
 
   return (
     <div className="w-full">
@@ -141,7 +222,7 @@ const HostedBy = (props) => {
                         <img src="https://a0.muscache.com/im/pictures/user/82130759-fbba-4012-ac60-51d5b0e4801e.jpg?im_w=240"   /> </div> 
                     </div> */}
         </div>
-        <ul className=" example grid grid-cols-3  w-full gap-2 overflow-x-scroll list-disc box-border grid-rows-1   ">
+        <ul className=" example flex   w-full gap-2 overflow-x-scroll list-disc box-border    ">
           {Rooms}
         </ul>
       </div>

@@ -155,8 +155,6 @@ export default function HostHome({ match }) {
     setSelectedTime(e.target.value);
   };
 
- 
-
   const handleVideoUpload = (e) => {
     const file = e.target.files[0];
 
@@ -373,20 +371,20 @@ export default function HostHome({ match }) {
       id: "house",
       label: "An entire place",
       icon: <FaHome />,
-      description: "Guests have the whole place to themselves.",
+      description: "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.",
     },
     {
       id: "hotel",
       label: "A room",
       icon: <FaHotel />,
-      description: "Guests have the whole place to themselves.",
+      description: "Cozy up in your own private room while sharing common spaces with other guests.",
     },
 
     {
       id: "guestHouse",
       label: "A shared room",
       icon: <FaBed />,
-      description: "Guests have the whole place to themselves.",
+      description: "Rent an entire guest house with all the amenities for an exclusive stay.",
     },
   ];
 
@@ -540,7 +538,7 @@ export default function HostHome({ match }) {
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
-   
+
     {
       id: "First aid kit",
       label: "First aid kit",
@@ -1365,7 +1363,9 @@ export default function HostHome({ match }) {
                         <FaCloudUploadAlt className="text-4xl mx-auto" />
                       </div>
                       <p className="mb-2">Click or Drag Photos Here</p>
-                      <p className="text-sm font-bold text-xl">Choose at least 5 photos</p>
+                      <p className="text-sm font-bold text-xl">
+                        Choose at least 5 photos
+                      </p>
                       <input
                         type="file"
                         multiple
@@ -1378,7 +1378,9 @@ export default function HostHome({ match }) {
                     </label>
                   </div>
 
-                  <p className="text-gray-400 font-bold">Choose at least 5 photos</p>
+                  <p className="text-gray-400 font-bold">
+                    Choose at least 5 photos
+                  </p>
                 </div>
                 <div className="flex flex-wrap mt-6">
                   {uploadedImages.map((image) => (
@@ -1419,7 +1421,7 @@ export default function HostHome({ match }) {
           </div>
         );
 
-        case 6: // Step for hosting type and property features
+      case 6: // Step for hosting type and property features
         return (
           <div className="mx-auto flex justify-center p-4">
             <div className="overflow-auto">
@@ -1448,20 +1450,24 @@ export default function HostHome({ match }) {
                       id="videoInput"
                     />
                   </label>
-      
+
                   <p className="text-slate-500">Maximum file size: 20MB</p>
                   <p className="text-slate-500">Maximum duration: 1 minute</p>
-      
+
                   {selectedVideo && (
                     <div className="mt-4">
                       <p className="text-lg font-semibold mb-2">
                         Selected Video: {selectedVideo.name}
                       </p>
                       <p className="text-slate-500">
-                        Size: {(selectedVideo.size / (1024 * 1024)).toFixed(2)} MB
+                        Size: {(selectedVideo.size / (1024 * 1024)).toFixed(2)}{" "}
+                        MB
                       </p>
                       <video controls className="mt-2">
-                        <source src={apartment.hosthomevideo} type="video/mp4" />
+                        <source
+                          src={apartment.hosthomevideo}
+                          type="video/mp4"
+                        />
                       </video>
                       <button
                         onClick={handleRemoveVideo}
@@ -1471,16 +1477,22 @@ export default function HostHome({ match }) {
                       </button>
                     </div>
                   )}
-      
+
                   {/* Display existing video from fetched data */}
                   {apartment.hosthomevideo && (
                     <div className="mt-4">
                       <p className="text-lg font-semibold mb-2">
                         Existing Video: <br />
-                        <p className="break-words"> {apartment.hosthomevideo}</p>
+                        <p className="break-words">
+                          {" "}
+                          {apartment.hosthomevideo}
+                        </p>
                       </p>
                       <video controls className="mt-2">
-                        <source src={apartment.hosthomevideo} type="video/mp4" />
+                        <source
+                          src={apartment.hosthomevideo}
+                          type="video/mp4"
+                        />
                       </video>
                     </div>
                   )}
@@ -1489,7 +1501,6 @@ export default function HostHome({ match }) {
             </div>
           </div>
         );
-      
 
       case 7: // Step for adding a house title
         const maxCharacterCount = 50;
