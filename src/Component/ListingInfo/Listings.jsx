@@ -98,7 +98,7 @@ const Listings = ({ user, homes, loading }) => {
 
       <div className=''>
 
-        <div className=' h-[250px] w-[270px] rounded-xl object-cover skeleton-loader text-transparent' />
+        <div className=' h-[250px] w-[330px]  md:w-[270px] rounded-xl  skeleton-loader text-transparent' />
       </div>
 
 
