@@ -10,6 +10,62 @@ import { Link } from "react-router-dom";
 import PaginationExample from "../PaginationExample";
 import BottomNavigation from "../Navigation/BottomNavigation";
 import Header from "../Navigation/Header";
+import {
+  FaHome,
+  FaHotel,
+  FaBed,
+  FaBuilding,
+  FaTrash,
+  FaVideo,
+  FaPalette,
+  FaCity,
+  FaDog,
+  FaTree,
+  FaUserFriends,
+  FaShopify,
+  FaWater,
+  FaLandmark,
+  FaChartBar,
+  FaMountain,
+  FaWifi,
+  FaTv,
+  FaUtensils,
+  FaHandsWash,
+  FaSnowflake,
+  FaParking,
+  FaSwimmingPool,
+  FaHotTub,
+  FaFire,
+  FaBell,
+  FaFirstAid,
+  FaFireExtinguisher,
+  FaSmoking,
+  FaTemperatureHigh,
+  FaSuitcase,
+  FaShower,
+  FaDumbbell,
+  FaWheelchair,
+  FaPaw,
+  FaCoffee,
+  FaBook,
+  FaChessBoard,
+  FaLaptop,
+  FaAirFreshener,
+  FaPaperclip,
+  FaSnowboarding,
+  FaArrowUp,
+  FaObjectGroup,
+  FaWaveSquare,
+  FaHotdog,
+  FaBox,
+  FaUser,
+  FaCamera,
+  FaShieldAlt,
+  FaExclamationTriangle,
+  FaCloudUploadAlt,
+  FaUtensilSpoon,
+  FaSmog,
+} from "react-icons/fa";
 
 
 export default function Trip() {
@@ -20,6 +76,46 @@ export default function Trip() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filteredTrips, setFilteredTrips] = useState([]);
+
+  const amenityIcons = {
+    Wifi: <FaWifi />,
+    TV: <FaTv />,
+    Kitchen: <FaUtensilSpoon />,
+    Washer: <FaHandsWash />,
+    "Air conditioning": <FaSnowflake />,
+    // Add icons for the remaining amenities
+    "Hot tub": <FaHotTub />,
+    "fire extinguisher": <FaFireExtinguisher />,
+    "first aid kit": <FaFirstAid />,
+    Pool: <FaSwimmingPool />,
+    "Free parking on premises": <FaParking />,
+    Essentials: <FaSuitcase />,
+    Gym: <FaDumbbell />,
+    "Wheelchair accessible": <FaWheelchair />,
+    "Board games": <FaChessBoard />,
+    Books: <FaBook />,
+    Refrigerator: <FaBox />,
+    Toaster: <FaHotdog />,
+    Microwave: <FaWaveSquare />,
+    Oven: <FaObjectGroup />,
+    "Smoking allowed": <FaSmoking />,
+    Balcony: <FaBuilding />,
+    Elevator: <FaArrowUp />,
+    "Coffee maker": <FaCoffee />,
+    "Tea kettle": <FaUtensils />,
+    Dishwasher: <FaHandsWash />,
+    "Pets allowed": <FaPaw />,
+    Hangers: <FaPaperclip />,
+    "Laptop-friendly workspace": <FaLaptop />,
+    Iron: <FaSnowboarding />,
+    "Fire pit": <FaFire />,
+    "Indoor fireplace": <FaFire />,
+    "Smoke alarm": <FaSmog />,
+    Heating: <FaTemperatureHigh />,
+    Shampoo: <FaShower />,
+    "Hair dryer": <FaShower />,
+    // "Smoke alarm": <FaBell />,
+  };
 
 
   useEffect(() => {
@@ -61,7 +157,7 @@ export default function Trip() {
 
 
 
-  },[]);
+  }, []);
 
 
   const [selectedTab, setSelectedTab] = useState("All"); // Default to "All" trips
@@ -104,7 +200,7 @@ export default function Trip() {
   //   ...trips,
   // ];
 
- 
+
 
   const SkeletonLoader = Array.from({ length: 8 }).map((group, index) => (
     <div
@@ -156,10 +252,10 @@ export default function Trip() {
         <header className="text-4xl pl-6 py-6 font-bold">Trips History</header>
         <div className="flex flex-wrap  p-4">
           <button
-          disabled={loading}
+            disabled={loading}
             className={`${selectedTab === "All"
-                ? "bg-orange-400  text-white"
-                : "bg-gray-200 text-gray-600"
+              ? "bg-orange-400  text-white"
+              : "bg-gray-200 text-gray-600"
               } px-4 py-2 rounded-full m-2 `}
             onClick={() => filterTripsByTab("All")}
             title="Show all trips" // Add the title attribute
@@ -170,8 +266,8 @@ export default function Trip() {
           <button
             disabled={loading}
             className={`${selectedTab === "Reserved"
-                ? "bg-orange-400 text-white"
-                : "bg-gray-200 text-gray-600"
+              ? "bg-orange-400 text-white"
+              : "bg-gray-200 text-gray-600"
               } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Reserved")}
             title="The booking is confirmed, and the check-in date is in the future. The trip has not yet started.
@@ -180,10 +276,10 @@ export default function Trip() {
             Reserved
           </button>
           <button
-             disabled={loading}
+            disabled={loading}
             className={`${selectedTab === "Checked in"
-                ? "bg-orange-400 text-white"
-                : "bg-gray-200 text-gray-600"
+              ? "bg-orange-400 text-white"
+              : "bg-gray-200 text-gray-600"
               } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Checked in")}
             title="The booking is confirmed, and the check-in date is approaching. This status is typically used for upcoming trips."
@@ -192,10 +288,10 @@ export default function Trip() {
             Checked In
           </button>
           <button
-             disabled={loading}
+            disabled={loading}
             className={`${selectedTab === "Checked Out"
-                ? "bg-orange-400 text-white"
-                : "bg-gray-200 text-gray-600"
+              ? "bg-orange-400 text-white"
+              : "bg-gray-200 text-gray-600"
               } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Checked Out")}
             title="The trip has ended, and both the check-in and check-out dates have passed. This status indicates that the reservation is no longer active.
@@ -204,10 +300,10 @@ export default function Trip() {
             Checked Out
           </button>
           <button
-             disabled={loading}
+            disabled={loading}
             className={`${selectedTab === "Cancelled"
-                ? "bg-orange-400 text-white"
-                : "bg-gray-200 text-gray-600"
+              ? "bg-orange-400 text-white"
+              : "bg-gray-200 text-gray-600"
               } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Cancelled")}
             title="The booking has been canceled by either the guest or the host. Cancellation can occur for various reasons, and the status indicates that the reservation is no longer active.
@@ -218,8 +314,8 @@ export default function Trip() {
 
         </div>
 
-       {!loading?
-        <div className="flex flex-wrap">
+        {!loading ?
+          <div className="flex flex-wrap">
             {filteredTrips.length > 0 ? (
               filteredTrips.map((trip, index) => (
                 <div
@@ -290,11 +386,11 @@ export default function Trip() {
               </div>
             )}
           </div>
-            :
-            <div className="flex flex-wrap justify-center">
+          :
+          <div className="flex flex-wrap justify-center">
 
-              {SkeletonLoader}
-            </div>
+            {SkeletonLoader}
+          </div>
         }
       </div>
 
@@ -336,8 +432,8 @@ export default function Trip() {
                       key={index}
                       onClick={() => changeMainPhoto(index)}
                       className={`cursor-pointer ${selectedPhotoIndex === index
-                          ? "border-2 border-orange-400"
-                          : ""
+                        ? "border-2 border-orange-400"
+                        : ""
                         }`}
                     >
                       <img
@@ -395,9 +491,17 @@ export default function Trip() {
 
                 <div className="my-4">
                   <h1 className="font-bold text-2xl">Amenities</h1>
-                  {selectedTrip.amenities.map((amenity, index) => (
-                    <li key={index}>{amenity}</li>
-                  ))}
+                  <ul>
+                    {selectedTrip.amenities.map((amenity, index) => (
+                      <li key={index} className="flex items-center space-x-3 py-2" >
+                        <span className="text-lg">
+                          {amenityIcons[amenity] || <FaTv />}
+                        </span>
+                        <span className="text-lg">{amenity}</span>
+                      </li>
+                    ))}
+
+                  </ul>
                 </div>
               </div>
             </div>
@@ -460,7 +564,7 @@ export default function Trip() {
         </div>
       )}
       <div className="my-10 pb-32">
-        {(trips&&trips.length > 0 )&& <PaginationExample />}
+        {(trips && trips.length > 0) && <PaginationExample />}
       </div>
       <BottomNavigation />
     </div>

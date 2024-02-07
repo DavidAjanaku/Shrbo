@@ -48,7 +48,6 @@ const HostedBy = (props) => {
     building: <FaBuilding />,
     art: <FaPalette />,
     house: <FaHome />,
-
     city: <FaCity />,
     dog: <FaDog />,
     tree: <FaTree />,
@@ -61,7 +60,6 @@ const HostedBy = (props) => {
     guestHouse: <FaBed />,
     apartment: <FaCity />,
     office: <FaCity />,
-    art: <FaPalette />,
     cityApartments: <FaCity />,
     petFriendlyRetreats: <FaDog />,
     treehouseRetreats: <FaTree />,
