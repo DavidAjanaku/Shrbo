@@ -49,6 +49,7 @@ const ListingInfoMain = () => {
 
     fetchListingDetails();
   }, [id]);
+  
 
   if (!listingDetails) {
     // Loading state or return null
@@ -86,6 +87,7 @@ const ListingInfoMain = () => {
             </div>
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
             <HostProfilePreview
+            userId={listingDetails?.user?.id || ""}
               userProfilePicture={listingDetails?.user?.profilePicture || ""}
               userRating={listingDetails?.user?.rating || 0}
               userReviews={listingDetails?.user?.reviews || 0}
@@ -110,6 +112,7 @@ const ListingInfoMain = () => {
           </div>
           <div className=" md:ml-[8.33333%] md:w-[33.33333%] hidden md:block relative mr-0 ">
             <ListingForm
+            id={id}
               price={listingDetails?.price}
               reservations={listingDetails?.reservations}
               reservation={listingDetails?.reservation}

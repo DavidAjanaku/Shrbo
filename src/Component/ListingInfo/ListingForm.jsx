@@ -475,7 +475,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
           centered={true}
           // width={"600px"}
         >
-          <ReportListing />
+          <ReportListing  id={id}/>
         </Popup>
 
         {/* <CustomModal isOpen={isReportModalVisible} onClose={()=>setIsReportModalVisible(false)}   >

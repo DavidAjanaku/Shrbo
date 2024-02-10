@@ -124,7 +124,7 @@ function App() {
               <Route path="/Hosting" element={<Hosting />} />
               <Route path="/ConfirmDetails" element={<ConfirmDetails />} />
               <Route path="/Listings" element={<Listings />} />
-              <Route path="/UserDetails" element={<UserDetails />} />
+              <Route path="/UserDetails/:id" element={<UserDetails />} />
               <Route path="/Reservations" element={<Reservations />} />
               <Route path="/HostAnalysis" element={<HostAnalysis />} />
               <Route path="/Schduler" element={<Schduler />} />
