@@ -27,6 +27,10 @@ const HouseRulesTab = () => {
 
   const rules = listingDetails.rules || [];
   const notices = listingDetails.notices || [];
+  const checkin = listingDetails.checkin || [];
+
+  const checkout = listingDetails.checkout || [];
+
   const checkInString = listingDetails.checkin || "";
   const checkInParts = checkInString.match(/(\d+):(\d+) (AM|PM)/i);
 
@@ -60,11 +64,11 @@ const HouseRulesTab = () => {
         {checkInTime && (
           <div className=" border-gray-200 ">
             <p className="text-sm">
-              <strong>Check-in:</strong> {formatTime(checkInTime)}
+              <strong>Check-in:</strong> {checkin}
             </p>
             {checkoutTime && (
               <p className="text-sm mt-2">
-                <strong>Checkout:</strong> {formatTime(checkoutTime)}
+                <strong>Checkout:</strong> {checkout}
               </p>
             )}
            

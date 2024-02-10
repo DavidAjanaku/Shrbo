@@ -12,8 +12,13 @@ const HostProfilePreview = ({
   totalHomes,
   yearsOfHosting,
   userName,
+  userId
 }) => {
  
+
+  const { hostId } = useParams(); // Assuming you're using React Router for navigation
+  const [hostInfo, setHostInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   
 
@@ -58,6 +63,22 @@ const HostProfilePreview = ({
       </div>
     </span>
   ));
+  console.log(userId);
+
+  useEffect(() => {
+    // Fetch host information and reviews
+    Axios.get(`/hostReview/${userId}`)
+      .then((response) => {
+        setHostInfo(response.data);
+         console.log(userId);
+
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching host information:", error);
+        setLoading(false);
+      });
+  }, [hostId]);
 
   return (
     <div className="w-full mb-6 ">
@@ -139,7 +160,7 @@ const HostProfilePreview = ({
           </div>
 
           <div className="block w-full box-border px-7 lg:px-8 pb-4 ">
-            <Link to="/UserDetails">
+          <Link to={`/UserDetails/${userId}`}>
               <button className=" w-full text-base font-normal text-white rounded-md border border-solid py-[14px] px-6 bg-[#222222]  ">
                 View host Profile
               </button>

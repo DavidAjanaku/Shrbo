@@ -10,6 +10,7 @@ import CustomModal from "../CustomModal";
 import { FlagOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import Axios from "../../Axios";
+import { useDateContext } from "../../ContextProvider/BookingInfo";
 
 export default function ListingForm({ reservations, reservation, guest }) {
   function showModal(e) {
@@ -20,24 +21,51 @@ export default function ListingForm({ reservations, reservation, guest }) {
   const [messageModalVisible, setMessageModalVisible] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const [showMessageHostButton, setShowMessageHostButton] = useState(true);
+
   const messageRef = useRef(null);
-  const [checkInDate, setCheckInDate] = useState(null);
-  const [checkOutDate, setCheckOutDate] = useState(null);
+  // const [checkInDate, setCheckInDate] = useState(null);
+  // const [checkOutDate, setCheckOutDate] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
-  const [pets, setPets] = useState(0);
-  const [infants, setInfants] = useState(0);
+  // const [adults, setAdults] = useState(1);
+  // const [children, setChildren] = useState(0);
+  // const [pets, setPets] = useState(0);
+  // const [infants, setInfants] = useState(0);
   const [price, setPrice] = useState(null); // Initialize with a default value if needed
   const [bookedDates, setBookedDates] = useState([]); // Add this line
-  const [totalPrice, setTotalPrice] = useState(null);
+  const [totalPrice] = useState(null);
   const [selectedCheckIn, setSelectedCheckIn] = useState(null);
   const [selectedCheckOut, setSelectedCheckOut] = useState(null);
   const [hostFee, setHostFee] = useState(0);
-  const [serviceFee, setServiceFee] = useState(0);
-  const [taxFee, setTaxFee] = useState(0);
-  const [totalCost, setTotalCost] = useState(0);
+  const [serviceFees, setServiceFees] = useState(0);
+  const [taxFees, setTaxFees] = useState(0);
+  const [totalCosts, setTotalCosts] = useState(0);
+  const [securityDeposit, setSecurityDeposit] = useState(0);
+  const [guestFee, setGuestFee] = useState(0);
 
+  const {
+    checkInDate,
+    setCheckInDate,
+    checkOutDate,
+    setCheckOutDate,
+    adults,
+    setAdults,
+
+    pets,
+    setPets,
+    hostFees,
+    setHostFees,
+    serviceFee,
+    setServiceFee,
+    setTax,
+    setTotalPrice,
+    totalCost,
+    setTotalCost,
+    setHousePrice,
+    nights,
+    setNights,
+    setSecurityDeposits,
+  } = useDateContext();
 
   const [form] = Form.useForm(); // Define the form variable
   const [listingDetails, setListingDetails] = useState(null);
@@ -63,6 +91,15 @@ export default function ListingForm({ reservations, reservation, guest }) {
     // Close the message modal
     setMessageModalVisible(false);
   };
+  useEffect(() => {
+    if (reservations && reservations.length > 0) {
+      const experiencedGuest = reservations.some(
+        (reservation) => reservation.reservation === "An experienced guest"
+      );
+      setShowMessageHostButton(!experiencedGuest);
+    }
+  }, [reservations]);
+
   const { id } = useParams(); // Get the ID parameter from the route
 
   useEffect(() => {
@@ -72,6 +109,10 @@ export default function ListingForm({ reservations, reservation, guest }) {
         setListingDetails(response.data.data);
         console.log(response.data.data);
         setPrice(response.data.data.price); // Adjust this line based on your API response structure
+        setHousePrice(price);
+        setSecurityDeposit(parseInt(response.data.data.securityDeposit));
+        setGuestFee(response.data.data.guest_fee);
+        setSecurityDeposits(parseInt(response.data.data.securityDeposit));
 
         // Extract booked dates and convert them to Date objects
         const bookedDates = response.data.data.bookedDates.map(
@@ -103,36 +144,45 @@ export default function ListingForm({ reservations, reservation, guest }) {
     calculateTotalPrice(checkInDate, date);
   };
 
-  
-
   const calculateTotalPrice = (checkIn, checkOut) => {
-  
     // Ensure that checkIn and checkOut are valid dates
     if (checkIn instanceof Date && checkOut instanceof Date) {
       const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
       const nightlyPrice = Number(price) || 0; // Convert price to a number, default to 0 if NaN
       const basePrice = nights * nightlyPrice;
-  
+
       // Assuming host fees is 20%, service fee is 5%, and tax is 4%
       const hostFees = 0.07 * basePrice;
-     const serviceFee = 0.01 * basePrice; // Assign a value to serviceFee
-     const  tax = 0.05 * basePrice;
-  
-      const totalPrice = nights * nightlyPrice;
-     const  TotalPrice = basePrice + hostFees + serviceFee + tax;
+      // const serviceFees = 0.01 * basePrice;
+      // const tax = 0.05 * basePrice;
 
+      const guest_fee = guestFee * nights;
+      console.log(guest_fee);
+      const securityDeposits = securityDeposit;
+      const totalPrice = nights * nightlyPrice;
+      const TotalPrice =
+        basePrice + securityDeposits;
+
+      setHousePrice(price);
+      console.log(nights);
+      setNights(nights);
       setTotalPrice(totalPrice);
-      setHostFee(hostFees)
-      setServiceFee(serviceFee)
-      setTaxFee(tax)
-      setTotalCost(TotalPrice)
+      setHostFee(hostFees);
+      setHostFees(hostFees);
+
+      setTotalCosts(totalCosts);
+      console.log(totalCosts);
+      setServiceFee(serviceFees);
+      setServiceFees(serviceFees);
+      // setTaxFees(tax);
+      // setTax(tax);
+
+      setTotalCost(TotalPrice);
     } else {
       // Set a default value when dates are not selected
       setTotalPrice(null);
     }
   };
-  
-  
 
   const calculateNumberOfNights = () => {
     if (checkInDate instanceof Date && checkOutDate instanceof Date) {
@@ -141,8 +191,6 @@ export default function ListingForm({ reservations, reservation, guest }) {
     return 1; // Default to 1 night if dates are not selected
   };
   let pricePerNight = Number(price).toLocaleString();
-
-  
 
   return (
     <div className=" block w-full h-full">
@@ -225,10 +273,11 @@ export default function ListingForm({ reservations, reservation, guest }) {
                 {/* <input className=' border rounded text-base font-normal '/> */}
                 <MyDropdown
                   adults={adults}
-                  children={children}
                   pets={pets}
-                  infants={infants}
-                  messageModalVisible={messageModalVisible} // Pass the prop here
+                  messageModalVisible={messageModalVisible}
+                  setAdults={setAdults}
+                  setPets={setPets}
+                  maxValue={guest} // Pass the guest value from the props as maxValue
                 />
 
                 {/* <ListingFormModal isModalVisible={isModalVisible} handleCancel={handleCancel} />
@@ -239,15 +288,14 @@ export default function ListingForm({ reservations, reservation, guest }) {
             {/* <!--total before and after tax--> */}
             <div className=" min-h-[1.5rem] w-full   p-3">
               <div className=" border-t py-4 flex flex-col gap-1">
-              {checkInDate && checkOutDate && (
-                <div className=" font-medium text-base box-border flex items-end justify-between break-words    ">
-                  <span> Total before tax </span>
-                  <div className=" whitespace-nowrap break-normal ">
-                  ₦ {Number(totalCost).toLocaleString()}
-
+                {checkInDate && checkOutDate && (
+                  <div className=" font-medium text-base box-border flex items-end justify-between break-words    ">
+                    <span> Total before  </span>
+                    <div className=" whitespace-nowrap break-normal ">
+                      ₦ {Number(totalCost).toLocaleString()}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
                 {checkInDate && checkOutDate && (
                   <div className=" font-normal text-sm box-border flex items-end justify-between break-words    ">
@@ -306,42 +354,47 @@ export default function ListingForm({ reservations, reservation, guest }) {
                                     <div className=" ">
                                       <div className=" mb-2 flex justify-between items-end break-words  ">
                                         <span className=" capitalize">
-                                          Host Fees
+                                          Security Deposit (Refundable)
                                         </span>
 
-                                        <div className=" ml-4 ">₦ {Number(hostFee).toLocaleString()}</div>
+                                        <div className=" ml-4 ">
+                                          ₦{" "}
+                                          {Number(
+                                            securityDeposit
+                                          ).toLocaleString()}
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                              <div className=" mb-2t box-border block">
+                              {/* <div className=" mb-2t box-border block">
                                 <div className=" flex items-end justify-between break-words    ">
                                   <div className=" block box-border">
                                     <span>Service Fee</span>
                                   </div>
                                   <div className=" ml-4 whitespace-nowrap block box-border   ">
-                                  ₦ {Number(serviceFee).toLocaleString()}
+                                    ₦ {Number(serviceFees).toLocaleString()}
                                   </div>
                                 </div>
-                              </div>
-                              <div className=" mb-2 box-border block">
+                              </div> */}
+                              {/* <div className=" mb-2 box-border block">
                                 <div className=" flex items-end justify-between break-words    ">
                                   <div className=" block box-border">
                                     <span>Tax</span>
                                   </div>
                                   <div className=" ml-4 whitespace-nowrap block box-border   ">
-                                  ₦ {Number(taxFee).toLocaleString()}
+                                    ₦ {Number(taxFees).toLocaleString()}
                                   </div>
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                             {/* Total */}
                             <div className="  py-4">
                               <div className=" font-bold text-lg flex items-end justify-between break-words    ">
                                 <span> Total </span>
                                 <div className=" whitespace-nowrap break-normal ">
-                                ₦ {Number(totalCost).toLocaleString()}
+                                  ₦ {Number(totalCost).toLocaleString()}
                                 </div>
                               </div>
                             </div>
@@ -372,21 +425,22 @@ export default function ListingForm({ reservations, reservation, guest }) {
 
             {/* <!--Submit button--> */}
             <div className="p-2">
-              <Link to="/RequestBook">
-                <button
-                  type="button"
-                  className="block w-full h-11 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
-                            text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
-                            focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
-                            focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
-                            dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
-                            dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
-                            ,0_4px_18px_0_rgba(59,113,202,0.1)]]"
-                >
-                  Book
-                </button>
-              </Link>
-
+            {showMessageHostButton && (
+    <button
+      type="button"
+      onClick={showMessageModal}
+      className="block w-full h-11 mt-3 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
+          text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
+          focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+          focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+          dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
+          dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
+          ,0_4px_18px_0_rgba(59,113,202,0.1)]"
+      disabled={!checkInDate || !checkOutDate}
+    >
+      Book
+    </button>
+  )}
               <button
                 type="button"
                 onClick={showMessageModal}
@@ -421,7 +475,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
           centered={true}
           // width={"600px"}
         >
-          <ReportListing />
+          <ReportListing  id={id}/>
         </Popup>
 
         {/* <CustomModal isOpen={isReportModalVisible} onClose={()=>setIsReportModalVisible(false)}   >
@@ -483,128 +537,28 @@ export default function ListingForm({ reservations, reservation, guest }) {
   );
 }
 
-// function MyDropdown({ adults, children, pets, infants, messageModalVisible }) {
-//   const [visible, setVisible] = useState(false);
-
-//   const toggleDropdown = () => {
-//     setVisible(!visible);
-//   };
-
-//   return (
-//     <div className="relative">
-//       <button
-//         className="w-full h-11 rounded bg-white  border-gray-300 pl-4 pr-10 py-2 text-left text-sm font-normal"
-//         onClick={toggleDropdown}
-//       >
-//         <span className="block">Guests</span>
-//         <span className="text-gray-500">
-//           {adults + children + pets + infants} guests
-//         </span>
-//       </button>
-
-//       {visible && (
-//         <div className="absolute top-full left-0 w-full bg-white border border-gray-300 shadow-lg rounded-b-lg mt-1 z-10">
-//           <div className="p-4">
-//             <div className="mb-4">
-//               <span className="font-medium text-lg">Guests</span>
-//             </div>
-//             <div className="mb-4">
-//               <span className="text-gray-600 text-sm">Adults</span>
-//               <button
-//                 className="ml-4 text-gray-400"
-//                 onClick={() => setAdults(adults + 1)}
-//               >
-//                 +
-//               </button>
-//               <span className="mx-2">{adults}</span>
-//               <button
-//                 className="text-gray-400"
-//                 onClick={() => setAdults(adults > 1 ? adults - 1 : 1)}
-//               >
-//                 -
-//               </button>
-//             </div>
-//             <div className="mb-4">
-//               <span className="text-gray-600 text-sm">Children</span>
-//               <button
-//                 className="ml-4 text-gray-400"
-//                 onClick={() => setChildren(children + 1)}
-//               >
-//                 +
-//               </button>
-//               <span className="mx-2">{children}</span>
-//               <button
-//                 className="text-gray-400"
-//                 onClick={() => setChildren(children > 0 ? children - 1 : 0)}
-//               >
-//                 -
-//               </button>
-//             </div>
-//             <div className="mb-4">
-//               <span className="text-gray-600 text-sm">Pets</span>
-//               <button
-//                 className="ml-4 text-gray-400"
-//                 onClick={() => setPets(pets + 1)}
-//               >
-//                 +
-//               </button>
-//               <span className="mx-2">{pets}</span>
-//               <button
-//                 className="text-gray-400"
-//                 onClick={() => setPets(pets > 0 ? pets - 1 : 0)}
-//               >
-//                 -
-//               </button>
-//             </div>
-//             <div className="mb-4">
-//               <span className="text-gray-600 text-sm">Infants</span>
-//               <button
-//                 className="ml-4 text-gray-400"
-//                 onClick={() => setInfants(infants + 1)}
-//               >
-//                 +
-//               </button>
-//               <span className="mx-2">{infants}</span>
-//               <button
-//                 className="text-gray-400"
-//                 onClick={() => setInfants(infants > 0 ? infants - 1 : 0)}
-//               >
-//                 -
-//               </button>
-//             </div>
-//             <button
-//               className="block w-full bg-orange-500 text-white text-center rounded py-2"
-//               onClick={toggleDropdown}
-//             >
-//               Done
-//             </button>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-function MyDropdown({ adults, children, pets, infants }) {
+function MyDropdown({ adults, pets, setAdults, setPets, maxValue }) {
   const [adultCount, setAdultCount] = useState(adults);
-  const [childCount, setChildCount] = useState(children);
   const [petCount, setPetCount] = useState(pets);
-  const [infantCount, setInfantCount] = useState(infants);
   const [visible, setVisible] = useState(false);
 
   const handleDecrease = (setter, value) => {
     if (value > 0) {
-      setter(parseInt(value, 10) - 1);
+      setter(value - 1);
+    }
+  };
+  const handleIncrease = (setter, value) => {
+    if (value < maxValue) {
+      // Check against the maxValue
+      setter(value + 1);
     }
   };
 
-  const handleIncrease = (setter, value) => {
-    setter(parseInt(value, 10) + 1);
-  };
-
   const handleSubmit = () => {
-    // e.preventDefault();
     setVisible(!visible);
+    // Update the adults and pets counts in the parent component
+    setAdults(adultCount);
+    setPets(petCount);
   };
 
   const items = [
@@ -614,7 +568,7 @@ function MyDropdown({ adults, children, pets, infants }) {
     >
       <div className="flex items-center justify-between">
         <div className="flex-col">
-          <span className="text-lg">Adults:</span> <br />
+          <span className="text-lg">Guests:</span> <br />
           <p className="text-gray-400">Ages 13 or above</p>
         </div>
         <div className="space-x-2">
@@ -633,27 +587,7 @@ function MyDropdown({ adults, children, pets, infants }) {
           </Button>
         </div>
       </div>
-      <div className="flex items-center justify-between">
-        <div className="flex-col">
-          <span className="text-lg">Children:</span>
-          <p className="text-gray-400">Ages 2–12</p>
-        </div>
-        <div className="space-x-2">
-          <Button
-            shape="circle"
-            onClick={() => handleDecrease(setChildCount, childCount)}
-          >
-            -
-          </Button>
-          <span>{childCount}</span>
-          <Button
-            shape="circle"
-            onClick={() => handleIncrease(setChildCount, childCount)}
-          >
-            +
-          </Button>
-        </div>
-      </div>
+
       <div className="flex items-center justify-between">
         <div className="flex-col">
           <span className="text-lg">Pets:</span>
@@ -674,27 +608,6 @@ function MyDropdown({ adults, children, pets, infants }) {
           <Button
             shape="circle"
             onClick={() => handleIncrease(setPetCount, petCount)}
-          >
-            +
-          </Button>
-        </div>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex-col">
-          <span className="text-lg">Infants:</span>
-          <p className="text-gray-400">Under 2</p>
-        </div>
-        <div className="space-x-2">
-          <Button
-            shape="circle"
-            onClick={() => handleDecrease(setInfantCount, infantCount)}
-          >
-            -
-          </Button>
-          <span>{infantCount}</span>
-          <Button
-            shape="circle"
-            onClick={() => handleIncrease(setInfantCount, infantCount)}
           >
             +
           </Button>
@@ -727,19 +640,13 @@ function MyDropdown({ adults, children, pets, infants }) {
       <Space className="w-full">
         <button
           type="button"
-          className=" block m-2 ml-3 cursor-pointer overflow-hidden text-ellipsis text-start whitespace-nowrap text-base font-normal w-full min-w-full     "
+          className="block m-2 ml-3 cursor-pointer overflow-hidden text-ellipsis text-start whitespace-nowrap text-base font-normal w-full min-w-full"
         >
           <span className="block">Guests</span>
           <span className="text-gray-500">
-            {adultCount + childCount > 1
-              ? `${adultCount + childCount} guests`
-              : `${adultCount + childCount} guest`}{" "}
-            {infantCount != 0 &&
-              (infantCount > 1
-                ? `,${infantCount} infants`
-                : `,${infantCount} infant`)}{" "}
-            {petCount != 0 &&
-              (petCount > 1 ? `,${petCount} pets` : `,${petCount} pet`)}
+            {adultCount > 1 ? `${adultCount} guests` : `${adultCount} guest`}{" "}
+            {petCount !== 0 &&
+              (petCount > 1 ? `, ${petCount} pets` : `, ${petCount} pet`)}
           </span>
         </button>
       </Space>

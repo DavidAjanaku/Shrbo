@@ -51,7 +51,7 @@ import {
   FaCamera,
   FaShieldAlt,
   FaExclamationTriangle,
-} from "react-icons/fa"; import { LoadingOutlined } from "@ant-design/icons";
+} from "react-icons/fa";import { LoadingOutlined } from "@ant-design/icons";
 
 import { Spin } from "antd";
 import { useParams } from "react-router-dom";
@@ -291,9 +291,17 @@ export default function HostHome({ match }) {
     { id: "office", label: "Office", icon: <FaBuilding /> },
     { id: "art", label: "Art", icon: <FaPalette /> },
     { id: "cityApartments", label: "City Apartments", icon: <FaCity /> },
-    { id: "petFriendlyRetreats", label: "Pet-Friendly Retreats", icon: <FaDog /> },
+    {
+      id: "petFriendlyRetreats",
+      label: "Pet-Friendly Retreats",
+      icon: <FaDog />,
+    },
     { id: "treehouseRetreats", label: "Treehouse Retreats", icon: <FaTree /> },
-    { id: "familyFriendlyHomes", label: "Family-Friendly Homes", icon: <FaUserFriends /> },
+    {
+      id: "familyFriendlyHomes",
+      label: "Family-Friendly Homes",
+      icon: <FaUserFriends />,
+    },
     { id: "boutiqueVillas", label: "Boutique Villas", icon: <FaShopify /> },
     { id: "lakesideSerenity", label: "Lakeside Serenity", icon: <FaWater /> },
     { id: "desertOases", label: "Desert Oases", icon: <FaLandmark /> },
@@ -302,8 +310,11 @@ export default function HostHome({ match }) {
     { id: "luxuryEstate", label: "Luxury Estate", icon: <FaCity /> },
     { id: "trending", label: "Trending", icon: <FaChartBar /> },
     { id: "beachfrontBliss", label: "Beachfront Bliss", icon: <FaLandmark /> },
-    { id: "mountainRetreats", label: "Mountain Retreats", icon: <FaMountain /> },
-
+    {
+      id: "mountainRetreats",
+      label: "Mountain Retreats",
+      icon: <FaMountain />,
+    },
   ];
 
   const privacyTypes = [
@@ -311,20 +322,23 @@ export default function HostHome({ match }) {
       id: "house",
       label: "An entire place",
       icon: <FaHome />,
-      description: "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.",
+      description:
+        "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.",
     },
     {
       id: "hotel",
       label: "A room",
       icon: <FaHotel />,
-      description: "Cozy up in your own private room while sharing common spaces with other guests.",
+      description:
+        "Cozy up in your own private room while sharing common spaces with other guests.",
     },
 
     {
       id: "guestHouse",
       label: "A shared room",
       icon: <FaBed />,
-      description: "Rent an entire guest house with all the amenities for an exclusive stay.",
+      description:
+        "Rent an entire guest house with all the amenities for an exclusive stay.",
     },
   ];
 
@@ -1194,27 +1208,27 @@ export default function HostHome({ match }) {
                   <p className="text-gray-400">Choose at least 5 photos</p>
                 </div>
                 <div className="flex flex-wrap mt-6">
-                  {uploadedImages.map((image) => (
-                    <div key={image.id} className="relative p-2">
-                      <img
-                        src={image.src}
-                        alt="Houses"
-                        className="w-64 object-cover h-64"
-                      />
-
-                    </div>
-                  ))}
+                {uploadedImages.map((image) => (
+  <div key={image.id} className="relative p-2">
+    <img
+      src={image.src}
+      alt="Houses"
+      className="w-64 object-cover h-64"
+    />
+  
+  </div>
+))}
 
                   {/* Display existing photos from fetched data */}
                   {Array.isArray(apartment?.hosthomephotos) &&
                     apartment.hosthomephotos.map((photo) => (
-                      <div key={photo.id} className="relative p-2">
+                      <div key={photo.id}className="relative p-2">
                         <img
                           src={photo}
                           alt="Houses"
                           className="w-64 object-cover h-64"
                         />
-
+                       
                       </div>
                     ))}
                 </div>
@@ -1256,7 +1270,7 @@ export default function HostHome({ match }) {
                     <video controls className="mt-2">
                       <source src={apartment.hosthomevideo} type="video/mp4" />
                     </video>
-
+                   
                   </div>
                 )}
 
@@ -1270,7 +1284,7 @@ export default function HostHome({ match }) {
                     <video controls className="mt-2">
                       <source src={apartment.hosthomevideo} type="video/mp4" />
                     </video>
-
+                   
                   </div>
                 )}
               </div>
@@ -1488,7 +1502,10 @@ export default function HostHome({ match }) {
             <div className="overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
                 <h1 className="text-6xl">Add discounts</h1>
-                <p>Help your place stand out to get booked faster and earn your first reviews.</p>
+                <p>
+                  Help your place stand out to get booked faster and earn your
+                  first reviews.
+                </p>
               </div>
               <div className="pb-32">
                 <div className="flex flex-wrap w-full">
@@ -1502,9 +1519,9 @@ export default function HostHome({ match }) {
                     const matchingDiscount = apartment?.discounts.find(
                       (discount) => discount.discount.trim() === cleanedTypeId
                     );
-
-
-
+      
+                  
+      
                     return (
                       <div
                         key={type.id}
@@ -1527,8 +1544,8 @@ export default function HostHome({ match }) {
             </div>
           </div>
         );
-
-
+      
+      
 
       case 14: // Step for hosting type and property features
         const additionalRulesFromApartment =
@@ -1597,7 +1614,8 @@ export default function HostHome({ match }) {
                     {HostType.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type  m-3   flex ${apartment.host_type === type.id
+                        className={`property-type  m-3   flex ${
+                          apartment.host_type === type.id
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                           } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}

@@ -192,7 +192,7 @@ const HostedBy = (props) => {
       </div>
       <div className="ml-4 block">
         <div className="text-base font-[500]">{perk.text}</div>
-        <div className="text-sm list-none text-gray-400 flex space-x-3">
+        <div className="text-sm list-none text-gray-400 flex flex-wrap space-x-3">
           {perk.description}
         </div>
       </div>

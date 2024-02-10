@@ -68,6 +68,7 @@ import ForgotPassword from "./Component/SignupLogin/ForgotPassword";
 import ReactivateAccount from "./Component/SignupLogin/ReactivateAccount";
 import ReportDamage from "./Component/ReportDamages";
 import EditHostHomes from "./Component/Unboarding/EditHostHomes";
+import { BookingInfoData } from "./ContextProvider/BookingInfo";
 import Protected from "./ProtectedRoutes";
 import Public from "./PublicRoutes";
 import PageNotFound from "./PageNotFound";
@@ -78,12 +79,26 @@ function App() {
   return (
     <Router>
       <ContextProvider>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/UsersShow" element={<UsersShow />} />
-          <Route path="/ListingInfoMain/:id" element={<ListingInfoMain />} />
-          <Route path="/RequestBook" element={<RequestBook />} />
+        <BookingInfoData>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/ListingInfoMain/:id" element={<ListingInfoMain />} />
+        <Route path="/RequestBook" element={<RequestBook />} />
+        <Route path="/Settings" element={<Settings />} />
+        <Route path="/Profile" element={<Profile />} />
+        <Route path="/Payments" element={<Payments />} />
+        <Route path="/Security" element={<Security />} />
+        <Route path="/AddGovvernmentId" element={<AddGovvernmentId />} />
+        <Route
+          path="/AccountNotifications"
+          element={<AccountNotifications />}
+        />
+        <Route path="/Chat" element={<Chat />} />
+        <Route path="/Trip" element={<Trip />} />
+        <Route path="/WishList" element={<WishList />} />
+        <Route path="/WishlistsSet" element={<WishlistsSet />} />
+        <Route path="/WishlistsSet/:wishList/:id" element={<WishlistsSet />} />
 
           <Route element={<Protected />} >
 
@@ -110,7 +125,7 @@ function App() {
               <Route path="/Hosting" element={<Hosting />} />
               <Route path="/ConfirmDetails" element={<ConfirmDetails />} />
               <Route path="/Listings" element={<Listings />} />
-              <Route path="/UserDetails" element={<UserDetails />} />
+              <Route path="/UserDetails/:id" element={<UserDetails />} />
               <Route path="/Reservations" element={<Reservations />} />
               <Route path="/HostAnalysis" element={<HostAnalysis />} />
               <Route path="/Schduler" element={<Schduler />} />
@@ -188,6 +203,8 @@ function App() {
           <Route path="*" element={<PageNotFound/>} />
 
         </Routes>
+        </BookingInfoData>
+
       </ContextProvider>
     </Router>
   );
