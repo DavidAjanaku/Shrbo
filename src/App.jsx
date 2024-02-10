@@ -1,4 +1,4 @@
-import React,{useEffect} from "react";
+import React, { useEffect } from "react";
 import { ContextProvider } from "./ContextProvider/ContextProvider";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./Views/Home";
@@ -69,14 +69,16 @@ import ReactivateAccount from "./Component/SignupLogin/ReactivateAccount";
 import ReportDamage from "./Component/ReportDamages";
 import EditHostHomes from "./Component/Unboarding/EditHostHomes";
 import { BookingInfoData } from "./ContextProvider/BookingInfo";
+import Protected from "./ProtectedRoutes";
+import Public from "./PublicRoutes";
+import PageNotFound from "./PageNotFound";
+
 function App() {
-
-
 
   return (
     <Router>
       <ContextProvider>
-        <BookingInfoData>
+        <BookingInfoData/>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -97,89 +99,109 @@ function App() {
         <Route path="/WishlistsSet" element={<WishlistsSet />} />
         <Route path="/WishlistsSet/:wishList/:id" element={<WishlistsSet />} />
 
-        <Route path="/ManageListings" element={<ManageListings />} />
-        <Route path="/UsersShow" element={<UsersShow />} />
-        <Route path="/HostHomes" element={<HostHomes />} />
-        <Route path="/HostHome/:id" element={<HostHome />} />
-        <Route path="/EditHostHomes/:id" element={<EditHostHomes />} />
+          <Route element={<Protected />} >
 
-        <Route path="/Hosting" element={<Hosting />} />
-        <Route path="/ConfirmDetails" element={<ConfirmDetails />} />
-        <Route path="/Listings" element={<Listings />} />
-        <Route path="/UserDetails" element={<UserDetails />} />
-        <Route path="/Reservations" element={<Reservations />} />
-        <Route path="/HostAnalysis" element={<HostAnalysis />} />
-        <Route path="/Schduler" element={<Schduler />} />
+              <Route path="/Settings" element={<Settings />} />
+              <Route path="/Profile" element={<Profile />} />
+              <Route path="/Payments" element={<Payments />} />
+              <Route path="/Security" element={<Security />} />
+              <Route path="/AddGovvernmentId" element={<AddGovvernmentId />} />
+              <Route
+                path="/AccountNotifications"
+                element={<AccountNotifications />}
+              />
+              <Route path="/Chat" element={<Chat />} />
+              <Route path="/Trip" element={<Trip />} />
+              <Route path="/WishList" element={<WishList />} />
+              <Route path="/WishlistsSet" element={<WishlistsSet />} />
+              <Route path="/WishlistsSet/:wishList/:id" element={<WishlistsSet />} />
 
-        
+              <Route path="/ManageListings" element={<ManageListings />} />
+              <Route path="/HostHomes" element={<HostHomes />} />
+              <Route path="/HostHome/:id" element={<HostHome />} />
+              <Route path="/EditHostHomes/:id" element={<EditHostHomes />} />
 
-        <Route
-          path="/ChatAndNotifcationTab"
-          element={<ChatAndNotifcationTab />}
-        />
-        <Route path="/EditHomepage" element={<EditHomepage />} />
-        <Route path="/AdminAnalytical" element={<AdminAnalytical />} />
-
-        <Route path="/GuestsListings" element={<GuestsListings />} />
-
-        <Route path="/HostsListings" element={<HostsListings />} />
-        <Route path="/PropertyList" element={<PropertyList />} />
-        <Route
-          path="/ApartmentListingApproval"
-          element={<ApartmentListingApproval />}
-        />
-        <Route path="/CurrentBookingsList" element={<CurrentBookingsList />} />
-        <Route
-          path="/UserVerificationPage"
-          element={<UserVerificationPage />}
-        />
-        <Route path="/AdminRolesPage" element={<AdminRolesPage />} />
-        <Route path="/AdminSupportPage" element={<AdminSupportPage />} />
-        <Route path="/AnnouncementPage" element={<AnnouncementPage />} />
-        <Route path="/RevenueMetricsPage" element={<RevenueMetricsPage />} />
-        <Route path="/DisplayBookingsPaid" element={<DisplayBookingsPaid />} />
-        <Route path="/FailedPayment" element={<FailedPayment />} />
-        <Route path="/ReceivablePayable" element={<ReceivablePayable />} />
-        <Route path="/BookingTable" element={<BookingTable />} />
-        <Route path="/CompletedBooking" element={<CompletedBooking />} />
-        <Route path="/ReviewList" element={<ReviewList />} />
-        <Route path="/HostPayment" element={<HostPayment />} />
-        <Route path="/PendingPayment" element={<PendingPayment />} />
-        <Route
-          path="/CanceledReservationTable"
-          element={<CanceledReservationTable />}
-        />
-        <Route path="/TransactionHistory" element={<TransactionHistory />} />
-        <Route path="/TermsofService" element={<TermsofService />} />
-        <Route path="/AboutUs" element={<AboutUs />} />
-        <Route path="/ContactSupport" element={<ContactSupport />} />
-        <Route path="/CancellationPolicy" element={<CancellationPolicy />} />
-        <Route path="/FAQAccordion" element={<FAQAccordion />} />
-        <Route path="/SupportAndHelp" element={<SupportAndHelp />} />
-        <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
-
-        <Route path="/Login" element={<LogIn/>}/>
-        <Route path="/Signup" element={<SignUp/>}/>
-        <Route path="/auth/google" element={<AuthGoogle/>} />
-        <Route path="/ForgotPassword" element={<ForgotPassword/>}/>
+              <Route path="/Hosting" element={<Hosting />} />
+              <Route path="/ConfirmDetails" element={<ConfirmDetails />} />
+              <Route path="/Listings" element={<Listings />} />
+              <Route path="/UserDetails" element={<UserDetails />} />
+              <Route path="/Reservations" element={<Reservations />} />
+              <Route path="/HostAnalysis" element={<HostAnalysis />} />
+              <Route path="/Schduler" element={<Schduler />} />
 
 
-        <Route path="/DamagesAndIncidentals" element={<DamagesIncidentals />} />
-        <Route
-          path="/UserVerificationDashboard"
-          element={<UserVerificationDashboard />}
-        />
-        <Route
-          path="/ServiceChargeSettings"
-          element={<ServiceChargeSettings />}
-        />
 
-        <Route path="/ReportDamage" element={<ReportDamage/>}/>
+              <Route
+                path="/ChatAndNotifcationTab"
+                element={<ChatAndNotifcationTab />}
+              />
+              <Route path="/EditHomepage" element={<EditHomepage />} />
+              <Route path="/AdminAnalytical" element={<AdminAnalytical />} />
 
-        <Route path="/ReactivateAccount" element={<ReactivateAccount/>}/>
-      </Routes>
-      </BookingInfoData>
+              <Route path="/GuestsListings" element={<GuestsListings />} />
 
+              <Route path="/HostsListings" element={<HostsListings />} />
+              <Route path="/PropertyList" element={<PropertyList />} />
+              <Route
+                path="/ApartmentListingApproval"
+                element={<ApartmentListingApproval />}
+              />
+              <Route path="/CurrentBookingsList" element={<CurrentBookingsList />} />
+              <Route
+                path="/UserVerificationPage"
+                element={<UserVerificationPage />}
+              />
+              <Route path="/AdminRolesPage" element={<AdminRolesPage />} />
+              <Route path="/AdminSupportPage" element={<AdminSupportPage />} />
+              <Route path="/AnnouncementPage" element={<AnnouncementPage />} />
+              <Route path="/RevenueMetricsPage" element={<RevenueMetricsPage />} />
+              <Route path="/DisplayBookingsPaid" element={<DisplayBookingsPaid />} />
+              <Route path="/FailedPayment" element={<FailedPayment />} />
+              <Route path="/ReceivablePayable" element={<ReceivablePayable />} />
+              <Route path="/BookingTable" element={<BookingTable />} />
+              <Route path="/CompletedBooking" element={<CompletedBooking />} />
+              <Route path="/ReviewList" element={<ReviewList />} />
+              <Route path="/HostPayment" element={<HostPayment />} />
+              <Route path="/PendingPayment" element={<PendingPayment />} />
+              <Route
+                path="/CanceledReservationTable"
+                element={<CanceledReservationTable />}
+              />
+              <Route path="/TransactionHistory" element={<TransactionHistory />} />
+
+              <Route
+                path="/UserVerificationDashboard"
+                element={<UserVerificationDashboard />}
+              />
+              <Route
+                path="/ServiceChargeSettings"
+                element={<ServiceChargeSettings />}
+              />
+              <Route path="/ReportDamage" element={<ReportDamage />} />
+
+          </Route>
+
+          <Route element={<Public />}>
+            <Route path="/Login" element={<LogIn />} />
+            <Route path="/Signup" element={<SignUp />} />
+            <Route path="/auth/google" element={<AuthGoogle />} />
+            <Route path="/ForgotPassword" element={<ForgotPassword />} />
+            <Route path="/ReactivateAccount" element={<ReactivateAccount />} />
+
+          </Route>
+
+          <Route path="/TermsofService" element={<TermsofService />} />
+          <Route path="/AboutUs" element={<AboutUs />} />
+          <Route path="/ContactSupport" element={<ContactSupport />} />
+          <Route path="/CancellationPolicy" element={<CancellationPolicy />} />
+          <Route path="/FAQAccordion" element={<FAQAccordion />} />
+          <Route path="/SupportAndHelp" element={<SupportAndHelp />} />
+          <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
+          <Route path="/DamagesAndIncidentals" element={<DamagesIncidentals />} />
+
+          <Route path="*" element={<PageNotFound/>} />
+
+        </Routes>
       </ContextProvider>
     </Router>
   );

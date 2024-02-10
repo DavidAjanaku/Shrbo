@@ -70,7 +70,7 @@ const LogIn=()=>{
           setUser(response.data.user);
           setToken(response.data.token);
           console.log(response.data);
-          window.location.replace('/');
+          window.location.href='/';
           setError("");
         
 
