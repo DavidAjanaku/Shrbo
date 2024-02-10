@@ -114,7 +114,6 @@ const ListingInfoMain = () => {
               reservations={listingDetails?.reservations}
               reservation={listingDetails?.reservation}
               guest={listingDetails?.guest}
-              
             />
           </div>
         </div>

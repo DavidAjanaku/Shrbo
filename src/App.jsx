@@ -78,7 +78,7 @@ function App() {
   return (
     <Router>
       <ContextProvider>
-        <BookingInfoData/>
+        <BookingInfoData>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -202,6 +202,8 @@ function App() {
           <Route path="*" element={<PageNotFound/>} />
 
         </Routes>
+        </BookingInfoData>
+
       </ContextProvider>
     </Router>
   );
