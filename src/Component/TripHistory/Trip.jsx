@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import room from "../../assets/room.jpeg";
-import room2 from "../../assets/room2.jpeg";
 import close from "../../assets/svg/close-line-icon.svg";
 import axios from "../../Axios";
 import bedroom from "../../assets/svg/double-bed-icon.svg";
@@ -9,6 +7,8 @@ import calender from "../../assets/svg/calendar-icon.svg";
 import { Link } from "react-router-dom";
 import PaginationExample from "../PaginationExample";
 import BottomNavigation from "../Navigation/BottomNavigation";
+import { styles } from "../ChatBot/Style";
+import {LoadingOutlined}  from '@ant-design/icons';
 import Header from "../Navigation/Header";
 import {
   FaHome,
@@ -73,8 +73,13 @@ export default function Trip() {
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [comments, setComments] = useState([]);
+  const [reasoms, setReasons] = useState("");
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingCancelReservation, setLoadingCancelReservation] = useState(false);
+  const [goNext, setGoNext] = useState(true);
+  const [error, setError] = useState('');
+  const [cancellationPolicy, setCancellationPolicy] = useState(null);
   const [filteredTrips, setFilteredTrips] = useState([]);
 
   const amenityIcons = {
@@ -119,7 +124,7 @@ export default function Trip() {
 
 
   useEffect(() => {
-    setLoading(true);
+    
     axios.get("/userTrips").then(response => {
       const filteredTripsData = response.data.data.map(item => ({
         id: item.id,
@@ -129,7 +134,9 @@ export default function Trip() {
         notes: item.hosthomedescription,
         image: item.hosthomephotos[0],
         amenities: item.hosthomeamenities,
-        hostName: "John Doe",
+        hostName: item.hostName,
+        hostId:item.hostid,
+        bbokingid:item.bbokingid,
         rating: 4.8,
         bathrooms: item.hosthomebathroom,
         bedrooms: item.hosthomebedroom,
@@ -141,6 +148,7 @@ export default function Trip() {
         checkedIn: item.status,
         checkingInDate: "",
         checkingInTime: "",
+        cancellationPolicy:item.hosthomecancelationpolicy,
 
 
 
@@ -159,6 +167,28 @@ export default function Trip() {
 
   }, []);
 
+  let policyText = "";
+
+  switch (cancellationPolicy) {
+    case "Flexible Cancellation Policy":
+      policyText =
+        "Cancelling within 48 hours of booking is free, and guest will have a full refund of their total booking amount. Cancellation after 48 hours, guest will be refunded 70% of their total booking amount.";
+      break;
+
+    case "Moderate Cancellation Policy":
+      policyText =
+        "Cancellation after booking, guest will be refunded 70% of their total booking amount.";
+      break;
+
+    case "Strict Cancellation Policy":
+      policyText =
+        "Cancellation after booking, guest will be refunded 50% of their total booking amount.";
+      break;
+
+    default:
+      // Handle other cases if needed
+      break;
+  }
 
   const [selectedTab, setSelectedTab] = useState("All"); // Default to "All" trips
 
@@ -177,21 +207,24 @@ export default function Trip() {
 
   const openModal = (trip) => {
     setSelectedTrip(trip);
+    setCancellationPolicy(trip.cancellationPolicy);
   };
 
   const closeModal = () => {
     setSelectedTrip(null);
   };
-
+  
   const changeMainPhoto = (index) => {
     setSelectedPhotoIndex(index);
   };
-
+  
   const openCancellationModal = () => {
     setIsCancellationModalOpen(true); // Step 2: Open the cancellation modal
   };
-
+  
   const closeCancellationModal = () => {
+    setGoNext(true);
+    setReasons('');
     setIsCancellationModalOpen(false); // Step 2: Close the cancellation modal
   };
 
@@ -229,6 +262,49 @@ export default function Trip() {
   ));
 
 
+  const cancelTrips = async () => {
+    setLoadingCancelReservation(true);
+
+  
+ 
+    const data =
+    {
+      booking_id: selectedTrip.bbokingid,
+      host_id: selectedTrip.hostId,
+      reasonforcancel: reasoms
+    }
+    console.log(data)
+
+    await axios.post("/createCancelTrips", data).then(response => {
+      // setGoNext(true);
+      console.log(response.data);
+      setReasons('');
+
+    }).catch(error => {
+      console.log(error)
+
+    }).finally(()=>{
+      window.location.href='/trip';
+      setLoadingCancelReservation(false) 
+      closeModal()
+      closeCancellationModal()});
+  }
+
+  const handleReasonChange = (e) => {
+    setReasons(e.target.value)
+
+
+  }
+
+  const handleGoNext = () => {
+    if (reasoms.trim() === "") {
+      setError("Reason cannot be empty");
+      return;
+    }
+    setGoNext(false);
+    setError('');
+  }
+
 
 
 
@@ -244,6 +320,8 @@ export default function Trip() {
     }
     setSelectedTab(tab);
   };
+
+  console.log(goNext)
 
   return (
     <div className=" h-[100vh]  overflow-auto example">
@@ -416,7 +494,7 @@ export default function Trip() {
                 <img
                   src={selectedTrip.morePhotos[selectedPhotoIndex]}
                   alt={`Main Photo`}
-                  className="mt-2 w-full h-2/5 object-cover rounded-lg"
+                  className="mt-2 w-full max-h-64 min-h-[256px] md:max-h-[360px] md:min-h-[360px] h-2/5 object-cover rounded-lg"
                 />
               </div>
               <Link to="/ListingInfoMain">
@@ -439,7 +517,7 @@ export default function Trip() {
                       <img
                         src={photo}
                         alt={`Photo ${index + 1}`}
-                        className="w-20 md:w-32 m-2 md:h-32 object-cover rounded-lg"
+                        className="w-20 h-20 md:w-32 m-2 md:h-32 object-cover rounded-lg"
                       />
                     </div>
                   ))}
@@ -530,41 +608,134 @@ export default function Trip() {
       )}
 
       {isCancellationModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="absolute inset-0 bg-black opacity-50"
-            onClick={closeCancellationModal} // Step 3: Close the cancellation modal
-          ></div>
-          <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
-            <div className="text-right">
-              <button
-                className="text-gray-500 hover:text-gray-700"
+        <> 
+        {!loadingCancelReservation?<>
+          {goNext ? (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div
+                className="absolute inset-0 bg-black opacity-50"
                 onClick={closeCancellationModal} // Step 3: Close the cancellation modal
-              >
-                <img src={close} className="w-4" alt="" />
-              </button>
+              ></div>
+              <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
+                <div className="text-right">
+                  <button
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                  >
+                    <img src={close} className="w-4" alt="" />
+                  </button>
+                </div>
+                <h2 className="text-2xl font-semibold mt-4">Cancel Reservation</h2>
+                <p className="mt-4">
+                  Are you sure you want to cancel your reservation for{" "}
+                  {selectedTrip.destination}? Please provide a reason for cancellation:
+                </p>
+                <textarea
+                  rows="3"
+                  className="w-full mt-2 p-2 border rounded"
+                  placeholder="Reason for cancellation"
+                  onChange={handleReasonChange}
+                ></textarea>
+                <label className="text-red-500">{error}</label><br></br>
+                <button
+                  className="bg-orange-400 p-4 rounded-full text-white mt-4"
+                  onClick={handleGoNext} // Use onClick for buttons
+                >
+                  Confirm Cancellation
+                </button>
+              </div>
             </div>
-            <h2 className="text-2xl font-semibold mt-4">Cancel Reservation</h2>
-            <p className="mt-4">
-              Are you sure you want to cancel your reservation for{" "}
-              {selectedTrip.destination}? Please provide a reason for
-              cancellation:
-            </p>
-            <textarea
-              rows="3"
-              className="w-full mt-2 p-2 border rounded"
-              placeholder="Reason for cancellation"
-            ></textarea>
-            <button
-              className="bg-orange-400 p-4 rounded-full text-white mt-4"
-            >
-              Confirm Cancellation
-            </button>
-          </div>
-        </div>
+          ) : (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div
+                className="absolute inset-0 bg-black opacity-50"
+                onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+              ></div>
+              <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
+                <div className="text-right">
+                  <button
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                  >
+                    <img src={close} className="w-4" alt="" />
+                  </button>
+                </div>
+                <h2 className="text-2xl font-semibold mt-4">Host Cancellation Policy</h2>
+                <p className="mt-4">
+                 {policyText}{" "}
+                  ,do you still want to Proceed?
+                </p>
+                <button
+                  className="bg-orange-400 p-4 rounded-full text-white mt-14 mr-4"
+                  onClick={cancelTrips} // Use onClick for buttons
+                >
+                 Cancel Reservation
+                </button>
+                <button
+                  className=" border-orange-400 border  p-4 rounded-full text-black mt-14"
+                  onClick={closeCancellationModal} // Use onClick for buttons
+                >
+                 Keep Reservation
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+        :
+        <>
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div
+                className="absolute inset-0 bg-black opacity-50"
+                onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+              ></div>
+              <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
+                <div className="text-right">
+                  <button
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                  >
+                    <img src={close} className="w-4" alt="" />
+                  </button>
+                </div>
+                  <div
+                className="transition-3"
+                style={{
+                    ...styles.loadingDiv,
+                    ...{
+                        zIndex:loadingCancelReservation? '10':'-1',
+                        display:loadingCancelReservation? "block" :"none",
+                        opacity:loadingCancelReservation? '0.33':'0',
+                    }
+                }}
+
+            />
+            <LoadingOutlined 
+                className="transition-3"
+                style={{
+                    ...styles.loadingIcon,
+                    ...{
+                        zIndex:loadingCancelReservation? '10':'-1',
+                        display:loadingCancelReservation? "block" :"none",
+                        opacity:loadingCancelReservation? '1':'0',
+                        fontSize:'42px',
+                        top:'calc(50% - 41px)',
+                        left:'calc(50% - 41px)',
+
+
+                    }
+                
+                
+                }}
+            />
+              </div>
+            </div>
+         
+        </>}
+        </>
       )}
+
       <div className="my-10 pb-32">
-        {(trips && trips.length > 0) && <PaginationExample />}
+        {(filteredTrips && filteredTrips.length > 0) && <PaginationExample />}
       </div>
       <BottomNavigation />
     </div>

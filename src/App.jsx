@@ -71,6 +71,7 @@ import EditHostHomes from "./Component/Unboarding/EditHostHomes";
 import Protected from "./ProtectedRoutes";
 import Public from "./PublicRoutes";
 import PageNotFound from "./PageNotFound";
+import PaymentsTab from "./Component/Settings/PaymentsTab";
 
 function App() {
 
@@ -88,7 +89,7 @@ function App() {
 
               <Route path="/Settings" element={<Settings />} />
               <Route path="/Profile" element={<Profile />} />
-              <Route path="/Payments" element={<Payments />} />
+              <Route path="/Payments" element={<PaymentsTab />} />
               <Route path="/Security" element={<Security />} />
               <Route path="/AddGovvernmentId" element={<AddGovvernmentId />} />
               <Route
