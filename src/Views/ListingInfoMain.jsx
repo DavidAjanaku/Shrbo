@@ -13,16 +13,33 @@ import HouseRules from "../Component/ListingInfo/HouseRules";
 import BottomNavigation from "../Component/Navigation/BottomNavigation";
 import Header from "../Component/Navigation/Header";
 import Axios from "../Axios";
-import { Spin } from 'antd';
+import { Spin } from "antd";
+import { useDateContext } from "../ContextProvider/BookingInfo";
 const ListingInfoMain = () => {
-  const { id } = useParams(); // Get the ID parameter from the route
+  const { id } = useParams();
   const [listingDetails, setListingDetails] = useState(null);
+
+  console.log(id);
+  const {
+    setTitle,
+    setCancellationPolicy,
+    setAddress,
+    setPhoto,
+    setApartment,
+    setUser,
+  } = useDateContext();
 
   useEffect(() => {
     const fetchListingDetails = async () => {
       try {
         const response = await Axios.get(`showGuestHome/${id}`);
         setListingDetails(response.data.data);
+        setApartment(id); // Set the ID parameter to the apartment state
+        setUser(response.data.data.user.id);
+        setTitle(response.data.data.title);
+        setCancellationPolicy(response.data.data.cancelPolicy);
+        setAddress(response.data.data.address);
+        setPhoto(response.data.data.hosthomephotos);
         console.log(response.data.data);
       } catch (error) {
         console.error("Error fetching listing details:", error);
@@ -37,8 +54,8 @@ const ListingInfoMain = () => {
     // Loading state or return null
     return (
       <div className="flex justify-center items-center h-[100vh]">
-      <Spin size="large" />
-    </div>
+        <Spin size="large" />
+      </div>
     );
   }
   return (
@@ -97,6 +114,7 @@ const ListingInfoMain = () => {
               reservations={listingDetails?.reservations}
               reservation={listingDetails?.reservation}
               guest={listingDetails?.guest}
+              
             />
           </div>
         </div>

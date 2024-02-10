@@ -51,6 +51,7 @@ import {
   FaCamera,
   FaShieldAlt,
   FaExclamationTriangle,
+  FaBan,
 } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
 import { Modal } from "antd";
@@ -70,6 +71,8 @@ export default function HostHomes({ match }) {
   const [additionalRules, setAdditionalRules] = useState("");
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [selectedTime, setSelectedTime] = useState("12:00 PM");
+  const [selectedCheckOutTime, setSelectedCheckOutTime] = useState("12:00 PM");
+
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [selectedPrivacyType, setSelectedPrivacyType] = useState(null);
   const [selectedInstantBookType, setSelectedInstantBookType] = useState(null);
@@ -136,6 +139,10 @@ export default function HostHomes({ match }) {
     setSelectedTime(e.target.value);
   };
 
+  const handleTimeChangeCheckOut = (e) => {
+    setSelectedCheckOutTime(e.target.value);
+  };
+
   const handleSave = () => {
     // You can send the selected time to your backend or perform any other action here
     console.log("Selected check-in time: ", selectedTime);
@@ -189,6 +196,9 @@ export default function HostHomes({ match }) {
           })
         : null;
 
+        const deposit = securityDeposit || 0;
+
+
       const formDetails = {
         property_type: selectedHouseType,
         guest_choice: selectedPrivacyType,
@@ -212,8 +222,10 @@ export default function HostHomes({ match }) {
         host_type: selectedHostType,
         notice: selectedCautionTypes,
         checkin: selectedTime,
+        check_out_time: selectedCheckOutTime,
+
         cancelPolicy: selectedPolicy,
-        securityDeposit: securityDeposit,
+        securityDeposit: deposit, // Use the default value for security deposit
       };
       console.log("Form submitted successfully", formDetails);
 
@@ -323,7 +335,7 @@ export default function HostHomes({ match }) {
         break;
 
       case 10:
-        if (selectedHouseDescriptions.length === 0) {
+        if (selectedHouseDescriptions.length === 1) {
           isValid = false;
           Modal.error({
             title: "Validation Error",
@@ -693,6 +705,12 @@ export default function HostHomes({ match }) {
       icon: <FaExclamationTriangle />,
       description: "Guests must ask if they can book.",
     },
+    {
+      id: "None",
+      label: "None",
+      icon:  <FaBan />, // You can specify null for the icon if needed
+      description: "No special cautions apply.",
+    },
   ];
 
   const amenities = [
@@ -979,13 +997,7 @@ export default function HostHomes({ match }) {
   ];
 
   const HouseRules = {
-    maximum: "2 Ideal for couples or solo travelers.",
-    singleGuest: "3 Perfect for a comfortable stay for one person.",
-    groupGuest: "5 Suitable for small groups or families.",
-    sevenGuests: "7 Ideal for larger groups or families.",
-    eightGuests: "8 Perfect for larger groups or gatherings.",
-    nineGuests: "9 Spacious enough for a comfortable stay for up to 9 guests.",
-    tenGuests: "10 Accommodates larger groups or families perfectly.",
+   
     pets: "No pets",
     events: "No parties or events",
     smoking: "No smoking",
@@ -1088,19 +1100,18 @@ export default function HostHomes({ match }) {
       ]);
     }
   };
-
   const handleWelcomeVisibilitySelection = (typeId) => {
     setVisiblities((prevVisibility) => {
-      // Check if the typeId is already in the array
+      // If the selected typeId is already in the array, deselect it
       if (prevVisibility.includes(typeId)) {
-        // If yes, remove it (deselect)
-        return prevVisibility.filter((id) => id !== typeId);
+        return [];
       } else {
-        // If not, add it (select)
-        return [...prevVisibility, typeId];
+        // If not, select the new typeId
+        return [typeId];
       }
     });
   };
+  
 
   const handleInstantBookSelection = (selectedId) => {
     setSelectedInstantBookType(selectedId);
@@ -1575,7 +1586,7 @@ export default function HostHomes({ match }) {
                       <p className="text-sm">Choose at least 5 photos</p>
                       <input
                         type="file"
-                        multiple
+                        multiple 
                         accept="image/*"
                         onChange={handleImageUpload}
                         key={fileInputKey}
@@ -2053,6 +2064,36 @@ export default function HostHomes({ match }) {
                     name="checkInTime"
                     value={selectedTime}
                     onChange={handleTimeChange}
+                    className="mt-1 p-2 border rounded-md w-full"
+                  >
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+
+                    <option value="12:00 PM">12:00 PM</option>
+                    <option value="1:00 PM">1:00 PM</option>
+                    <option value="2:00 PM">2:00 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="4:00PM">4:00PM</option>
+                    {/* Add more time options as needed */}
+                  </select>
+                </div>
+              </div>
+              <div className="max-w-md mx-auto p-4">
+                <h2 className="text-2xl font-semibold mb-4">
+                  Set Check-Out Time
+                </h2>
+                <div className="mb-4">
+                  <label
+                    htmlFor="checkOutTime"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Select Check-In Time:
+                  </label>
+                  <select
+                    id="checkOutTime"
+                    name="checkOutTime"
+                    value={selectedCheckOutTime}
+                    onChange={handleTimeChangeCheckOut}
                     className="mt-1 p-2 border rounded-md w-full"
                   >
                     <option value="10:00 AM">10:00 AM</option>

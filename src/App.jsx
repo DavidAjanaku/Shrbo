@@ -68,6 +68,7 @@ import ForgotPassword from "./Component/SignupLogin/ForgotPassword";
 import ReactivateAccount from "./Component/SignupLogin/ReactivateAccount";
 import ReportDamage from "./Component/ReportDamages";
 import EditHostHomes from "./Component/Unboarding/EditHostHomes";
+import { BookingInfoData } from "./ContextProvider/BookingInfo";
 function App() {
 
 
@@ -75,6 +76,7 @@ function App() {
   return (
     <Router>
       <ContextProvider>
+        <BookingInfoData>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -176,6 +178,8 @@ function App() {
 
         <Route path="/ReactivateAccount" element={<ReactivateAccount/>}/>
       </Routes>
+      </BookingInfoData>
+
       </ContextProvider>
     </Router>
   );

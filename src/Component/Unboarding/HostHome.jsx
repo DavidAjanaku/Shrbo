@@ -51,7 +51,8 @@ import {
   FaCamera,
   FaShieldAlt,
   FaExclamationTriangle,
-} from "react-icons/fa";import { LoadingOutlined } from "@ant-design/icons";
+} from "react-icons/fa";
+import { LoadingOutlined } from "@ant-design/icons";
 
 import { Spin } from "antd";
 import { useParams } from "react-router-dom";
@@ -291,9 +292,17 @@ export default function HostHome({ match }) {
     { id: "office", label: "Office", icon: <FaBuilding /> },
     { id: "art", label: "Art", icon: <FaPalette /> },
     { id: "cityApartments", label: "City Apartments", icon: <FaCity /> },
-    { id: "petFriendlyRetreats", label: "Pet-Friendly Retreats", icon: <FaDog /> },
+    {
+      id: "petFriendlyRetreats",
+      label: "Pet-Friendly Retreats",
+      icon: <FaDog />,
+    },
     { id: "treehouseRetreats", label: "Treehouse Retreats", icon: <FaTree /> },
-    { id: "familyFriendlyHomes", label: "Family-Friendly Homes", icon: <FaUserFriends /> },
+    {
+      id: "familyFriendlyHomes",
+      label: "Family-Friendly Homes",
+      icon: <FaUserFriends />,
+    },
     { id: "boutiqueVillas", label: "Boutique Villas", icon: <FaShopify /> },
     { id: "lakesideSerenity", label: "Lakeside Serenity", icon: <FaWater /> },
     { id: "desertOases", label: "Desert Oases", icon: <FaLandmark /> },
@@ -302,8 +311,11 @@ export default function HostHome({ match }) {
     { id: "luxuryEstate", label: "Luxury Estate", icon: <FaCity /> },
     { id: "trending", label: "Trending", icon: <FaChartBar /> },
     { id: "beachfrontBliss", label: "Beachfront Bliss", icon: <FaLandmark /> },
-    { id: "mountainRetreats", label: "Mountain Retreats", icon: <FaMountain /> },
-
+    {
+      id: "mountainRetreats",
+      label: "Mountain Retreats",
+      icon: <FaMountain />,
+    },
   ];
 
   const privacyTypes = [
@@ -311,20 +323,23 @@ export default function HostHome({ match }) {
       id: "house",
       label: "An entire place",
       icon: <FaHome />,
-      description: "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.",
+      description:
+        "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.",
     },
     {
       id: "hotel",
       label: "A room",
       icon: <FaHotel />,
-      description: "Cozy up in your own private room while sharing common spaces with other guests.",
+      description:
+        "Cozy up in your own private room while sharing common spaces with other guests.",
     },
 
     {
       id: "guestHouse",
       label: "A shared room",
       icon: <FaBed />,
-      description: "Rent an entire guest house with all the amenities for an exclusive stay.",
+      description:
+        "Rent an entire guest house with all the amenities for an exclusive stay.",
     },
   ];
 
@@ -474,7 +489,7 @@ export default function HostHome({ match }) {
     {
       id: "Indoor fireplace",
       label: "Indoor fireplace",
-      icon: <FaFire/>,
+      icon: <FaFire />,
       description:
         "For your first guest, welcome someone with a good track record on Shbro who can offer tips for how to be a great Host.",
     },
@@ -529,13 +544,13 @@ export default function HostHome({ match }) {
     {
       id: "Hair dryer",
       label: "Hair dryer",
-      icon: <FaAirFreshener/>,
+      icon: <FaAirFreshener />,
       description: "Include a hair dryer for guests to use during their stay.",
     },
     {
       id: "Iron",
       label: "Iron",
-      icon: <FaSnowboarding/>,
+      icon: <FaSnowboarding />,
       description:
         "Ensure guests can keep their clothes wrinkle-free with an available iron.",
     },
@@ -549,11 +564,11 @@ export default function HostHome({ match }) {
     {
       id: "Hangers",
       label: "Hangers",
-      icon: <FaPaperclip/>,
+      icon: <FaPaperclip />,
       description:
         "Include hangers in the wardrobe for guests to hang their clothes.",
     },
-   
+
     {
       id: "Gym",
       label: "Gym",
@@ -583,14 +598,14 @@ export default function HostHome({ match }) {
     {
       id: "Balcony",
       label: "Balcony",
-      icon: <FaBuilding/>,
+      icon: <FaBuilding />,
       description:
         "Offer a private balcony for guests to enjoy outdoor views and fresh air.",
     },
     {
       id: "Elevator",
       label: "Elevator",
-      icon: <FaArrowUp/>,
+      icon: <FaArrowUp />,
       description: "Convenient access to different floors with an elevator.",
     },
 
@@ -604,39 +619,39 @@ export default function HostHome({ match }) {
     {
       id: "Tea kettle",
       label: "Tea kettle",
-      icon: <FaUtensils/>,
+      icon: <FaUtensils />,
       description: "Include a tea kettle for guests who prefer tea.",
     },
     {
       id: "Dishwasher",
       label: "Dishwasher",
-      icon: <FaHandsWash/>,
+      icon: <FaHandsWash />,
       description: "Offer the convenience of a dishwasher for guests' use.",
     },
     {
       id: "Oven",
       label: "Oven",
-      icon: <FaObjectGroup/>,
+      icon: <FaObjectGroup />,
       description:
         "Include an oven for guests who prefer cooking or baking during their stay.",
     },
     {
       id: "Microwave",
       label: "Microwave",
-      icon: <FaWaveSquare/>,
+      icon: <FaWaveSquare />,
       description: "Provide a microwave for quick and easy meal preparation.",
     },
     {
       id: "Toaster",
       label: "Toaster",
-      icon: <FaHotdog/>,
+      icon: <FaHotdog />,
       description:
         "Include a toaster for guests to prepare their favorite toasted snacks.",
     },
     {
       id: "Refrigerator",
       label: "Refrigerator",
-      icon: <FaBox/>,
+      icon: <FaBox />,
       description:
         "Offer a refrigerator for guests to store their perishable items.",
     },
@@ -1197,29 +1212,29 @@ export default function HostHome({ match }) {
                   <p className="text-gray-400">Choose at least 5 photos</p>
                 </div>
                 <div className="flex flex-wrap mt-6">
-                {uploadedImages.map((image) => (
-  <div key={image.id} className="relative p-2">
-    <img
-      src={image.src}
-      alt="Houses"
-      className="w-64 object-cover h-64"
-    />
-  
-  </div>
-))}
+                  {uploadedImages.map((image) => (
+                    <div key={image.id} className="relative p-2">
+                      <img
+                        src={image.src}
+                        alt="Houses"
+                        className="w-64 object-cover h-64"
+                      />
+                    </div>
+                  ))}
 
                   {/* Display existing photos from fetched data */}
                   {Array.isArray(apartment?.hosthomephotos) &&
-                    apartment.hosthomephotos.map((photo) => (
-                      <div key={photo.id}className="relative p-2">
-                        <img
-                          src={photo}
-                          alt="Houses"
-                          className="w-64 object-cover h-64"
-                        />
-                       
-                      </div>
-                    ))}
+    apartment.hosthomephotos.map((photo) => (
+        <div key={photo.id} className="relative p-2">
+            <img
+                src={photo.images} // Corrected: accessing the 'images' property
+                alt="Houses"
+                className="w-64 object-cover h-64"
+            />
+        </div>
+    ))
+}
+
                 </div>
               </div>
             </div>
@@ -1259,7 +1274,6 @@ export default function HostHome({ match }) {
                     <video controls className="mt-2">
                       <source src={apartment.hosthomevideo} type="video/mp4" />
                     </video>
-                   
                   </div>
                 )}
 
@@ -1273,7 +1287,6 @@ export default function HostHome({ match }) {
                     <video controls className="mt-2">
                       <source src={apartment.hosthomevideo} type="video/mp4" />
                     </video>
-                   
                   </div>
                 )}
               </div>
@@ -1488,13 +1501,16 @@ export default function HostHome({ match }) {
           </div>
         );
 
-        case 13: // Step for adding discounts
+      case 13: // Step for adding discounts
         return (
           <div className="mx-auto flex justify-center p-4">
             <div className="overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
                 <h1 className="text-6xl">Add discounts</h1>
-                <p>Help your place stand out to get booked faster and earn your first reviews.</p>
+                <p>
+                  Help your place stand out to get booked faster and earn your
+                  first reviews.
+                </p>
               </div>
               <div className="pb-32">
                 <div className="flex flex-wrap w-full">
@@ -1504,13 +1520,11 @@ export default function HostHome({ match }) {
                     const isSelected = apartment?.discounts.some(
                       (discount) => discount.discount.trim() === cleanedTypeId
                     );
-                  
+
                     const matchingDiscount = apartment?.discounts.find(
                       (discount) => discount.discount.trim() === cleanedTypeId
                     );
-      
-                  
-      
+
                     return (
                       <div
                         key={type.id}
@@ -1534,8 +1548,6 @@ export default function HostHome({ match }) {
             </div>
           </div>
         );
-      
-      
 
       case 14: // Step for hosting type and property features
         const additionalRulesFromApartment =
@@ -1606,7 +1618,7 @@ export default function HostHome({ match }) {
                       <div
                         key={type.id}
                         className={`property-type  m-3   flex ${
-                          apartment.host_type === type.id
+                          apartment?.host_type === type.id
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
