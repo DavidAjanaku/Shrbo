@@ -15,12 +15,18 @@ import {
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import axiosInstance from "../../Axios";
 import { LoadingOutlined } from "@ant-design/icons";
+import { Button } from "antd";
 
 const { confirm } = Modal;
 
 export default function GuestsListings() {
   const [guests, setGuests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [banMessage, setBanMessage] = useState(""); // State for ban message input
+  const [showBanMessageModal, setShowBanMessageModal] = useState(false); // State to control visibility of ban message modal
+  const [selectedGuest, setSelectedGuest] = useState(null);
+  const [suspendMessage, setSuspendMessage] = useState(""); // State for suspension reason input
+  const [showSuspendMessageModal, setShowSuspendMessageModal] = useState(false);
 
   const [filters, setFilters] = useState({
     verified: "Any",
@@ -45,6 +51,56 @@ export default function GuestsListings() {
     });
   };
 
+  const handleBanGuest = (record) => {
+    // Set the selectedGuest state to the current guest
+    setSelectedGuest(record);
+    // Show the modal for providing a message
+    setShowBanMessageModal(true);
+  };
+
+  // Function to handle the ban confirmation
+  const handleConfirmBan = async () => {
+    try {
+      const endpoint = selectedGuest.banned
+        ? `/unbanGuest/${selectedGuest.id}`
+        : `/banGuest/${selectedGuest.id}`;
+      const message = selectedGuest.banned
+        ? "Unbanned"
+        : banMessage || "You have been banned."; // Set a default message if unbanning and no message is provided
+
+      const response = await axiosInstance.put(endpoint, {
+        message: message, // Pass the message to the API
+      });
+
+      const updatedGuests = guests.map((guest) =>
+        guest.id === selectedGuest.id
+          ? { ...guest, banned: !guest.banned }
+          : guest
+      );
+
+      setGuests(updatedGuests);
+
+      notification.success({
+        message: `Guest ${message}`,
+        description: `The guest has been successfully ${message.toLowerCase()}.`,
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } catch (error) {
+      console.error(`Error ${message.toLowerCase()} guest:`, error);
+      notification.error({
+        message: `Error ${message.toLowerCase()} Guest`,
+        description: `Failed to ${message.toLowerCase()} the guest. Please try again later.`,
+      });
+    } finally {
+      // Hide the ban message modal
+      setShowBanMessageModal(false);
+      // Clear the ban message
+      setBanMessage("");
+    }
+  };
+
   const handleSuspendedFilterChange = (value) => {
     setFilters({
       ...filters,
@@ -65,7 +121,7 @@ export default function GuestsListings() {
             banLabel: guest.banned === null ? "Ban" : "Unban",
           };
         });
-  
+
         setGuests(updatedGuests);
         setLoading(false);
       })
@@ -74,10 +130,31 @@ export default function GuestsListings() {
         setLoading(false);
       });
   }, []);
-  
+
+  const hideBanMessageModal = () => {
+    setShowBanMessageModal(false);
+  };
+
+  // Function to handle the ban message input change
+  const handleBanMessageChange = (event) => {
+    setBanMessage(event.target.value);
+  };
+
+  const handleSuspendMessageChange = (event) => {
+    setSuspendMessage(event.target.value);
+  };
+
+  const handleDecline = () => {
+    // Handle the decline action here
+  };
 
   const handleSearchInputChange = (event) => {
     setSearchQuery(event.target.value);
+  };
+
+  const handleSuspendGuest = (record) => {
+    setSelectedGuest(record);
+    setShowSuspendMessageModal(true);
   };
 
   const columns = [
@@ -133,6 +210,7 @@ export default function GuestsListings() {
                   key: "0",
                   onClick: () => handleBanGuest(record),
                 },
+
                 {
                   label: <div>{getSuspendLabel(record)}</div>,
                   key: "1",
@@ -165,7 +243,6 @@ export default function GuestsListings() {
     },
   ];
 
-
   // function to delete guests
   const handleDeleteGuest = (guestId) => {
     confirm({
@@ -177,70 +254,21 @@ export default function GuestsListings() {
       },
     });
   };
-  
-
-  //function to ban guest
-  const handleBanGuest = async (record) => {
-    // Make an API call to update the ban status of the guest
-    if (record && record.id) {
-      const guestIdString = record.id.toString();
-      const messageObject = { message: "DD" };
-  
-      // Determine the action based on the current ban status of the guest
-      const isBanned = record.banned;
-  
-      // Define the API endpoint based on the action (ban/unban)
-      const endpoint = isBanned ? `/unbanGuest/${guestIdString}` : `/banGuest/${guestIdString}`;
-  
-      try {
-        await axiosInstance.put(endpoint, messageObject);
-  
-        // Update the local state with the updated data
-        const updatedGuests = guests.map((guest) =>
-          guest.id === record.id
-            ? { ...guest, banned: !isBanned } // Toggle the ban status
-            : guest
-        );
-  
-        notification.success({
-          message: isBanned ? "Guest Unbanned" : "Guest Banned",
-          description: `The Guest has been successfully ${isBanned ? "Unbanned" : "Banned"}.`,
-        });
-  
-        setGuests(updatedGuests);
-  
-        // Wait for 1 second before reloading the page
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-  
-        // Reload the page
-        window.location.reload();
-        // You can also show a success message or perform other actions if needed
-      } catch (error) {
-        console.error("Error changing guest ban status:", error);
-        notification.error({
-          message: `Error ${isBanned ? "Unbanning" : "Banning"} Guest`,
-          description: `Failed to ${isBanned ? "unban" : "ban"} the guest. Please try again later.`,
-        });
-        // Handle error scenarios, show an error message, etc.
-      }
-    } else {
-      console.error("Invalid record:", record);
-    }
-  };
-  
 
   const handleDeleteeGuest = (record) => {
     // Make an API call to update the ban status of the guest
     if (record && record.id) {
       const guestIdString = record.id.toString();
       const messageObject = { message: "DD" };
-  
+
       // Determine the action based on the current ban status of the guest
       const isDeleted = record.banned;
-  
+
       // Define the API endpoint based on the action (ban/unban)
-      const endpoint = isDeleted ? `/unDeleteGuest/${guestIdString}` : `/deleteGuest/${guestIdString}`;
-  
+      const endpoint = isDeleted
+        ? `/unDeleteGuest/${guestIdString}`
+        : `/deleteGuest/${guestIdString}`;
+
       axiosInstance
         .put(endpoint, messageObject)
         .then((response) => {
@@ -250,21 +278,25 @@ export default function GuestsListings() {
               ? { ...guest, banned: !isDeleted } // Toggle the ban status
               : guest
           );
-  
+
           notification.success({
             message: isDeleted ? "Guest Deleted" : "Guest Deleted",
-            description: `The Guest has been successfully ${isDeleted ? "UnDeleted" : "Deleted"}.`,
+            description: `The Guest has been successfully ${
+              isDeleted ? "UnDeleted" : "Deleted"
+            }.`,
           });
-  
+
           setGuests(updatedGuests);
-  
+
           // You can also show a success message or perform other actions if needed
         })
         .catch((error) => {
           console.error("Error changing guest ban status:", error);
           notification.error({
             message: `Error ${isDeleted ? "UnDeleting" : "Deleting"} Guest`,
-            description: `Failed to ${isDeleted ? "unDelete" : "Delete"} the guest. Please try again later.`,
+            description: `Failed to ${
+              isDeleted ? "unDelete" : "Delete"
+            } the guest. Please try again later.`,
           });
           // Handle error scenarios, show an error message, etc.
         });
@@ -272,71 +304,65 @@ export default function GuestsListings() {
       console.error("Invalid record:", record);
     }
   };
+
+
+  const handleConfirmSuspend = async (guest) => {
+    try {
+      const endpoint = guest.suspend
+        ? `/unsuspendGuest/${guest.id}`
+        : `/suspendGuest/${guest.id}`;
+      const message = suspendMessage; // Use suspendMessage as the message
   
-  // function to suspend guests
-  const handleSuspendGuest = async (record) => {
-    // Make an API call to update the ban status of the guest
-    if (record && record.id) {
-      const guestIdString = record.id.toString();
-      const messageObject = { message: "DD" };
+      const response = await axiosInstance.put(endpoint, {
+        message: message,
+      });
   
-      // Determine the action based on the current ban status of the guest
-      const isSuspend = record.suspend;
+      console.log('API Response:', response.data); 
   
-      // Define the API endpoint based on the action (ban/unban)
-      const endpoint = isSuspend
-        ? `/unsuspendGuest/${guestIdString}`
-        : `/suspendGuest/${guestIdString}`;
+      // Update the 'suspended' status based on the API response
+      const updatedGuests = guests.map((guest) =>
+        guest.id === guest.id ? { ...guest, suspend: !guest.suspend } : guest
+      );
   
-      try {
-        const response = await axiosInstance.put(endpoint, messageObject);
+      setGuests(updatedGuests);
   
-        // Update the local state with the updated data
-        const updatedGuests = guests.map((guest) =>
-          guest.id === record.id ? { ...guest, suspend: !isSuspend } : guest
-        );
+      notification.success({
+        message: guest.suspend ? "Guest Unsuspended" : "Guest Suspended",
+        description: `The guest has been successfully ${
+          guest.suspend ? "unsuspended" : "suspended"
+        }.`,
+      });
   
-        notification.success({
-          message: isSuspend ? "Guest UnSuspended" : "Guest Suspend",
-          description: `The Guest has been successfully ${
-            isSuspend ? "UnSuspended" : "Suspend"
-          }.`,
-        });
+      await new Promise((resolve) => setTimeout(resolve, 3000));
   
-        setGuests(updatedGuests);
-  
-        // Wait for the notification to be displayed before reloading
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-  
-        // Reload the page
-        window.location.reload();
-      } catch (error) {
-        console.error("Error changing guest ban status:", error);
-        notification.error({
-          message: `Error ${isSuspend ? "Unsuspending" : "Suspending"} Guest`,
-          description: `Failed to ${
-            isSuspend ? "unban" : "ban"
-          } the guest. Please try again later.`,
-        });
-        // Handle error scenarios, show an error message, etc.
-      }
-    } else {
-      console.error("Invalid record:", record);
+      window.location.reload();
+    } catch (error) {
+      console.error(`Error ${suspendMessage.toLowerCase()} guest:`, error);
+      notification.error({
+        message: `Error ${suspendMessage.toLowerCase()} Guest`,
+        description: `Failed to ${suspendMessage.toLowerCase()} the guest. Please try again later.`,
+      });
+    } finally {
+      setShowSuspendMessageModal(false);
+      setSuspendMessage("");
     }
   };
-
+  
+  
+  
+  
+  
+  
 
   // function to be able to change the label of guests
   const getBanLabel = (record) => {
     return record.banned === null ? "Ban" : "Unban";
   };
 
-    // function to be able to change the label of guests
+  // function to be able to change the label of guests
   const getSuspendLabel = (record) => {
     return record.suspend === null ? "suspend" : "Unsuspend";
   };
-  
-  
 
   const items = [
     {
@@ -348,8 +374,7 @@ export default function GuestsListings() {
     {
       label: <div>Suspend</div>,
       key: "1",
-      onClick: (record) => handleSuspendGuest(record), 
-
+      onClick: (record) => handleSuspendGuest(record),
     },
     {
       type: "divider",
@@ -360,8 +385,6 @@ export default function GuestsListings() {
     },
   ];
 
-  
-
   const filteredGuests = guests.filter((guest) => {
     const { verified, ban, suspended } = filters;
 
@@ -369,7 +392,7 @@ export default function GuestsListings() {
     const matchesVerified =
       verified === "Any" ||
       (verified === "Verified" && guest.verified === "Verified") ||
-      (verified === "Not Verified" && guest.verified !== "Verified"); 
+      (verified === "Not Verified" && guest.verified !== "Verified");
 
     const matchesSearch =
       (guest.name &&
@@ -377,19 +400,19 @@ export default function GuestsListings() {
       (guest.email &&
         guest.email.toLowerCase().includes(searchQuery.toLowerCase()));
 
-        const matchesBan =
-        ban === "Any" ||
-        (ban === "Yes" && (guest.banned !== null ? guest.banned : false)) ||
-        (ban === "No" && (guest.banned !== null ? !guest.banned : true));
-      
-      const matchesSuspended =
-        suspended === "Any" ||
-        (suspended === "Yes" && (guest.suspend !== null ? guest.suspend : false)) ||
-        (suspended === "No" && (guest.suspend !== null ? !guest.suspend : true));
-      
+    const matchesBan =
+      ban === "Any" ||
+      (ban === "Yes" && (guest.banned !== null ? guest.banned : false)) ||
+      (ban === "No" && (guest.banned !== null ? !guest.banned : true));
 
-          return matchesVerified && matchesBan && matchesSuspended && matchesSearch;
-        });
+    const matchesSuspended =
+      suspended === "Any" ||
+      (suspended === "Yes" &&
+        (guest.suspend !== null ? guest.suspend : false)) ||
+      (suspended === "No" && (guest.suspend !== null ? !guest.suspend : true));
+
+    return matchesVerified && matchesBan && matchesSuspended && matchesSearch;
+  });
 
   return (
     <div className="bg-gray-100 h-[100vh]">
@@ -465,6 +488,40 @@ export default function GuestsListings() {
             </div>
           </div>
         </div>
+        <Modal
+          title="Provide a message for banning"
+          open={showBanMessageModal}
+          onCancel={hideBanMessageModal}
+        >
+          <Input.TextArea
+            value={banMessage}
+            onChange={handleBanMessageChange}
+            placeholder="Enter your message here..."
+          />
+          <Button
+            type="primary"
+            onClick={() => handleConfirmBan(selectedGuest)}
+          >
+            Submit
+          </Button>
+        </Modal>
+
+
+        <Modal
+          title="Provide a reason for suspension"
+          open={showSuspendMessageModal}
+          onCancel={() => setShowSuspendMessageModal(false)}
+        >
+          <Input.TextArea
+            value={suspendMessage}
+            onChange={handleSuspendMessageChange}
+            placeholder="Enter your reason here..."
+          />
+          <Button type="primary" onClick={() => handleConfirmSuspend(selectedGuest)}>
+  Submit
+</Button>
+
+        </Modal>
       </div>
     </div>
   );

@@ -2,33 +2,35 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
-import { Table, Input, Select, Modal, Space, Dropdown, Spin, notification } from "antd";
+import { Table, Input, Select, Modal, Space, Dropdown, Spin, notification, Button } from "antd";
 import { ExclamationCircleOutlined, LoadingOutlined } from "@ant-design/icons";
-import axoisInstance from "../../Axios";
+import axiosInstance from "../../Axios";
 import moment from "moment";
 
 const { confirm } = Modal;
 
 export default function HostsListings() {
   const [hosts, setHosts] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [filters, setFilters] = useState({
     verified: "Any",
     ban: "Any",
     suspended: "Any",
   });
-
   const [searchQuery, setSearchQuery] = useState("");
+  const [banMessage, setBanMessage] = useState("");
+  const [showBanMessageModal, setShowBanMessageModal] = useState(false);
+  const [suspendMessage, setSuspendMessage] = useState("");
+  const [showSuspendMessageModal, setShowSuspendMessageModal] = useState(false);
+  const [selectedHost, setSelectedHost] = useState(null);
 
   const handleFilterChange = (value) => {
     setFilters({
       ...filters,
-
       verified: value,
     });
   };
+
   const handleBanFilterChange = (value) => {
     setFilters({
       ...filters,
@@ -48,11 +50,10 @@ export default function HostsListings() {
   };
 
   useEffect(() => {
-    axoisInstance
+    axiosInstance
       .get("/hosts")
       .then((response) => {
         setHosts(response.data.data);
-        // console.log(response.data.data); 
         setLoading(false);
       })
       .catch((error) => {
@@ -71,21 +72,30 @@ export default function HostsListings() {
       },
     });
   };
-  
 
   const handleBanHost = async (record) => {
+    setSelectedHost(record);
+    setShowBanMessageModal(true);
+  };
+
+  const handleSuspendHost = async (record) => {
+    setSelectedHost(record);
+    setShowSuspendMessageModal(true);
+  };
+
+  const handleConfirmBan = async (record) => {
     if (record && record.user && record.user.id) {
       const hostIdString = record.user.id.toString();
       console.log(hostIdString);
       const hostId = record.user.id;
       console.log("Host ID:", hostId);
-      const messageObject = { message: "DD" };
+      const messageObject = { message: banMessage };
   
       const isBanned = record.user.banned;
       const endpoint = isBanned ? `/unbanGuest/${hostIdString}` : `/banGuest/${hostIdString}`;
   
       try {
-        await axoisInstance.put(endpoint, messageObject);
+        await axiosInstance.put(endpoint, messageObject);
   
         const updatedHosts = hosts.map((host) =>
           host.id === hostId ? { ...host, user: { ...host.user, banned: !isBanned } } : host
@@ -119,13 +129,13 @@ export default function HostsListings() {
     }
   };
 
-  const handleSuspendHost = async (record) => {
+  const handleConfirmSuspend = async (record) => {
     if (record && record.user && record.user.id) {
       const hostIdString = record.user.id.toString();
       console.log(hostIdString);
       const hostId = record.user.id;
       console.log("Host ID:", hostId);
-      const messageObject = { message: "DD" };
+      const messageObject = { message: suspendMessage };
   
       // Use isSuspended to determine the action
       const isSuspended = record.user.suspend;
@@ -134,7 +144,7 @@ export default function HostsListings() {
         : `/suspendGuest/${hostIdString}`;
   
       try {
-        await axoisInstance.put(endpoint, messageObject);
+        await axiosInstance.put(endpoint, messageObject);
   
         const updatedHosts = hosts.map((host) =>
           host.id === hostId ? { ...host, user: { ...host.user, suspend: !isSuspended } } : host
@@ -167,9 +177,14 @@ export default function HostsListings() {
       console.error("Invalid record:", record);
     }
   };
-  
-  
-  
+
+  const handleBanMessageChange = (event) => {
+    setBanMessage(event.target.value);
+  };
+
+  const handleSuspendMessageChange = (event) => {
+    setSuspendMessage(event.target.value);
+  };
 
   const getBanLabel = (record) => {
     return record.user.banned === null ? "Ban" : "Unban";
@@ -178,8 +193,6 @@ export default function HostsListings() {
   const getSuspendLabel = (record) => {
     return record.user.suspend === null ? "Suspend" : "Unsuspend";
   };
-  
-  
 
   const columns = [
     {
@@ -241,27 +254,27 @@ export default function HostsListings() {
       render: (text, record) => (
         <div>
           <Dropdown
-              menu={{
-                items: [
-                  {
-                    label: <div>{getBanLabel(record)}</div>,
-                    key: "0",
-                    onClick: () => handleBanHost(record),
-                  },
-                  {
-                    label: <div>{getSuspendLabel(record)}</div>,
-                    key: "1",
-                    onClick: () => handleSuspendHost(record),
-                  },
-                  {
-                    type: "divider",
-                  },
-                  {
-                    label: <div>No idea</div>,
-                    key: "3",
-                  },
-                ],
-              }}
+            menu={{
+              items: [
+                {
+                  label: <div>{getBanLabel(record)}</div>,
+                  key: "0",
+                  onClick: () => handleBanHost(record),
+                },
+                {
+                  label: <div>{getSuspendLabel(record)}</div>,
+                  key: "1",
+                  onClick: () => handleSuspendHost(record),
+                },
+                {
+                  type: "divider",
+                },
+                {
+                  label: <div>No idea</div>,
+                  key: "3",
+                },
+              ],
+            }}
             trigger={["click"]}
           >
             <a onClick={(e) => e.preventDefault()}>
@@ -271,56 +284,6 @@ export default function HostsListings() {
           &nbsp; <span onClick={() => handleDeleteHost(record.id)}>Delete</span>
         </div>
       ),
-    },
-  ];
-
-  const filteredHosts = hosts.filter((host) => {
-    const { verified, ban, suspended } = filters;
-
-    const matchesVerified =
-      verified === "Any" ||
-      (verified === "Yes" && host.user.verified) ||
-      (verified === "No" && !host.user.verified);
-
-    const matchesBan =
-      ban === "Any" ||
-      (ban === "Yes" &&
-        (host.user.banned !== null ? host.user.banned : false)) ||
-      (ban === "No" && (host.user.banned !== null ? !host.user.banned : true));
-
-    const matchesSuspended =
-      suspended === "Any" ||
-      (suspended === "Yes" &&
-        (host.user.suspend !== null ? host.user.suspend : false)) ||
-      (suspended === "No" &&
-        (host.user.suspend !== null ? !host.user.suspend : true));
-
-    const matchesSearch =
-      (host.user.name &&
-        host.user.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (host.user.email &&
-        host.user.email.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    return matchesVerified && matchesBan && matchesSuspended && matchesSearch;
-  });
-
-  const items = [
-    {
-      label: <div>{getBanLabel}</div>,
-      key: "0",
-      onClick: (record) => handleBanHost(record),
-
-    },
-    {
-      label: <div>Suspend</div>,
-      key: "1",
-    },
-    {
-      type: "divider",
-    },
-    {
-      label: <div>No idea</div>,
-      key: "3",
     },
   ];
 
@@ -393,7 +356,7 @@ export default function HostsListings() {
               ) : (
                 <Table
                   columns={columns}
-                  dataSource={filteredHosts}
+                  dataSource={hosts}
                   rowKey={(record) => `${record.user.id}`}
                 />
               )}
@@ -401,6 +364,48 @@ export default function HostsListings() {
           </div>
         </div>
       </div>
+
+      <Modal
+        title="Provide a message for banning"
+        open={showBanMessageModal}
+        onCancel={() => setShowBanMessageModal(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setShowBanMessageModal(false)}>
+            Cancel
+          </Button>,
+       
+        ]}
+      >
+        <Input.TextArea
+          value={banMessage}
+          onChange={handleBanMessageChange}
+          placeholder="Enter your message here..."
+        />
+           <Button key="submit" type="primary" onClick={() => handleConfirmBan(selectedHost)}>
+            Submit
+          </Button>
+      </Modal>
+
+      <Modal
+        title="Provide a reason for suspension"
+        open={showSuspendMessageModal}
+        onCancel={() => setShowSuspendMessageModal(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setShowSuspendMessageModal(false)}>
+            Cancel
+          </Button>,
+       
+        ]}
+      >
+        <Input.TextArea
+          value={suspendMessage}
+          onChange={handleSuspendMessageChange}
+          placeholder="Enter your reason here..."
+        />
+           <Button key="submit" type="primary" onClick={() => handleConfirmSuspend(selectedHost)}>
+            Submit
+          </Button>
+      </Modal>
     </div>
   );
 }
