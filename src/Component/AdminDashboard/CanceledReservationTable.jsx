@@ -1,14 +1,20 @@
-import React from "react";
-import { Table } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Spin } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
+import Axios from "../../Axios"
+import moment from "moment"; // Import moment library
+
 
 export default function CanceledReservationTable() {
+  const [loading, setLoading] = useState(true);
+  const [cancelledTrips, setCancelledTrips] = useState([]);
+
   const columns = [
     {
       title: "Reservation ID",
-      dataIndex: "reservationId",
-      key: "reservationId",
+      dataIndex: "reservationID",
+      key: "reservationID",
     },
     {
       title: "Guest Name",
@@ -24,34 +30,40 @@ export default function CanceledReservationTable() {
       title: "Cancellation Date",
       dataIndex: "cancellationDate",
       key: "cancellationDate",
+      render: (text, record) => {
+        const formattedDate = moment(text, "YYYY-MM-DD HH:mm:ss").format("dddd, D MMMM YYYY");
+        return formattedDate;
+      },
     },
     {
       title: "Reason for Cancellation",
-      dataIndex: "cancellationReason",
-      key: "cancellationReason",
+      dataIndex: "reason",
+      key: "reason",
     },
   ];
+  
 
   const data = [
-    {
-      key: "1",
-      reservationId: "R12345",
-      guestName: "Guest 1",
-      apartmentName: "Apartment A",
-      cancellationDate: "2023-11-02 14:30:00",
-      cancellationReason: "Change of plans",
-    },
-    {
-      key: "2",
-      reservationId: "R12346",
-      guestName: "Guest 2",
-      apartmentName: "Apartment B",
-      cancellationDate: "2023-11-03 10:00:00",
-      cancellationReason: "Found another accommodation",
-    },
-    // Add more data as needed
+  
   ];
 
+
+  useEffect(() => {
+    const fetchCancelledTrips = async () => {
+      try {
+        const response = await Axios.get("/cancelledTrips");
+        setCancelledTrips(response.data.data);
+        console.log(response.data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching cancelled trips:", error);
+        setLoading(false);
+        // Handle error, show error message, etc.
+      }
+    };
+
+    fetchCancelledTrips();
+  }, []);
   return (
     <div>
       <div className="bg-gray-100 h-[100vh]">
@@ -66,7 +78,11 @@ export default function CanceledReservationTable() {
 
             <div className="bg-white p-4 rounded shadow">
               <div className="overflow-x-auto">
-                <Table columns={columns} dataSource={data} />
+              {loading ? (
+                  <Spin size="large" />
+                ) : (
+                  <Table columns={columns} dataSource={cancelledTrips} />
+                )}
               </div>
             </div>
           </div>

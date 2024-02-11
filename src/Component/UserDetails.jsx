@@ -111,29 +111,128 @@ const UserDetails = () => {
           </div>
         )}
 
-        <h3 className="text-xl font-semibold mt-4">
-          Houses {userData.name} has hosted or stayed in
-        </h3>
-        <div
-          className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
-            showAllHouses ? "w-full" : "w-fit"
-          }`}
-        >
-          {userData.hosthomeDetails.map((apartment, index) => (
-            <Link to={`/ListingInfoMain/${apartment.hosthome_id}`} key={index}>
-              <div className="mt-2 p-4 bg-white ">
-                <img
-                  src={apartment.photo_image}
-                  className="h-32 w-full object-cover rounded-t-lg"
-                  alt={apartment.hosthome_title}
-                />
-                <p className="text-center text-gray-800 mt-2 font-semibold">
-                  {apartment.hosthome_title}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {userData.Status === "Host" && (
+          <>
+            <h3 className="text-xl font-semibold mt-4">
+              Houses {userData.name} has hosted
+            </h3>
+            <div
+              className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
+                showAllHouses ? "w-full" : "w-fit"
+              }`}
+            >
+              {userData.hosthomeDetails.map((apartment, index) => (
+                <Link
+                  to={`/ListingInfoMain/${apartment.hosthome_id}`}
+                  key={index}
+                >
+                  <div className="mt-2 p-4 bg-white ">
+                    <img
+                      src={apartment.photo_image}
+                      className="h-32 w-full object-cover rounded-t-lg"
+                      alt={apartment.hosthome_title}
+                    />
+                    <p className="text-center text-gray-800 mt-2 font-semibold">
+                      {apartment.hosthome_title}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+
+        {userData.Status === "Guest" && (
+          <>
+            <h3 className="text-xl font-semibold mt-4">
+              Houses {userData.name} has stayed in
+            </h3>
+            <div
+              className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
+                showAllHouses ? "w-full" : "w-fit"
+              }`}
+            >
+              {userData.bookedhosthomeDetails.map((apartment, index) => (
+                <Link
+                  to={`/ListingInfoMain/${apartment.hosthome_id}`}
+                  key={index}
+                >
+                  <div className="mt-2 p-4 bg-white ">
+                    <img
+                      src={apartment.photo_image}
+                      className="h-32 w-full object-cover rounded-t-lg"
+                      alt={apartment.hosthome_title}
+                    />
+                    <p className="text-center text-gray-800 mt-2 font-semibold">
+                      {apartment.hosthome_title}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+
+        {userData.Status === "Host And Guest" && (
+          <>
+            <h3 className="text-xl font-semibold mt-4">
+              Houses {userData.name} has hosted
+            </h3>
+            <div
+              className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
+                showAllHouses ? "w-full" : "w-fit"
+              }`}
+            >
+              {userData.hosthomeDetails.map((apartment, index) => (
+                <Link
+                  to={`/ListingInfoMain/${apartment.hosthome_id}`}
+                  key={index}
+                >
+                  <div className="mt-2 p-4 bg-white ">
+                    <img
+                      src={apartment.photo_image}
+                      className="h-32 w-full object-cover rounded-t-lg"
+                      alt={apartment.hosthome_title}
+                    />
+                    <p className="text-center text-gray-800 mt-2 font-semibold">
+                      {apartment.hosthome_title}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+        {userData.Status === "Host And Guest" && (
+          <>
+            <h3 className="text-xl font-semibold mt-4">
+              Houses {userData.name} has stayed in
+            </h3>
+            <div
+              className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
+                showAllHouses ? "w-full" : "w-fit"
+              }`}
+            >
+              {userData.bookedhosthomeDetails.map((apartment, index) => (
+                <Link
+                  to={`/ListingInfoMain/${apartment.hosthome_id}`}
+                  key={index}
+                >
+                  <div className="mt-2 p-4 bg-white ">
+                    <img
+                      src={apartment.photo_image}
+                      className="h-32 w-full object-cover rounded-t-lg"
+                      alt={apartment.hosthome_title}
+                    />
+                    <p className="text-center text-gray-800 mt-2 font-semibold">
+                      {apartment.hosthome_title}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
 
         {userData.totalPages > 1 && !showAllHouses && (
           <button
