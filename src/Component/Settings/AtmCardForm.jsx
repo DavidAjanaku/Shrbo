@@ -122,9 +122,9 @@ const ATMCardForm = ({ close,userId,refresh }) => {
                         zIndex:loading? '10':'-1',
                         display:loading? "block" :"none",
                         opacity:loading? '1':'0',
-                        fontSize:'82px',
-                        top:'calc(50% - 41px)',
-                        left:'calc(50% - 41px)',
+                        fontSize:'52px',
+                        top:'calc(50% - 171px)',
+                        left:'calc(50% - 21px)',
 
 
                     }
@@ -133,7 +133,7 @@ const ATMCardForm = ({ close,userId,refresh }) => {
                 }}
             />
 
-      <div className="bg-white p-6 rounded shadow-md w-96 my-4">
+      <div className="bg-white p-6 rounded shadow-md w-96 my-4 ">
         <h2 className="text-2xl font-semibold mb-4">ATM Card Information</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -146,6 +146,7 @@ const ATMCardForm = ({ close,userId,refresh }) => {
               className="w-full p-2 border rounded"
               placeholder="Enter card number"
               value={cardNumber}
+              disabled={loading?true:false}
               onChange={handleCardNumberChange}
               maxLength={19}
             />
@@ -160,6 +161,7 @@ const ATMCardForm = ({ close,userId,refresh }) => {
               className="w-full p-2 border rounded"
               placeholder="MMYY"
               value={expiryDate}
+              disabled={loading?true:false}
               onChange={handleExpiryDateChange}
               maxLength={5}
             />
@@ -175,6 +177,7 @@ const ATMCardForm = ({ close,userId,refresh }) => {
               placeholder="Enter CVV"
               maxLength={3}
               value={cvv}
+              disabled={loading?true:false}
               onChange={(e) => setCVV(e.target.value)}
             />
           </div>
@@ -183,11 +186,13 @@ const ATMCardForm = ({ close,userId,refresh }) => {
             <button
               type="submit"
               className="w-1/2 mr-2 bg-orange-400 text-white py-2 rounded hover:bg-orange-500"
+              disabled={loading?true:false}
             >
               Submit
             </button>
             <button
               type="button"
+              disabled={loading?true:false}
               className="w-1/2 ml-2 text-black  py-2 rounded"
               onClick={handleCancel}
             >

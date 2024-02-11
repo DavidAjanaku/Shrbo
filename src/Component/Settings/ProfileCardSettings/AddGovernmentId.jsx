@@ -8,6 +8,7 @@ import { useStateContext } from "../../../ContextProvider/ContextProvider";
 import { Link } from "react-router-dom";
 import {styles} from '../../ChatBot/Style';
 import {LoadingOutlined}  from '@ant-design/icons';
+import { FaCloudUploadAlt } from "react-icons/fa";
 
 const { Option } = Select;
 
@@ -22,6 +23,7 @@ export default function AddGovernmentId() {
   const [succesfull,setSuccesfull]=useState();
   const {user,setUser,setHost,setAdminStatus}=useStateContext(false);
   const videoRef = useRef(null);
+  const imageRef=useRef(null);
   const [loading,setLoading]=useState(false);
 
   useEffect(() => {
@@ -203,6 +205,7 @@ const capturePhoto = async () => {
     }
   }
 
+
   return (
     <div className="container max-w-2xl mx-auto p-4">
       
@@ -300,12 +303,36 @@ const capturePhoto = async () => {
           National Identity Number (Slip)
         </Option>
       </Select>
-      <input
+      {/* <input
         type="file"
         accept="image/*"
         onChange={handleImageUpload}
-        className="mt-4 p-2 border border-gray-300 rounded"
-        />
+        className="mt-4 p-2 border border-gray-300 rounded hidden tim"
+        /> */}
+          <div className="text-center">
+                  <div className=" my-6">
+                    <label
+                      htmlFor={imageRef}
+                      onClick={()=>imageRef.current.click()}
+                      className="cursor-pointer block w-full  mx-auto bg-orange-300 text-white rounded-md p-4 text-center transition duration-300 hover:bg-orange-600"
+                    >
+                      <div className="mb-4">
+                        <FaCloudUploadAlt className="text-4xl mx-auto" />
+                      </div>
+                      <p className="mb-2">Click or Drag Photos Here</p>
+                      <p className="text-sm">Choose a clear picture</p>
+                      <input
+                        type="file"
+                        ref={imageRef}
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        // key={fileInputKey}
+                        className="hidden"
+                        // id={fileInputKey}
+                      />
+                    </label>
+                  </div>
+                </div>
       <div className="mt-4">
         <video ref={videoRef} autoPlay playsInline className="w-full rounded" />
         <div className="flex justify-between mt-2">

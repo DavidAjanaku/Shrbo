@@ -1,33 +1,20 @@
-import React, { useState,useEffect } from "react";
-import { Link } from "react-router-dom";
-import SettingsNavigation from "./SettingsNavigation";
-import ChangePassword from "./ChangePassword";
+import React, { useState, useEffect } from "react";
 import ATMCardForm from "./AtmCardForm";
-import GoBackButton from "../GoBackButton";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 import axios from '../../Axios'
 import verve from '../../assets/Verve-Logo.png';
 import visa from '../../assets/Visa-Payment-Card.png';
 import masterCard from '../../assets/mastercard.png';
-import { message, Popconfirm ,Tag } from 'antd';
-import {LoadingOutlined}  from '@ant-design/icons';
-import {styles} from '../ChatBot/Style'
-import AccountNumberForm from "./ProfileCardSettings/AccountNumberForm";
-import { data } from "autoprefixer";
-
-
+import { message, Popconfirm, Tag } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import { styles } from '../ChatBot/Style'
 
 
 
 export default function Payments() {
   const [isChangePassword, setIsChangePassword] = useState(false);
-  const [isChangeAccountNumber, setIsChangeAccountNumber] = useState(false);
-  const [isConfirmDeactivation, setIsConfirmDeactivation] = useState(false);
-  const [isCardRemoved, setIsCardRemoved] = useState(false);
-  const {user,setUser,setHost,setAdminStatus}=useStateContext();
-  const [loading,setLoading]=useState(false);
-  const [acLoading,setAcLoading]=useState(false);
-  const [accountDetails, setAccountDetails] = useState([])
+  const { user } = useStateContext();
+  const [loading, setLoading] = useState(true);
   const [paymentDetails, setPaymentDetails] = useState([
     // {
     //   title: "MasterCard ****4567",
@@ -53,38 +40,38 @@ export default function Payments() {
 
 
   const detailsArray = [
-    {
-      title: "Refund Account details",
-      value: "Add Bank Details for Refund",
-      action: "Add",
-      link: "/edit-name",
-    },  
-    ...accountDetails,
+    // {
+    //   title: "Refund Account details",
+    //   value: "Add Bank Details for Refund",
+    //   action: "Add",
+    //   link: "/edit-name",
+    // },  
+    // ...accountDetails,
     {
       title: "Payment Cards",
       value: "Add New Payment Method",
       action: "Add",
       link: "/edit-name",
-    },  
-  ...paymentDetails
+    },
+    ...paymentDetails
 
   ];
 
-  
+
   message.config({
-    duration: 5,
+    duration: 3,
   });
 
   //Confirm deleting the Card 
-  const confirm = async (e,type,cardId) => {
+  const confirm = async (e, type, cardId) => {
     // console.log(e);
 
-    await axios.delete(`/deleteUserCard/${cardId}/${user.id}`).then(response=>{
+    await axios.delete(`/deleteUserCard/${cardId}/${user.id}`).then(response => {
       console.log(response);
       message.success(`Card ${type} deleted successfully`);
       fetchUserCards();
-    }).catch(error=>{
-      console.error("Failed to delete Card",error);
+    }).catch(error => {
+      console.error("Failed to delete Card", error);
       message.error(`An Error Occured while trying to delte Card ${type}`)
     })
 
@@ -93,64 +80,52 @@ export default function Payments() {
     console.log();
   };
 
-  const selectCard=async(cardId,type)=>{
+  const selectCard = async (cardId, type) => {
 
-    await axios.get(`/selectCard/${cardId}/${user.id}`).then(response=>{
+    toggleSelected(cardId);
+
+    await axios.get(`/selectCard/${cardId}/${user.id}`).then(response => {
       console.log(response);
       message.success(`Card ${type} Selected successfully`);
-      fetchUserCards();
-    }).catch(err=>{
-      console.error("Failed to Selected Card",err);
+    }).catch(err => {
+      console.error("Failed to Selected Card", err);
       message.error(`An Error Occured while trying to Select Card ${type}`)
+      toggleSelected(cardId);
+
     })
+
+  }
+
+  const toggleSelected = (cardId) => {
+    setPaymentDetails((prevPaymentDetails) =>
+      prevPaymentDetails.map((paymentDetail) => {
+        // Check if the current paymentDetail has the same id as the parameter
+
+
+        if (paymentDetail.id === cardId) {
+          // Toggle the selected field
+          return { ...paymentDetail, selected: paymentDetail.selected === 'Selected' ? null : 'Selected' };
+        } else if (paymentDetail.selected !== null) {
+          // Deselect any previously selected item
+          return { ...paymentDetail, selected: null };
+        }
+        // Keep other paymentDetails unchanged
+        return paymentDetail;
+      })
+    );
 
   }
 
 
 
-
-  const removeCard = () => {
-   
-    setIsCardRemoved(true);
-  };
-
-
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // Make a request to get the user data
-        const response = await axios.get('/user'); // Adjust the endpoint based on your API
-        
 
-        // Set the user data in state
-        setUser(response.data);
-        setHost(response.data.host);
-        setAdminStatus(response.data.adminStatus);
-      
-
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        // Set loading to false regardless of success or error
-        // setLoading(false);
-      
-      }
-    };
-    if(!user.id){
-
-      fetchUserData();
-    }
-  }, []); 
-
-  useEffect(() => {
-   
     if (user.id) {
       fetchUserCards();
     }
   }, [user.id]);
-  
-   // Fetch user cards
-   const fetchUserCards = async () => {
+  // Fetch user cards
+  const fetchUserCards = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`/getUserCards/${user.id}`);
@@ -167,149 +142,82 @@ export default function Payments() {
           card: true,
           card_type: card.cardtype,
           created_at: formattedCreatedAt,
-          selected:card.Selected,
+          selected: card.Selected,
         };
       });
-        setPaymentDetails(newDetails);
-        setLoading(false);
-     
-        
+      setPaymentDetails(newDetails);
+
+
+
     } catch (error) {
       console.error('Error fetching user cards:', error);
+    } finally {
+      setLoading(false)
     }
   };
 
 
-  const determine_card =(type)=>{
-      let cardUrl="";
-      if(type=="Visa"){
-        cardUrl=visa;
-      }else if(type=="Verve"){
-        cardUrl=verve;
-      }else if(type=="Master"){
-        cardUrl=masterCard;
-      }
-
-      return(cardUrl);
-
-  }
-
-  const handleAccountNumber=async(data)=>{
-
-    const details={
-      account_number:data.accountNumber,
-      bank_name:data.bankName,
-      account_name:data.fullName,
+  const determine_card = (type) => {
+    let cardUrl = "";
+    if (type == "Visa") {
+      cardUrl = visa;
+    } else if (type == "Verve") {
+      cardUrl = verve;
+    } else if (type == "Master") {
+      cardUrl = masterCard;
     }
 
-    await axios.post(`/createUserBankinfo/${user.id}`,details).then((response)=>{
-
-      console.log(response);
-      message.success(`Account Details added successfully`);
-      fetchUserCards();
-    }).catch(error=>{
-      console.error("Failed to add Account detais",error);
-      message.error(`An Error Occured while trying to add Account detais ${type}`)
-    }).finally(()=>{
-      setAcLoading(false)
-      setIsChangeAccountNumber(false);
-    });
-
+    return (cardUrl);
 
   }
-
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // Make a request to get the user data
-        const response = await axios.get(`/getUserBankInfos/${user.id}`); 
-        // Adjust the endpoint based on your API
-        console.log(response.data);
-
-        const data={
-          title:response.data.data[0].bank_name ,
-          value: response.data.data[0].account_number,
-          action:response.data.data[0].account_name,
-
-        }
-
-        setAccountDetails([data]);
-        
-
-        
-
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        // Set loading to false regardless of success or error
-        // setLoading(false);
-      
-      }
-    };
- 
-
-      fetchUserData();
-   
-  }, []); 
-
-
 
 
 
   return (
     <div>
+      {loading?
+      <>
       <div
-                className="transition-3"
-                style={{
-                    ...styles.loadingDiv,
-                    ...{
-                        zIndex:loading? '10':'-1',
-                        display:loading? "block" :"none",
-                        opacity:loading? '0.33':'0',
-                    }
-                }}
+        className="transition-3"
+        style={{
+          ...styles.loadingDiv,
+          ...{
+            zIndex: loading ? '10' : '-1',
+            display: loading ? "block" : "none",
+            opacity: loading ? '0.33' : '0',
+          }
+        }}
 
-            />
-            <LoadingOutlined 
-                className="transition-3"
-                style={{
-                    ...styles.loadingIcon,
-                    ...{
-                        zIndex:loading? '10':'-1',
-                        display:loading? "block" :"none",
-                        opacity:loading? '1':'0',
-                        fontSize:'42px',
-                        top:'calc(50% - 41px)',
-                        left:'calc(50% - 41px)',
+      />
+      <LoadingOutlined
+        className="transition-3"
+        style={{
+          ...styles.loadingIcon,
+          ...{
+            zIndex: loading ? '10' : '-1',
+            display: loading ? "block" : "none",
+            opacity: loading ? '1' : '0',
+            fontSize: '42px',
+            top: 'calc(50% - -42px)',
+            left: 'calc(50% - 41px)',
 
 
-                    }
-                
-                
-                }}
-            />
-      <div className="max-w-2xl mx-auto p-4">
-        <GoBackButton/>
-        <SettingsNavigation title="Payments & payouts" text="Payments & payouts" />
-        
+          }
 
+
+        }}
+      />
+      </>
+        :
+      <div className="max-w-2xl mx-auto ">
         <div>
-        <p className="text-gray-400 font-normal text-base my-4">Manage your payment methods and view your transaction history.
-        </p>
 
           <div className="tab">
 
             {isChangePassword && (
               <div className="max-w-2xl mx-auto p-4">
                 <h2 className="text-2xl font-medium mb-4">Payment Card</h2>
-                <ATMCardForm userId={user.id} close={ (bool)=>{setIsChangePassword(bool)} } refresh={()=>{fetchUserCards()}} />
-              </div>
-            )}
-            {isChangeAccountNumber && (
-              <div className="max-w-2xl mx-auto p-4">
-                <h2 className="text-2xl font-medium mb-4">Account Details</h2>
-                 <AccountNumberForm close={(bool)=>{setIsChangeAccountNumber(bool)}} loading={acLoading} Submit={(val)=>{handleAccountNumber(val)}} />
+                <ATMCardForm userId={user.id} close={(bool) => { setIsChangePassword(bool) }} refresh={() => { fetchUserCards() }} />
               </div>
             )}
 
@@ -319,117 +227,69 @@ export default function Payments() {
                 key={index}
               >
 
-               {!detail.card?
-                <>
-               <div>
-                  <div>
-                    <section>
-                      <h2>{detail.title}</h2>
-                    </section>
-                  </div>
-                  <div>
-                    <span>{detail.value}</span>
-                  </div>
-                </div>
-                <div>
-                  {detail.action === "Add" ? 
+                {!detail.card ?
                   <>
-                  {(detail.title==="Payment Cards")? 
-                    <button
-                      className="underline"
-                      onClick={() => {setIsChangePassword(true);setIsChangeAccountNumber(false)}}
-                    >
-                      {detail.action}
-                    </button>:  <button
-                      className="underline"
-                      onClick={() => {setIsChangeAccountNumber(true);setIsChangePassword(false)}}
-                    >
-                      {detail.action}
-                    </button>}
+                    <div>
+                      <div>
+                        <section>
+                          <h2>{detail.title}</h2>
+                        </section>
+                      </div>
+                      <div>
+                        <span>{detail.value}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <>
+                        <button
+                          className="underline"
+                          onClick={() => { setIsChangePassword(true); setIsChangeAccountNumber(false) }}
+                        >
+                          {detail.action}
+                        </button>
+                      </>
+
+                    </div>
                   </>
-                   : detail.action === "Remove" ? (
-                    <>
-                      <button className="underline" onClick={removeCard}>
-                        {detail.action}
-                      </button>
-                      {isCardRemoved && (
-                        <p className="text-green-500">Card removed successfully.</p>
-                      )}
-                    </>
-                  ) : detail.action === "Remove Payment Method" ? (
-                    <>
-                      <button
-                        className="underline"
-                        onClick={() => setIsConfirmDeactivation(true)}
-                      >
-                        {detail.action}
-                      </button>
-                    </>
-                  ) : (
-                    <Link className="underline" to={detail.link}>
-                      {detail.action}
-                    </Link>
-                  )}
-                </div>
-                </>:
-                <div className=" min-[640px]:justify-between min-[640px]:items-start min-[640px]:flex py-5 px-6 bg-[rgb(249,250,251)] rounded-md w-full relative" >
-                  <h4 className=" absolute w-[1px] h-[1px] p-0 -m-[1px] overflow-hidden whitespace-nowrap ">{detail.card_type}</h4>
-                   {(detail.selected=="Selected")&&<Tag bordered={true} color="success" className=" min-[640px]:text-[10px] max-[639px]:right-2 min-[640px]:left-3 min-[640px]:bottom-1 absolute min-[640px]:leading-4   ">
-                      selected 
+                  :
+                  <div className=" min-[640px]:justify-between min-[640px]:items-start min-[640px]:flex py-5 px-6 bg-[rgb(249,250,251)] rounded-md w-full relative" >
+                    <h4 className=" absolute w-[1px] h-[1px] p-0 -m-[1px] overflow-hidden whitespace-nowrap ">{detail.card_type}</h4>
+                    {(detail.selected == "Selected") && <Tag bordered={true} color="success" className=" min-[640px]:text-[10px] max-[639px]:right-2 min-[640px]:left-3 min-[640px]:bottom-1 absolute min-[640px]:leading-4   ">
+                      selected
                     </Tag>}
-                  <div className=" min-[640px]:items-start min-[640px]:flex cursor-pointer " onClick={()=>{selectCard(detail.id,detail.title)}}>
-                    <img src={determine_card(detail.card_type)} width="36" height="24" alt="cardType"/>
-                    <div className="block mt-3 min-[640px]:mt-0 min-[640px]:ml-4 ">
-                      <div className=" text-sm font-medium text-[rgb(17,24,39)] ">{detail.title}</div>
-                      <div className="min-[640px]:items-center min-[640px]:flex mt-1 text-sm text-[rgb(75,85,99)]  "><div>{detail.value}</div><span className="min-[640px]:inline min-[640px]:mx-2 hidden ">.</span> <div>Card added on:{detail.created_at}</div> </div>
+                    <div className=" min-[640px]:items-start min-[640px]:flex cursor-pointer " onClick={() => { selectCard(detail.id, detail.title) }}>
+                      <img src={determine_card(detail.card_type)} width="36" height="24" alt="cardType" />
+                      <div className="block mt-3 min-[640px]:mt-0 min-[640px]:ml-4 ">
+                        <div className=" text-sm font-medium text-[rgb(17,24,39)] ">{detail.title}</div>
+                        <div className="min-[640px]:items-center min-[640px]:flex mt-1 text-sm text-[rgb(75,85,99)]  "><div>{detail.value}</div><span className="min-[640px]:inline min-[640px]:mx-2 hidden ">.</span> <div>Card added on:{detail.created_at}</div> </div>
+                      </div>
+
+                    </div>
+                    <div className=" mt-4 min-[640px]:mt-0 min-[640px]:flex-shrink-0 min-[640px]:ml-6 ">
+                      <Popconfirm
+                        title="Remove Payment Card"
+                        description={`Sure you want to delete ${detail.title} Card?`}
+                        onConfirm={(e) => { confirm(e, detail.title, detail.id) }}
+                        onCancel={cancel}
+                        okText="Delete"
+                        cancelText="Cancel"
+                      >
+                        <button className="m-0 cursor-pointer inline-flex items-center rounded-md bg-[rgb(255,255,255)] px-3 py-2 text-sm font-semibold text-[rgb(17,24,39)] border   ">
+                          Remove Card
+                        </button>
+                      </Popconfirm>
+
                     </div>
 
-                  </div>
-                  <div className=" mt-4 min-[640px]:mt-0 min-[640px]:flex-shrink-0 min-[640px]:ml-6 ">
-                      <Popconfirm
-                      title="Remove Payment Card"
-                      description={`Sure you want to delete ${detail.title} Card?`}
-                      onConfirm={(e)=>{confirm(e,detail.title,detail.id)}}
-                      onCancel={cancel}
-                      okText="Delete"
-                      cancelText="Cancel"
-                    >
-                    <button   className="m-0 cursor-pointer inline-flex items-center rounded-md bg-[rgb(255,255,255)] px-3 py-2 text-sm font-semibold text-[rgb(17,24,39)] border   ">
-                      Remove Card
-                    </button>                    
-                    </Popconfirm>
 
                   </div>
-
-
-                </div>                                
                 }
               </div>
             ))}
-
-            {isConfirmDeactivation && (
-              <div className="bg-white border rounded-md p-4 mt-2">
-                <p>Are you sure you want to remove this card?</p>
-                <button
-                  className="bg-red-500 text-white rounded-md py-2 px-4 mt-2"
-                  onClick={() => {
-                    console.log("Card Deleted");
-                    setIsConfirmDeactivation(false);
-                  }}
-                >
-                  Confirm
-                </button>
-                <button
-                  className="text-gray-500 ml-2 mt-2"
-                  onClick={() => setIsConfirmDeactivation(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
+       }
     </div>
   );
 }

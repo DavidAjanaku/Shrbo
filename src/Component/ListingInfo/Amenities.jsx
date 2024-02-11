@@ -114,7 +114,7 @@ const Amenities = ({ amenities }) => {
     Heating: <FaTemperatureHigh />,
     Shampoo: <FaShower />,
     "Hair dryer": <FaShower />,
-    "Smoke alarm": <FaBell />,
+    // "Smoke alarm": <FaBell />,
   };
 
   // Display only the first 10 amenities

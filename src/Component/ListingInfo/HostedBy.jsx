@@ -48,7 +48,6 @@ const HostedBy = (props) => {
     building: <FaBuilding />,
     art: <FaPalette />,
     house: <FaHome />,
-
     city: <FaCity />,
     dog: <FaDog />,
     tree: <FaTree />,

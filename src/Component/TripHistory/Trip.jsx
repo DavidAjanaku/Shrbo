@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import room from "../../assets/room.jpeg";
-import room2 from "../../assets/room2.jpeg";
 import close from "../../assets/svg/close-line-icon.svg";
 import axios from "../../Axios";
 import bedroom from "../../assets/svg/double-bed-icon.svg";
@@ -9,7 +7,65 @@ import calender from "../../assets/svg/calendar-icon.svg";
 import { Link } from "react-router-dom";
 import PaginationExample from "../PaginationExample";
 import BottomNavigation from "../Navigation/BottomNavigation";
+import { styles } from "../ChatBot/Style";
+import {LoadingOutlined}  from '@ant-design/icons';
 import Header from "../Navigation/Header";
+import {
+  FaHome,
+  FaHotel,
+  FaBed,
+  FaBuilding,
+  FaTrash,
+  FaVideo,
+  FaPalette,
+  FaCity,
+  FaDog,
+  FaTree,
+  FaUserFriends,
+  FaShopify,
+  FaWater,
+  FaLandmark,
+  FaChartBar,
+  FaMountain,
+  FaWifi,
+  FaTv,
+  FaUtensils,
+  FaHandsWash,
+  FaSnowflake,
+  FaParking,
+  FaSwimmingPool,
+  FaHotTub,
+  FaFire,
+  FaBell,
+  FaFirstAid,
+  FaFireExtinguisher,
+  FaSmoking,
+  FaTemperatureHigh,
+  FaSuitcase,
+  FaShower,
+  FaDumbbell,
+  FaWheelchair,
+  FaPaw,
+  FaCoffee,
+  FaBook,
+  FaChessBoard,
+  FaLaptop,
+  FaAirFreshener,
+  FaPaperclip,
+  FaSnowboarding,
+  FaArrowUp,
+  FaObjectGroup,
+  FaWaveSquare,
+  FaHotdog,
+  FaBox,
+  FaUser,
+  FaCamera,
+  FaShieldAlt,
+  FaExclamationTriangle,
+  FaCloudUploadAlt,
+  FaUtensilSpoon,
+  FaSmog,
+} from "react-icons/fa";
 
 
 export default function Trip() {
@@ -17,13 +73,58 @@ export default function Trip() {
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [comments, setComments] = useState([]);
+  const [reasoms, setReasons] = useState("");
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingCancelReservation, setLoadingCancelReservation] = useState(false);
+  const [goNext, setGoNext] = useState(true);
+  const [error, setError] = useState('');
+  const [cancellationPolicy, setCancellationPolicy] = useState(null);
   const [filteredTrips, setFilteredTrips] = useState([]);
+
+  const amenityIcons = {
+    Wifi: <FaWifi />,
+    TV: <FaTv />,
+    Kitchen: <FaUtensilSpoon />,
+    Washer: <FaHandsWash />,
+    "Air conditioning": <FaSnowflake />,
+    // Add icons for the remaining amenities
+    "Hot tub": <FaHotTub />,
+    "fire extinguisher": <FaFireExtinguisher />,
+    "first aid kit": <FaFirstAid />,
+    Pool: <FaSwimmingPool />,
+    "Free parking on premises": <FaParking />,
+    Essentials: <FaSuitcase />,
+    Gym: <FaDumbbell />,
+    "Wheelchair accessible": <FaWheelchair />,
+    "Board games": <FaChessBoard />,
+    Books: <FaBook />,
+    Refrigerator: <FaBox />,
+    Toaster: <FaHotdog />,
+    Microwave: <FaWaveSquare />,
+    Oven: <FaObjectGroup />,
+    "Smoking allowed": <FaSmoking />,
+    Balcony: <FaBuilding />,
+    Elevator: <FaArrowUp />,
+    "Coffee maker": <FaCoffee />,
+    "Tea kettle": <FaUtensils />,
+    Dishwasher: <FaHandsWash />,
+    "Pets allowed": <FaPaw />,
+    Hangers: <FaPaperclip />,
+    "Laptop-friendly workspace": <FaLaptop />,
+    Iron: <FaSnowboarding />,
+    "Fire pit": <FaFire />,
+    "Indoor fireplace": <FaFire />,
+    "Smoke alarm": <FaSmog />,
+    Heating: <FaTemperatureHigh />,
+    Shampoo: <FaShower />,
+    "Hair dryer": <FaShower />,
+    // "Smoke alarm": <FaBell />,
+  };
 
 
   useEffect(() => {
-    setLoading(true);
+    
     axios.get("/userTrips").then(response => {
       const filteredTripsData = response.data.data.map(item => ({
         id: item.id,
@@ -33,7 +134,9 @@ export default function Trip() {
         notes: item.hosthomedescription,
         image: item.hosthomephotos[0],
         amenities: item.hosthomeamenities,
-        hostName: "John Doe",
+        hostName: item.hostName,
+        hostId:item.hostid,
+        bbokingid:item.bbokingid,
         rating: 4.8,
         bathrooms: item.hosthomebathroom,
         bedrooms: item.hosthomebedroom,
@@ -45,6 +148,7 @@ export default function Trip() {
         checkedIn: item.status,
         checkingInDate: "",
         checkingInTime: "",
+        cancellationPolicy:item.hosthomecancelationpolicy,
 
 
 
@@ -61,8 +165,30 @@ export default function Trip() {
 
 
 
-  },[]);
+  }, []);
 
+  let policyText = "";
+
+  switch (cancellationPolicy) {
+    case "Flexible Cancellation Policy":
+      policyText =
+        "Cancelling within 48 hours of booking is free, and guest will have a full refund of their total booking amount. Cancellation after 48 hours, guest will be refunded 70% of their total booking amount.";
+      break;
+
+    case "Moderate Cancellation Policy":
+      policyText =
+        "Cancellation after booking, guest will be refunded 70% of their total booking amount.";
+      break;
+
+    case "Strict Cancellation Policy":
+      policyText =
+        "Cancellation after booking, guest will be refunded 50% of their total booking amount.";
+      break;
+
+    default:
+      // Handle other cases if needed
+      break;
+  }
 
   const [selectedTab, setSelectedTab] = useState("All"); // Default to "All" trips
 
@@ -81,21 +207,24 @@ export default function Trip() {
 
   const openModal = (trip) => {
     setSelectedTrip(trip);
+    setCancellationPolicy(trip.cancellationPolicy);
   };
 
   const closeModal = () => {
     setSelectedTrip(null);
   };
-
+  
   const changeMainPhoto = (index) => {
     setSelectedPhotoIndex(index);
   };
-
+  
   const openCancellationModal = () => {
     setIsCancellationModalOpen(true); // Step 2: Open the cancellation modal
   };
-
+  
   const closeCancellationModal = () => {
+    setGoNext(true);
+    setReasons('');
     setIsCancellationModalOpen(false); // Step 2: Close the cancellation modal
   };
 
@@ -104,7 +233,7 @@ export default function Trip() {
   //   ...trips,
   // ];
 
- 
+
 
   const SkeletonLoader = Array.from({ length: 8 }).map((group, index) => (
     <div
@@ -133,6 +262,49 @@ export default function Trip() {
   ));
 
 
+  const cancelTrips = async () => {
+    setLoadingCancelReservation(true);
+
+  
+ 
+    const data =
+    {
+      booking_id: selectedTrip.bbokingid,
+      host_id: selectedTrip.hostId,
+      reasonforcancel: reasoms
+    }
+    console.log(data)
+
+    await axios.post("/createCancelTrips", data).then(response => {
+      // setGoNext(true);
+      console.log(response.data);
+      setReasons('');
+
+    }).catch(error => {
+      console.log(error)
+
+    }).finally(()=>{
+      window.location.href='/trip';
+      setLoadingCancelReservation(false) 
+      closeModal()
+      closeCancellationModal()});
+  }
+
+  const handleReasonChange = (e) => {
+    setReasons(e.target.value)
+
+
+  }
+
+  const handleGoNext = () => {
+    if (reasoms.trim() === "") {
+      setError("Reason cannot be empty");
+      return;
+    }
+    setGoNext(false);
+    setError('');
+  }
+
 
 
 
@@ -149,6 +321,8 @@ export default function Trip() {
     setSelectedTab(tab);
   };
 
+  console.log(goNext)
+
   return (
     <div className=" h-[100vh]  overflow-auto example">
       <Header />
@@ -156,10 +330,10 @@ export default function Trip() {
         <header className="text-4xl pl-6 py-6 font-bold">Trips History</header>
         <div className="flex flex-wrap  p-4">
           <button
-          disabled={loading}
+            disabled={loading}
             className={`${selectedTab === "All"
-                ? "bg-orange-400  text-white"
-                : "bg-gray-200 text-gray-600"
+              ? "bg-orange-400  text-white"
+              : "bg-gray-200 text-gray-600"
               } px-4 py-2 rounded-full m-2 `}
             onClick={() => filterTripsByTab("All")}
             title="Show all trips" // Add the title attribute
@@ -170,8 +344,8 @@ export default function Trip() {
           <button
             disabled={loading}
             className={`${selectedTab === "Reserved"
-                ? "bg-orange-400 text-white"
-                : "bg-gray-200 text-gray-600"
+              ? "bg-orange-400 text-white"
+              : "bg-gray-200 text-gray-600"
               } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Reserved")}
             title="The booking is confirmed, and the check-in date is in the future. The trip has not yet started.
@@ -180,10 +354,10 @@ export default function Trip() {
             Reserved
           </button>
           <button
-             disabled={loading}
+            disabled={loading}
             className={`${selectedTab === "Checked in"
-                ? "bg-orange-400 text-white"
-                : "bg-gray-200 text-gray-600"
+              ? "bg-orange-400 text-white"
+              : "bg-gray-200 text-gray-600"
               } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Checked in")}
             title="The booking is confirmed, and the check-in date is approaching. This status is typically used for upcoming trips."
@@ -192,10 +366,10 @@ export default function Trip() {
             Checked In
           </button>
           <button
-             disabled={loading}
+            disabled={loading}
             className={`${selectedTab === "Checked Out"
-                ? "bg-orange-400 text-white"
-                : "bg-gray-200 text-gray-600"
+              ? "bg-orange-400 text-white"
+              : "bg-gray-200 text-gray-600"
               } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Checked Out")}
             title="The trip has ended, and both the check-in and check-out dates have passed. This status indicates that the reservation is no longer active.
@@ -204,10 +378,10 @@ export default function Trip() {
             Checked Out
           </button>
           <button
-             disabled={loading}
+            disabled={loading}
             className={`${selectedTab === "Cancelled"
-                ? "bg-orange-400 text-white"
-                : "bg-gray-200 text-gray-600"
+              ? "bg-orange-400 text-white"
+              : "bg-gray-200 text-gray-600"
               } px-4 py-2 rounded-full m-2`}
             onClick={() => filterTripsByTab("Cancelled")}
             title="The booking has been canceled by either the guest or the host. Cancellation can occur for various reasons, and the status indicates that the reservation is no longer active.
@@ -218,8 +392,8 @@ export default function Trip() {
 
         </div>
 
-       {!loading?
-        <div className="flex flex-wrap">
+        {!loading ?
+          <div className="flex flex-wrap">
             {filteredTrips.length > 0 ? (
               filteredTrips.map((trip, index) => (
                 <div
@@ -290,11 +464,11 @@ export default function Trip() {
               </div>
             )}
           </div>
-            :
-            <div className="flex flex-wrap justify-center">
+          :
+          <div className="flex flex-wrap justify-center">
 
-              {SkeletonLoader}
-            </div>
+            {SkeletonLoader}
+          </div>
         }
       </div>
 
@@ -320,7 +494,7 @@ export default function Trip() {
                 <img
                   src={selectedTrip.morePhotos[selectedPhotoIndex]}
                   alt={`Main Photo`}
-                  className="mt-2 w-full h-2/5 object-cover rounded-lg"
+                  className="mt-2 w-full max-h-64 min-h-[256px] md:max-h-[360px] md:min-h-[360px] h-2/5 object-cover rounded-lg"
                 />
               </div>
               <Link to="/ListingInfoMain">
@@ -336,14 +510,14 @@ export default function Trip() {
                       key={index}
                       onClick={() => changeMainPhoto(index)}
                       className={`cursor-pointer ${selectedPhotoIndex === index
-                          ? "border-2 border-orange-400"
-                          : ""
+                        ? "border-2 border-orange-400"
+                        : ""
                         }`}
                     >
                       <img
                         src={photo}
                         alt={`Photo ${index + 1}`}
-                        className="w-20 md:w-32 m-2 md:h-32 object-cover rounded-lg"
+                        className="w-20 h-20 md:w-32 m-2 md:h-32 object-cover rounded-lg"
                       />
                     </div>
                   ))}
@@ -395,9 +569,17 @@ export default function Trip() {
 
                 <div className="my-4">
                   <h1 className="font-bold text-2xl">Amenities</h1>
-                  {selectedTrip.amenities.map((amenity, index) => (
-                    <li key={index}>{amenity}</li>
-                  ))}
+                  <ul>
+                    {selectedTrip.amenities.map((amenity, index) => (
+                      <li key={index} className="flex items-center space-x-3 py-2" >
+                        <span className="text-lg">
+                          {amenityIcons[amenity] || <FaTv />}
+                        </span>
+                        <span className="text-lg">{amenity}</span>
+                      </li>
+                    ))}
+
+                  </ul>
                 </div>
               </div>
             </div>
@@ -426,41 +608,134 @@ export default function Trip() {
       )}
 
       {isCancellationModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="absolute inset-0 bg-black opacity-50"
-            onClick={closeCancellationModal} // Step 3: Close the cancellation modal
-          ></div>
-          <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
-            <div className="text-right">
-              <button
-                className="text-gray-500 hover:text-gray-700"
+        <> 
+        {!loadingCancelReservation?<>
+          {goNext ? (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div
+                className="absolute inset-0 bg-black opacity-50"
                 onClick={closeCancellationModal} // Step 3: Close the cancellation modal
-              >
-                <img src={close} className="w-4" alt="" />
-              </button>
+              ></div>
+              <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
+                <div className="text-right">
+                  <button
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                  >
+                    <img src={close} className="w-4" alt="" />
+                  </button>
+                </div>
+                <h2 className="text-2xl font-semibold mt-4">Cancel Reservation</h2>
+                <p className="mt-4">
+                  Are you sure you want to cancel your reservation for{" "}
+                  {selectedTrip.destination}? Please provide a reason for cancellation:
+                </p>
+                <textarea
+                  rows="3"
+                  className="w-full mt-2 p-2 border rounded"
+                  placeholder="Reason for cancellation"
+                  onChange={handleReasonChange}
+                ></textarea>
+                <label className="text-red-500">{error}</label><br></br>
+                <button
+                  className="bg-orange-400 p-4 rounded-full text-white mt-4"
+                  onClick={handleGoNext} // Use onClick for buttons
+                >
+                  Confirm Cancellation
+                </button>
+              </div>
             </div>
-            <h2 className="text-2xl font-semibold mt-4">Cancel Reservation</h2>
-            <p className="mt-4">
-              Are you sure you want to cancel your reservation for{" "}
-              {selectedTrip.destination}? Please provide a reason for
-              cancellation:
-            </p>
-            <textarea
-              rows="3"
-              className="w-full mt-2 p-2 border rounded"
-              placeholder="Reason for cancellation"
-            ></textarea>
-            <button
-              className="bg-orange-400 p-4 rounded-full text-white mt-4"
-            >
-              Confirm Cancellation
-            </button>
-          </div>
-        </div>
+          ) : (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div
+                className="absolute inset-0 bg-black opacity-50"
+                onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+              ></div>
+              <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
+                <div className="text-right">
+                  <button
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                  >
+                    <img src={close} className="w-4" alt="" />
+                  </button>
+                </div>
+                <h2 className="text-2xl font-semibold mt-4">Host Cancellation Policy</h2>
+                <p className="mt-4">
+                 {policyText}{" "}
+                  ,do you still want to Proceed?
+                </p>
+                <button
+                  className="bg-orange-400 p-4 rounded-full text-white mt-14 mr-4"
+                  onClick={cancelTrips} // Use onClick for buttons
+                >
+                 Cancel Reservation
+                </button>
+                <button
+                  className=" border-orange-400 border  p-4 rounded-full text-black mt-14"
+                  onClick={closeCancellationModal} // Use onClick for buttons
+                >
+                 Keep Reservation
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+        :
+        <>
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div
+                className="absolute inset-0 bg-black opacity-50"
+                onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+              ></div>
+              <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
+                <div className="text-right">
+                  <button
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                  >
+                    <img src={close} className="w-4" alt="" />
+                  </button>
+                </div>
+                  <div
+                className="transition-3"
+                style={{
+                    ...styles.loadingDiv,
+                    ...{
+                        zIndex:loadingCancelReservation? '10':'-1',
+                        display:loadingCancelReservation? "block" :"none",
+                        opacity:loadingCancelReservation? '0.33':'0',
+                    }
+                }}
+
+            />
+            <LoadingOutlined 
+                className="transition-3"
+                style={{
+                    ...styles.loadingIcon,
+                    ...{
+                        zIndex:loadingCancelReservation? '10':'-1',
+                        display:loadingCancelReservation? "block" :"none",
+                        opacity:loadingCancelReservation? '1':'0',
+                        fontSize:'42px',
+                        top:'calc(50% - 41px)',
+                        left:'calc(50% - 41px)',
+
+
+                    }
+                
+                
+                }}
+            />
+              </div>
+            </div>
+         
+        </>}
+        </>
       )}
+
       <div className="my-10 pb-32">
-        {(trips&&trips.length > 0 )&& <PaginationExample />}
+        {(filteredTrips && filteredTrips.length > 0) && <PaginationExample />}
       </div>
       <BottomNavigation />
     </div>

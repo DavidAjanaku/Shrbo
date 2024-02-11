@@ -18,6 +18,8 @@ export default function usersShow() {
     navigate(-1);
   };
   const [profilePicture, setProfilePicture] = useState(defaultProfile);
+  const [visiblePicture, setVisiblePicture] = useState(defaultProfile);
+  const [reRender,setRerender]=useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -44,6 +46,7 @@ export default function usersShow() {
       reader.onload = (e) => {
          const base64String = e.target.result;
          setProfilePicture(base64String);
+         setVisiblePicture(base64String);
       };
       reader.readAsDataURL(selectedImage);
     }
@@ -65,18 +68,19 @@ export default function usersShow() {
       return
     }
 
-      try {
-        const response= await axios.put(`/userDetail/${user.id}`,{profilePicture:profilePicture});
-        console.log('PUT request successful for Email', response.data);
-        message.success("Updated Successfuly")
-        closeModal()
-      } catch (error) {
-        console.error('Error making PUT request', error);
-        openNotificationWithIcon("error",error.response.data);
-        return;
-      }finally{
-        setRerender(true);
-      }
+    try {
+      const response= await axios.put(`/userDetail/${user.id}`,{profilePicture:profilePicture});
+      console.log('PUT request successful for Email', response.data);
+      message.success("Updated Successfuly")
+    } catch (error) {
+      console.error('Error making PUT request', error);
+      openNotificationWithIcon("error",error.response.data);
+      return;
+    }finally{
+      closeModal()
+      
+      setRerender(true);
+    }
     
     console.log("Form Data:", formData);
     // You can now do something with the form data, such as sending it to an API.
@@ -92,6 +96,7 @@ export default function usersShow() {
   };
 
   useEffect(() => {
+    setRerender(false);
     const fetchUserData = async () => {
       try {
         // Make a request to get the user data
@@ -102,6 +107,7 @@ export default function usersShow() {
         setUser(response.data);
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
+        setVisiblePicture(response.data.profilePicture?`https://shortletbooking.com/${response.data.profilePicture}`:"");
 
       
         
@@ -117,7 +123,7 @@ export default function usersShow() {
     };
 
     fetchUserData();
-  }, []); 
+  }, [reRender]); 
 
 
 
@@ -301,7 +307,7 @@ export default function usersShow() {
                       <div
                         className="cursor-pointer bg-slate-200"
                         style={{
-                          backgroundImage: `url(${user.profilePicture?`https://shortletbooking.com/${user.profilePicture}`:profilePicture})`,
+                          backgroundImage: `url(${visiblePicture})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
                           width: "150px",
@@ -321,6 +327,7 @@ export default function usersShow() {
                         onChange={handleImageUpload}
                       />
                       <button
+                        type="button"
                         onClick={() => {
                           // Trigger the file input when the button is clicked
                           document
