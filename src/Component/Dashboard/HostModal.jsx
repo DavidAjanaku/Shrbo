@@ -8,30 +8,30 @@ import HostingCard from "../HostingCard";
 import SupportCard from "../SupportCard";
 import axios from "../../Axios"
 
-export default function HostModal({ isOpen, onClose,userData }) {
+export default function HostModal({ isOpen, onClose, userData, hostStatus, adminStatus }) {
   const [profilePicture, setProfilePicture] = useState(defaultProfile);
 
-  
- const logOut=()=>{
 
-  try {
-    axios.get("/logout").then(response=>{
+  const logOut = () => {
 
-      console.log("logout",response);
-      localStorage.removeItem("Shbro");
-      localStorage.removeItem("A_Status");
-      localStorage.removeItem("H_Status");
-      // setIsLoggedIn(false);
-      window.location.replace('/');
-    });
-  } catch (error) {
+    try {
+      axios.get("/logout").then(response => {
 
-    console.log("Error",error);
+        console.log("logout", response);
+        localStorage.removeItem("Shbro");
+        localStorage.removeItem("A_Status");
+        localStorage.removeItem("H_Status");
+        // setIsLoggedIn(false);
+        window.location.replace('/');
+      });
+    } catch (error) {
+
+      console.log("Error", error);
+    }
+
+
   }
 
-
-} 
- 
 
   return (
     isOpen && (
@@ -52,7 +52,7 @@ export default function HostModal({ isOpen, onClose,userData }) {
                         <div
                           className="cursor-pointer bg-slate-200"
                           style={{
-                            backgroundImage: `url(${`https://shortletbooking.com/${userData.profilePicture}`||profilePicture})`,
+                            backgroundImage: `url(${`https://shortletbooking.com/${userData.profilePicture}` || profilePicture})`,
                             backgroundSize: "cover",
                             backgroundPosition: "center",
                             width: "100px",
@@ -60,35 +60,35 @@ export default function HostModal({ isOpen, onClose,userData }) {
                             borderRadius: "50%",
                           }}
                         >
-                      
+
                         </div>
                       </label>
                     </div>
                     <div>
-                      <h1 className="text-white text-2xl">Welcome {userData.name.split(' ')[0]||""}</h1>
+                      <h1 className="text-white text-2xl">Welcome {userData.name.split(' ')[0] || ""}</h1>
                     </div>
                   </Link>
                 </div>
               </section>
               <section>
                 <ul>
-                  <MenuCard
+                  {(hostStatus === 1) && <MenuCard
                     linkTo="/HostHomes"
                     icon={<BsHouseDoor />}
                     title="Create a new listing"
-                  />
+                  />}
 
-                  <MenuCard
+                  {adminStatus === "admin" && <MenuCard
                     linkTo="/EditHomepage"
                     icon={<BsHouseDoor />}
                     title="Dashboard"
-                  />
+                  />}
 
-                  <MenuCard
+                  {(hostStatus === 1) && <MenuCard
                     linkTo="/Listings"
                     icon={<BsHouseDoor />}
                     title="Listings"
-                  />
+                  />}
 
                   <MenuCard
                     linkTo="/Profile"
@@ -108,11 +108,11 @@ export default function HostModal({ isOpen, onClose,userData }) {
                     title="Payments"
                   />
 
-                  <MenuCard
+                  {(hostStatus === 1) && <MenuCard
                     linkTo="/Reservations"
                     icon={<BsHouseDoor />}
                     title="Reservations"
-                  />
+                  />}
 
                   <MenuCard
                     linkTo="/Security"
@@ -125,8 +125,10 @@ export default function HostModal({ isOpen, onClose,userData }) {
               <section>
                 <h1 className="text-2xl my-10">Hosting</h1>
                 <ul>
-                  <HostingCard linkTo="/hosting" title="Manage your listing" />
-                  
+                  {(hostStatus === 1) && <HostingCard linkTo="/hosting" title="Manage your listing" />
+                  }
+                  {!(hostStatus === 1) && <SupportCard linkTo="/hosthomes" title="Shrbo Your Space" />}
+
                 </ul>
               </section>
 
@@ -141,7 +143,7 @@ export default function HostModal({ isOpen, onClose,userData }) {
 
                   <SupportCard linkTo="/CancellationPolicy" title="Cancellation options" />
                   <SupportCard linkTo="/FAQAccordion" title="Frequently Asked Questions (FAQ)" />
-                  <SupportCard linkTo="/hosthomes" title="Shrbo Your Space" />
+
 
 
                 </ul>
@@ -151,9 +153,9 @@ export default function HostModal({ isOpen, onClose,userData }) {
               </div>
             </div>
           </div>
-          <button className="text-blue-500" onClick={onClose}>
+          {/* <button className="text-blue-500" onClick={onClose}>
             Close Modal
-          </button>
+          </button> */}
         </div>
       </div>
     )
