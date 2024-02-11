@@ -1,38 +1,36 @@
 import React, { useEffect, useState } from "react";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
-import { Table,Button, Modal, Form, Input, Space, Select } from "antd";
+import { Table, Button, Modal, Form, Input, Space, Select, Spin } from "antd";
+import Axios from ".././../Axios";
+import { LoadingOutlined } from "@ant-design/icons";
 
 export default function UserVerificationPage() {
   const [users, setUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [verificationModalVisible, setVerificationModalVisible] =
     useState(false);
-
-  const sampleUsers = [
-    {
-      id: 1,
-      firstName: "Junior",
-      lastName: "Doe",
-      email: "junior@gmail.com",
-      idStatus: "Not verified",
-      photo:
-        "https://media.premiumtimesng.com/wp-content/files/2014/08/National-eID-card.jpg",
-    },
-
-    {
-      id: 2,
-      firstName: "Senior",
-      lastName: "Doe",
-      email: "senior@gmail.com",
-      idStatus: "Not verified",
-      photo:
-        "https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=600,h=432,fit=crop/mvoERzanQjc0pn0J/nigeria-driver-license-YKb0Gk24DGHEG8KD.jpg",
-    },
-  ];
+  const [photoModalVisible, setPhotoModalVisible] = useState(false);
+  const [livePhotoModalVisible, setLivePhotoModalVisible] = useState(false);
+  const [selectedUserPhoto, setSelectedUserPhoto] = useState("");
+  const [selectedUserLivePhoto, setSelectedUserLivePhoto] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setUsers(sampleUsers);
+    const fetchUsers = async () => {
+      try {
+        const response = await Axios.get("/userDetail");
+        setUsers(response.data.data);
+        setLoading(false); // Set loading to false after data is fetched
+        console.log(response.data.data);
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+        setLoading(false); // Set loading to false in case of error
+        // Handle error, show error message, etc.
+      }
+    };
+
+    fetchUsers();
   }, []);
 
   const showVerificationModal = (userId) => {
@@ -60,16 +58,26 @@ export default function UserVerificationPage() {
     setVerificationModalVisible(false);
   };
 
+  const openPhotoModal = (photoUrl) => {
+    setSelectedUserPhoto(photoUrl);
+    setPhotoModalVisible(true);
+  };
+
+  const openLivePhotoModal = (livePhotoUrl) => {
+    setSelectedUserLivePhoto(livePhotoUrl);
+    setLivePhotoModalVisible(true);
+  };
+
   const columns = [
     {
-      title: "First Name",
-      dataIndex: "firstName",
-      key: "firstName",
+      title: "Full Name",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: "Last Name",
-      dataIndex: "lastName",
-      key: "lastName",
+      title: "Verification Type",
+      dataIndex: "verification_type",
+      key: "verification_type",
     },
     {
       title: "Email",
@@ -92,11 +100,14 @@ export default function UserVerificationPage() {
           >
             Verify ID
           </Button>
+          <Button onClick={() => openPhotoModal(record.photo)}>View Photo</Button>
+          <Button onClick={() => openLivePhotoModal(record.live_photo)}>
+            View Live Photo
+          </Button>
         </Space>
       ),
     },
   ];
-  
 
   return (
     <div className="bg-gray-100 h-[100vh]">
@@ -107,49 +118,75 @@ export default function UserVerificationPage() {
           <AdminSidebar />
         </div>
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
-          <h1 className="text-2xl font-semibold mb-4">User ID Verification</h1>
+          <h1 className="text-2xl font-semibold mb-4">
+            User ID Verification
+          </h1>
 
           <div className="bg-white p-4 shadow">
-            <div className="overflow-x-auto">
-            <Table columns={columns} dataSource={users} />{" "}
-
-            </div>
+            {loading ? ( // Render loader if loading state is true
+               <div className="flex justify-center h-52 items-center">
+               <Spin
+                 indicator={
+                   <LoadingOutlined
+                     style={{
+                       fontSize: 24,
+                     }}
+                     spin
+                   />
+                 }
+               />
+             </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table columns={columns} dataSource={users}  rowKey="id" />
+              </div>
+            )}
           </div>
         </div>
       </div>
       <Modal
-      title="Verify User ID"
-      open={verificationModalVisible}
-      onCancel={handleVerificationModalCancel}
-      footer={null}>
-        <Form name="verification" onFinish={handleVerificationSubmit} >
-            <Form.Item
+        title="Verify User ID"
+        open={verificationModalVisible}
+        onCancel={handleVerificationModalCancel}
+        footer={null}
+      >
+        <Form name="verification" onFinish={handleVerificationSubmit}>
+          <Form.Item
             name="idStatus"
             label="ID Status"
-            rules={[{required: true, message:"Please selected an ID Status"}]}
-            >
-                <Select placeholder="Select ID Card">
-                    <Option value="Verified">Verified</Option>
-                    <Option value="Pending Verification">Pending Verification</Option>
-                    <Option value="Decline">Decline</Option>
-                    <Option value="Photo Not Clear">Photo Not Clear</Option>
-
-                </Select>
-            
-            
-            </Form.Item>
-            <Form.Item>
-                    <img src={users.find((user) => user.id === selectedUserId)?.photo}
-                     alt="User" 
-                     style={{maxWidth:"50%"}}
-                     />
-                </Form.Item>
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" >
-                        submit
-                    </Button>
-                </Form.Item>
+            rules={[
+              { required: true, message: "Please select an ID Status" },
+            ]}
+          >
+            <Select placeholder="Select ID Card">
+              <Option value="Verified">Verified</Option>
+              <Option value="Pending Verification">Pending Verification</Option>
+              <Option value="Decline">Decline</Option>
+              <Option value="Photo Not Clear">Photo Not Clear</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        title="User Photo"
+        open={photoModalVisible}
+        onCancel={() => setPhotoModalVisible(false)}
+        footer={null}
+      >
+        <img src={selectedUserPhoto} alt="User Photo" style={{ width: "100%" }} />
+      </Modal>
+      <Modal
+        title="User Live Photo"
+        open={livePhotoModalVisible}
+        onCancel={() => setLivePhotoModalVisible(false)}
+        footer={null}
+      >
+        <img src={selectedUserLivePhoto} alt="User Live Photo" style={{ width: "100%" }} />
       </Modal>
     </div>
   );
