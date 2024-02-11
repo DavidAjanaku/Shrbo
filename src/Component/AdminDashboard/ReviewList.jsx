@@ -1,35 +1,38 @@
-import React, { useState } from "react";
-import { Table, Input, Select, Modal, Space, Dropdown } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Input, Select, Modal, Space, Dropdown, Spin } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
-
+import Axios from "../../Axios"
 const { confirm } = Modal;
 
 export default function ReviewListings() {
   const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      rentalName: "Awesome Villa",
-      rating: 5,
-      emailAddress: "johndoe@example.com",
-      comments:
-        "     Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur similique aperiam, quasi hic commodi, voluptatum alias enim repellat odit deleniti sit itaque, deserunt impedit maiores rerum ipsam neque laborum tempore.",
-      dateAdded: "2023-10-01",
-      status: "Active",
-    },
-    {
-      id: 2,
-      rentalName: "Cozy Cabin",
-      rating: 4,
-      emailAddress: "janesmith@example.com",
-      comments: "lorem",
-
-      dateAdded: "2023-09-15",
-      status: "Not Active",
-    },
-    // Add more review data objects as needed
+  
   ]);
+
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await Axios.get("/getReviews");
+        setReviews(response.data.data); 
+        console.log(response.data.data);
+        setLoading(false); 
+
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+        // Handle error, show error message, etc.
+        setLoading(false); // Set loading to false whether request succeeds or fails
+
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
 
   const [filters, setFilters] = useState({
     status: "Any",
@@ -176,8 +179,11 @@ export default function ReviewListings() {
               </Select>
             </div>
             <div className="overflow-x-auto">
-              <Table columns={columns} dataSource={filteredReviews} />
-            </div>
+            {loading ? (
+                <Spin size="large" />
+              ) : (
+                <Table columns={columns} rowKey="id" dataSource={filteredReviews} />
+              )}            </div>
           </div>
         </div>
       </div>
