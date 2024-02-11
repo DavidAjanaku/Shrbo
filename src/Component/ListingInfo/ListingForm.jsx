@@ -160,8 +160,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
       console.log(guest_fee);
       const securityDeposits = securityDeposit;
       const totalPrice = nights * nightlyPrice;
-      const TotalPrice =
-        basePrice + securityDeposits;
+      const TotalPrice = basePrice + securityDeposits;
 
       setHousePrice(price);
       console.log(nights);
@@ -290,7 +289,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
               <div className=" border-t py-4 flex flex-col gap-1">
                 {checkInDate && checkOutDate && (
                   <div className=" font-medium text-base box-border flex items-end justify-between break-words    ">
-                    <span> Total before  </span>
+                    <span> Total before </span>
                     <div className=" whitespace-nowrap break-normal ">
                       ₦ {Number(totalCost).toLocaleString()}
                     </div>
@@ -425,22 +424,23 @@ export default function ListingForm({ reservations, reservation, guest }) {
 
             {/* <!--Submit button--> */}
             <div className="p-2">
-            {showMessageHostButton && (
-    <button
-      type="button"
-      onClick={showMessageModal}
-      className="block w-full h-11 mt-3 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
+              {showMessageHostButton && (
+                <Link to="/RequestBook">
+                  <button
+                    type="button"
+                    className="block w-full h-11 mt-3 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
           text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
           focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
           focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
           dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
           dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
           ,0_4px_18px_0_rgba(59,113,202,0.1)]"
-      disabled={!checkInDate || !checkOutDate}
-    >
-      Book
-    </button>
-  )}
+                    disabled={!checkInDate || !checkOutDate}
+                  >
+                    Book
+                  </button>
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={showMessageModal}
@@ -475,7 +475,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
           centered={true}
           // width={"600px"}
         >
-          <ReportListing  id={id}/>
+          <ReportListing id={id} />
         </Popup>
 
         {/* <CustomModal isOpen={isReportModalVisible} onClose={()=>setIsReportModalVisible(false)}   >
