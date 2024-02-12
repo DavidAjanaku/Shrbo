@@ -25,7 +25,8 @@ export default function Home() {
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
-  const { setUser, setToken, token, setHost, setAdminStatus, user } =useStateContext();
+  const { setUser, setToken, token, setHost, setAdminStatus, user } =
+    useStateContext();
   const [loading, setLoading] = useState(true);
   const [listingLoading, setListingLoading] = useState(true);
   const [homeImage, setHomeImage] = useState("");
@@ -420,9 +421,9 @@ export default function Home() {
       })
       .catch((err) => {
         console.log("Listing", err);
-      }).finally(() => setListingLoading(false));
+      })
+      .finally(() => setListingLoading(false));
   }, [clearFilter]);
-
 
   const filterData = async (data, close) => {
     setListingLoading(true);
@@ -440,7 +441,10 @@ export default function Home() {
     console.log(main);
 
     await axios
-      .post(token ? "/filterHomepageForAuthUser" : "/filterHomepageForUnAuthUser", main)
+      .post(
+        token ? "/filterHomepageForAuthUser" : "/filterHomepageForUnAuthUser",
+        main
+      )
       .then((response) => {
         const formattedHostHomes = response.data.data.map((item) => ({
           id: item.id,
@@ -456,12 +460,11 @@ export default function Home() {
 
         setListings(formattedHostHomes);
         console.log("filter", response.data.data);
-
       })
       .catch((err) => {
         console.log(err);
-      }).finally(() => setListingLoading(false));
-
+      })
+      .finally(() => setListingLoading(false));
   };
 
   const filterDataByDates = async (data) => {
@@ -469,19 +472,23 @@ export default function Home() {
     const totalGuest = data.adults + data.infants + data.children;
 
     const main = {
-      address: data.selectedOption?data.selectedOption.value:"",
+      address: data.selectedOption ? data.selectedOption.value : "",
       start_date: data.checkInDate,
       end_date: data.checkOutDate,
       guests: totalGuest,
       allow_pets: data.pets > 0 ? "allow_pets" : "no_pets",
-
     };
     // console.log("Main", main);
 
     await axios
-      .post(token ? "/filterHostHomesDatesForAuthUser" : "/filterHostHomesDatesForUnAuthUser", main)
-      .then(response => {
-        console.log("Main 2",response.data);
+      .post(
+        token
+          ? "/filterHostHomesDatesForAuthUser"
+          : "/filterHostHomesDatesForUnAuthUser",
+        main
+      )
+      .then((response) => {
+        console.log("Main 2", response.data);
         const formattedHostHomes = response.data.data.map((item) => ({
           id: item.id,
           pictures: item.hosthomephotos,
@@ -495,13 +502,12 @@ export default function Home() {
         }));
 
         setListings(formattedHostHomes);
-
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
-      }).finally(() => setListingLoading(false));;
-
-  }
+      })
+      .finally(() => setListingLoading(false));
+  };
 
   const settings = {
     dots: true,
@@ -545,8 +551,9 @@ export default function Home() {
 
           <BottomNavigation />
           <div
-            className={` md:w-2/5 mx-auto flex justify-center fixed z-[999] left-0 right-0 transition-all ${isSearchButtonFixed ? "top-0" : "mt-6"
-              }`}
+            className={` md:w-2/5 mx-auto flex justify-center fixed z-[999] left-0 right-0 transition-all ${
+              isSearchButtonFixed ? "top-0" : "mt-6"
+            }`}
           >
             <div className="bg-orange-400 z-50 w-[90%] md:w-full flex items-center justify-between  py-3 px-5 rounded-full mt-6 text-white shadow-2xl">
               <button onClick={openModal} className="flex  items-center w-3/4">
@@ -573,7 +580,11 @@ export default function Home() {
               </div>
             </div>
 
-            <Modal isOpen={isModalOpen} onClose={closeModal} search={filterDataByDates} />
+            <Modal
+              isOpen={isModalOpen}
+              onClose={closeModal}
+              search={filterDataByDates}
+            />
           </div>
           <div className="pageHeader"></div>
           <div className="storeFrontHomeage">

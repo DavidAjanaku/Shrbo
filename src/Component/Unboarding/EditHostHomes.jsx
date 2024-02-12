@@ -78,6 +78,7 @@ export default function HostHome({ match }) {
   const [selectedPrivacyType, setSelectedPrivacyType] = useState(null);
   const [selectedInstantBookType, setSelectedInstantBookType] = useState(null);
   const [initiallySelectedType, setInitiallySelectedType] = useState(null);
+  const [selectedCheckOutTime, setSelectedCheckOutTime] = useState("12:00 PM");
 
   const [selectedHouseType, setSelectedHouseType] = useState(null);
   const [selectedHostType, setSelectedHostType] = useState(null);
@@ -98,6 +99,7 @@ export default function HostHome({ match }) {
   const [selectedHouseDescriptions, setSelectedHouseDescriptions] = useState(
     []
   );
+  const [newPhotos, setNewPhotos] = useState([]);
   const [selectedCancellationPolicy, setSelectedCancellationPolicy] =
     useState("");
 
@@ -195,6 +197,10 @@ export default function HostHome({ match }) {
     setEnteredAddress(address);
   };
 
+  const handleTimeChangeCheckOut = (e) => {
+    setSelectedCheckOutTime(e.target.value);
+  };
+
   const [housePrice, setHousePrice] = useState(""); // Add this line for the house price
   const [securityDeposit, setSecurityDeposit] = useState("");
 
@@ -202,13 +208,37 @@ export default function HostHome({ match }) {
     try {
       setIsSubmitting(true);
 
-      console.log(
-        "Image URLs from hosthomephotos:",
-        apartment.hosthomephotos.map((photo) => photo.images)
-      );
+      async function getBase64ImageFromUrl(imageUrl) {
+        var res = await fetch(imageUrl);
+        var blob = await res.blob();
+      
+        return new Promise((resolve, reject) => {
+          var reader  = new FileReader();
+          reader.addEventListener("load", function () {
+              resolve(reader.result);
+          }, false);
+      
+          reader.onerror = () => {
+            return reject(this);
+          };
+          reader.readAsDataURL(blob);
+        })
+      }
+      
+      // getBase64ImageFromUrl(  apartment.hosthomephotos.map((photo) => photo.images))
+      //     .then(result => console.log(result))
+      //     .catch(err => console.error(err));
+      // console.log(
+      //   "Image URLs from hosthomephotos:",
+      //   apartment.hosthomephotos.map((photo) => photo.images)
+      // );
+      const existingPhotosUrls = apartment.hosthomephotos.map((photo) => photo.images);
 
-      const photoBase64Array = uploadedImages.map((image) => image.src);
-      // console.log(photoBase64Array);
+      // Extract base64 data from newly uploaded images
+      const newPhotosBase64 = uploadedImages.map((image) => image.src);
+  
+      // Combine existing photos URLs with newly uploaded photos base64 data
+      const allPhotos = [...existingPhotosUrls, ...newPhotosBase64];
 
       const videoBase64 = apartment.hosthomevideo
         ? await new Promise((resolve) => {
@@ -244,7 +274,7 @@ export default function HostHome({ match }) {
         beds: apartment.beds,
         bathrooms: apartment.bathrooms,
         amenities: apartment.amenities.map((amenity) => amenity.offer),
-        hosthomephotos: photoBase64Array,
+        hosthomephotos: newPhotosBase64,
         hosthomevideo: videoBase64, // Use the Object URL
         title: apartment.title,
         hosthomedescriptions: selectedDescriptions,
@@ -260,11 +290,16 @@ export default function HostHome({ match }) {
         checkin: selectedTime,
         cancelPolicy: selectedCancellationPolicy,
         securityDeposit: securityDeposit,
+        check_out_time: selectedCheckOutTime,
+        host_home_id: parseInt(id),
+
       };
       console.log("Form submitted successfully", formDetails);
 
       // Example Axios post request
-      await Axios.post("/hosthomes", formDetails);
+      console.log(id);
+      const apartmentId =  parseInt(id);
+      await Axios.put(`/hosthomes/${apartmentId}`, formDetails);
 
       console.log("Form submitted successfully", formDetails);
       navigate("/hosting");
@@ -986,33 +1021,28 @@ export default function HostHome({ match }) {
     zipcode: "",
   });
 
-  const handleImageUpload = async (e) => {
-    const files = e.target.files;
-    const newImages = [];
+  const handleImageUpload = (event) => {
+    const files = event.target.files;
+    const uploadedPhotos = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const reader = new FileReader();
 
-      reader.onload = async (event) => {
-        const base64Image = event.target.result;
-        newImages.push({ id: Date.now(), src: base64Image });
+      reader.onload = () => {
+        uploadedPhotos.push({
+          id: Date.now() + i, // Generate a unique id for each photo
+          src: reader.result, // Base64 representation of the image
+        });
 
-        if (newImages.length === files.length) {
-          // Directly update the hosthomephotos array in the state
-          setUploadedImages((prevImages) => [...prevImages, ...newImages]);
-
-          // If you need to submit the form immediately after all images are converted,
-          // you can call handleSubmit here.
-          // await handleSubmit();
-        }
+        // Add the uploaded photo to the state
+        setUploadedImages([...uploadedImages, ...uploadedPhotos]);
+        // Add the uploaded photo to the newPhotos state
+        setNewPhotos([...newPhotos, reader.result]);
       };
 
       reader.readAsDataURL(file);
     }
-
-    // Reset the file input field
-    setFileInputKey(fileInputKey + 1);
   };
 
   const handleImageDeletes = (id) => {
@@ -1908,6 +1938,36 @@ export default function HostHome({ match }) {
                     {/* Add more time options as needed */}
                   </select>
                 </div>
+                   <div className="max-w-md mx-auto p-4">
+                <h2 className="text-2xl font-semibold mb-4">
+                  Set Check-Out Time
+                </h2>
+                <div className="mb-4">
+                  <label
+                    htmlFor="checkOutTime"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Select Check-In Time:
+                  </label>
+                  <select
+                    id="checkOutTime"
+                    name="checkOutTime"
+                    value={selectedCheckOutTime}
+                    onChange={handleTimeChangeCheckOut}
+                    className="mt-1 p-2 border rounded-md w-full"
+                  >
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+
+                    <option value="12:00 PM">12:00 PM</option>
+                    <option value="1:00 PM">1:00 PM</option>
+                    <option value="2:00 PM">2:00 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="4:00PM">4:00PM</option>
+                    {/* Add more time options as needed */}
+                  </select>
+                </div>
+              </div>
               </div>
             </div>
           </div>

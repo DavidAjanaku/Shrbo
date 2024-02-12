@@ -276,9 +276,10 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
                       src={imageUrl}
                       alt={`Image ${index + 1}`}
                       style={{
-                        height: "100%",
-                        width: "100%",
+                        height: "500px",
+                        width: "700px",
                         margin: "100px auto",
+                        objectFit: "contain",
                       }}
                     />
                   ) : (
@@ -287,8 +288,10 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
                       alt={`Image ${index + 1}`}
                       style={{
                         height: "100%",
-                        width: "100%",
+                        width: "700%",
                         margin: "100px auto",
+                        objectFit: "contain",
+
                       }}
                     />
                   )}
