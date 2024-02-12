@@ -81,10 +81,10 @@ export default function PropertyList() {
     },
     {
       title: "Created On",
-      dataIndex: "user", // Assuming 'createdOn' is stored in the 'created_at' property
-      key: "createdOn",
-      render: (user) =>
-        moment(user.created_at).format("MMMM Do, YYYY, h:mm:ss a"),
+      dataIndex: "created_on", // Assuming 'createdOn' is stored in the 'created_at' property
+      key: "created_on",
+      render: (createdAt) => moment(createdAt).format("MMMM Do, YYYY, h:mm:ss a"), // Format the date using moment.js
+
     },
     {
       title: "Status",
@@ -115,19 +115,24 @@ export default function PropertyList() {
   ];
 
   useEffect(() => {
-    // Fetch guests from the API when the component mounts
+    // Fetch properties from the API when the component mounts
     axiosInstance
       .get("/allHomes")
       .then((response) => {
-        setProperties(response.data.data);
-        // console.log(response.data.data);
+        // Sort properties in descending order based on creation date
+        const sortedProperties = response.data.data.sort((a, b) => {
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
+        setProperties(sortedProperties.reverse()); // Reverse the order of the sorted properties
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching guests:", error);
+        console.error("Error fetching properties:", error);
         setLoading(false);
       });
   }, []);
+  
+  
 
   return (
     <div className="bg-gray-100 h-[100vh]">

@@ -53,7 +53,13 @@ export default function HostsListings() {
     axiosInstance
       .get("/hosts")
       .then((response) => {
-        setHosts(response.data.data);
+        // Sort the hosts array by created_at date in descending order
+        const sortedHosts = response.data.data.sort((a, b) => {
+          return new Date(b.user.created_at) - new Date(a.user.created_at);
+        });
+  
+        // Set the sorted hosts data
+        setHosts(sortedHosts);
         setLoading(false);
       })
       .catch((error) => {
@@ -61,6 +67,7 @@ export default function HostsListings() {
         setLoading(false);
       });
   }, []);
+  
 
   const handleDeleteHost = (hostId) => {
     confirm({
@@ -231,15 +238,15 @@ export default function HostsListings() {
     },
     {
       title: "Date Created",
-      dataIndex: "created_at",
-      key: "dateCreated",
+      dataIndex: ["user", "created_at"], // Update this line to access the created_at field nested inside the user object
+      key: "created_at",
 
       render: (created_at) =>
         moment(created_at).format("MMMM Do, YYYY, h:mm:ss a"),
     },
     {
       title: "Last Login",
-      dataIndex: "last_login_at",
+      dataIndex: ["user", "last_login_at"],
       key: "lastLogin",
       render: (last_login_at) => {
         const formattedDate = moment(last_login_at);
