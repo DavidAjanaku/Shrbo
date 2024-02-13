@@ -59,7 +59,7 @@ import {
 } from "react-icons/fa";
 const Amenities = ({ amenities }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   const openPopup = () => {
     setIsPopupOpen(true);
@@ -70,11 +70,11 @@ const Amenities = ({ amenities }) => {
   };
 
   const showDrawer = () => {
-    setOpen(true);
+    setOpenDrawer(true);
   };
 
-  const onClose = () => {
-    setOpen(false);
+  const closeDrawer = () => {
+    setOpenDrawer(false);
   };
 
   const amenityIcons = {
@@ -185,7 +185,7 @@ const Amenities = ({ amenities }) => {
                       <span className="text-lg">
                         {amenityIcons[amenity.offer] || <FaTv />}
                       </span>
-                      <span className="text-lg">{amenity.offer}</span>
+                      <span className="text-base">{amenity.offer}</span>
                     </li>
                   ))}
                 </ul>
@@ -194,7 +194,26 @@ const Amenities = ({ amenities }) => {
               )}
             </Popup>
 
-            {/* Drawer Popup */}
+            <PopupFull
+              title={"Amenities"}
+              onClose={closeDrawer}
+              open={openDrawer}
+            >
+              {displayAmenities.length > 0 ? (
+                <ul>
+                  {amenities.map((amenity, index) => (
+                    <li key={index} className="flex items-center space-x-3 py-2">
+                      <span className="text-lg">
+                        {amenityIcons[amenity.offer] || <FaTv />}
+                      </span>
+                      <span className="text-base">{amenity.offer}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No amenities available.</p>
+              )}
+            </PopupFull>
           </div>
         </section>
       </div>

@@ -51,7 +51,9 @@ import {
   FaCamera,
   FaShieldAlt,
   FaExclamationTriangle,
-} from "react-icons/fa";import { LoadingOutlined } from "@ant-design/icons";
+  FaBan,
+} from "react-icons/fa";
+import { LoadingOutlined } from "@ant-design/icons";
 
 import { Spin } from "antd";
 import { useParams } from "react-router-dom";
@@ -181,10 +183,10 @@ export default function HostHome({ match }) {
       const photoSrcArray = uploadedImages.map((image) => image.src);
       const videoBase64 = selectedVideo
         ? await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (event) => resolve(event.target.result);
-          reader.readAsDataURL(selectedVideo);
-        })
+            const reader = new FileReader();
+            reader.onload = (event) => resolve(event.target.result);
+            reader.readAsDataURL(selectedVideo);
+          })
         : null;
 
       const formDetails = {
@@ -401,23 +403,29 @@ export default function HostHome({ match }) {
 
   const caution = [
     {
-      id: "              Security camera(s) ",
+      id: "Security camera(s)",
       label: "An entire place",
       icon: <FaCamera />,
       description: "Guests can book automatically.",
     },
     {
-      id: "              Weapons      ",
+      id: "Weapons",
       label: "A room",
       icon: <FaShieldAlt />,
       description: "Guests must ask if they can book.",
     },
 
     {
-      id: "              Dangerous Animal      ",
+      id: "Dangerous Animal",
       label: "A room",
       icon: <FaExclamationTriangle />,
       description: "Guests must ask if they can book.",
+    },
+    {
+      id: "None",
+      label: "None",
+      icon: <FaBan />, // You can specify null for the icon if needed
+      description: "No special cautions apply.",
     },
   ];
 
@@ -689,14 +697,14 @@ export default function HostHome({ match }) {
 
   const HostType = [
     {
-      id: "              I'm hosting as a private individual      ",
+      id: "I'm hosting as a private individual",
       label: "An entire place",
       icon: <FaUser />,
       description:
         "Get reservations faster when you welcome anyone from the Shbro community.",
     },
     {
-      id: "              I'm hosting as a business  ",
+      id: "I'm hosting as a business",
       label: "A room",
       icon: <FaUserFriends />,
       description:
@@ -810,7 +818,23 @@ export default function HostHome({ match }) {
   };
 
   const handleWelcomeVisibilitySelection = (typeId) => {
-    setVisiblities((prevVisibility) => {
+    const handleWelcomeVisibilitySelection = (selectedId) => {
+      // Toggle selection
+      setSelectedWelcomeVisibility((prev) => {
+        if (prev.includes(selectedId)) {
+          // Unselect if already selected
+          setVisibilities((prevVisibilities) =>
+            prevVisibilities.filter((id) => id !== selectedId)
+          );
+          return prev.filter((id) => id !== selectedId);
+        } else {
+          // Select if not selected
+          setVisibilities((prevVisibilities) => [...prevVisibilities, selectedId]);
+          return [...prev, selectedId];
+        }
+      });
+    };
+    ((prevVisibility) => {
       // Check if the typeId is already in the array
       if (prevVisibility.includes(typeId)) {
         // If yes, remove it (deselect)
@@ -958,10 +982,11 @@ export default function HostHome({ match }) {
                       {propertyTypes.map((type) => (
                         <div
                           key={type.id}
-                          className={`property-type h-24 w-32 m-3 flex ${apartment?.property_type === type.id
+                          className={`property-type h-24 w-32 m-3 flex ${
+                            apartment?.property_type === type.id
                               ? "bg-orange-300 border-2 border-black text-white"
                               : "bg-gray-200 text-black"
-                            } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                           onClick={() => handleTypeSelection(type.id)}
                         >
                           <span className="mr-2 text-2xl">{type.icon}</span>
@@ -991,10 +1016,11 @@ export default function HostHome({ match }) {
                     {privacyTypes.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type m-3 flex ${apartment?.guest_choice === type.id
+                        className={`property-type m-3 flex ${
+                          apartment?.guest_choice === type.id
                             ? "bg-orange-500 text-white"
                             : "bg-gray-200 text-black"
-                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => handlePrivacyTypeSelection(type.id)}
                       >
                         <span className="mr-2 text-2xl mb-3">{type.icon}</span>
@@ -1163,12 +1189,13 @@ export default function HostHome({ match }) {
                     {amenities.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type h-26 w-32 m-3 flex ${apartment?.amenities.some(
-                          (amenity) => amenity.offer === type.id
-                        )
+                        className={`property-type h-26 w-32 m-3 flex ${
+                          apartment?.amenities.some(
+                            (amenity) => amenity.offer === type.id
+                          )
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
-                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => handleAmenitySelection(type.id)}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
@@ -1208,27 +1235,25 @@ export default function HostHome({ match }) {
                   <p className="text-gray-400">Choose at least 5 photos</p>
                 </div>
                 <div className="flex flex-wrap mt-6">
-                {uploadedImages.map((image) => (
-  <div key={image.id} className="relative p-2">
-    <img
-      src={image.src}
-      alt="Houses"
-      className="w-64 object-cover h-64"
-    />
-  
-  </div>
-))}
+                  {uploadedImages.map((image) => (
+                    <div key={image.id} className="relative p-2">
+                      <img
+                        src={image.src}
+                        alt="Houses"
+                        className="w-64 object-cover h-64"
+                      />
+                    </div>
+                  ))}
 
                   {/* Display existing photos from fetched data */}
                   {Array.isArray(apartment?.hosthomephotos) &&
                     apartment.hosthomephotos.map((photo) => (
-                      <div key={photo.id}className="relative p-2">
+                      <div key={photo.id} className="relative p-2">
                         <img
-                          src={photo}
+                          src={photo.images}
                           alt="Houses"
                           className="w-64 object-cover h-64"
                         />
-                       
                       </div>
                     ))}
                 </div>
@@ -1270,7 +1295,6 @@ export default function HostHome({ match }) {
                     <video controls className="mt-2">
                       <source src={apartment.hosthomevideo} type="video/mp4" />
                     </video>
-                   
                   </div>
                 )}
 
@@ -1284,7 +1308,6 @@ export default function HostHome({ match }) {
                     <video controls className="mt-2">
                       <source src={apartment.hosthomevideo} type="video/mp4" />
                     </video>
-                   
                   </div>
                 )}
               </div>
@@ -1346,12 +1369,13 @@ export default function HostHome({ match }) {
                     {houseDescription.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type h-24 w-32 m-3 flex ${apartment?.hosthomedescriptions.some(
-                          (description) => description.description === type.id
-                        )
+                        className={`property-type h-24 w-32 m-3 flex ${
+                          apartment?.hosthomedescriptions.some(
+                            (description) => description.description === type.id
+                          )
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
-                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => handleHouseDescriptionSelection(type.id)}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
@@ -1415,10 +1439,11 @@ export default function HostHome({ match }) {
                     {instantBook.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type m-3 flex ${apartment?.reservation === type.id
+                        className={`property-type m-3 flex ${
+                          apartment?.reservation === type.id
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
-                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => handleInstantBookSelection(type.id)}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
@@ -1450,12 +1475,13 @@ export default function HostHome({ match }) {
                     {visiblity.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type  m-3   flex ${apartment?.reservations.some(
-                          (reservation) => reservation.reservation === type.id
-                        )
+                        className={`property-type  m-3   flex ${
+                          apartment?.reservations.some(
+                            (reservation) => reservation.reservation === type.id
+                          )
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
-                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => {
                           handleWelcomeVisibilitySelection(type.id);
                         }}
@@ -1519,16 +1545,15 @@ export default function HostHome({ match }) {
                     const matchingDiscount = apartment?.discounts.find(
                       (discount) => discount.discount.trim() === cleanedTypeId
                     );
-      
-                  
-      
+
                     return (
                       <div
                         key={type.id}
-                        className={`property-type m-3 flex ${isSelected
+                        className={`property-type m-3 flex ${
+                          isSelected
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
-                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => {
                           handleDiscountSelection(type.id);
                         }}
@@ -1544,8 +1569,6 @@ export default function HostHome({ match }) {
             </div>
           </div>
         );
-      
-      
 
       case 14: // Step for hosting type and property features
         const additionalRulesFromApartment =
@@ -1564,10 +1587,11 @@ export default function HostHome({ match }) {
                 {Object.keys(HouseRules).map((rule) => (
                   <div
                     key={rule}
-                    className={`property-type m-3 flex ${apartment?.rules.some((r) => r.rule === rule)
+                    className={`property-type m-3 flex ${
+                      apartment?.rules.some((r) => r.rule === rule)
                         ? "bg-orange-300 border-2 border-black text-white"
                         : "bg-gray-200 text-black"
-                      } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                    } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                     onClick={() => handleRuleSelection(rule)}
                   >
                     <span className="mr-2 text-2xl">{rule}</span>
@@ -1585,17 +1609,17 @@ export default function HostHome({ match }) {
                 </div>
                 {additionalRulesFromApartment.length >
                   additionalRules.length && (
-                    <div className="px-4">
-                      <ul className="list-disc">
-                        {/* Display additional rules only if there are more in the apartment object */}
-                        {additionalRulesFromApartment
-                          .slice(additionalRules.length)
-                          .map((rule, index) => (
-                            <li key={index}>{rule}</li>
-                          ))}
-                      </ul>
-                    </div>
-                  )}
+                  <div className="px-4">
+                    <ul className="list-disc">
+                      {/* Display additional rules only if there are more in the apartment object */}
+                      {additionalRulesFromApartment
+                        .slice(additionalRules.length)
+                        .map((rule, index) => (
+                          <li key={index}>{rule}</li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1603,22 +1627,22 @@ export default function HostHome({ match }) {
 
       case 15: // Step for hosting type and property features
         return (
-          <div className=" mx-auto  flex justify-center p-4">
-            <div className="  overflow-auto">
+          <div className="mx-auto flex justify-center p-4">
+            <div className="overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
                 <h1 className="text-6xl">How are you hosting on Shbro?</h1>
               </div>
               <div className="pb-32">
-                <div className=" space-y-4">
-                  <div className="flex flex-wrap   w-full">
+                <div className="space-y-4">
+                  <div className="flex flex-wrap w-full">
                     {HostType.map((type) => (
                       <div
                         key={type.id}
-                        className={`property-type  m-3   flex ${
+                        className={`property-type m-3 flex ${
                           apartment.host_type === type.id
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
-                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() => handleHostTypeSelection(type.id)}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
@@ -1629,28 +1653,26 @@ export default function HostHome({ match }) {
                 </div>
               </div>
 
-              <div className="md:flex md:justify-center md:flex-col ">
-                <h1 className="text-2xl">
-                  {" "}
-                  Does your place have any of these?
-                </h1>
+              <div className="md:flex md:justify-center md:flex-col">
+                <h1 className="text-2xl">Does your place have any of these?</h1>
               </div>
               <div className="pb-32">
-                <div className=" space-y-4">
-                  <div className="flex flex-wrap   w-full">
-                    {caution.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`property-type  m-3   flex ${selectedCautionTypes.includes(type.id)
-                            ? "bg-orange-300 border-2 border-black text-white"
-                            : "bg-gray-200 text-black"
-                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleCautionTypeSelection(type.id)}
-                      >
-                        <span className="mr-2 text-2xl">{type.icon}</span>
-                        {type.id}
-                      </div>
-                    ))}
+                <div className="space-y-4">
+                  <div className="flex flex-wrap w-full">
+                  {caution.map((type) => (
+    <div
+        key={type.id}
+        className={`property-type m-3 flex ${
+            apartment.notices.some((notice) => notice.notice === type.id)
+                ? "bg-orange-300 border-2 border-black text-white"
+                : "bg-gray-200 text-black"
+        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+        onClick={() => handleCautionTypeSelection(type.id)}
+    >
+        <span className="mr-2 text-2xl">{type.icon}</span>
+        {type.id}
+    </div>
+))}
                   </div>
                 </div>
               </div>
@@ -1711,10 +1733,11 @@ export default function HostHome({ match }) {
                     {cancellationPolicies.map((policy) => (
                       <div
                         key={policy.id}
-                        className={`property-type   m-3   flex ${apartment?.cancelPolicy === policy.label
+                        className={`property-type   m-3   flex ${
+                          apartment?.cancelPolicy === policy.label
                             ? "bg-orange-500 text-white"
                             : "bg-gray-200 text-black"
-                          } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
                         onClick={() =>
                           handleCancellationPolicySelection(policy.label)
                         }

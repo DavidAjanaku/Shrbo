@@ -52,6 +52,7 @@ import {
   FaShieldAlt,
   FaExclamationTriangle,
   FaCloudUploadAlt,
+  FaBan,
 } from "react-icons/fa";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -141,10 +142,13 @@ export default function HostHome({ match }) {
         setHouseDescriptionDetails(response.data.data.description || ""); // Corrected this line
         setHousePrice(response.data.data.price || ""); // Corrected this line
         setSelectedHostType(response.data.data.host_type || null);
-        setSelectedCautionTypes(response.data.data.caution_types || []);
+        setSelectedCautionType(response.data.data.notices[0].notice || []);
+
         setSelectedCancellationPolicy(response.data.data.cancelPolicy || "");
         setSecurityDeposit(response.data.data.securityDeposit || "");
+        console.log(response.data.data);
       })
+
       .catch((error) => {
         console.log("Error fetching hosthome details:", error);
       })
@@ -211,20 +215,24 @@ export default function HostHome({ match }) {
       async function getBase64ImageFromUrl(imageUrl) {
         var res = await fetch(imageUrl);
         var blob = await res.blob();
-      
+
         return new Promise((resolve, reject) => {
-          var reader  = new FileReader();
-          reader.addEventListener("load", function () {
+          var reader = new FileReader();
+          reader.addEventListener(
+            "load",
+            function () {
               resolve(reader.result);
-          }, false);
-      
+            },
+            false
+          );
+
           reader.onerror = () => {
             return reject(this);
           };
           reader.readAsDataURL(blob);
-        })
+        });
       }
-      
+
       // getBase64ImageFromUrl(  apartment.hosthomephotos.map((photo) => photo.images))
       //     .then(result => console.log(result))
       //     .catch(err => console.error(err));
@@ -232,11 +240,13 @@ export default function HostHome({ match }) {
       //   "Image URLs from hosthomephotos:",
       //   apartment.hosthomephotos.map((photo) => photo.images)
       // );
-      const existingPhotosUrls = apartment.hosthomephotos.map((photo) => photo.images);
+      const existingPhotosUrls = apartment.hosthomephotos.map(
+        (photo) => photo.images
+      );
 
       // Extract base64 data from newly uploaded images
       const newPhotosBase64 = uploadedImages.map((image) => image.src);
-  
+
       // Combine existing photos URLs with newly uploaded photos base64 data
       const allPhotos = [...existingPhotosUrls, ...newPhotosBase64];
 
@@ -255,50 +265,47 @@ export default function HostHome({ match }) {
         (item) => item.description
       );
 
-      const selectedRules = apartment.rules.map((item) => item.rule);
+      // const selectedRules = apartment.rules.map((item) => item.rule);
 
       const selectedReservations = apartment.reservations.map(
         (item) => item.reservation
       );
 
-      const selectedDiscounts = apartment.discounts.map(
-        (item) => item.discount
-      );
+     
 
       const formDetails = {
-        property_type: apartment.property_type,
-        guest_choice: apartment.guest_choice,
+        property_type: selectedHouseType || "",
+        guest_choice: selectedPrivacyType || "",
         address: apartment.address,
         guest: apartment.guest,
         bedrooms: apartment.bedroom,
         beds: apartment.beds,
         bathrooms: apartment.bathrooms,
-        amenities: apartment.amenities.map((amenity) => amenity.offer),
+        amenities: selectedAmenities,
         hosthomephotos: newPhotosBase64,
         hosthomevideo: videoBase64, // Use the Object URL
         title: apartment.title,
         hosthomedescriptions: selectedDescriptions,
         description: houseDescriptionDetails,
-        reservations: selectedWelcomeVisibility,
-        reservation: selectedInstantBookType,
-        price: housePrice,
+        reservations: [visiblities] || [],
+        reservation: selectedInstantBookType || [],
+        price: parseInt(housePrice),
         discounts: selectedDiscounts,
-        rules: selectedRules,
-        additionalRules: apartment.additionalRules,
+        rules: selectedRules || [],
+        additionalRules: additionalRules || "none",
         host_type: selectedHostType,
-        notice: selectedCautionTypes,
+        notice: selectedCautionType || [],
         checkin: selectedTime,
         cancelPolicy: selectedCancellationPolicy,
-        securityDeposit: securityDeposit,
+        securityDeposit: parseInt(securityDeposit),
         check_out_time: selectedCheckOutTime,
         host_home_id: parseInt(id),
-
       };
       console.log("Form submitted successfully", formDetails);
 
       // Example Axios post request
       console.log(id);
-      const apartmentId =  parseInt(id);
+      const apartmentId = parseInt(id);
       await Axios.put(`/hosthomes/${apartmentId}`, formDetails);
 
       console.log("Form submitted successfully", formDetails);
@@ -406,20 +413,23 @@ export default function HostHome({ match }) {
       id: "house",
       label: "An entire place",
       icon: <FaHome />,
-      description: "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.",
+      description:
+        "Enjoy the entire property to yourself, perfect for those who prefer privacy and space.",
     },
     {
       id: "hotel",
       label: "A room",
       icon: <FaHotel />,
-      description: "Cozy up in your own private room while sharing common spaces with other guests.",
+      description:
+        "Cozy up in your own private room while sharing common spaces with other guests.",
     },
 
     {
       id: "guestHouse",
       label: "A shared room",
       icon: <FaBed />,
-      description: "Rent an entire guest house with all the amenities for an exclusive stay.",
+      description:
+        "Rent an entire guest house with all the amenities for an exclusive stay.",
     },
   ];
 
@@ -482,23 +492,29 @@ export default function HostHome({ match }) {
 
   const caution = [
     {
-      id: "              Security camera(s) ",
+      id: "Security camera(s)",
       label: "An entire place",
       icon: <FaCamera />,
       description: "Guests can book automatically.",
     },
     {
-      id: "              Weapons      ",
+      id: "Weapons",
       label: "A room",
       icon: <FaShieldAlt />,
       description: "Guests must ask if they can book.",
     },
 
     {
-      id: "              Dangerous Animal      ",
+      id: "Dangerous Animal",
       label: "A room",
       icon: <FaExclamationTriangle />,
       description: "Guests must ask if they can book.",
+    },
+    {
+      id: "None",
+      label: "None",
+      icon: <FaBan />, // You can specify null for the icon if needed
+      description: "No special cautions apply.",
     },
   ];
 
@@ -764,14 +780,14 @@ export default function HostHome({ match }) {
 
   const HostType = [
     {
-      id: "              I'm hosting as a private individual      ",
+      id: "I'm hosting as a private individual",
       label: "An entire place",
       icon: <FaUser />,
       description:
         "Get reservations faster when you welcome anyone from the Shbro community.",
     },
     {
-      id: "              I'm hosting as a business  ",
+      id: "I'm hosting as a business",
       label: "A room",
       icon: <FaUserFriends />,
       description:
@@ -789,19 +805,19 @@ export default function HostHome({ match }) {
 
   const houseDiscount = [
     {
-      id: "     20% New listing promotion",
+      id: "20% New listing promotion",
       label: "An entire place",
       icon: <FaHome />,
       description: "Offer 20% off your first 3 bookings",
     },
     {
-      id: "    5% Weekly discount",
+      id: "5% Weekly discount",
       label: "A room",
       icon: <FaHotel />,
       description: "For stays of 7 nights or more",
     },
     {
-      id: "   10% Monthly discount",
+      id: "10% Monthly discount",
       label: "A room",
       icon: <FaHotel />,
       description: "For stays of 28 nights or more",
@@ -834,6 +850,8 @@ export default function HostHome({ match }) {
       ...prev,
       property_type: selectedType,
     }));
+
+    setSelectedHouseType(selectedType);
   };
 
   const handlePrivacyTypeSelection = (selectedType) => {
@@ -841,6 +859,7 @@ export default function HostHome({ match }) {
       ...prev,
       guest_choice: selectedType,
     }));
+    setSelectedPrivacyType(selectedType);
   };
 
   const handleAmenitySelection = (amenityId) => {
@@ -864,6 +883,13 @@ export default function HostHome({ match }) {
           amenities: [...prev.amenities, { offer: amenityId }],
         };
       }
+    });
+
+    setSelectedAmenities((prev) => {
+      const updatedAmenities = prev.includes(amenityId)
+        ? prev.filter((id) => id !== amenityId)
+        : [...prev, amenityId];
+      return updatedAmenities;
     });
   };
 
@@ -919,16 +945,8 @@ export default function HostHome({ match }) {
   }, [apartment]);
 
   const handleWelcomeVisibilitySelection = (selectedId) => {
-    // Toggle selection
-    setSelectedWelcomeVisibility((prev) => {
-      if (prev.includes(selectedId)) {
-        // Unselect if already selected
-        return prev.filter((id) => id !== selectedId);
-      } else {
-        // Select if not selected
-        return [...prev, selectedId];
-      }
-    });
+    setSelectedWelcomeVisibility([selectedId]); // Set the selected item as the only item in the array
+    setVisiblities([selectedId]); // Update apartment state accordingly
   };
 
   useEffect(() => {
@@ -948,11 +966,7 @@ export default function HostHome({ match }) {
     setSelectedCancellationPolicy(selectedPolicy);
   };
 
-  const handleDiscountSelection = (
-    selectedId,
-    isSelected,
-    matchingDiscount
-  ) => {
+  const handleDiscountSelection = (selectedId, isSelected, matchingDiscount) => {
     if (isSelected) {
       // Deselect the discount if it was selected
       setApartment((prev) => ({
@@ -961,6 +975,10 @@ export default function HostHome({ match }) {
           (discount) => discount.discount.trim() !== selectedId.trim()
         ),
       }));
+      // Remove the discount from selected discounts state
+      setSelectedDiscounts((prevSelectedDiscounts) =>
+        prevSelectedDiscounts.filter((discount) => discount !== selectedId.trim())
+      );
     } else {
       // Select the discount if it was not selected
       setApartment((prev) => ({
@@ -972,39 +990,73 @@ export default function HostHome({ match }) {
           { discount: selectedId.trim(), value: matchingDiscount?.value || 0 },
         ],
       }));
+      // Add the discount to selected discounts state
+      setSelectedDiscounts((prevSelectedDiscounts) => [
+        ...prevSelectedDiscounts,
+        selectedId.trim(),
+      ]);
     }
   };
+  
 
-  const handleRuleSelection = (rule) => {
+  const handleRuleSelection = (selectedRule) => {
     setSelectedRules((prevSelectedRules) => {
-      const updatedRules = prevSelectedRules.includes(rule)
-        ? prevSelectedRules.filter((selectedRule) => selectedRule !== rule)
-        : [...prevSelectedRules, rule];
-
-      // Update additionalRules state
-      setAdditionalRules(updatedRules);
-
-      return updatedRules;
+      const isRuleSelected = prevSelectedRules.includes(selectedRule);
+  
+      if (isRuleSelected) {
+        // Deselect the rule if it was selected
+        return prevSelectedRules.filter((rule) => rule !== selectedRule);
+      } else {
+        // Select the rule if it was not selected
+        return [...prevSelectedRules, selectedRule];
+      }
     });
   };
-
-  const handleHouseTypeSelection = (typeId) => {
-    setSelectedHouseType(typeId);
-  };
+  
+  
+ 
+  
 
   const handleHostTypeSelection = (typeId) => {
     setSelectedHostType(typeId);
   };
+  useEffect(() => {
+    if (apartment && apartment.notices) {
+      const notices = apartment.notices.map((notice) => notice.notice);
+      const initialSelectedCautionTypes = caution.filter((type) =>
+        notices.includes(type.id)
+      );
+      const initialSelectedIds = initialSelectedCautionTypes.map(
+        (type) => type.id
+      );
+      setSelectedCautionTypes(initialSelectedIds);
+    }
+  }, [apartment]);
+
+  // Function to handle caution type selection
+  // Function to handle caution type selection
   const handleCautionTypeSelection = (id) => {
     setSelectedCautionTypes((prevSelectedTypes) => {
-      const newSelectedTypes = prevSelectedTypes.includes(id)
-        ? prevSelectedTypes.filter((type) => type !== id)
-        : [...prevSelectedTypes, id];
-
-      console.log("Selected Caution Types:", newSelectedTypes);
-      return newSelectedTypes;
+      const isSelected = prevSelectedTypes.includes(id);
+      if (isSelected) {
+        // If already selected, remove it from the array
+        const newSelectedTypes = prevSelectedTypes.filter(
+          (type) => type !== id
+        );
+        console.log("Item deselected:", id);
+        console.log(newSelectedTypes);
+        setSelectedCautionType(newSelectedTypes);
+        return newSelectedTypes;
+      } else {
+        // If not selected, add it to the array
+        const newSelectedTypes = [...prevSelectedTypes, id];
+        console.log("Item selected:", id);
+        return newSelectedTypes;
+      }
     });
   };
+
+  console.log(selectedCautionType);
 
   const addressFields = [
     { id: "street", label: "Street Address" },
@@ -1797,10 +1849,12 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 14: // Step for hosting type and property features
+        case 14: // Step for hosting type and property features
         const additionalRulesFromApartment =
           apartment?.rules.map((r) => r.rule) || [];
-
+      
+        const noRulesSelected = selectedRules.length === 0;
+      
         return (
           <div className="mx-auto flex justify-center p-4">
             <div className="overflow-auto">
@@ -1811,29 +1865,43 @@ export default function HostHome({ match }) {
                 </p>
               </div>
               <div className="flex">
-                {Object.keys(HouseRules).map((rule) => (
-                  <div
-                    key={rule}
-                    className={`property-type m-3 flex ${
-                      apartment?.rules.some((r) => r.rule === rule)
-                        ? "bg-orange-300 border-2 border-black text-white"
-                        : "bg-gray-200 text-black"
-                    } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                    onClick={() => handleRuleSelection(rule)}
-                  >
-                    <span className="mr-2 text-2xl">{rule}</span>
-                    {HouseRules[rule]}
-                  </div>
-                ))}
+                {Object.keys(HouseRules).map((rule) => {
+                  const isRuleSelected = selectedRules.includes(rule);
+                  const isSelectedFromApi = apartment?.rules.some(
+                    (r) => r.rule === rule
+                  );
+      
+                  return (
+                    <div
+                      key={rule}
+                      className={`property-type m-3 flex ${
+                        isRuleSelected || isSelectedFromApi
+                          ? "bg-orange-300 border-2 border-black text-white"
+                          : "bg-gray-200 text-black"
+                      } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                      onClick={() => {
+                        console.log(`Clicked rule: ${rule}`);
+                        handleRuleSelection(rule);
+                      }}
+                    >
+                      <span className="mr-2 text-2xl">{rule}</span>
+                      {HouseRules[rule]}
+                    </div>
+                  );
+                })}
               </div>
-
+      
               <div className="md:flex md:justify-center md:flex-col">
                 <h1 className="text-2xl">Additional Rules</h1>
               </div>
               <div className="pb-32">
-                <div className="space-y-4">
-                  <div className="flex flex-wrap w-full"></div>
-                </div>
+                {noRulesSelected ? (
+                  <p className="text-gray-400">No additional rules selected</p>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap w-full"></div>
+                  </div>
+                )}
                 {additionalRulesFromApartment.length >
                   additionalRules.length && (
                   <div className="px-4">
@@ -1938,36 +2006,36 @@ export default function HostHome({ match }) {
                     {/* Add more time options as needed */}
                   </select>
                 </div>
-                   <div className="max-w-md mx-auto p-4">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Set Check-Out Time
-                </h2>
-                <div className="mb-4">
-                  <label
-                    htmlFor="checkOutTime"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Select Check-In Time:
-                  </label>
-                  <select
-                    id="checkOutTime"
-                    name="checkOutTime"
-                    value={selectedCheckOutTime}
-                    onChange={handleTimeChangeCheckOut}
-                    className="mt-1 p-2 border rounded-md w-full"
-                  >
-                    <option value="10:00 AM">10:00 AM</option>
-                    <option value="11:00 AM">11:00 AM</option>
+                <div className="max-w-md mx-auto p-4">
+                  <h2 className="text-2xl font-semibold mb-4">
+                    Set Check-Out Time
+                  </h2>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="checkOutTime"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Select Check-In Time:
+                    </label>
+                    <select
+                      id="checkOutTime"
+                      name="checkOutTime"
+                      value={selectedCheckOutTime}
+                      onChange={handleTimeChangeCheckOut}
+                      className="mt-1 p-2 border rounded-md w-full"
+                    >
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
 
-                    <option value="12:00 PM">12:00 PM</option>
-                    <option value="1:00 PM">1:00 PM</option>
-                    <option value="2:00 PM">2:00 PM</option>
-                    <option value="3:00 PM">3:00 PM</option>
-                    <option value="4:00PM">4:00PM</option>
-                    {/* Add more time options as needed */}
-                  </select>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00PM">4:00PM</option>
+                      {/* Add more time options as needed */}
+                    </select>
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
           </div>
