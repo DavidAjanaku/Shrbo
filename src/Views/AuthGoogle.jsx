@@ -2,9 +2,13 @@ import React, { useEffect, useRef } from "react";
 import axios from "../Axios.js";
 import { useStateContext } from "../ContextProvider/ContextProvider.jsx";
 
+
+
+
 const AuthGoogle = () => {
   const goHome = useRef(null);
   const { setUser, setToken } = useStateContext();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,21 +21,14 @@ const AuthGoogle = () => {
 
         console.log(response.data);
 
-        // Extract the access token from the response
-        const accessToken = response.data.access_token;
+             // Extract the access token from the response
+             const accessToken = response.data.access_token;
 
-        // Store the access token in local storage
-        setToken(accessToken);
+                // Store the access token in local storage
+                setToken(accessToken);
 
-        // Check if user is authenticated
-        const isAuthenticated = response.data.isAuthenticated; // Assuming you have this property in your response
+        goHome.current.click();
 
-        // Redirect based on authentication status
-        if (isAuthenticated) {
-          window.location.href = "https://shbro.onrender.com/";
-        } else {
-          goHome.current.click();
-        }
 
       } catch (error) {
         console.log("Error: ", error);
