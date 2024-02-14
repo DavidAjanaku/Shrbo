@@ -59,23 +59,28 @@ import {
 } from "react-icons/fa";
 const Amenities = ({ amenities }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
+  const [drawer,setDrawer]=useState(false);
 
   const openPopup = () => {
+    setDrawer(false);
     setIsPopupOpen(true);
+    
   };
 
   const closePopup = () => {
     setIsPopupOpen(false);
+    // setOpen(false);
   };
 
   const showDrawer = () => {
-    setOpen(true);
+    setDrawer(true)
+    setIsPopupOpen(true);
   };
 
-  const onClose = () => {
-    setOpen(false);
-  };
+  // const onClose = () => {
+  //   setOpen(false);
+  // };
 
   const amenityIcons = {
     Wifi: <FaWifi />,
@@ -174,7 +179,9 @@ const Amenities = ({ amenities }) => {
               isModalVisible={isPopupOpen}
               handleCancel={closePopup}
               title={"Amenities"}
+              drawer={drawer}
             >
+              <div className={`${drawer?"h-full overflow-scroll":"h-96 overflow-scroll"} `}>
               {displayAmenities.length > 0 ? (
                 <ul>
                   {amenities.map((amenity) => (
@@ -192,6 +199,8 @@ const Amenities = ({ amenities }) => {
               ) : (
                 <p>No amenities available.</p>
               )}
+
+              </div>
             </Popup>
 
             {/* Drawer Popup */}

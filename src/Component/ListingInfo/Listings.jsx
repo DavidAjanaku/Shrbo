@@ -9,7 +9,7 @@ import WishlistModal from "../../Views/WishListModal";
 import axios from '../../Axios'
 const Listings = ({ user, homes, loading }) => {
   const [isDeleted, setDeleted] = useState(true);
-  const [listings, setListings] = useState([ 
+  const [listings, setListings] = useState([
     // {
     //   id: 8,
     //   pictures: [
@@ -28,6 +28,7 @@ const Listings = ({ user, homes, loading }) => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedListingId, setSelectedListingId] = useState(null);
+  
 
 
   const toggleFavorite = async (id, fav) => {
@@ -90,15 +91,18 @@ const Listings = ({ user, homes, loading }) => {
   }, [homes, isDeleted]);
 
 
-  const SkeletonLoader =  Array.from({ length: 8 }).map((group,index )=> (
+  
+
+
+  const SkeletonLoader = Array.from({ length: 8 }).map((group, index) => (
     <div
       key={index}
-      className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden   m-4 cursor-pointer  "
+      className="max-w-[26rem] md:max-w-[18rem] rounded-xl overflow-hidden   m-4 cursor-pointer  "
     >
 
       <div className=''>
 
-        <div className=' h-[250px] w-[330px]  md:w-[270px] rounded-xl  skeleton-loader text-transparent' />
+        <div className=' h-[250px] w-[330px]  md:w-[300px] rounded-2xl  skeleton-loader text-transparent' />
       </div>
 
 
@@ -126,27 +130,27 @@ const Listings = ({ user, homes, loading }) => {
         {listing.pictures.map((picture, index) => (
           <div key={index}>
             {user.name &&
-            <button
-              onClick={() => toggleFavorite(listing.id, listing.isFavorite)}
-              className={`flex items-center absolute outline-none bg-${listing.isFavorite ? "yellow-400" : ""
-                } hover:bg-${listing.isFavorite ? "yellow-500" : ""
-                } text-white font-bold py-2 px-4 rounded`}
-            >
-               <div
-                className={`border border-gray-400 rounded-full p-1 ${listing.isFavorite ? "bg-white" : ""
-                  }`}
+              <button
+                onClick={() => toggleFavorite(listing.id, listing.isFavorite)}
+                className={`flex items-center absolute outline-none bg-${listing.isFavorite ? "yellow-400" : ""
+                  } hover:bg-${listing.isFavorite ? "yellow-500" : ""
+                  } text-white font-bold py-2 px-4 rounded`}
               >
-                <svg
-                  className={`w-5 h-5 fill-current ${listing.isFavorite ? "text-red-600" : "text-white"
+                <div
+                  className={`border border-gray-400 rounded-full p-1 ${listing.isFavorite ? "bg-white" : ""
                     }`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
                 >
-                  <path d="M12 21.35l-1.45-1.32C5.4 16.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C15.09 3.81 16.76 3 18.5 3 21.58 3 24 5.42 24 8.5c0 3.78-3.4 7.86-8.55 11.54L12 21.35z" />
-                </svg>
-              </div>
-            </button>}
-            <img src={picture.images}  className="h-[250px] object-cover " alt={`Apartment in ${listing.location}`} />
+                  <svg
+                    className={`w-5 h-5 fill-current ${listing.isFavorite ? "text-red-600" : "text-white"
+                      }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 21.35l-1.45-1.32C5.4 16.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C15.09 3.81 16.76 3 18.5 3 21.58 3 24 5.42 24 8.5c0 3.78-3.4 7.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                </div>
+              </button>}
+            <img src={picture.images} className="h-[250px] object-cover " alt={`Apartment in ${listing.location}`} />
           </div>
         ))}
       </Carousel>
@@ -179,28 +183,44 @@ const Listings = ({ user, homes, loading }) => {
   return (
     <>
 
-      {(homes&&homes.length!=0)? <div>
-        <div className="flex flex-wrap justify-center mt-10 mb-32">
-          {isModalOpen && (
-            <WishlistModal
-              listingId={selectedListingId}
-              added={() => setModalOpen(false)}
-              onClose={closeModal}
-              onToggleFavorite={(wishlist) => toggleFavorite(selectedListingId, wishlist)}
-            />
-          )}
-          {!loading ? Listings : SkeletonLoader}
-          <br />
-        </div>
-        <div className="flex justify-center mb-10">
-          <button className="py-2 px-4 bg-gray-800 block text-white rounded-full">Show more listings</button>
+      {!loading ? <>
 
+        {(homes && homes.length != 0) ? <div>
+          <div className="flex flex-wrap justify-center mt-10 mb-32">
+            {isModalOpen && (
+              <WishlistModal
+                listingId={selectedListingId}
+                added={() => setModalOpen(false)}
+                onClose={closeModal}
+                onToggleFavorite={(wishlist) => toggleFavorite(selectedListingId, wishlist)}
+              />
+            )}
+            {Listings}
+            <br />
+          </div>
+          <div className="flex justify-center mb-10">
+            <button className="py-2 px-4 bg-gray-800 block text-white rounded-full">Show more listings</button>
+
+          </div>
         </div>
-      </div> 
-      : 
-      <div className="flex justify-center mt-60 mb-60">
-        <p className="text-gray-600 text-4xl">No Listings Available </p>
-      </div>}
+          :
+          <div className="flex justify-center mt-60 mb-60">
+            <p className="text-gray-600 text-4xl">No Listings Available </p>
+          </div>}
+
+      </>
+
+        :
+
+        <div>
+          <div className="flex flex-wrap justify-center mt-10 mb-32">
+            {SkeletonLoader}
+            <br />
+          </div>
+        </div>
+
+
+      }
 
     </>
   );

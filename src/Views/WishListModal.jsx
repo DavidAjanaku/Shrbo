@@ -67,15 +67,15 @@ const WishlistModal = ({ added, onClose, closable,listingId }) => {
     }
 
     console.log(data)
-
+    added()
+    
     await axios.post(`/createWishlist/${user.id}`,data).then(response=>{
       toggleFav("success");
-      added()
-
+      
     }).catch(error=>{
       console.log('ADDing to Wishlist',error)
-      handleCancel()
       toggleFav("error");
+      handleCancel()
     });
 
   };
