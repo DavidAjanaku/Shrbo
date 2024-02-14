@@ -124,54 +124,59 @@ const Listings = ({ user, homes, loading }) => {
   const Listings = listings.map((listing) => (
     <div
       key={listing.id}
-      className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden   m-4 cursor-pointer"
+      className="max-w-[26rem] md:max-w-[18rem] mx-auto rounded overflow-hidden   m-4 cursor-pointer"
     >
-      <Carousel >
+      <Carousel>
         {listing.pictures.map((picture, index) => (
           <div key={index}>
-            {user.name &&
+            {user.name && (
               <button
                 onClick={() => toggleFavorite(listing.id, listing.isFavorite)}
-                className={`flex items-center absolute outline-none bg-${listing.isFavorite ? "yellow-400" : ""
-                  } hover:bg-${listing.isFavorite ? "yellow-500" : ""
-                  } text-white font-bold py-2 px-4 rounded`}
+                className={`flex items-center absolute outline-none bg-${
+                  listing.isFavorite ? "yellow-400" : ""
+                } hover:bg-${
+                  listing.isFavorite ? "yellow-500" : ""
+                } text-white font-bold py-2 px-4 rounded`}
               >
                 <div
-                  className={`border border-gray-400 rounded-full p-1 ${listing.isFavorite ? "bg-white" : ""
-                    }`}
+                  className={`border border-gray-400 rounded-full p-1 ${
+                    listing.isFavorite ? "bg-white" : ""
+                  }`}
                 >
                   <svg
-                    className={`w-5 h-5 fill-current ${listing.isFavorite ? "text-red-600" : "text-white"
-                      }`}
+                    className={`w-5 h-5 fill-current ${
+                      listing.isFavorite ? "text-red-600" : "text-white"
+                    }`}
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                   >
                     <path d="M12 21.35l-1.45-1.32C5.4 16.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C15.09 3.81 16.76 3 18.5 3 21.58 3 24 5.42 24 8.5c0 3.78-3.4 7.86-8.55 11.54L12 21.35z" />
                   </svg>
                 </div>
-              </button>}
-            <img src={picture.images} className="h-[250px] object-cover " alt={`Apartment in ${listing.location}`} />
+              </button>
+            )}
+            <img
+              src={picture.images}
+              className="h-[250px] object-cover "
+              alt={`Apartment in ${listing.location}`}
+            />
           </div>
         ))}
       </Carousel>
       <Link to={`/ListingInfoMain/${listing.id}`}>
         <div className=" py-4">
-          <div className="font-medium text-base mb-2">
-            {listing.title}
-          </div>
+          <div className="font-medium text-base mb-2">{listing.title}</div>
           <Rating rating={listing.rating} />
 
           <p className="text-gray-400 text-base">{listing.location}</p>
 
           <p className="text-gray-400 text-base">{listing.date}</p>
-          <p className="font-medium text-gray-700 text-base">
-            {listing.price}
-          </p>
+          <p className="font-medium text-gray-700 text-base">{listing.price}</p>
         </div>
       </Link>
       <ToastContainer />
     </div>
-  ))
+  ));
 
 
 
@@ -187,7 +192,7 @@ const Listings = ({ user, homes, loading }) => {
       <>
 
         {(homes && homes.length != 0) ? <div>
-          <div className="flex flex-wrap justify-center mt-10 mb-32">
+          <div className="justify-center mt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {isModalOpen && (
               <WishlistModal
                 listingId={selectedListingId}

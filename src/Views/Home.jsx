@@ -401,6 +401,7 @@ export default function Home() {
   ];
 
   useEffect(() => {
+    setListingLoading(true);
     axios
       .get(token ? "/hosthomesForAuthUser" : "/hosthomesForUnAuthUser")
       .then((response) => {
@@ -509,6 +510,30 @@ export default function Home() {
       .finally(() => setListingLoading(false));
   };
 
+  const filterDataByCategories=async(data)=>{
+    setListingLoading(true);
+
+    await axios.get(`/searchHomeByProperty_type/${data}`).then(response=>{
+      const formattedHostHomes = response.data.data.map((item) => ({
+        id: item.id,
+        pictures: item.hosthomephotos,
+        location: item.address,
+        price: `₦${item.price} per night`,
+        date: item.created_on,
+        title: item.title,
+        rating: item.rating ? item.rating : 4,
+        link: "/ListingInfoMain",
+        isFavorite: item.addedToWishlist,
+      }));
+      
+      setListings(formattedHostHomes);
+    }).catch((error) => {
+      console.log(error);
+    }).finally(() => setListingLoading(false));
+
+  };
+
+
   const settings = {
     dots: true,
     infinite: true,
@@ -531,6 +556,7 @@ export default function Home() {
       },
     ],
   };
+
 
   return (
     <div>
@@ -628,7 +654,7 @@ export default function Home() {
 
             <section className=" mx-auto justify-center w-[90%] md:w-[80%]">
               <div className="justify-center flex">
-                <CategoryHeader />
+                <CategoryHeader  filter={filterDataByCategories} />
               </div>
 
               <Listings user={user} homes={listings} loading={listingLoading} />
