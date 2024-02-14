@@ -209,6 +209,8 @@ export default function HostHome({ match }) {
   const [securityDeposit, setSecurityDeposit] = useState("");
 
   const handleSubmit = async () => {
+    console.log(selectedCautionTypes);
+
     try {
       setIsSubmitting(true);
 
@@ -274,8 +276,8 @@ export default function HostHome({ match }) {
      
 
       const formDetails = {
-        property_type: selectedHouseType || "",
-        guest_choice: selectedPrivacyType || "",
+        property_type: selectedHouseType || apartment.property_type,
+        guest_choice: selectedPrivacyType || apartment.guest_choice,
         address: apartment.address,
         guest: apartment.guest,
         bedrooms: apartment.bedroom,
@@ -287,14 +289,14 @@ export default function HostHome({ match }) {
         title: apartment.title,
         hosthomedescriptions: selectedDescriptions,
         description: houseDescriptionDetails,
-        reservations: [visiblities] || [],
+        reservations: visiblities || [],
         reservation: selectedInstantBookType || [],
-        price: parseInt(housePrice),
+        price: housePrice,
         discounts: selectedDiscounts,
         rules: selectedRules || [],
         additionalRules: additionalRules || "none",
         host_type: selectedHostType,
-        notice: selectedCautionType || [],
+        notice: selectedCautionTypes || [],
         checkin: selectedTime,
         cancelPolicy: selectedCancellationPolicy,
         securityDeposit: parseInt(securityDeposit),
@@ -1036,27 +1038,16 @@ export default function HostHome({ match }) {
   // Function to handle caution type selection
   // Function to handle caution type selection
   const handleCautionTypeSelection = (id) => {
-    setSelectedCautionTypes((prevSelectedTypes) => {
-      const isSelected = prevSelectedTypes.includes(id);
-      if (isSelected) {
-        // If already selected, remove it from the array
-        const newSelectedTypes = prevSelectedTypes.filter(
-          (type) => type !== id
-        );
-        console.log("Item deselected:", id);
-        console.log(newSelectedTypes);
-        setSelectedCautionType(newSelectedTypes);
-        return newSelectedTypes;
+    setSelectedCautionTypes(prevSelectedCautionTypes => {
+      if (prevSelectedCautionTypes.includes(id)) {
+        // If already selected, remove it
+        return prevSelectedCautionTypes.filter(typeId => typeId !== id);
       } else {
-        // If not selected, add it to the array
-        const newSelectedTypes = [...prevSelectedTypes, id];
-        console.log("Item selected:", id);
-        return newSelectedTypes;
+        // If not selected, add it
+        return [...prevSelectedCautionTypes, id];
       }
     });
   };
-
-  console.log(selectedCautionType);
 
   const addressFields = [
     { id: "street", label: "Street Address" },
@@ -1772,30 +1763,29 @@ export default function HostHome({ match }) {
           </div>
         );
 
-      case 12:
-        return (
-          <div className="mx-auto flex justify-center p-4">
-            <div className="overflow-auto">
-              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
-                <h1 className="text-6xl">Now, set your price</h1>
-                <p className="text-gray-400 mt-10">
-                  You can change it anytime.
-                </p>
-              </div>
-              <div className="pb-32">
-                <div className="text-center">
-                  <input
-                    type="number"
-                    className="border rounded-lg px-4 py-2 w-full text-lg"
-                    placeholder="Price per night"
-                    value={housePrice} // Update this line to use housePrice instead of apartment.price
-                    onChange={(e) => setHousePrice(e.target.value)}
-                  />
+        case 12:
+          return (
+            <div className="mx-auto flex justify-center p-4">
+              <div className="overflow-auto">
+                <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
+                  <h1 className="text-6xl">Now, set your price</h1>
+                  <p className="text-gray-400 mt-10">You can change it anytime.</p>
+                </div>
+                <div className="pb-32">
+                  <div className="text-center">
+                    <input
+                      type="number"
+                      className="border rounded-lg px-4 py-2 w-full text-lg"
+                      placeholder="Price per night"
+                      value={housePrice}
+                      onChange={(e) => setHousePrice(parseInt(e.target.value))}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
+          );
+        
 
       case 13: // Step for adding discounts
         return (
