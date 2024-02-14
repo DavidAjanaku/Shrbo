@@ -41,6 +41,7 @@ const ListingInfoMain = () => {
         setAddress(response.data.data.address);
         setPhoto(response.data.data.hosthomephotos);
         console.log(response.data.data);
+        
       } catch (error) {
         console.error("Error fetching listing details:", error);
         // Handle error, show error message, etc.
@@ -49,6 +50,7 @@ const ListingInfoMain = () => {
 
     fetchListingDetails();
   }, [id]);
+  
   
 
   if (!listingDetails) {

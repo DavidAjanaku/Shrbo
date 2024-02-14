@@ -183,7 +183,8 @@ const Listings = ({ user, homes, loading }) => {
   return (
     <>
 
-      {!loading ? <>
+      {!loading ? 
+      <>
 
         {(homes && homes.length != 0) ? <div>
           <div className="flex flex-wrap justify-center mt-10 mb-32">

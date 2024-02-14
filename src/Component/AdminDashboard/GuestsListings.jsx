@@ -113,15 +113,19 @@ export default function GuestsListings() {
     axiosInstance
       .get("/guests")
       .then((response) => {
-        // console.log(response.data.data);
-        // Check the 'banned' property in each guest and update the label accordingly
-        const updatedGuests = response.data.data.map((guest) => {
+        // Sort guests in descending order based on creation date
+        const sortedGuests = response.data.data.sort((a, b) => {
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
+  
+        // Update the 'banned' label for each guest
+        const updatedGuests = sortedGuests.map((guest) => {
           return {
             ...guest,
             banLabel: guest.banned === null ? "Ban" : "Unban",
           };
         });
-
+  
         setGuests(updatedGuests);
         setLoading(false);
       })
@@ -130,6 +134,7 @@ export default function GuestsListings() {
         setLoading(false);
       });
   }, []);
+  
 
   const hideBanMessageModal = () => {
     setShowBanMessageModal(false);

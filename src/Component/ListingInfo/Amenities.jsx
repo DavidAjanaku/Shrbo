@@ -192,7 +192,7 @@ const Amenities = ({ amenities }) => {
                       <span className="text-lg">
                         {amenityIcons[amenity.offer] || <FaTv />}
                       </span>
-                      <span className="text-lg">{amenity.offer}</span>
+                      <span className="text-base">{amenity.offer}</span>
                     </li>
                   ))}
                 </ul>
@@ -202,8 +202,6 @@ const Amenities = ({ amenities }) => {
 
               </div>
             </Popup>
-
-            {/* Drawer Popup */}
           </div>
         </section>
       </div>

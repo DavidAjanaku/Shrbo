@@ -106,8 +106,8 @@ const MainSlider = (props) => {
 
   const slides = pics.map((slide, index) => (
     <SplideSlide key={slide.id}>
-      <div className="  ">
-        <div className=" relative h-[258px]  ">
+      <div className="  h-full">
+        <div className=" relative h-[308px]  ">
           <div className="h-full w-full rounded">
             {slide.id === "video" ? (
               <div className="w-full h-full md:mr-2 overflow-hidden">
@@ -122,7 +122,7 @@ const MainSlider = (props) => {
                         className="w-auto object-cover h-auto min-h-full min-w-full"
                       ></video>
                     ) : (
-                      <div className="relative">
+                      <div className="relative h-full">
                         <img
                           src={imageUrls[0]}
                           alt="Video Thumbnail"
