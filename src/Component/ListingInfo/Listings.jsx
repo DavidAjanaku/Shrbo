@@ -6,37 +6,53 @@ import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import WishlistModal from "../../Views/WishListModal";
-import axios from "../../Axios";
+import axios from '../../Axios'
 const Listings = ({ user, homes, loading }) => {
   const [isDeleted, setDeleted] = useState(true);
   const [listings, setListings] = useState([
-
+    // {
+    //   id: 8,
+    //   pictures: [
+    //     "https://a0.muscache.com/im/pictures/7ca6118f-68c7-4a32-8bbc-09ce1840a373.jpg?im_w=720",
+    //     "https://a0.muscache.com/im/pictures/c99e5b00-a779-40e9-bd0e-5062dfdb7eb8.jpg?im_w=720",
+    //     "https://a0.muscache.com/im/pictures/f8099680-c563-4491-9258-f679eef415e9.jpg?im_w=720",
+    //   ],
+    //   location: "2b, Admiralty Road",
+    //   price: "$120 per night",
+    //   date: "22/08/2023",
+    //   title: "22miles away",
+    //   rating: 4.8,
+    //   link: "/ListingInfoMain",
+    // },
   ]);
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedListingId, setSelectedListingId] = useState(null);
+  
+
 
   const toggleFavorite = async (id, fav) => {
     if (fav != true) {
       setModalOpen(true);
+
     } else {
-      await axios
-        .delete(`/removeFromWishlist/${id}`)
-        .then((response) => {
-          console.log(response);
+      await axios.delete(`/removeFromWishlist/${id}`).then(response => {
 
-          toast.success("Wishlist deleted Successfuly", {
-            position: toast.POSITION.TOP_CENTER,
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-          setDeleted(!isDeleted);
+        console.log(response);
 
-          toast.error(" Couldn't delete Wishlist", {
-            position: toast.POSITION.TOP_CENTER,
-          });
+        toast.success('Wishlist deleted Successfuly', {
+          position: toast.POSITION.TOP_CENTER,
         });
+
+
+      }).catch(err => {
+        console.error(err);
+        setDeleted(!isDeleted);
+
+        toast.error(" Couldn't delete Wishlist", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      });
     }
     setSelectedListingId(id);
     setListings((prevListings) =>
@@ -48,10 +64,12 @@ const Listings = ({ user, homes, loading }) => {
         return listing;
       })
     );
+
   };
 
   const closeModal = () => {
-    setModalOpen(false);
+
+    setModalOpen(false)
     setListings((prevListings) =>
       prevListings.map((listing) => {
         if (listing.id === selectedListingId) {
@@ -61,40 +79,47 @@ const Listings = ({ user, homes, loading }) => {
         return listing;
       })
     );
-  };
+
+  }
 
   useEffect(() => {
     if (homes) {
+
       setListings(homes);
     }
+
   }, [homes, isDeleted]);
+
+
+  
+
 
   const SkeletonLoader = Array.from({ length: 8 }).map((group, index) => (
     <div
       key={index}
-      className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden   m-4 cursor-pointer  "
+      className="max-w-[26rem] md:max-w-[18rem] rounded-xl overflow-hidden   m-4 cursor-pointer  "
     >
-      <div className="">
-        <div className=" h-[250px] w-[330px]  md:w-[270px] rounded-xl  skeleton-loader text-transparent" />
+
+      <div className=''>
+
+        <div className=' h-[250px] w-[330px]  md:w-[300px] rounded-2xl  skeleton-loader text-transparent' />
       </div>
 
+
       <div className=" py-4">
-        <div className="font-medium text-base mb-2 skeleton-loader text-transparent">
-          dddddddddd
-        </div>
+        <div className="font-medium text-base mb-2 skeleton-loader text-transparent">dddddddddd</div>
         {/* <Rating rating={group.rating} /> */}
         <br></br>
-        <p className="text-gray-400 text-base skeleton-loader text-transparent">
-          dddddddddddddddddddd
-        </p>
+        <p className="text-gray-400 text-base skeleton-loader text-transparent">dddddddddddddddddddd</p>
         {/* <p className="text-gray-400 text-base skeleton-loader text-transparent">dddddddddd</p> */}
         <br></br>
-        <p className="font-medium text-gray-700 text-base skeleton-loader text-transparent">
-          dddddddd
-        </p>
+        <p className="font-medium text-gray-700 text-base skeleton-loader text-transparent">dddddddd</p>
       </div>
+
     </div>
+
   ));
+
 
   const Listings = listings.map((listing) => (
     <div
@@ -153,36 +178,56 @@ const Listings = ({ user, homes, loading }) => {
     </div>
   ));
 
+
+
+
+
+
+
+
   return (
     <>
-      {homes && homes.length != 0 ? (
-        <div>
-          <div className=" justify-center mt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+
+      {!loading ? 
+      <>
+
+        {(homes && homes.length != 0) ? <div>
+          <div className="justify-center mt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {isModalOpen && (
               <WishlistModal
                 listingId={selectedListingId}
                 added={() => setModalOpen(false)}
                 onClose={closeModal}
-                onToggleFavorite={(wishlist) =>
-                  toggleFavorite(selectedListingId, wishlist)
-                }
+                onToggleFavorite={(wishlist) => toggleFavorite(selectedListingId, wishlist)}
               />
             )}
-            {!loading ? Listings : SkeletonLoader}
+            {Listings}
             <br />
           </div>
-
           <div className="flex justify-center mb-10">
-            <button className="py-2 px-4 bg-gray-800 block text-white rounded-full">
-              Show more listings
-            </button>
+            <button className="py-2 px-4 bg-gray-800 block text-white rounded-full">Show more listings</button>
+
           </div>
         </div>
-      ) : (
-        <div className="flex justify-center mt-60 mb-60">
-          <p className="text-gray-600 text-4xl">No Listings Available </p>
+          :
+          <div className="flex justify-center mt-60 mb-60">
+            <p className="text-gray-600 text-4xl">No Listings Available </p>
+          </div>}
+
+      </>
+
+        :
+
+        <div>
+          <div className="flex flex-wrap justify-center mt-10 mb-32">
+            {SkeletonLoader}
+            <br />
+          </div>
         </div>
-      )}
+
+
+      }
+
     </>
   );
 };

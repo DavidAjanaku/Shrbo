@@ -1,12 +1,13 @@
 import React from 'react';
 import { Modal } from 'antd';
+import PopupFull from './PopupFull';
 
-const Popup = ({ isModalVisible, handleCancel, children, title, className, centered, width }) => {
+const Popup = ({ isModalVisible, handleCancel, children, title, className, centered, width,drawer }) => {
   // console.log('Modal Content:', children);
 
   return (
     <div>
-      <Modal
+      {!drawer?<Modal
         title={title}
         open={isModalVisible}
         onCancel={handleCancel}
@@ -15,10 +16,17 @@ const Popup = ({ isModalVisible, handleCancel, children, title, className, cente
         width={width}
         footer={null}
       >
-        <div className='h-96 overflow-scroll'>
+        <div className=''>
         {children}
         </div>
       </Modal>
+      :
+      <PopupFull title={title} onClose={handleCancel} open={isModalVisible}>
+        <>
+       {children}
+        </>
+      </PopupFull>  
+    }
     </div>
   );
 };

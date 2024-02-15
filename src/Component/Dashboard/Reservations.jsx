@@ -18,6 +18,18 @@ const Reservations = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [show, setShow] = useState(false);
   const toggleShow = () => setShow(!show);
+  const [drawer,setDrawer]=useState(false);
+
+ 
+
+  const showDrawer = (key) => {
+    setDrawer(true)
+    setIsModalVisible(true);
+    setSelectedReservation(key);
+    console.log(key);
+  };
+
+
 
   const handleSubmit = () => {
     // e.preventDefault();
@@ -25,6 +37,11 @@ const Reservations = () => {
   };
 
   const handlePopup = (key) => {
+    if(window.innerWidth < 768){
+      setDrawer(true); 
+    }else{
+      setDrawer(false);    
+    }
     setIsModalVisible(true);
     setSelectedReservation(key);
     console.log(key);
@@ -412,15 +429,16 @@ const Reservations = () => {
             setSelectedReservation(null);
           }}
           centered={true}
+          drawer={drawer}
           // width={"100vw"}
 
           title={
-            <div className=" text-xl w-full border-b  ">
+            <div className=" text-xl w-full md:border-b  ">
               Reservation Details
             </div>
           }
         >
-          <div className="h-[80vh]  md:h-[70vh] example overflow-scroll">
+          <div className={`  ${drawer?"h-full overflow-y-scroll":"h-[80vh] overflow-y-scroll"}`}>
             {selectedReservation != null ? (
               <div className=" flex-col flex gap-2  pt-2 h-full    ">
                 {/* {filteredData[selectedReservation].status} */}
@@ -687,6 +705,7 @@ export default Reservations;
 const CardTable = ({ dataSource, handlePopup }) => {
   return (
     <div className=" example overflow-y-scroll  w-full    gap-2 md:gap-0 flex items-stretch justify-start lg:h-[438px] md:h-[530px]   h-[638px] flex-col md:flex-row   md:flex-wrap    ">
+     {(dataSource&&dataSource.length !=0 )? <>
       {dataSource.map((data, index) => (
         <div
           key={index}
@@ -731,6 +750,13 @@ const CardTable = ({ dataSource, handlePopup }) => {
           </div>
         </div>
       ))}
+      </>
+      :
+      <div className=" text-center w-full text-base font-medium mt-10">
+        No Reservations Found ,<br></br>Clear date filter 
+      </div>
+    }
+     
     </div>
   );
 };

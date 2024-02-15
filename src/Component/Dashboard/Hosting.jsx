@@ -135,6 +135,7 @@ export default function Hosting() {
 
         setTips(response.data);
 
+        console.log("hello")
 
 
 
@@ -174,6 +175,20 @@ useEffect(() => {
       break;
   }
 }, [activeTab]);
+
+const fetchInitialData = () => {
+  setLoading(true);
+  fetchUpcomingData();
+  fetchCheckingOut();
+  fetchCurrentlyHosting();
+  fetchArrivingSoon();
+  fetchPendingReview();
+  setLoading(false);
+};
+
+useEffect(() => {
+  fetchInitialData();
+}, []); 
 
   const fetchUpcomingData= async()=>{
    await axios.get("/upcomingReservation").then(response=>{
@@ -424,7 +439,7 @@ useEffect(() => {
         if (checkingOut.length === 0) {
           return (
             <div className=" mt-4 h-36 flex justify-center items-center">
-              No hosts are currently hosting.
+              No guest needs to be checked out.
             </div>
           );
         }
@@ -471,7 +486,7 @@ useEffect(() => {
         if (currentlyHosting.length === 0) {
           return (
             <div className=" mt-4 h-36 flex justify-center items-center">
-              No hosts are currently hosting.
+              You're not currently hosting any guest.
             </div>
           );
         }
@@ -517,7 +532,7 @@ useEffect(() => {
         if (arrivingSoonReservations.length === 0) {
           return (
             <div className=" mt-4 h-36 flex justify-center items-center">
-              No hosts are currently hosting.
+              No guest is arriving soon.
             </div>
           );
         }
@@ -665,10 +680,10 @@ useEffect(() => {
   };
 
 
-  const SkeletonLoader = Array.from({ length: 3 }).map((group, index) => (
+  const SkeletonLoader = Array.from({ length: 5 }).map((group, index) => (
     <div
       key={index}
-      className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden  m-4 cursor-pointer  "
+      className="rounded  m-4 cursor-pointer  "
     >
 
       <div className=''>
@@ -827,7 +842,7 @@ useEffect(() => {
             </div>
           </div>
 
-        {!loading?<div className="tab-content">{renderTabContent()}</div>:<div className="tab-content flex  space-x-3 w-fit p-4">{SkeletonLoader}</div>}
+        {!loading?<div className="tab-content">{renderTabContent()}</div>:<div className=" flex items-center w-full  whitespace-nowrap overflow-x-auto example ">{SkeletonLoader}</div>}
 
           <div className="my-10 bg-orange-100 p-5">
             <h1 className="mb-5 text-2xl">Share more details</h1>

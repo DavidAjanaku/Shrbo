@@ -59,23 +59,28 @@ import {
 } from "react-icons/fa";
 const Amenities = ({ amenities }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [openDrawer, setOpenDrawer] = useState(false);
+  // const [open, setOpen] = useState(false);
+  const [drawer,setDrawer]=useState(false);
 
   const openPopup = () => {
+    setDrawer(false);
     setIsPopupOpen(true);
+    
   };
 
   const closePopup = () => {
     setIsPopupOpen(false);
+    // setOpen(false);
   };
 
   const showDrawer = () => {
-    setOpenDrawer(true);
+    setDrawer(true)
+    setIsPopupOpen(true);
   };
 
-  const closeDrawer = () => {
-    setOpenDrawer(false);
-  };
+  // const onClose = () => {
+  //   setOpen(false);
+  // };
 
   const amenityIcons = {
     Wifi: <FaWifi />,
@@ -174,7 +179,9 @@ const Amenities = ({ amenities }) => {
               isModalVisible={isPopupOpen}
               handleCancel={closePopup}
               title={"Amenities"}
+              drawer={drawer}
             >
+              <div className={`${drawer?"h-full overflow-scroll":"h-96 overflow-scroll"} `}>
               {displayAmenities.length > 0 ? (
                 <ul>
                   {amenities.map((amenity) => (
@@ -192,28 +199,9 @@ const Amenities = ({ amenities }) => {
               ) : (
                 <p>No amenities available.</p>
               )}
-            </Popup>
 
-            <PopupFull
-              title={"Amenities"}
-              onClose={closeDrawer}
-              open={openDrawer}
-            >
-              {displayAmenities.length > 0 ? (
-                <ul>
-                  {amenities.map((amenity, index) => (
-                    <li key={index} className="flex items-center space-x-3 py-2">
-                      <span className="text-lg">
-                        {amenityIcons[amenity.offer] || <FaTv />}
-                      </span>
-                      <span className="text-base">{amenity.offer}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No amenities available.</p>
-              )}
-            </PopupFull>
+              </div>
+            </Popup>
           </div>
         </section>
       </div>
