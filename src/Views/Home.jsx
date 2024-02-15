@@ -123,7 +123,7 @@ export default function Home() {
 
         // Set the user data in state
         setUser(response.data);
-        console.log(response.data);
+        console.log(response.data.id);
         console.log(response.data.host);
 
         console.log("yes");

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Select, Card, Row, Col, Table } from "antd";
 import Cards from "./AdminAnalysisCard";
 
+
 export default function AdminAnalytical() {
   const data = [
     {

@@ -110,6 +110,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
         console.log(response.data.data);
         setPrice(response.data.data.price); // Adjust this line based on your API response structure
         setHousePrice(price);
+        const checkoutTimeDate = (response.data.data.checkout);
         setSecurityDeposit(parseInt(response.data.data.securityDeposit));
         setGuestFee(response.data.data.guest_fee);
         setSecurityDeposits(parseInt(response.data.data.securityDeposit));
@@ -138,6 +139,8 @@ export default function ListingForm({ reservations, reservation, guest }) {
     setCheckInDate(date);
     calculateTotalPrice(date, checkOutDate);
   };
+
+  
 
   const handleCheckOut = (date) => {
     setCheckOutDate(date);
@@ -181,6 +184,11 @@ export default function ListingForm({ reservations, reservation, guest }) {
       // Set a default value when dates are not selected
       setTotalPrice(null);
     }
+  };
+  const addDays = (date, days) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
   };
 
   const calculateNumberOfNights = () => {
@@ -239,6 +247,8 @@ export default function ListingForm({ reservations, reservation, guest }) {
                   dateFormat="dd/MM/yyyy"
                   minDate={new Date()}
                   excludeDates={bookedDates}
+                  filterDate={(date) => date.getTime() >= new Date().getTime()} // Filter out dates later than the current time
+
                 />
 
                 <img
@@ -254,7 +264,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
                   onChange={(date) => handleCheckOut(date)}
                   placeholderText="Check out"
                   dateFormat="dd/MM/yyyy"
-                  minDate={checkInDate || new Date()} // Use checkInDate as the minimum date
+                  minDate={checkInDate ? addDays(checkInDate, 1) : new Date()} // Use checkInDate as the minimum date
                   excludeDates={bookedDates}
                 />
 

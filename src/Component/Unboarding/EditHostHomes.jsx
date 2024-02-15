@@ -53,7 +53,9 @@ import {
   FaExclamationTriangle,
   FaCloudUploadAlt,
   FaBan,
+
 } from "react-icons/fa";
+
 import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { notification } from "antd";
@@ -66,6 +68,7 @@ import Axios from "../../Axios";
 import { data } from "autoprefixer";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { Link } from "react-router-dom";
+
 export default function HostHome({ match }) {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [step, setStep] = useState(0);
@@ -156,6 +159,21 @@ export default function HostHome({ match }) {
         setIsLoading(false); // Set loading to false regardless of success or error
       });
   }, [id]);
+
+
+  const deleteAmenity = async (id) => {
+    try {
+      const response = await Axios.delete(`/deleteOfferById/${id}`);
+      if (response.status === 200) {
+        console.log(`Amenity with id ${id} deleted successfully`);
+      } else {
+        console.error('Failed to delete amenity');
+      }
+    } catch (error) {
+      console.error('Error deleting amenity:', error);
+    }
+  };
+  
 
   const handleTimeChange = (e) => {
     setSelectedTime(e.target.value);
@@ -273,6 +291,7 @@ export default function HostHome({ match }) {
         (item) => item.reservation
       );
 
+
      
 
       const formDetails = {
@@ -291,8 +310,8 @@ export default function HostHome({ match }) {
         description: houseDescriptionDetails,
         reservations: visiblities || [],
         reservation: selectedInstantBookType || [],
-        price: housePrice,
-        discounts: selectedDiscounts,
+        price: housePrice || apartment.price,
+        discounts: selectedDiscounts || apartment.discounts,
         rules: selectedRules || [],
         additionalRules: additionalRules || "none",
         host_type: selectedHostType,
@@ -864,36 +883,46 @@ export default function HostHome({ match }) {
     setSelectedPrivacyType(selectedType);
   };
 
-  const handleAmenitySelection = (amenityId) => {
+  const handleAmenitySelection = (amenityId, apartmentId) => {
     setApartment((prev) => {
       const isAmenitySelected = prev.amenities.some(
         (amenity) => amenity.offer === amenityId
       );
-
+  
       if (isAmenitySelected) {
         // If amenity is already selected, remove it
+        const updatedAmenities = prev.amenities.filter(
+          (amenity) => amenity.offer !== amenityId
+        );
+        console.log('Amenity unselected:', amenityId);
+        // Send DELETE request to API
+        Axios.delete(`deleteOfferById/${apartmentId}`)
+          .then((response) => {
+            console.log('Delete response:', response);
+          })
+          .catch((error) => {
+            console.error('Error deleting offer:', error);
+          });
+        setSelectedAmenities((prevSelected) =>
+          prevSelected.filter((selectedId) => selectedId !== amenityId)
+        );
         return {
           ...prev,
-          amenities: prev.amenities.filter(
-            (amenity) => amenity.offer !== amenityId
-          ),
+          amenities: updatedAmenities,
         };
       } else {
         // If amenity is not selected, add it
+        const updatedAmenities = [...prev.amenities, { offer: amenityId }];
+        console.log('Amenity selected:', amenityId);
+        setSelectedAmenities((prevSelected) => [...prevSelected, amenityId]);
         return {
           ...prev,
-          amenities: [...prev.amenities, { offer: amenityId }],
+          amenities: updatedAmenities,
         };
       }
     });
-
-    setSelectedAmenities((prev) => {
-      const updatedAmenities = prev.includes(amenityId)
-        ? prev.filter((id) => id !== amenityId)
-        : [...prev, amenityId];
-      return updatedAmenities;
-    });
   };
+  
 
   const updateSelection = (array = [], itemId) => {
     // Logic to toggle the selection status of the item in the array
@@ -960,45 +989,71 @@ export default function HostHome({ match }) {
     }
   }, [apartment]);
 
-  const handleInstantBookSelection = (selectedId) => {
-    setSelectedInstantBookType(selectedId);
-  };
+  const handleInstantBookSelection = (typeId) => {
+    if (selectedInstantBookType !== null) {
+        // Delete the previously selected reservation
+        Axios.delete(`deleteReservationById/${selectedInstantBookType}`)
+            .then((response) => {
+                console.log('Previous reservation deleted:', response);
+            })
+            .catch((error) => {
+                console.error('Error deleting previous reservation:', error);
+            });
+    }
+
+    setSelectedInstantBookType(typeId);
+
+    // Handle the selected instant booking option
+    // For example, you can update state or perform other actions here
+};
+
+
 
   const handleCancellationPolicySelection = (selectedPolicy) => {
     setSelectedCancellationPolicy(selectedPolicy);
   };
 
-  const handleDiscountSelection = (selectedId, isSelected, matchingDiscount) => {
+  const handleDiscountSelection = (discountId, isSelected, matchingDiscount) => {
     if (isSelected) {
-      // Deselect the discount if it was selected
-      setApartment((prev) => ({
-        ...prev,
-        discounts: prev.discounts.filter(
-          (discount) => discount.discount.trim() !== selectedId.trim()
-        ),
-      }));
-      // Remove the discount from selected discounts state
-      setSelectedDiscounts((prevSelectedDiscounts) =>
-        prevSelectedDiscounts.filter((discount) => discount !== selectedId.trim())
+      // If the discount is already selected, remove it
+      const updatedDiscounts = apartment.discounts.filter(
+        (discount) => discount.discount !== discountId
       );
-    } else {
-      // Select the discount if it was not selected
+      console.log('Discount unselected:', discountId);
+      // Send DELETE request to API
+      Axios.delete(`deleteDiscountById/${matchingDiscount.id}`)
+        .then((response) => {
+          console.log('Delete response:', response);
+        })
+        .catch((error) => {
+          console.error('Error deleting discount:', error);
+        });
       setApartment((prev) => ({
         ...prev,
-        discounts: [
-          ...prev.discounts.filter(
-            (discount) => discount.discount.trim() !== selectedId.trim()
-          ),
-          { discount: selectedId.trim(), value: matchingDiscount?.value || 0 },
-        ],
+        discounts: updatedDiscounts,
       }));
-      // Add the discount to selected discounts state
-      setSelectedDiscounts((prevSelectedDiscounts) => [
-        ...prevSelectedDiscounts,
-        selectedId.trim(),
-      ]);
+      setSelectedDiscounts([discountId]);
+    } else {
+      // If the discount is not selected, add it
+      const updatedDiscounts = [...apartment.discounts, { discount: discountId }];
+      console.log('Discount selected:', discountId);
+      // Send POST request to API to add discount
+      Axios.post('api/addDiscount', { discount: discountId })
+        .then((response) => {
+          console.log('Add response:', response);
+        })
+        .catch((error) => {
+          console.error('Error adding discount:', error);
+        });
+      setApartment((prev) => ({
+        ...prev,
+        discounts: updatedDiscounts,
+      }));
+      setSelectedDiscounts([discountId]);
     }
   };
+
+  
   
 
   const handleRuleSelection = (selectedRule) => {
@@ -1392,22 +1447,35 @@ export default function HostHome({ match }) {
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold">Amenities</h3>
                   <div className="flex flex-wrap w-full">
-                    {amenities.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`property-type h-26 w-32 m-3 flex ${
-                          apartment?.amenities.some(
-                            (amenity) => amenity.offer === type.id
-                          )
-                            ? "bg-orange-300 border-2 border-black text-white"
-                            : "bg-gray-200 text-black"
-                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleAmenitySelection(type.id)}
-                      >
-                        <span className="mr-2 text-2xl">{type.icon}</span>
-                        {type.id}
-                      </div>
-                    ))}
+                  {amenities.map((type) => (
+  <div
+    key={type.id}
+    className={`property-type h-26 w-32 m-3 flex ${
+      apartment?.amenities.some(
+        (amenity) => amenity.offer === type.id
+      )
+        ? "bg-orange-300 border-2 border-black text-white"
+        : "bg-gray-200 text-black"
+    } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+    onClick={() => {
+      console.log('Type ID:', type.id);
+      const selectedAmenity = apartment?.amenities.find(
+        (amenity) => amenity.offer === type.id
+      );
+      if (selectedAmenity) {
+        console.log('Amenity selected:', selectedAmenity.id);
+        handleAmenitySelection(type.id, selectedAmenity.id);
+      } else {
+        handleAmenitySelection(type.id, null); // Pass null or a non-existing id to indicate selection
+      }
+    }}
+    
+  >
+    <span className="mr-2 text-2xl">{type.icon}</span>
+    {type.id}
+  </div>
+))}
+
                   </div>
                 </div>
               </div>
