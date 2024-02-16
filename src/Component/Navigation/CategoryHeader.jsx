@@ -64,32 +64,32 @@ import {
 
 export default function CategoryHeader({filter}) {
   const categories = [
-    { id: "house", label: "House", icon: <FaHome className=" text-gray-500  text-xl"  /> },
-    { id: "hotel", label: "Hotel", icon: <FaHotel className=" text-gray-500  text-xl"  /> },
-    { id: "guestHouse", label: "Guest House", icon: <FaBed className=" text-gray-500  text-xl"  /> },
-    { id: "apartment", label: "Apartment", icon: <FaBuilding className=" text-gray-500  text-xl"  /> },
-    { id: "office", label: "Office", icon: <FaBuilding className=" text-gray-500  text-xl"  /> },
-    { id: "art", label: "Art", icon: <FaPalette className=" text-gray-500  text-xl"  /> },
-    { id: "cityApartments", label: "City Apartments", icon: <FaCity className=" text-gray-500  text-xl"  /> },
+    { id: "house", label: "House", icon: <FaHome className=" text-gray-500  text-2xl"  /> },
+    { id: "hotel", label: "Hotel", icon: <FaHotel className=" text-gray-500  text-2xl"  /> },
+    { id: "guestHouse", label: "Guest House", icon: <FaBed className=" text-gray-500  text-2xl"  /> },
+    { id: "apartment", label: "Apartment", icon: <FaBuilding className=" text-gray-500  text-2xl"  /> },
+    { id: "office", label: "Office", icon: <FaBuilding className=" text-gray-500  text-2xl"  /> },
+    { id: "art", label: "Art", icon: <FaPalette className=" text-gray-500  text-2xl"  /> },
+    { id: "cityApartments", label: "City Apartments", icon: <FaCity className=" text-gray-500  text-2xl"  /> },
     {
       id: "petFriendlyRetreats",
       label: "Pet-Friendly Retreats",
-      icon: <FaDog className=" text-gray-500  text-xl"  />,
+      icon: <FaDog className=" text-gray-500  text-2xl"  />,
     },
-    { id: "treehouseRetreats", label: "Treehouse Retreats", icon: <FaTree className=" text-gray-500  text-xl"  /> },
+    { id: "treehouseRetreats", label: "Treehouse Retreats", icon: <FaTree className=" text-gray-500  text-2xl"  /> },
     {
       id: "familyFriendlyHomes",
       label: "Family-Friendly Homes",
-      icon: <FaUserFriends  className=" text-gray-500  text-xl" />,
+      icon: <FaUserFriends  className=" text-gray-500  text-2xl" />,
     },
-    { id: "boutiqueVillas", label: "Boutique Villas", icon: <FaShopify  className=" text-gray-500  text-xl" /> },
-    { id: "lakesideSerenity", label: "Lakeside Serenity", icon: <FaWater  className=" text-gray-500  text-xl" /> },
-    { id: "desertOases", label: "Desert Oases", icon: <FaLandmark  className=" text-gray-500  text-xl" /> },
-    { id: "urbanGetaways", label: "Urban Getaways", icon: <FaCity  className=" text-gray-500  text-xl" /> },
-    { id: "countryside", label: "Countryside", icon: <FaHome  className=" text-gray-500  text-xl" /> },
-    { id: "luxuryEstate", label: "Luxury Estate", icon: <FaCity  className=" text-gray-500  text-xl" /> },
-    { id: "trending", label: "Trending", icon: <FaChartBar  className=" text-gray-500  text-xl" /> },
-    { id: "beachfrontBliss", label: "Beachfront Bliss", icon: <FaLandmark  className=" text-gray-500  text-xl" /> },
+    { id: "boutiqueVillas", label: "Boutique Villas", icon: <FaShopify  className=" text-gray-500  text-2xl" /> },
+    { id: "lakesideSerenity", label: "Lakeside Serenity", icon: <FaWater  className=" text-gray-500  text-2xl" /> },
+    { id: "desertOases", label: "Desert Oases", icon: <FaLandmark  className=" text-gray-500  text-2xl" /> },
+    { id: "urbanGetaways", label: "Urban Getaways", icon: <FaCity  className=" text-gray-500  text-2xl" /> },
+    { id: "countryside", label: "Countryside", icon: <FaHome  className=" text-gray-500  text-2xl" /> },
+    { id: "luxuryEstate", label: "Luxury Estate", icon: <FaCity  className=" text-gray-500  text-2xl" /> },
+    { id: "trending", label: "Trending", icon: <FaChartBar  className=" text-gray-500  text-2xl" /> },
+    { id: "beachfrontBliss", label: "Beachfront Bliss", icon: <FaLandmark  className=" text-gray-500  text-2xl" /> },
     {
       id: "mountainRetreats",
       label: "Mountain Retreats",
@@ -197,7 +197,7 @@ export default function CategoryHeader({filter}) {
           </svg>
         </button>
 
-        <div className="overflow-x-auto example flex  shadow-md" ref={scrollerRef}>
+        <div className="overflow-x-auto example flex  shadow-md md:shadow-none" ref={scrollerRef}>
           {categories.map((category) => (
               <div
                 key={category.id}
