@@ -72,6 +72,7 @@ import Protected from "./ProtectedRoutes";
 import Public from "./PublicRoutes";
 import PageNotFound from "./PageNotFound";
 import PaymentsTab from "./Component/Settings/PaymentsTab";
+import OtpPage from "./Component/Settings/OtpPage";
 
 function App() {
 
@@ -84,8 +85,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/ListingInfoMain/:id" element={<ListingInfoMain />} />
         <Route path="/RequestBook" element={<RequestBook />} />
-        <Route path="/Settings" element={<Settings />} />
-        <Route path="/Profile" element={<Profile />} />
+
       
           <Route element={<Protected />} >
 

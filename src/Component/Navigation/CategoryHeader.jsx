@@ -54,6 +54,7 @@ import {
   FaObjectGroup,
   FaWaveSquare,
   FaHotdog,
+  FaUmbrellaBeach,
   FaBox,
   FaUser,
   FaCamera,
@@ -89,7 +90,7 @@ export default function CategoryHeader({filter}) {
     { id: "countryside", label: "Countryside", icon: <FaHome  className=" text-gray-500  text-xl" /> },
     { id: "luxuryEstate", label: "Luxury Estate", icon: <FaCity  className=" text-gray-500  text-xl" /> },
     { id: "trending", label: "Trending", icon: <FaChartBar  className=" text-gray-500  text-xl" /> },
-    { id: "beachfrontBliss", label: "Beachfront Bliss", icon: <FaLandmark  className=" text-gray-500  text-xl" /> },
+    { id: "beachfrontBliss", label: "Beachfront Bliss", icon: <FaUmbrellaBeach className=" text-gray-500  text-xl" /> },
     {
       id: "mountainRetreats",
       label: "Mountain Retreats",
@@ -168,7 +169,7 @@ export default function CategoryHeader({filter}) {
   );
   const canScrollBackward = currentIndex > 0;
   const canScrollForward = currentIndex != categories.length;
-  console.log(currentIndex);
+
 
   return (
     <div className="mt-16 md:mt-40 w-full ">
@@ -197,7 +198,7 @@ export default function CategoryHeader({filter}) {
           </svg>
         </button>
 
-        <div className="overflow-x-auto example flex space-x-10" ref={scrollerRef}>
+        <div className="overflow-x-auto example flex space-x-8 md:space-x-10" ref={scrollerRef}>
           {categories.map((category) => (
               <div
                 key={category.id}

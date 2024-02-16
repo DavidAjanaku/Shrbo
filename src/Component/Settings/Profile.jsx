@@ -12,6 +12,8 @@ import GoBackButton from "../GoBackButton";
 import axios from '../../Axios';
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { message,notification } from 'antd';
+import Popup from "../../hoc/Popup";
+import OTPPage from "./OtpPage";
 
 
 export default function Profile() {
@@ -22,6 +24,41 @@ export default function Profile() {
   const [isEditingEmergency, setIsEditingEmergency] = useState(false);
   const {user,setUser,setHost,setAdminStatus}=useStateContext();
   const [reRender,setRerender]=useState(false)
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [otpError,setOtpError]=useState("");
+
+
+  const openPopup = () => {
+    setIsPopupOpen(true);
+    
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+    // setOpen(false);
+  };
+
+  const resendOtp=async()=>{
+    await axios.post('/otp/resend').then(response=>{
+
+      openNotificationWithIcon("success","OTP Re-sent");
+
+    }).
+    catch(error=>{
+      if(error.response.data.message){
+        openNotificationWithIcon("error",error.response.data.message);
+      }else{
+
+        openNotificationWithIcon("error",error.response.data);
+      }
+
+    });
+
+  }
+
 
   // const [visible, setVisible] = useState(false);
   // const handleClose = () => {
@@ -79,7 +116,7 @@ export default function Profile() {
     setIsEditingEmailName(false);
   };
 
-  const handleSavePhoneNumber = (updatedPhoneNumber) => {
+  const handleSavePhoneNumber = async (updatedPhoneNumber) => {
     console.log("Email Address Updated:", updatedPhoneNumber);
 
     // try {
@@ -94,12 +131,23 @@ export default function Profile() {
     // let stringNumber = updatedPhoneNumber.toString();
 
     const data={
-      phone:updatedPhoneNumber.phoneNumber
+      new_number:updatedPhoneNumber.phoneNumber
     }
 
-    updateData(data)
-
     setIsEditingPhoneNumber(false);
+    await axios.put('/sendOtpForPhoneNumberChange',data).then(response=>{
+      openPopup();
+    }).catch(error=>{
+      if(error.response.data.message){
+        openNotificationWithIcon("error",error.response.data.message);
+      }else{
+
+        openNotificationWithIcon("error",error.response.data);
+      }
+    });
+
+    
+
   };
 
   const handleSaveEmergency = (updatedPhoneNumber) => {
@@ -180,6 +228,33 @@ export default function Profile() {
     }finally{
       setRerender(true);
     }
+  }
+
+
+  const verifyOtp=async(code)=>{
+    setIsLoading(true);
+
+    const data={
+      otp_code:[...code].join(''),
+    }
+
+    console.log(data);
+
+    await axios.post('/otp/verify',data)
+    .then(response=>{
+      setIsVerified(true);
+      setOtpError("");
+      closePopup();
+      message.success("Updated Phone Number Successfuly")
+      setRerender(true);
+    }).catch(error=>{
+      setOtpError("Incorrect code, check the code and try again ")
+      setIsVerified(false);
+
+    }).finally(()=>{
+      setIsLoading(false);      
+    });
+
   }
 
 
@@ -390,6 +465,11 @@ export default function Profile() {
             ))}
           </div>
         </div>
+        <Popup  isModalVisible={isPopupOpen}
+              handleCancel={closePopup}
+             >
+          <OTPPage resendOtp={()=>{resendOtp()}} verifyOtp={(code)=>{verifyOtp(code)}} isLoading={isLoading} isVerified={isVerified} onClose={()=>{closePopup()}} error={otpError} />
+        </Popup>
       </div>
     </div>
       <BottomNavigation/>
@@ -397,3 +477,4 @@ export default function Profile() {
     </div>
   );
 }
+ 

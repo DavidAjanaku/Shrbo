@@ -20,7 +20,7 @@ const UserDetailsSkeleton = () => {
             </div>
           </div>
 
-          <button className="bg-gray-200 w-[100px] px-2 py-4 rounded-full text-gray-400 rounded-md animate-pulse">
+          <button className="bg-gray-200 w-[100px] px-2 py-4  text-gray-400 rounded-md animate-pulse">
      
     </button>
           <div>

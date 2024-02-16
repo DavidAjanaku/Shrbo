@@ -4,7 +4,7 @@ import CategoryHeader from "../Component/Navigation/CategoryHeader";
 import Listings from "../Component/ListingInfo/Listings";
 import Header from "../Component/Navigation/Header";
 import Hamburger from "../Component/Navigation/Hamburger";
-
+import { toast } from "react-toastify"; // Import toast
 import Modal from "../Component/SearchModal/Modal";
 import searchIcon from "../assets/svg/search-icon.svg";
 import BottomNavigation from "../Component/Navigation/BottomNavigation";
@@ -24,7 +24,7 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
-  const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
+  const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(true);
   const { setUser, setToken, token, setHost, setAdminStatus, user } =
     useStateContext();
   const [loading, setLoading] = useState(true);
@@ -34,6 +34,7 @@ export default function Home() {
   const [homeSubTitle, setHomeSubTitle] = useState("");
   const [listings, setListings] = useState();
   const [clearFilter, setClearFilter] = useState(false);
+  // const [pendingReview,setPendingReview]=useState([]);
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -47,6 +48,7 @@ export default function Home() {
   };
 
   const closeRateHouseModal = () => {
+    deletePendingReview(houseDetails[0].id);
     setIsRateHouseModalOpen(false);
   };
 
@@ -419,6 +421,7 @@ export default function Home() {
         }));
 
         setListings(formattedHostHomes);
+        //  setHouseDetails(listings[0]);
       })
       .catch((err) => {
         console.log("Listing", err);
@@ -510,10 +513,10 @@ export default function Home() {
       .finally(() => setListingLoading(false));
   };
 
-  const filterDataByCategories=async(data)=>{
+  const filterDataByCategories = async (data) => {
     setListingLoading(true);
 
-    await axios.get(`/searchHomeByProperty_type/${data}`).then(response=>{
+    await axios.get(`/searchHomeByProperty_type/${data}`).then(response => {
       const formattedHostHomes = response.data.data.map((item) => ({
         id: item.id,
         pictures: item.hosthomephotos,
@@ -525,7 +528,7 @@ export default function Home() {
         link: "/ListingInfoMain",
         isFavorite: item.addedToWishlist,
       }));
-      
+
       setListings(formattedHostHomes);
     }).catch((error) => {
       console.log(error);
@@ -557,6 +560,79 @@ export default function Home() {
     ],
   };
 
+  // Reviews
+
+  useEffect(() => {
+    axios.get("/getPendingReviews").then(response=>{
+      
+      const formattedHostHomes = response.data.data.map((item) => ({
+        id: item.id,
+        location: item.address,
+        title: item.title,
+        bookingid:item.bookingid,
+        userid: item.userid,
+        hostid: item.hostid,
+        hosthomeid: item.hosthomeid,
+      }));
+      setHouseDetails(formattedHostHomes);
+
+    }).catch(error=>{
+
+    });
+
+   },[]);
+
+   useEffect(()=>{
+
+    if(houseDetails!=null){
+      setIsRateHouseModalOpen(true);
+    }
+
+   },[houseDetails]);
+
+   console.log("houseDetails",houseDetails)
+
+  const ReviewListing = async (data) => {
+  
+    const reviewData = {
+      pendingreviewid: houseDetails[0].id,
+      ratings: data.rating,
+      bookingid: houseDetails[0].bookingid,
+      title: houseDetails[0].title,
+      host_id: houseDetails[0].hostid,
+      comment: data.comment,
+      user_id: houseDetails[0].userid,
+      host_home_id: houseDetails[0].hosthomeid
+    }
+
+    console.table(reviewData);
+
+    await axios.post(`/createReviews`, reviewData).then(respnse => {
+      toast.success("Thank you for commenting!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+
+    }).catch(error => {
+      console.log("createReview",error)
+
+    }).finally(() => { });
+
+  }
+  const deletePendingReview=async(id)=>{
+
+    await axios.delete(`/deleteHostPendingReviews/${id}`).then(response=>{
+      console.log("Deleted Pending Review Successfully",response.data)
+
+    }).catch(error=>{
+      console.log("DeletePendingReview",error)
+    });
+
+
+  }
+
+
 
   return (
     <div>
@@ -577,9 +653,8 @@ export default function Home() {
 
           <BottomNavigation />
           <div
-            className={` md:w-2/5 mx-auto flex justify-center fixed z-[999] left-0 right-0 transition-all ${
-              isSearchButtonFixed ? "top-0" : "mt-6"
-            }`}
+            className={` md:w-2/5 mx-auto flex justify-center fixed z-[999] left-0 right-0 transition-all ${isSearchButtonFixed ? "top-0" : "mt-6"
+              }`}
           >
             <div className="bg-orange-400 z-50 w-[90%] md:w-full flex items-center justify-between  py-3 px-5 rounded-full mt-6 text-white shadow-2xl">
               <button onClick={openModal} className="flex  items-center w-3/4">
@@ -654,7 +729,7 @@ export default function Home() {
 
             <section className=" mx-auto justify-center w-[90%] md:w-[80%]">
               <div className="justify-center flex">
-                <CategoryHeader  filter={filterDataByCategories} />
+                <CategoryHeader filter={filterDataByCategories} />
               </div>
 
               <Listings user={user} homes={listings} loading={listingLoading} />
@@ -673,6 +748,7 @@ export default function Home() {
               isOpen={isRateHouseModalOpen}
               onClose={closeRateHouseModal}
               houseDetails={houseDetails}
+              review={(data)=>{ReviewListing(data)}}
             />
           </div>
           <ChatSupport />

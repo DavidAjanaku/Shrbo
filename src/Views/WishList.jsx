@@ -16,7 +16,7 @@ const WishList=()=>{
                     id:item.wishlistContainer.id,
                     title:item.wishlistContainer.name,
                     saves:item.itemsLength,
-                    url:item.items[0].hosthomes.hosthomephotos[0],
+                    url:item.items[0]?item.items[0].hosthomes.hosthomephotos[0]:null,
                     link:`/WishlistsSet/${item.wishlistContainer.name}/${item.wishlistContainer.id}`,
                 
             }));
