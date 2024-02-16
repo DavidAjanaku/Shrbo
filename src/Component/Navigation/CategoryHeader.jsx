@@ -197,7 +197,7 @@ export default function CategoryHeader({filter}) {
           </svg>
         </button>
 
-        <div className="overflow-x-auto example flex " ref={scrollerRef}>
+        <div className="overflow-x-auto example flex  shadow-md" ref={scrollerRef}>
           {categories.map((category) => (
               <div
                 key={category.id}
@@ -218,7 +218,7 @@ export default function CategoryHeader({filter}) {
                 <div className="  rounded-full ">
                   {category.icon}
                 </div>
-                <span className="mt-1 text-sm text-gray-500 w-[150px]">
+                <span className="mt-1 text-sm text-gray-500 w-[120px]">
                   {category.label}
                 </span>
               </div>
