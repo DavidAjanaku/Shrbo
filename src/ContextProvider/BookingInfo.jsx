@@ -23,6 +23,7 @@ export const BookingInfoData = ({ children }) => {
   const [apartment, setApartment] = useState(null); // New state variable for apartment
   const [user, setUser] = useState(null); // Add user state variable and its setter
   const [securityDeposit, setSecurityDeposits] = useState(0); // New state variable for security deposit
+  const [discounts, setDiscounts] = useState([]); // New state variable for discounts
 
   return (
     <DateContext.Provider
@@ -36,33 +37,35 @@ export const BookingInfoData = ({ children }) => {
         pets,
         setPets,
         hostFees, 
-        setHostFees, // Provide setter for host fees
-        serviceFee, // Provide service fee to consuming components
-        setServiceFee, // Provide setter for service fee
-        tax, // Provide tax to consuming components
-        setTax, // Provide setter for tax
-        totalPrice, // Provide total price to consuming components
-        setTotalPrice, // Provide setter for total price
-        totalCost, // Provide total cost to consuming components
+        setHostFees,
+        serviceFee, 
+        setServiceFee, 
+        tax, 
+        setTax,
+        totalPrice,
+        setTotalPrice, 
+        totalCost,
         setTotalCost, 
         housePrice,
         setHousePrice,
         nights,
         setNights,
-        title, // Provide title to consuming components
-        setTitle, // Provide setter for title
-        cancellationPolicy, // Provide cancellation policy to consuming components
+        title, 
+        setTitle, 
+        cancellationPolicy, 
         setCancellationPolicy, 
-        address, // Provide address to consuming components
+        address,
         setAddress, 
-        photo, // Provide photo to consuming components
-        setPhoto, // Provide se
-        apartment, // Provide apartment to consuming components
+        photo, 
+        setPhoto, 
+        apartment, 
         setApartment,
         user,
         setUser,
         securityDeposit,
         setSecurityDeposits, 
+        discounts,
+        setDiscounts,
       }}
     >
       {children}

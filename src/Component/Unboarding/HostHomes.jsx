@@ -196,8 +196,7 @@ export default function HostHomes({ match }) {
           })
         : null;
 
-        const deposit = securityDeposit || 0;
-
+      const deposit = securityDeposit || 0;
 
       const formDetails = {
         property_type: selectedHouseType,
@@ -708,7 +707,7 @@ export default function HostHomes({ match }) {
     {
       id: "None",
       label: "None",
-      icon:  <FaBan />, // You can specify null for the icon if needed
+      icon: <FaBan />, // You can specify null for the icon if needed
       description: "No special cautions apply.",
     },
   ];
@@ -997,7 +996,6 @@ export default function HostHomes({ match }) {
   ];
 
   const HouseRules = {
-   
     pets: "No pets",
     events: "No parties or events",
     smoking: "No smoking",
@@ -1111,7 +1109,6 @@ export default function HostHomes({ match }) {
       }
     });
   };
-  
 
   const handleInstantBookSelection = (selectedId) => {
     setSelectedInstantBookType(selectedId);
@@ -1586,7 +1583,7 @@ export default function HostHomes({ match }) {
                       <p className="text-sm">Choose at least 5 photos</p>
                       <input
                         type="file"
-                        multiple 
+                        multiple
                         accept="image/*"
                         onChange={handleImageUpload}
                         key={fileInputKey}

@@ -32,6 +32,7 @@ const RequestBook = () => {
     address,
     photo,
     securityDeposit,
+    discounts
   } = useDateContext();
 
   console.log("checkInDate:", checkInDate);

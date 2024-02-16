@@ -27,7 +27,24 @@ const ListingInfoMain = () => {
     setPhoto,
     setApartment,
     setUser,
+    setDiscounts,
   } = useDateContext();
+
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await Axios.get("/user");
+        setUser(response.data.id);
+        console.log(response.data.id);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        // Handle error, show error message, etc.
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
     const fetchListingDetails = async () => {
@@ -40,6 +57,7 @@ const ListingInfoMain = () => {
         setCancellationPolicy(response.data.data.cancelPolicy);
         setAddress(response.data.data.address);
         setPhoto(response.data.data.hosthomephotos);
+        setDiscounts(response.data.data.discounts)
         console.log(response.data.data);
         
       } catch (error) {

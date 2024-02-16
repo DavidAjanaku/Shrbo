@@ -65,23 +65,23 @@ import {
 
 export default function CategoryHeader({filter}) {
   const categories = [
-    { id: "house", label: "House", icon: <FaHome className=" text-gray-500  text-xl"  /> },
-    { id: "hotel", label: "Hotel", icon: <FaHotel className=" text-gray-500  text-xl"  /> },
-    { id: "guestHouse", label: "Guest House", icon: <FaBed className=" text-gray-500  text-xl"  /> },
-    { id: "apartment", label: "Apartment", icon: <FaBuilding className=" text-gray-500  text-xl"  /> },
-    { id: "office", label: "Office", icon: <FaBuilding className=" text-gray-500  text-xl"  /> },
-    { id: "art", label: "Art", icon: <FaPalette className=" text-gray-500  text-xl"  /> },
-    { id: "cityApartments", label: "City Apartments", icon: <FaCity className=" text-gray-500  text-xl"  /> },
+    { id: "house", label: "House", icon: <FaHome className=" text-gray-500  text-2xl"  /> },
+    { id: "hotel", label: "Hotel", icon: <FaHotel className=" text-gray-500  text-2xl"  /> },
+    { id: "guestHouse", label: "Guest House", icon: <FaBed className=" text-gray-500  text-2xl"  /> },
+    { id: "apartment", label: "Apartment", icon: <FaBuilding className=" text-gray-500  text-2xl"  /> },
+    { id: "office", label: "Office", icon: <FaBuilding className=" text-gray-500  text-2xl"  /> },
+    { id: "art", label: "Art", icon: <FaPalette className=" text-gray-500  text-2xl"  /> },
+    { id: "cityApartments", label: "City Apartments", icon: <FaCity className=" text-gray-500  text-2xl"  /> },
     {
       id: "petFriendlyRetreats",
       label: "Pet-Friendly Retreats",
-      icon: <FaDog className=" text-gray-500  text-xl"  />,
+      icon: <FaDog className=" text-gray-500  text-2xl"  />,
     },
-    { id: "treehouseRetreats", label: "Treehouse Retreats", icon: <FaTree className=" text-gray-500  text-xl"  /> },
+    { id: "treehouseRetreats", label: "Treehouse Retreats", icon: <FaTree className=" text-gray-500  text-2xl"  /> },
     {
       id: "familyFriendlyHomes",
       label: "Family-Friendly Homes",
-      icon: <FaUserFriends  className=" text-gray-500  text-xl" />,
+      icon: <FaUserFriends  className=" text-gray-500  text-2xl" />,
     },
     { id: "boutiqueVillas", label: "Boutique Villas", icon: <FaShopify  className=" text-gray-500  text-xl" /> },
     { id: "lakesideSerenity", label: "Lakeside Serenity", icon: <FaWater  className=" text-gray-500  text-xl" /> },
@@ -202,7 +202,7 @@ export default function CategoryHeader({filter}) {
           {categories.map((category) => (
               <div
                 key={category.id}
-                className={`flex flex-col items-center cursor-pointer  ${
+                className={`flex flex-col px- text-center items-center cursor-pointer  ${
                   selectedCategory === category.id ? "font-bold" : ""
                 }`}
                 aria-hidden="true"
@@ -216,10 +216,10 @@ export default function CategoryHeader({filter}) {
                   checked={selectedCategory === category.id}
                   onChange={() => handleCategoryChange(category.id)}
                 />
-                <div className="  rounded-full h-7 w-7 md:h-10 md:w-10">
+                <div className="  rounded-full ">
                   {category.icon}
                 </div>
-                <span className="mt-1 text-sm text-gray-500">
+                <span className="mt-1 text-sm text-gray-500 w-[120px]">
                   {category.label}
                 </span>
               </div>

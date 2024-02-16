@@ -54,6 +54,7 @@ import {
   FaCloudUploadAlt,
   FaBan,
 } from "react-icons/fa";
+
 import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { notification } from "antd";
@@ -66,9 +67,13 @@ import Axios from "../../Axios";
 import { data } from "autoprefixer";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { Link } from "react-router-dom";
+import { Modal } from "antd";
+
 export default function HostHome({ match }) {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [step, setStep] = useState(0);
+  const [isStepValid, setIsStepValid] = useState(true);
+
   const [uploadedImages, setUploadedImages] = useState([]);
   const [fileInputKey, setFileInputKey] = useState(0);
   const [houseTitle, setHouseTitle] = useState("");
@@ -80,7 +85,10 @@ export default function HostHome({ match }) {
   const [selectedInstantBookType, setSelectedInstantBookType] = useState(null);
   const [initiallySelectedType, setInitiallySelectedType] = useState(null);
   const [selectedCheckOutTime, setSelectedCheckOutTime] = useState("12:00 PM");
-
+  const [isGuestsSelected, setIsGuestsSelected] = useState(false);
+  const [isBedroomsSelected, setIsBedroomsSelected] = useState(false);
+  const [isBedsSelected, setIsBedsSelected] = useState(false);
+  const [isBathroomsSelected, setIsBathroomsSelected] = useState(false);
   const [selectedHouseType, setSelectedHouseType] = useState(null);
   const [selectedHostType, setSelectedHostType] = useState(null);
   const [selectedCautionTypes, setSelectedCautionTypes] = useState([]);
@@ -93,6 +101,7 @@ export default function HostHome({ match }) {
   const [selectedWelcomeVisibility, setSelectedWelcomeVisibility] = useState(
     []
   );
+  const [isAmenitySelected, setIsAmenitySelected] = useState(false);
 
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [houseDescriptionDetails, setHouseDescriptionDetails] = useState("");
@@ -156,6 +165,19 @@ export default function HostHome({ match }) {
         setIsLoading(false); // Set loading to false regardless of success or error
       });
   }, [id]);
+
+  const deleteAmenity = async (id) => {
+    try {
+      const response = await Axios.delete(`/deleteOfferById/${id}`);
+      if (response.status === 200) {
+        console.log(`Amenity with id ${id} deleted successfully`);
+      } else {
+        console.error("Failed to delete amenity");
+      }
+    } catch (error) {
+      console.error("Error deleting amenity:", error);
+    }
+  };
 
   const handleTimeChange = (e) => {
     setSelectedTime(e.target.value);
@@ -273,8 +295,6 @@ export default function HostHome({ match }) {
         (item) => item.reservation
       );
 
-     
-
       const formDetails = {
         property_type: selectedHouseType || apartment.property_type,
         guest_choice: selectedPrivacyType || apartment.guest_choice,
@@ -291,8 +311,8 @@ export default function HostHome({ match }) {
         description: houseDescriptionDetails,
         reservations: visiblities || [],
         reservation: selectedInstantBookType || [],
-        price: housePrice,
-        discounts: selectedDiscounts,
+        price: housePrice || apartment.price,
+        discounts: selectedDiscounts || apartment.discounts,
         rules: selectedRules || [],
         additionalRules: additionalRules || "none",
         host_type: selectedHostType,
@@ -320,8 +340,170 @@ export default function HostHome({ match }) {
   };
 
   const handleNext = () => {
+    let isValid = true;
+
+    switch (step) {
+      case 2:
+        if (!selectedHouseType && !apartment.property_type) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content: "Please select a house type.",
+          });
+          break;
+        }
+        break;
+
+      case 3:
+        if (!selectedPrivacyType && !apartment.guest_choice) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content: "Please select a privacy type.",
+          });
+          break;
+        }
+        break;
+      case 5:
+        if (
+          (!isGuestsSelected && apartment.guest < 1) ||
+          (!isBedroomsSelected && apartment.bedroom < 1) ||
+          (!isBedsSelected && apartment.beds < 1) ||
+          (!isBathroomsSelected && apartment.bathrooms < 1)
+        ) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please select at least one guest, one bedroom, one bed, and one bathroom before proceeding to the next step.",
+          });
+        }
+        break;
+
+      case 6:
+        if (selectedAmenities.length === 0 && apartment.amenities === 0) {
+          isValid = false;
+          setIsAmenitySelected(false);
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please select at least one amenity before proceeding to the next step. it is recommended you select up to 10 amenities to boost your apartment",
+          });
+        } else {
+          setIsAmenitySelected(true);
+        }
+        break;
+
+      case 7:
+        if (uploadedImages < 5 && apartment.hosthomephotos < 5) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please upload at least 5 photos before proceeding to the next step.",
+          });
+        }
+        break;
+
+      case 8:
+        if (!selectedVideo && !apartment.hosthomevideo) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please upload a video before proceeding to the next step.",
+          });
+        }
+        break;
+
+      case 9:
+        if (houseTitle.trim() === "" && apartment.title === "") {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please enter a title for your house before proceeding to the next step.",
+          });
+        }
+        break;
+
+      case 10:
+        if (
+          selectedHouseDescriptions.length < 2 &&
+          apartment.hosthomedescriptions.length < 2
+        ) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please choose at least two highlights for your house before proceeding to the next step.",
+          });
+        }
+        break;
+      case 11:
+        if (
+          houseDescriptionDetails.length === 0 ||
+          (houseDescriptionDetails.length > 750 &&
+            apartment.description.length === 0)
+        ) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please enter a description within the character limit (1-750 characters) before proceeding to the next step.",
+          });
+          break;
+        }
+          break;
+
+      case 12:
+        // Check if housePrice is not a valid number or is less than or equal to 0
+        if (
+          isNaN(housePrice) ||
+          (housePrice.length <= 4 && apartment.price.length <= 4)
+        ) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please enter a valid price before proceeding to the next step",
+          });
+          break;
+        }
+        break;
+
+      case 13:
+        // Check if at least one discount is selected
+        if (
+          selectedDiscounts.length === 0 &&
+          apartment.discounts.length === 0 
+        ) {
+          isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Please select at least one discount before proceeding to the next step",
+          });
+          break;
+        }
+
+        
+        break;
+
+      default:
+        break;
+    }
+
+    if (!isValid) {
+      // Modal.error({
+      //   title: "Validation Error",
+      //   content: "Please select an option before proceeding to the next step.",
+      // });
+      return;
+    }
+
     if (token) {
-      setStep(step + 1);
+      setStep((prevStep) => prevStep + 1);
     } else {
       goLogin.current.click();
     }
@@ -864,7 +1046,7 @@ export default function HostHome({ match }) {
     setSelectedPrivacyType(selectedType);
   };
 
-  const handleAmenitySelection = (amenityId) => {
+  const handleAmenitySelection = (amenityId, apartmentId) => {
     setApartment((prev) => {
       const isAmenitySelected = prev.amenities.some(
         (amenity) => amenity.offer === amenityId
@@ -872,26 +1054,35 @@ export default function HostHome({ match }) {
 
       if (isAmenitySelected) {
         // If amenity is already selected, remove it
+        const updatedAmenities = prev.amenities.filter(
+          (amenity) => amenity.offer !== amenityId
+        );
+        console.log("Amenity unselected:", amenityId);
+        // Send DELETE request to API
+        Axios.delete(`deleteOfferById/${apartmentId}`)
+          .then((response) => {
+            console.log("Delete response:", response);
+          })
+          .catch((error) => {
+            console.error("Error deleting offer:", error);
+          });
+        setSelectedAmenities((prevSelected) =>
+          prevSelected.filter((selectedId) => selectedId !== amenityId)
+        );
         return {
           ...prev,
-          amenities: prev.amenities.filter(
-            (amenity) => amenity.offer !== amenityId
-          ),
+          amenities: updatedAmenities,
         };
       } else {
         // If amenity is not selected, add it
+        const updatedAmenities = [...prev.amenities, { offer: amenityId }];
+        console.log("Amenity selected:", amenityId);
+        setSelectedAmenities((prevSelected) => [...prevSelected, amenityId]);
         return {
           ...prev,
-          amenities: [...prev.amenities, { offer: amenityId }],
+          amenities: updatedAmenities,
         };
       }
-    });
-
-    setSelectedAmenities((prev) => {
-      const updatedAmenities = prev.includes(amenityId)
-        ? prev.filter((id) => id !== amenityId)
-        : [...prev, amenityId];
-      return updatedAmenities;
     });
   };
 
@@ -923,13 +1114,34 @@ export default function HostHome({ match }) {
       (description) => description.description === selectedType
     );
 
+    // Track the unselected ID
+    let unselectedId = null;
+
     // If it's already selected, remove it. Otherwise, add it.
     setApartment((prev) => {
       const updatedDescriptions = isAlreadySelected
-        ? prev.hosthomedescriptions.filter(
-            (description) => description.description !== selectedType
-          )
+        ? prev.hosthomedescriptions.filter((description) => {
+            if (description.description === selectedType) {
+              unselectedId = description.id; // Set the unselected ID
+              return false; // Remove the selected description
+            } else {
+              return true; // Keep other descriptions
+            }
+          })
         : [...prev.hosthomedescriptions, { description: selectedType }];
+
+      console.log("Unselected ID:", unselectedId);
+
+      // Send DELETE request to API to delete description
+      if (unselectedId) {
+        Axios.delete(`deleteDescriptionById/${unselectedId}`)
+          .then((response) => {
+            console.log("Description deleted:", response);
+          })
+          .catch((error) => {
+            console.error("Error deleting description:", error);
+          });
+      }
 
       return { ...prev, hosthomedescriptions: updatedDescriptions };
     });
@@ -960,51 +1172,79 @@ export default function HostHome({ match }) {
     }
   }, [apartment]);
 
-  const handleInstantBookSelection = (selectedId) => {
-    setSelectedInstantBookType(selectedId);
+  const handleInstantBookSelection = (typeId) => {
+    if (selectedInstantBookType !== null) {
+      // Delete the previously selected reservation
+      Axios.delete(`deleteReservationById/${selectedInstantBookType}`)
+        .then((response) => {
+          console.log("Previous reservation deleted:", response);
+        })
+        .catch((error) => {
+          console.error("Error deleting previous reservation:", error);
+        });
+    }
+
+    setSelectedInstantBookType(typeId);
+
+    // Handle the selected instant booking option
+    // For example, you can update state or perform other actions here
   };
 
   const handleCancellationPolicySelection = (selectedPolicy) => {
     setSelectedCancellationPolicy(selectedPolicy);
   };
 
-  const handleDiscountSelection = (selectedId, isSelected, matchingDiscount) => {
+  const handleDiscountSelection = (
+    discountId,
+    isSelected,
+    matchingDiscount
+  ) => {
     if (isSelected) {
-      // Deselect the discount if it was selected
-      setApartment((prev) => ({
-        ...prev,
-        discounts: prev.discounts.filter(
-          (discount) => discount.discount.trim() !== selectedId.trim()
-        ),
-      }));
-      // Remove the discount from selected discounts state
-      setSelectedDiscounts((prevSelectedDiscounts) =>
-        prevSelectedDiscounts.filter((discount) => discount !== selectedId.trim())
+      // If the discount is already selected, remove it
+      const updatedDiscounts = apartment.discounts.filter(
+        (discount) => discount.discount !== discountId
       );
-    } else {
-      // Select the discount if it was not selected
+      console.log("Discount unselected:", discountId);
+      // Send DELETE request to API
+      Axios.delete(`deleteDiscountById/${matchingDiscount.id}`)
+        .then((response) => {
+          console.log("Delete response:", response);
+        })
+        .catch((error) => {
+          console.error("Error deleting discount:", error);
+        });
       setApartment((prev) => ({
         ...prev,
-        discounts: [
-          ...prev.discounts.filter(
-            (discount) => discount.discount.trim() !== selectedId.trim()
-          ),
-          { discount: selectedId.trim(), value: matchingDiscount?.value || 0 },
-        ],
+        discounts: updatedDiscounts,
       }));
-      // Add the discount to selected discounts state
-      setSelectedDiscounts((prevSelectedDiscounts) => [
-        ...prevSelectedDiscounts,
-        selectedId.trim(),
-      ]);
+      setSelectedDiscounts([discountId]);
+    } else {
+      // If the discount is not selected, add it
+      const updatedDiscounts = [
+        ...apartment.discounts,
+        { discount: discountId },
+      ];
+      console.log("Discount selected:", discountId);
+      // Send POST request to API to add discount
+      Axios.post("api/addDiscount", { discount: discountId })
+        .then((response) => {
+          console.log("Add response:", response);
+        })
+        .catch((error) => {
+          console.error("Error adding discount:", error);
+        });
+      setApartment((prev) => ({
+        ...prev,
+        discounts: updatedDiscounts,
+      }));
+      setSelectedDiscounts([discountId]);
     }
   };
-  
 
   const handleRuleSelection = (selectedRule) => {
     setSelectedRules((prevSelectedRules) => {
       const isRuleSelected = prevSelectedRules.includes(selectedRule);
-  
+
       if (isRuleSelected) {
         // Deselect the rule if it was selected
         return prevSelectedRules.filter((rule) => rule !== selectedRule);
@@ -1014,10 +1254,6 @@ export default function HostHome({ match }) {
       }
     });
   };
-  
-  
- 
-  
 
   const handleHostTypeSelection = (typeId) => {
     setSelectedHostType(typeId);
@@ -1038,10 +1274,10 @@ export default function HostHome({ match }) {
   // Function to handle caution type selection
   // Function to handle caution type selection
   const handleCautionTypeSelection = (id) => {
-    setSelectedCautionTypes(prevSelectedCautionTypes => {
+    setSelectedCautionTypes((prevSelectedCautionTypes) => {
       if (prevSelectedCautionTypes.includes(id)) {
         // If already selected, remove it
-        return prevSelectedCautionTypes.filter(typeId => typeId !== id);
+        return prevSelectedCautionTypes.filter((typeId) => typeId !== id);
       } else {
         // If not selected, add it
         return [...prevSelectedCautionTypes, id];
@@ -1402,7 +1638,21 @@ export default function HostHome({ match }) {
                             ? "bg-orange-300 border-2 border-black text-white"
                             : "bg-gray-200 text-black"
                         } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-                        onClick={() => handleAmenitySelection(type.id)}
+                        onClick={() => {
+                          console.log("Type ID:", type.id);
+                          const selectedAmenity = apartment?.amenities.find(
+                            (amenity) => amenity.offer === type.id
+                          );
+                          if (selectedAmenity) {
+                            console.log(
+                              "Amenity selected:",
+                              selectedAmenity.id
+                            );
+                            handleAmenitySelection(type.id, selectedAmenity.id);
+                          } else {
+                            handleAmenitySelection(type.id, null); // Pass null or a non-existing id to indicate selection
+                          }
+                        }}
                       >
                         <span className="mr-2 text-2xl">{type.icon}</span>
                         {type.id}
@@ -1763,29 +2013,30 @@ export default function HostHome({ match }) {
           </div>
         );
 
-        case 12:
-          return (
-            <div className="mx-auto flex justify-center p-4">
-              <div className="overflow-auto">
-                <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
-                  <h1 className="text-6xl">Now, set your price</h1>
-                  <p className="text-gray-400 mt-10">You can change it anytime.</p>
-                </div>
-                <div className="pb-32">
-                  <div className="text-center">
-                    <input
-                      type="number"
-                      className="border rounded-lg px-4 py-2 w-full text-lg"
-                      placeholder="Price per night"
-                      value={housePrice}
-                      onChange={(e) => setHousePrice(parseInt(e.target.value))}
-                    />
-                  </div>
+      case 12:
+        return (
+          <div className="mx-auto flex justify-center p-4">
+            <div className="overflow-auto">
+              <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
+                <h1 className="text-6xl">Now, set your price</h1>
+                <p className="text-gray-400 mt-10">
+                  You can change it anytime.
+                </p>
+              </div>
+              <div className="pb-32">
+                <div className="text-center">
+                  <input
+                    type="number"
+                    className="border rounded-lg px-4 py-2 w-full text-lg"
+                    placeholder="Price per night"
+                    value={housePrice}
+                    onChange={(e) => setHousePrice(parseInt(e.target.value))}
+                  />
                 </div>
               </div>
             </div>
-          );
-        
+          </div>
+        );
 
       case 13: // Step for adding discounts
         return (
@@ -1839,12 +2090,12 @@ export default function HostHome({ match }) {
           </div>
         );
 
-        case 14: // Step for hosting type and property features
+      case 14: // Step for hosting type and property features
         const additionalRulesFromApartment =
           apartment?.rules.map((r) => r.rule) || [];
-      
+
         const noRulesSelected = selectedRules.length === 0;
-      
+
         return (
           <div className="mx-auto flex justify-center p-4">
             <div className="overflow-auto">
@@ -1860,7 +2111,7 @@ export default function HostHome({ match }) {
                   const isSelectedFromApi = apartment?.rules.some(
                     (r) => r.rule === rule
                   );
-      
+
                   return (
                     <div
                       key={rule}
@@ -1880,7 +2131,7 @@ export default function HostHome({ match }) {
                   );
                 })}
               </div>
-      
+
               <div className="md:flex md:justify-center md:flex-col">
                 <h1 className="text-2xl">Additional Rules</h1>
               </div>
@@ -2129,7 +2380,9 @@ export default function HostHome({ match }) {
           <button
             type="button" // Add this line to prevent form submission
             onClick={handleNext}
-            className="text-white text-center  bg-orange-400 w-full p-4"
+            className={`text-white text-center bg-orange-400 w-full p-4 ${
+              !isStepValid && "opacity-50 cursor-not-allowed"
+            }`}
           >
             Next
           </button>
