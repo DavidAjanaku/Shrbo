@@ -652,12 +652,13 @@ export default function Home() {
           </p> */}
             </div>
 
-            <section className=" mx-auto justify-center w-[90%] md:w-[80%]">
+            <section className=" md:w-[80%] mx-auto">
               <div className="justify-center flex">
                 <CategoryHeader  filter={filterDataByCategories} />
               </div>
+            <section className="mx-auto justify-center w-[90%] md:w-[%]">
 
-              <Listings user={user} homes={listings} loading={listingLoading} />
+            <Listings user={user} homes={listings} loading={listingLoading} />
               <div className="pb-48 w-[90%] mx-auto ">
                 <h1 className="text-center text-4xl mb-10">
                   Learn About the Major Cities
@@ -668,6 +669,7 @@ export default function Home() {
                   ))}
                 </Slider>
               </div>
+            </section>
             </section>
             <RateHouseModal
               isOpen={isRateHouseModalOpen}

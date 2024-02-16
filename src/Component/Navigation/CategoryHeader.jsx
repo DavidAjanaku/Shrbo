@@ -197,11 +197,11 @@ export default function CategoryHeader({filter}) {
           </svg>
         </button>
 
-        <div className="overflow-x-auto example flex space-x-10" ref={scrollerRef}>
+        <div className="overflow-x-auto example flex " ref={scrollerRef}>
           {categories.map((category) => (
               <div
                 key={category.id}
-                className={`flex flex-col items-center cursor-pointer  ${
+                className={`flex flex-col px- text-center items-center cursor-pointer  ${
                   selectedCategory === category.id ? "font-bold" : ""
                 }`}
                 aria-hidden="true"
@@ -215,10 +215,10 @@ export default function CategoryHeader({filter}) {
                   checked={selectedCategory === category.id}
                   onChange={() => handleCategoryChange(category.id)}
                 />
-                <div className="  rounded-full h-7 w-7 md:h-10 md:w-10">
+                <div className="  rounded-full ">
                   {category.icon}
                 </div>
-                <span className="mt-1 text-sm text-gray-500">
+                <span className="mt-1 text-sm text-gray-500 w-[150px]">
                   {category.label}
                 </span>
               </div>
