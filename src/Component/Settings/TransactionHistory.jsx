@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef,useEffect } from "react";
 import { Link } from "react-router-dom";
 import SettingsNavigation from "./SettingsNavigation";
 import ChangePassword from "./ChangePassword";
@@ -6,6 +6,7 @@ import GoBackButton from "../GoBackButton";
 import { Table, Button, Modal } from "antd";
 import { usePDF } from "react-to-pdf";
 import Logo from "../../assets/logo.png";
+import axios from "../../Axios"
 
 // Sample booking details
 const sampleBookingDetails = {
@@ -40,39 +41,48 @@ const sampleBookingDetails = {
 };
 
 // Sample transaction data
-const data = [
-  {
-    key: "1",
-    hostName: "John Doe",
-    transactionId: "T12345",
-    numGuests: 2,
-    propertyId: "ABC123",
-    bookingStatus: "confirmed",
-    paymentAmount: 100,
-    serivceCharge: 10,
-    bookingDates: "2023-01-10 to 2023-01-20",
-  },
-  {
-    key: "2",
-    hostName: "Jane Smith",
-    transactionId: "T12345",
-    numGuests: 3,
-    propertyId: "XYZ789",
-    bookingStatus: "pending",
-    paymentAmount: 150,
-    serivceCharge: 15,
-    bookingDates: "2023-02-15 to 2023-02-23",
-  },
-  // Add more booking data as needed
-];
+// const data = [
+//   {
+//     key: "1",
+//     hostName: "John Doe",
+//     transactionId: "T12345",
+//     numGuests: 2,
+//     propertyId: "ABC123",
+//     bookingStatus: "confirmed",
+//     paymentAmount: 100,
+//     serivceCharge: 10,
+//     bookingDates: "2023-01-10 to 2023-01-20",
+//   },
+//   {
+//     key: "2",
+//     hostName: "Jane Smith",
+//     transactionId: "T12345",
+//     numGuests: 3,
+//     propertyId: "XYZ789",
+//     bookingStatus: "pending",
+//     paymentAmount: 150,
+//     serivceCharge: 15,
+//     bookingDates: "2023-02-15 to 2023-02-23",
+//   },
+//   // Add more booking data as needed
+// ];
 
 export default function TransactionHistory() {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showBreakdowns, setShowBreakdowns] = useState(false);
+  const [dataSource, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
   const pdfRef = useRef(); // Create a ref for the PDF content
 
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
+
 
   const columns = [
     // Define table columns
@@ -85,11 +95,6 @@ export default function TransactionHistory() {
       title: "Host Name",
       dataIndex: "hostName",
       key: "hostName",
-    },
-    {
-      title: "Number of Guests",
-      dataIndex: "numGuests",
-      key: "numGuests",
     },
     {
       title: "Property ID",
@@ -122,27 +127,47 @@ export default function TransactionHistory() {
 
   // Function to render booking details breakdown
   const renderBreakdowns = (booking) => {
-    const totalNightsFee = booking.roomPerNightPrice * booking.numNights;
+    const totalNightsFee =formatAmountWithCommas( booking.roomPerNightPrice * booking.numNights);
+    const totalFull=formatAmountWithCommas(booking.paymentAmount);
 
     return (
       <div className="breakdoguestPaid4">
         <h2 className="text-base font-semibold mt-4 mb-2">Breakdowns</h2>
         <div className="flex justify-between">
           <span>{booking.numNights} nights room fee</span>
-          <span>${totalNightsFee}</span>
+          <span>₦{totalNightsFee}</span>
         </div>
 
         <div className="flex justify-between">
-          <span>Total (USD)</span>
-          <span>${calculateTotal(booking)}</span>
+          <span>Total (NGN)</span>
+          <span>₦{totalFull}</span>
         </div>
       </div>
     );
   };
 
+  function formatAmountWithCommas(amount) {
+    // Convert the amount to a string and split it into integer and decimal parts
+    const [integerPart, decimalPart] = amount.toString().split('.');
+  
+    // Add commas to the integer part
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  
+    // Combine the integer and decimal parts with a dot if there is a decimal part
+    const formattedAmount = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+  
+    return formattedAmount;
+  }
+  
+  // Example usage:
+  const amount = 1234567.89;
+  const formattedAmount = formatAmountWithCommas(amount);
+  console.log(formattedAmount); // Output: "1,234,567.89"
+  
+
   // Function to view booking details
   const viewBookingDetails = (booking) => {
-    const matchingBooking = Object.values(sampleBookingDetails).find(
+    const matchingBooking = Object.values(dataSource).find(
       (details) => details.hostName === booking.hostName
     );
 
@@ -153,15 +178,7 @@ export default function TransactionHistory() {
   };
 
   // Function to calculate the total cost of a booking
-  const calculateTotal = (booking) => {
-    const total =
-      booking.roomPerNightPrice * booking.numNights +
-      booking.guestServiceFee +
-      booking.nightlyRateAdjustment +
-      booking.hostServiceFee;
-    return total;
-  };
-
+  
   // Function to handle closing the details modal
   const handleDetailsClose = () => {
     setDetailsVisible(false);
@@ -183,6 +200,63 @@ export default function TransactionHistory() {
     }
   };
 
+  const fetchData= async ()=>{
+    setLoading(true);
+     await axios.get('/transactionHistory').then(response=>{
+        const results=response.data.data.map(item=>({
+
+    
+            key: item.id,
+            hostName: item.hostname,
+            transactionId: item.transactionID,
+            // numGuests: 2,
+            propertyId: item.propertyID,
+            bookingStatus: "confirmed",
+            paymentAmount: item.paymentAmount,
+            serivceCharge: 10,
+            bookingDates:` ${item.check_in} to ${item.check_out}`,
+
+            roomPerNightPrice: item.amountForOneNight, // Replace with the actual price per night
+            guestServiceFee: 25, // Replace with the actual guest service fee
+            numNights: item.duration_of_stay,
+            nightlyRateAdjustment: -40.6,
+            hostServiceFee: -23.5,
+            propertyDetails: "Mountain Cabin, Aspen",
+            receiptId: item.transactionID,
+            paymentMethod: item.paymentMethod, // Add payment method for the second booking
+            propertyDescription: "2bed 3 guests",
+        
+       
+        }));
+        setData(results);
+
+      }).catch(err=>{
+        console.log(err);
+
+      }).finally(()=>{
+        setLoading(false);
+      });
+
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const paginationOptions = {
+    current: tableParams.pagination.current,
+    pageSize: tableParams.pagination.pageSize,
+    total: dataSource.length, // Replace with the actual total number of items
+    onChange: (page, pageSize) => {
+      setTableParams({
+        pagination: {
+          current: page,
+          pageSize: pageSize,
+        },
+      });
+    },
+  };
+
   return (
     <div>
       <div className="max-w-2xl mx-auto p-4">
@@ -195,7 +269,9 @@ export default function TransactionHistory() {
         <div>
           <div className="bg-white p-4 rounded shadow">
             <div className="overflow-x-auto">
-              <Table columns={columns} dataSource={data} />
+              <Table  columns={columns}   dataSource={dataSource}
+                pagination={paginationOptions}
+                loading={loading} />
             </div>
           </div>
         </div>
@@ -233,9 +309,8 @@ export default function TransactionHistory() {
                       <span>
                         $
                         {(
-                          selectedBooking.roomPerNightPrice *
-                          selectedBooking.numNights
-                        ).toFixed(2)}{" "}
+                          formatAmountWithCommas(selectedBooking.paymentAmount)
+                        )}{" "}
                         * {selectedBooking.numNights} nights
                       </span>
                     </div>
@@ -281,7 +356,7 @@ export default function TransactionHistory() {
 
                       <div className="flex justify-between mb-2">
                         <span>Host</span>
-                        <span>{selectedBooking.host}</span>
+                        <span>{selectedBooking.hostName}</span>
                       </div>
                     </div>
                   </div>

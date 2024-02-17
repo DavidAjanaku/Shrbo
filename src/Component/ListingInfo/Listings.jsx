@@ -192,7 +192,7 @@ const Listings = ({ user, homes, loading }) => {
       <>
 
         {(homes && homes.length != 0) ? <div>
-          <div className="justify-center mt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="justify-center mt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
             {isModalOpen && (
               <WishlistModal
                 listingId={selectedListingId}

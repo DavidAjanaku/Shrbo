@@ -12,8 +12,6 @@ import {
   FaHotel,
   FaBed,
   FaBuilding,
-  FaTrash,
-  FaVideo,
   FaPalette,
   FaCity,
   FaDog,
@@ -24,43 +22,8 @@ import {
   FaLandmark,
   FaChartBar,
   FaMountain,
-  FaWifi,
-  FaTv,
-  FaUtensils,
-  FaHandsWash,
-  FaSnowflake,
-  FaParking,
-  FaSwimmingPool,
-  FaHotTub,
-  FaFire,
-  FaBell,
-  FaFirstAid,
-  FaFireExtinguisher,
-  FaSmoking,
-  FaTemperatureHigh,
-  FaSuitcase,
-  FaShower,
-  FaDumbbell,
-  FaWheelchair,
-  FaPaw,
-  FaCoffee,
-  FaBook,
-  FaChessBoard,
-  FaLaptop,
-  FaAirFreshener,
-  FaPaperclip,
-  FaSnowboarding,
-  FaArrowUp,
-  FaObjectGroup,
-  FaWaveSquare,
-  FaHotdog,
   FaUmbrellaBeach,
-  FaBox,
-  FaUser,
-  FaCamera,
-  FaShieldAlt,
-  FaExclamationTriangle,
-  FaBan,
+  
 } from "react-icons/fa";
 
 export default function CategoryHeader({filter}) {
@@ -173,16 +136,16 @@ export default function CategoryHeader({filter}) {
 
   return (
     <div className="mt-16 md:mt-40 w-full ">
-      <div className="flex space-x-1 items-center " >
+      <div className="flex space-x-1 items-center justify-center " >
         <button
-          className={`border-1 p-1 md:w-8 md:h-8 rounded-full hidden md:block ${
+          className={` border hover:shadow-gray-600 hover:scale-110 mb-4 rounded-full hidden md:block ${
             canScrollBackward ? "" : "opacity-50 cursor-not-allowed"
-          } shadow-2xl`}
+          }  ` }
           onClick={handlePreviousCategory}
           disabled={!canScrollBackward}
-          style={{ border: "1px solid black" }}
+        
         >
-          <svg
+          {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-4 h-4" // You can adjust the width and height here
             fill="none"
@@ -195,7 +158,8 @@ export default function CategoryHeader({filter}) {
               strokeWidth="2"
               d="M10 19l-7-7m0 0l7-7m-7 7h18"
             />
-          </svg>
+          </svg> */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8"  fill="rgb(71 85 105)"  viewBox="0 0 24 24"><path d="M14,7L9,12L14,17V7Z" /></svg>
         </button>
 
         <div className="overflow-x-auto example flex space-x-8 md:space-x-10" ref={scrollerRef}>
@@ -226,14 +190,14 @@ export default function CategoryHeader({filter}) {
           ))}
         </div>
         <button
-          className={`border-1 p-1 md:w-8 md:h-8 rounded-full hidden md:block ${
+          className={` border hover:scale-110 mb-4 rounded-full hidden md:block ${
             canScrollForward ? "" : "opacity-50 cursor-not-allowed"
-          } shadow-md`}
+          } shadow-2xl` }
           onClick={handleNextCategory}
           disabled={!canScrollForward}
-          style={{ border: "1px solid black" }}
+          // style={{ border: "1px solid black" }}
         >
-          <svg
+          {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-4 h-4" // You can adjust the width and height here
             fill="none"
@@ -246,7 +210,9 @@ export default function CategoryHeader({filter}) {
               strokeWidth="2"
               d="M14 5l7 7m0 0l-7 7m7-7H3"
             />
-          </svg>
+          </svg> */}
+
+<svg xmlns="http://www.w3.org/2000/svg"   className="w-8 h-8 " fill="rgb(71 85 105)"   viewBox="0 0 24 24"><path d="M10,17L15,12L10,7V17Z" /></svg>
         </button>
       </div>
      
