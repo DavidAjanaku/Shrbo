@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { styles } from '../../ChatBot/Style';
 import { Select } from 'antd';
+import axios from '../../../Axios'
 
 
-const AccountNumberForm = ({ Submit, close, loading,banks }) => {
+const AccountNumberForm = ({ Submit, close, loading,banks}) => {
   const [accountNumber, setAccountNumber] = useState('');
   const [bankName, setBankName] = useState('');
   const [fullName, setFullName] = useState('');
+  const [loadingName, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const onChange = (value) => {
     setBankName(value);
@@ -17,11 +20,63 @@ const AccountNumberForm = ({ Submit, close, loading,banks }) => {
   };
 
 
-  const filterOption = (input, option) =>
-    (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
+  const filterOption = (input, option) =>(option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
 
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      setFullName("");
+      try {
+        if (!(accountNumber.trim().length===10) || !bankName.trim()) {
+          setError('Bank Name and Account Number are required.');
+          return;
+        }
+
+        setLoading(true);
+
+        const response = await axios.get(`/getUserInfoByAccountNumber/${accountNumber}/${bankName}`);
+        const newErrors = {
+          accountNumber: '',
+          bankName: '',
+          fullName: '',
+        };
+
+        if(response.data.account_name){
+          setFullName(response.data.account_name);
+          setErrors(newErrors);
+          
+        }else{
+          newErrors.fullName = "Could'nt find a name linked to this account";
+          setErrors(newErrors)
+          
+        }
+        setError(null);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+        setError('Error fetching user info. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const debounceTimeout = setTimeout(fetchUserInfo, 500);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [bankName, accountNumber]);
+
+
+  const handleAccountNumberChange = (e) => {
+    let inputAccountNumber = e.target.value;
+
+    // Use regex to remove non-numeric characters
+    inputAccountNumber = inputAccountNumber.replace(/[^0-9]/g, '');
+
+    // Use regex to limit to exactly 10 digits
+    inputAccountNumber = inputAccountNumber.substring(0, 10);
+
+    setAccountNumber(inputAccountNumber);
+  };
 
 
   const handleCancel = () => {
@@ -119,7 +174,7 @@ const AccountNumberForm = ({ Submit, close, loading,banks }) => {
               id="accountNumber"
               placeholder='000-00000-0000'
               value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
+              onChange={handleAccountNumberChange}
               className={`w-full p-2 border ${errors.accountNumber ? 'border-red-500' : 'border-gray-300'
                 } rounded-md focus:outline-none `}
               required
@@ -150,24 +205,29 @@ const AccountNumberForm = ({ Submit, close, loading,banks }) => {
             {errors.bankName && <p className="text-red-500 text-sm mt-1">{errors.bankName}</p>}
           </div>
           <div className="mb-6">
-            <label htmlFor="fullName" className="block text-sm font-semibold mb-2">
+            <label htmlFor="fullName" className=" gap-2 text-sm font-semibold mb-2 flex">
               Full Name
+            {loadingName&& <LoadingOutlined
+        className={`transition-3 text-orange-500 text-base ${loadingName?" opacity-75":"opacity-0"} `}
+      />}
             </label>
             <input
               type="text"
               id="fullName"
-              placeholder='Mohammed Adamu Charles'
+              readOnly
               value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              placeholder='Mohammed Adamu Charles'
               className={`w-full p-2 border ${errors.fullName ? 'border-red-500' : 'border-gray-300'
                 } rounded-md focus:outline-none `}
               required
             />
             {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
           </div>
+          {error&& <p className="text-red-500 text-sm mt-1">{error}</p>}
           <div className=' flex gap-2'>
             <button
               type="submit"
+              disabled={loadingName}
               className="bg-orange-500 w-full text-white px-4 py-2 rounded-md hover:bg-orange-600 focus:outline-none focus:bg-orange-600"
             >
               Submit

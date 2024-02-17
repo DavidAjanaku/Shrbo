@@ -243,7 +243,7 @@ export default function Payments() {
                       <>
                         <button
                           className="underline"
-                          onClick={() => { setIsChangePassword(true); setIsChangeAccountNumber(false) }}
+                          onClick={() => { setIsChangePassword(true);  }}
                         >
                           {detail.action}
                         </button>
