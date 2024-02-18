@@ -273,7 +273,7 @@ export default function TransactionHistory() {
     });
 
     // `dataSource` is useless since `per_page` changed
-    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+    if (pagination.pageSize!== tableParams.pagination?.pageSize) {
       setData([]);
     }
   };
