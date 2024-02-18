@@ -1344,23 +1344,17 @@ export default function HostHome({ match }) {
 
   const handleImageDelete = async (hostHomephotoId, e) => {
     try {
-      // Prevent default form submission behavior
       e.preventDefault();
-
+  
       // Make DELETE request to delete the image
       await Axios.delete(`/deleteHostHostHomeImages/${hostHomephotoId}`);
-
-      // After successful deletion, update the state or perform any other necessary actions
-      setUploadedImages((prevImages) =>
-        prevImages.filter((image) => image.id !== hostHomephotoId)
-      );
-
-      // Log the updated state
-      console.log("Updated Uploaded Images:", uploadedImages);
-
-      // Log the updated hosthomephotos state
-      console.log("Updated Hosthome Photos:", apartment.hosthomephotos);
-
+  
+      // Remove the deleted image element from the DOM
+      const imageElement = document.getElementById(`image-${hostHomephotoId}`);
+      if (imageElement) {
+        imageElement.remove();
+      }
+  
       // Show success notification
       notification.success({
         message: "Image Deleted",
@@ -1368,7 +1362,7 @@ export default function HostHome({ match }) {
       });
     } catch (error) {
       console.error("Error deleting image:", error);
-
+  
       // Show error notification
       notification.error({
         message: "Error Deleting Image",
@@ -1376,6 +1370,7 @@ export default function HostHome({ match }) {
       });
     }
   };
+  
 
   const renderContent = () => {
     switch (step) {
@@ -1478,6 +1473,7 @@ export default function HostHome({ match }) {
           <AddressForm
             onAddressChange={handleAddressChange}
             defaultAddress={apartment?.address}
+            
           />
         );
 

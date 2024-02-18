@@ -137,7 +137,7 @@ const TestimonialInfo = ({ reviews }) => {
 
         <div className="flex justify-items-start flex-row items-center box-border  mt-5  w4/5">
           <div className=" h-[40px] w-[40px] md:w-[58px] md:h-[58px]  overflow-hidden rounded-full bg-orange-600 m-1">
-            <img src={client.min} />
+            <img src={client.user_profilePic} />
           </div>
 
           <div className=" pt-3 pl-2">
@@ -172,7 +172,7 @@ const TestimonialInfo = ({ reviews }) => {
           </section>
         </div>
 
-        <div className=" flex flex-row  md:max-h-40 md:h-40 h-36 max-h-36 mb-8   w-full ">
+        <div className=" flex flex-row   items-center mb-8   w-full ">
           <div className=" rounded-md bg-slate-100 flex flex-col items-center p-4 md:p-6 gap-1 text-center  ">
             <div>
               <span className="text-lg md:text-2xl text-orange-400 font-bold ">
@@ -185,7 +185,7 @@ const TestimonialInfo = ({ reviews }) => {
                 &#9733; &#9733; &#9733; &#9733;
               </span>
             </div>
-            <div className=" text-xs md:text-base ">140 Verified ratings</div>
+            <div className=" text-xs md:text-base ">{reviews.length} Verified ratings</div>
           </div>
 
           <div className=" w-[60%] h-full  md:w-[70%]">
