@@ -76,6 +76,7 @@ const AddressForm = ({ onAddressChange }) => {
           onChange={handleAddressChange}
           placeholder="Enter your address"
           className="bg-orange-200 my-4 p-4 rounded-full"
+          disabled
         />
       </div>
       <div id="map" style={{ height: "400px", width: "80%", margin: "auto" }}></div>
