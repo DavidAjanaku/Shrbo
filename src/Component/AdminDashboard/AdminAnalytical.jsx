@@ -12,7 +12,6 @@ export default function AdminAnalytical() {
   const [error, setError] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("today");
 
-
   useEffect(() => {
     async function fetchHostAnalytics() {
       try {
@@ -79,40 +78,39 @@ export default function AdminAnalytical() {
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
           <h1 className="text-2xl font-semibold mb-4">Dashboard</h1>
           <div className="bg-white p-4 rounded shadow">
-          <div className="mb-4">
-            <label htmlFor="" className="mr-4">
-              Filter by:
-            </label>
-            <select
-  name=""
-  className="border border-gray-300 rounded p-2"
-  id=""
-  value={selectedFilter}
-  onChange={(e) => setSelectedFilter(e.target.value)}
->
-  <option value="today">Today</option>
-  <option value="week">Week</option>
-  <option value="month">Month</option>
-  <option value="year">Year</option>
-  <option value="all-time">All Time</option>
-</select>
-
-          </div>
+            <div className="mb-4">
+              <label htmlFor="" className="mr-4">
+                Filter by:
+              </label>
+              <select
+                name=""
+                className="border border-gray-300 rounded p-2"
+                id=""
+                value={selectedFilter}
+                onChange={(e) => setSelectedFilter(e.target.value)}
+              >
+                <option value="today">Today</option>
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+                <option value="year">Year</option>
+                <option value="all-time">All Time</option>
+              </select>
+            </div>
 
             {analyticsData && (
               <>
                 <div className="bg-gray-200 p-4 rounded shadow">
-                <h2 className="text-base font-semibold">
-  {selectedFilter === "today"
-    ? "Today's Summary"
-    : selectedFilter === "week"
-    ? "This Week's Summary"
-    : selectedFilter === "month"
-    ? "This Month's Summary"
-    : selectedFilter === "year"
-    ? "This Year's Summary"
-    : "All Time Summary"}
-</h2>
+                  <h2 className="text-base font-semibold">
+                    {selectedFilter === "today"
+                      ? "Today's Summary"
+                      : selectedFilter === "week"
+                      ? "This Week's Summary"
+                      : selectedFilter === "month"
+                      ? "This Month's Summary"
+                      : selectedFilter === "year"
+                      ? "This Year's Summary"
+                      : "All Time Summary"}
+                  </h2>
                   <div className="flex flex-col md:flex-row flex-wrap mt-4 gap-4">
                     {/* Card for Guests Today */}
                     <Cards
@@ -148,36 +146,45 @@ export default function AdminAnalytical() {
                 </div>
 
                 <div className="bg-gray-200 p-4 rounded shadow">
-                <h2 className="text-base font-semibold">
-  {selectedFilter === "today"
-    ? "Today's Summary"
-    : selectedFilter === "week"
-    ? "This Week's Summary"
-    : selectedFilter === "month"
-    ? "This Month's Summary"
-    : selectedFilter === "year"
-    ? "This Year's Summary"
-    : "All Time Summary"}
-</h2>
+                  <h2 className="text-base font-semibold">
+                    {selectedFilter === "today"
+                      ? "Today's Summary"
+                      : selectedFilter === "week"
+                      ? "This Week's Summary"
+                      : selectedFilter === "month"
+                      ? "This Month's Summary"
+                      : selectedFilter === "year"
+                      ? "This Year's Summary"
+                      : "All Time Summary"}
+                  </h2>
                   <div className="flex flex-wrap  mt-4 gap-3">
-                    <Cards title="Users" value={analyticsData.userCountForPresentDay} />
-                    <Cards title="Pending Verified Users" value={analyticsData.unVerifiedUserForPresentDay} />
-                    <Cards title="Pending Approvals" value={analyticsData.unApprovedHomesCount} />
+                    <Cards
+                      title="Users"
+                      value={analyticsData.userCountForPresentDay}
+                    />
+                    <Cards
+                      title="Pending Verified Users"
+                      value={analyticsData.unVerifiedUserForPresentDay}
+                    />
+                    <Cards
+                      title="Pending Approvals"
+                      value={analyticsData.unApprovedHomesCount}
+                    />
                   </div>
                 </div>
 
                 <div className="bg-gray-200 p-4 rounded shadow">
-                <h2 className="text-base font-semibold">
-  {selectedFilter === "today"
-    ? "Today's Summary"
-    : selectedFilter === "week"
-    ? "This Week's Summary"
-    : selectedFilter === "month"
-    ? "This Month's Summary"
-    : selectedFilter === "year"
-    ? "This Year's Summary"
-    : "All Time Summary"}
-</h2>
+                  <h2 className="text-base font-semibold">
+                    {selectedFilter === "today"
+                      ? "Today's Summary"
+                      : selectedFilter === "week"
+                      ? "This Week's Summary"
+                      : selectedFilter === "month"
+                      ? "This Month's Summary"
+                      : selectedFilter === "year"
+                      ? "This Year's Summary"
+                      : "All Time Summary"}
+                  </h2>
 
                   <div className="flex flex-wrap  mt-4 gap-3">
                     <Cards title="Booking Requests" value={0} />
@@ -194,55 +201,57 @@ export default function AdminAnalytical() {
               </>
             )}
 
-{analyticsData && (
-  <div className="bg-gray-200 rounded shadow mt-4">
-    <div className="flex justify-between p-4 bg-orange-400 text-white uppercase mb-4">
-      <div className="font-bold">
-        Current vacation rental bookings
-      </div>
-      <div>
-        <Link to="/CurrentBookingsList">View All</Link>
-      </div>
-    </div>
+            {analyticsData && (
+              <div className="bg-gray-200 rounded shadow mt-4">
+                <div className="flex justify-between p-4 bg-orange-400 text-white uppercase mb-4">
+                  <div className="font-bold">
+                    Current vacation rental bookings
+                  </div>
+                  <div>
+                    <Link to="/CurrentBookingsList">View All</Link>
+                  </div>
+                </div>
 
-    <div className="overflow-x-auto  pb-32">
-      <Table
-        dataSource={analyticsData.reservationData.slice(0, 4).map((reservation, index) => ({
-          ...reservation,
-          key: index, 
-        }))}
-        columns={[
-          {
-            title: "Booking ID",
-            dataIndex: "bookingId",
-            key: "bookingId",
-          },
-          {
-            title: "Guest Name",
-            dataIndex: "guestName",
-            key: "guestName",
-          },
-          {
-            title: "Home Title",
-            dataIndex: "homeTitle",
-            key: "homeTitle",
-          },
-          {
-            title: "Status",
-            dataIndex: "status",
-            key: "status",
-          },
-          {
-            title: "Check-in Date",
-            dataIndex: "check_in",
-            key: "check_in",
-          },
-          // Add more columns as needed
-        ]}
-      />
-    </div>
-  </div>
-)}
+                <div className="overflow-x-auto  pb-32">
+                  <Table
+                    dataSource={analyticsData.reservationData
+                      .slice(0, 4)
+                      .map((reservation, index) => ({
+                        ...reservation,
+                        key: index,
+                      }))}
+                    columns={[
+                      {
+                        title: "Booking ID",
+                        dataIndex: "bookingId",
+                        key: "bookingId",
+                      },
+                      {
+                        title: "Guest Name",
+                        dataIndex: "guestName",
+                        key: "guestName",
+                      },
+                      {
+                        title: "Home Title",
+                        dataIndex: "homeTitle",
+                        key: "homeTitle",
+                      },
+                      {
+                        title: "Status",
+                        dataIndex: "status",
+                        key: "status",
+                      },
+                      {
+                        title: "Check-in Date",
+                        dataIndex: "check_in",
+                        key: "check_in",
+                      },
+                      // Add more columns as needed
+                    ]}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
