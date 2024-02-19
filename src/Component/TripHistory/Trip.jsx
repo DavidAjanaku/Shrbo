@@ -407,7 +407,7 @@ export default function Trip() {
                     <img
                       src={trip.image}
                       alt=""
-                      className="object-cover rounded-lg"
+                      className="object-cover h-full w-full rounded-lg"
                     />
                   </div>
                   <div className="mt-4">
