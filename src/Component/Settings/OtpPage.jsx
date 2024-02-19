@@ -81,6 +81,7 @@ const OTPPage = ({ resendOtp, onClose, verifyOtp, isVerified, isLoading, error }
               className="w-10 h-10 text-center border rounded focus:outline-none focus:border-orange-400"
             />
           ))}
+          
         </div>
         {isLoading ? (
           <div className=' w-full flex justify-center pr-16  '>
