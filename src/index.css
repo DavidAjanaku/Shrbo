@@ -315,7 +315,7 @@
  color: orange;
 }
 
-.skeleton-loader {
+/* .skeleton-loader {
   background: linear-gradient(
     90deg,
     rgba(219, 219, 219, 0) 0%,
@@ -334,4 +334,4 @@
   100% {
     background-position: -200% 0;
   }
-}
+} */

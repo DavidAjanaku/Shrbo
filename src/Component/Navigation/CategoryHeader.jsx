@@ -106,7 +106,6 @@ export default function CategoryHeader({filter}) {
   }
   
 
-
   const handleScroll = () => {
     if (scrollerRef.current) {
       const scrollAmount = scrollerRef.current.scrollLeft;
@@ -117,16 +116,15 @@ export default function CategoryHeader({filter}) {
 
   useEffect(() => {
     if (scrollerRef.current) {
-      scrollerRef.current.addEventListener("scroll", handleScroll);
+      scrollerRef.current.addEventListener('scroll', handleScroll, { passive: true });
     }
 
     return () => {
       if (scrollerRef.current) {
-        scrollerRef.current.removeEventListener("scroll", handleScroll);
+        scrollerRef.current.removeEventListener('scroll', handleScroll);
       }
     };
-  }, []);
-
+  }, [])
   const currentIndex = categories.findIndex(
     (category) => category.id === slideCategory
   );

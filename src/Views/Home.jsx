@@ -28,12 +28,17 @@ export default function Home() {
   const { setUser, setToken, token, setHost, setAdminStatus, user } =
     useStateContext();
   const [loading, setLoading] = useState(true);
+  const [showMoreLoading, setShowMoreLoading] = useState(true);
   const [listingLoading, setListingLoading] = useState(true);
   const [homeImage, setHomeImage] = useState("");
   const [homeTitle, setHomeTitle] = useState("");
   const [homeSubTitle, setHomeSubTitle] = useState("");
   const [listings, setListings] = useState();
-  const [clearFilter, setClearFilter] = useState(false);
+  const [category, setCategory] = useState();
+  const [listingType, setListingType] = useState("NoFilter"); //I'm using this state to know what type of listing i'm getting based on the particular Api i'm making a request from
+  const [per_page, setPerPage] = useState(2); // handles the amount of listing that can show at a time
+  const [current_page,setCurrent_page]=useState();
+  const [last_page,setLast_page]=useState();
   // const [pendingReview,setPendingReview]=useState([]);
   const openModal = () => {
     setIsModalOpen(true);
@@ -402,10 +407,11 @@ export default function Home() {
     },
   ];
 
-  useEffect(() => {
+
+  const fetchListings = async () => {
     setListingLoading(true);
-    axios
-      .get(token ? "/hosthomesForAuthUser" : "/hosthomesForUnAuthUser")
+  await  axios
+      .get(token ? `/hosthomesForAuthUser?per_page=${per_page}` : `/hosthomesForUnAuthUser?per_page=${per_page}`)
       .then((response) => {
         console.log(response.data.data);
         const formattedHostHomes = response.data.data.map((item) => ({
@@ -419,15 +425,24 @@ export default function Home() {
           link: "/ListingInfoMain",
           isFavorite: item.addedToWishlist,
         }));
-
-        setListings(formattedHostHomes);
-        //  setHouseDetails(listings[0]);
+        
+        setListingType("NoFilter");
+        setCurrent_page(response.data.meta.current_page);
+        setLast_page(response.data.meta.last_page);
+        if(per_page>2&&(response.data.meta.total!=formattedHostHomes.length)){
+          setListings((prevlisting)=>{[...prevlisting,formattedHostHomes.slice(-2)]}); 
+        }else{
+  
+          setListings(formattedHostHomes);
+        }
       })
       .catch((err) => {
         console.log("Listing", err);
       })
       .finally(() => setListingLoading(false));
-  }, [clearFilter]);
+
+
+  }
 
   const filterData = async (data, close) => {
     setListingLoading(true);
@@ -514,9 +529,10 @@ export default function Home() {
   };
 
   const filterDataByCategories = async (data) => {
+    setCategory(data);
     setListingLoading(true);
 
-    await axios.get(`/searchHomeByProperty_type/${data}`).then(response => {
+    await axios.get(token ? `/searchHomeByProperty_typeForAuthUser/${data}?per_page=${per_page}` : `/searchHomeByProperty_typeForUnAuthUser/${data}?per_page=${per_page}`).then(response => {
       const formattedHostHomes = response.data.data.map((item) => ({
         id: item.id,
         pictures: item.hosthomephotos,
@@ -528,8 +544,16 @@ export default function Home() {
         link: "/ListingInfoMain",
         isFavorite: item.addedToWishlist,
       }));
+    
+      setListingType("FilterbyPropertTypes");
+      setCurrent_page(response.data.meta.current_page);
+      setLast_page(response.data.meta.last_page);
+      if(per_page>2&&(response.data.meta.total!=formattedHostHomes.length)){
+        setListings((prevlisting)=>{[...prevlisting,formattedHostHomes.slice(-2)]}); 
+      }else{
 
-      setListings(formattedHostHomes);
+        setListings(formattedHostHomes);
+      }
     }).catch((error) => {
       console.log(error);
     }).finally(() => setListingLoading(false));
@@ -563,37 +587,37 @@ export default function Home() {
   // Reviews
 
   useEffect(() => {
-    axios.get("/getPendingReviews").then(response=>{
-      
+    axios.get("/getPendingReviews").then(response => {
+
       const formattedHostHomes = response.data.data.map((item) => ({
         id: item.id,
         location: item.address,
         title: item.title,
-        bookingid:item.bookingid,
+        bookingid: item.bookingid,
         userid: item.userid,
         hostid: item.hostid,
         hosthomeid: item.hosthomeid,
       }));
       setHouseDetails(formattedHostHomes);
 
-    }).catch(error=>{
+    }).catch(error => {
 
     });
 
-   },[]);
+  }, []);
 
-   useEffect(()=>{
+  useEffect(() => {
 
-    if(houseDetails!=null){
+    if (houseDetails != null) {
       setIsRateHouseModalOpen(true);
     }
 
-   },[houseDetails]);
+  }, [houseDetails]);
 
-   console.log("houseDetails",houseDetails)
+  console.log("houseDetails", houseDetails)
 
   const ReviewListing = async (data) => {
-  
+
     const reviewData = {
       pendingreviewid: houseDetails[0].id,
       ratings: data.rating,
@@ -615,22 +639,54 @@ export default function Home() {
       });
 
     }).catch(error => {
-      console.log("createReview",error)
+      console.log("createReview", error)
 
     }).finally(() => { });
 
   }
-  const deletePendingReview=async(id)=>{
+  const deletePendingReview = async (id) => {
 
-    await axios.delete(`/deleteHostPendingReviews/${id}`).then(response=>{
-      console.log("Deleted Pending Review Successfully",response.data)
+    await axios.delete(`/deleteHostPendingReviews/${id}`).then(response => {
+      console.log("Deleted Pending Review Successfully", response.data)
 
-    }).catch(error=>{
-      console.log("DeletePendingReview",error)
+    }).catch(error => {
+      console.log("DeletePendingReview", error)
     });
 
 
   }
+
+
+  // Logic For the Pagination {START}
+  const showMoreListings = () => {
+    console.log("perPage",per_page)
+    setPerPage((prevPage) => prevPage + 2);
+
+
+  }
+
+  useEffect(() => {
+    setShowMoreLoading(true);
+    switch (listingType) {
+      case "NoFilter":
+        fetchListings().finally(() => setShowMoreLoading(false));
+        break;
+      case "FilterbyPropertTypes":
+        filterDataByCategories(category).finally(() => setShowMoreLoading(false));
+        break;
+      default:
+        fetchListings().finally(() => setShowMoreLoading(false));
+    }
+      console.log("show",showMoreLoading);
+      // setShowMoreLoading(false)
+          
+  }, [per_page]);
+
+
+
+  //{END}
+
+
 
 
 
@@ -675,7 +731,7 @@ export default function Home() {
                 <FilterModal
                   search={filterData}
                   clearAll={() => {
-                    setClearFilter((prevClearFilter) => !prevClearFilter);
+                    fetchListings()
                   }}
                 />
               </div>
@@ -731,26 +787,26 @@ export default function Home() {
               <div className="justify-center flex">
                 <CategoryHeader filter={filterDataByCategories} />
               </div>
-            <section className="mx-auto justify-center w-[90%] md:w-[%]">
+              <section className="mx-auto justify-center w-[90%] md:w-[%]">
 
-            <Listings user={user} homes={listings} loading={listingLoading} />
-              <div className="pb-48 w-[90%] mx-auto ">
-                <h1 className="text-center text-4xl mb-10">
-                  Learn About the Major Cities
-                </h1>
-                <Slider {...settings}>
-                  {cities.map((city, index) => (
-                    <CityCard key={index} {...city} />
-                  ))}
-                </Slider>
-              </div>
-            </section>
+                <Listings user={user} homes={listings} loading={listingLoading} showMoreLoading={showMoreLoading} last_page={last_page} current_page={current_page} showMore={()=>(showMoreListings())} />
+                <div className="pb-48 w-[90%] mx-auto ">
+                  <h1 className="text-center text-4xl mb-10">
+                    Learn About the Major Cities
+                  </h1>
+                  <Slider {...settings}>
+                    {cities.map((city, index) => (
+                      <CityCard key={index} {...city} />
+                    ))}
+                  </Slider>
+                </div>
+              </section>
             </section>
             <RateHouseModal
               isOpen={isRateHouseModalOpen}
               onClose={closeRateHouseModal}
               houseDetails={houseDetails}
-              review={(data)=>{ReviewListing(data)}}
+              review={(data) => { ReviewListing(data) }}
             />
           </div>
           <ChatSupport />

@@ -7,7 +7,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import WishlistModal from "../../Views/WishListModal";
 import axios from '../../Axios'
-const Listings = ({ user, homes, loading }) => {
+import userPng from "../../assets/logo.png"
+const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, current_page }) => {
   const [isDeleted, setDeleted] = useState(true);
   const [listings, setListings] = useState([
     // {
@@ -28,7 +29,21 @@ const Listings = ({ user, homes, loading }) => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedListingId, setSelectedListingId] = useState(null);
-  
+
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+useEffect(() => {
+  if(listings.length!=0){
+  const img = new Image();
+  img.src =listings[0].pictures[0].images;
+  console.log("images",listings[0].pictures[0].images)
+  img.onload = () => {
+    setImageLoaded(true);
+  };
+}
+}, [listings]);
+
+
 
 
   const toggleFavorite = async (id, fav) => {
@@ -91,7 +106,7 @@ const Listings = ({ user, homes, loading }) => {
   }, [homes, isDeleted]);
 
 
-  
+
 
 
   const SkeletonLoader = Array.from({ length: 8 }).map((group, index) => (
@@ -126,27 +141,23 @@ const Listings = ({ user, homes, loading }) => {
       key={listing.id}
       className="max-w-[26rem] md:max-w-[18rem] mx-auto rounded overflow-hidden   m-4 cursor-pointer"
     >
-      <Carousel>
+     {imageLoaded ?  <Carousel>
         {listing.pictures.map((picture, index) => (
           <div key={index}>
             {user.name && (
               <button
                 onClick={() => toggleFavorite(listing.id, listing.isFavorite)}
-                className={`flex items-center absolute outline-none bg-${
-                  listing.isFavorite ? "yellow-400" : ""
-                } hover:bg-${
-                  listing.isFavorite ? "yellow-500" : ""
-                } text-white font-bold py-2 px-4 rounded`}
+                className={`flex items-center absolute outline-none bg-${listing.isFavorite ? "yellow-400" : ""
+                  } hover:bg-${listing.isFavorite ? "yellow-500" : ""
+                  } text-white font-bold py-2 px-4 rounded`}
               >
                 <div
-                  className={`border border-gray-400 rounded-full p-1 ${
-                    listing.isFavorite ? "bg-white" : ""
-                  }`}
+                  className={`border border-gray-400 rounded-full p-1 ${listing.isFavorite ? "bg-white" : ""
+                    }`}
                 >
                   <svg
-                    className={`w-5 h-5 fill-current ${
-                      listing.isFavorite ? "text-red-600" : "text-white"
-                    }`}
+                    className={`w-5 h-5 fill-current ${listing.isFavorite ? "text-red-600" : "text-white"
+                      }`}
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                   >
@@ -157,12 +168,20 @@ const Listings = ({ user, homes, loading }) => {
             )}
             <img
               src={picture.images}
+              loading="lazy"
               className="h-[250px] object-cover "
               alt={`Apartment in ${listing.location}`}
             />
           </div>
         ))}
       </Carousel>
+            :
+            <div className=" skeleton-loader flex items-center justify-center rounded-xl h-[250px] w-[80vw] md:w-[230px] ">
+
+               <img src={userPng} alt="Placeholder"  className="filter grayscale h-20 w-20 " />
+            </div>
+
+            }
       <Link to={`/ListingInfoMain/${listing.id}`}>
         <div className=" py-4">
           <div className="font-medium text-base mb-2">{listing.title}</div>
@@ -188,33 +207,49 @@ const Listings = ({ user, homes, loading }) => {
   return (
     <>
 
-      {!loading ? 
-      <>
+      {!loading || showMoreLoading ?
+        <>
 
-        {(homes && homes.length != 0) ? <div>
-          <div className="justify-center mt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
-            {isModalOpen && (
-              <WishlistModal
-                listingId={selectedListingId}
-                added={() => setModalOpen(false)}
-                onClose={closeModal}
-                onToggleFavorite={(wishlist) => toggleFavorite(selectedListingId, wishlist)}
-              />
-            )}
-            {Listings}
-            <br />
+          {(homes && homes.length != 0) ? <div>
+            <div className="justify-center mt-10 mb-32 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+              {isModalOpen && (
+                <WishlistModal
+                  listingId={selectedListingId}
+                  added={() => setModalOpen(false)}
+                  onClose={closeModal}
+                  onToggleFavorite={(wishlist) => toggleFavorite(selectedListingId, wishlist)}
+                />
+              )}
+              {Listings}
+              <br />
+            </div>
+            <div className="flex justify-center mb-10">
+              <>
+                {showMoreLoading? (
+                  <div className=' w-full flex justify-center pr-16  '>
+
+                    <div className='   '>
+                      <div className="containerM  ">
+                        <div className="dot"></div>
+                        <div className="dot"></div>
+                        <div className="dot"></div>
+                        <div className="dot"></div>
+                        <div className="dot"></div>
+                      </div>
+                    </div>
+                  </div>) :
+
+                 <> {!(current_page === last_page) && <button className="py-2 px-4 bg-gray-800 block text-white rounded-full" onClick={showMore}>Show more listings</button>}</>
+}
+              </>
+            </div>
           </div>
-          <div className="flex justify-center mb-10">
-            <button className="py-2 px-4 bg-gray-800 block text-white rounded-full">Show more listings</button>
+            :
+            <div className="flex justify-center mt-60 mb-60">
+              <p className="text-gray-600 text-4xl">No Listings Available </p>
+            </div>}
 
-          </div>
-        </div>
-          :
-          <div className="flex justify-center mt-60 mb-60">
-            <p className="text-gray-600 text-4xl">No Listings Available </p>
-          </div>}
-
-      </>
+        </>
 
         :
 

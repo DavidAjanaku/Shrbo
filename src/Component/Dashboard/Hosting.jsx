@@ -23,6 +23,7 @@ export default function Hosting() {
   const [arriving,setArriving]=useState([]);
   const [hosting,setHosting]=useState([]);
   const [loading, setLoading] = useState(true);
+  const [tabLoading, setTabLoading] = useState(true);
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -176,14 +177,14 @@ useEffect(() => {
   }
 }, [activeTab]);
 
-const fetchInitialData = () => {
-  setLoading(true);
-  fetchUpcomingData();
+const fetchInitialData =async () => {
+  setTabLoading(true);
+  await fetchUpcomingData();
   fetchCheckingOut();
   fetchCurrentlyHosting();
   fetchArrivingSoon();
   fetchPendingReview();
-  setLoading(false);
+  setTabLoading(false);
 };
 
 useEffect(() => {
@@ -694,6 +695,16 @@ useEffect(() => {
 
   ));
 
+  const SkeletonLoaderTabs= Array.from({ length: 5 }).map((group, index) =>(
+    <div
+    key={index}
+    className={`  py-2 px-4 w-28  h-10 rounded-full   skeleton-loader `}
+  >
+        
+  </div>
+
+  ));
+
 
 
 
@@ -792,9 +803,12 @@ useEffect(() => {
         </div>
         <div className="reservation w-full md:w-[80vw] mt-14 pb-20">
           <div>
-            <h1 className="text-2xl font-medium mb-4">Your reservations</h1>
+           {!tabLoading? <h1 className="text-2xl font-medium mb-4">Your reservations</h1>
+            :
+            <h1 className="skeleton-loader mb-4 w-52 rounded-[2px] h-7" />}
           </div>
           <div className="tab-container space-x-4 flex  overflow-x-auto whitespace-nowrap example">
+         {(!tabLoading)? <>
             <div
               className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "checkingOut"
                   ? "active bg-orange-300 text-white"
@@ -840,6 +854,12 @@ useEffect(() => {
             >
               Pending review ({pendingReviews.length})
             </div>
+            </>
+            :
+          
+            (SkeletonLoaderTabs)
+          
+            }
           </div>
 
         {!loading?<div className="tab-content">{renderTabContent()}</div>:<div className=" flex items-center w-full  whitespace-nowrap overflow-x-auto example ">{SkeletonLoader}</div>}

@@ -494,10 +494,15 @@ The slider*/
 
   .skeleton-loader {
     display: inline-block;
-    background: linear-gradient(90deg, #b4b4b4 25%, #b4b4b4 50%, #b4b4b4 75%);
+    background: linear-gradient(
+      90deg,
+      rgba(219, 219, 219, 0) 0%,
+      rgba(219, 219, 219, 0.5) 50%,
+      rgba(219, 219, 219, 0) 100%
+    );
     background-size: 200% 100%;
     animation: loading 1.5s infinite;
-    border-radius: 2px;
+    /* border-radius: 2px; */
     /* height: 18px; */
     margin-bottom: 10px;
   }
