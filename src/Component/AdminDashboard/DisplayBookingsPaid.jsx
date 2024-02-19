@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Table, Space, Input, DatePicker, Select, Dropdown, Modal } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
@@ -6,6 +6,7 @@ import { parse, isAfter } from "date-fns";
 import { usePDF } from "react-to-pdf";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import Logo from "../../assets/logo.png";
+import Axios from '../../Axios'
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -19,38 +20,25 @@ const DisplayBookingsPaid = () => {
     dateRange: null,
   });
 
+
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [paymentData, setPaymentData] = useState([]);
 
-  const paymentData = [
-    {
-      id: 1,
-      username: "darwinnuez@gmail.com",
-      paymentDate: "2023-10-15",
-      bookingNo: "B001",
-      totalAmount: "$100",
-      paymentType: "Visa Card",
-      status: "Paid",
-    },
-    {
-      id: 2,
-      username: "kobiko@gmail.com",
-      paymentDate: "2023-10-14",
-      bookingNo: "B002",
-      totalAmount: "$150",
-      paymentType: "Transfer",
-      status: "Paid",
-    },
-    {
-      id: 3,
-      username: "myemailaddress123@gmail.com",
-      paymentDate: "2023-10-13",
-      bookingNo: "B003",
-      totalAmount: "$120",
-      paymentType: "Verve Card",
-      status: "Paid",
-    },
-  ];
+  useEffect(() => {
+    const fetchTransactionHistory = async () => {
+      try {
+        const response = await Axios.get("/transactionHistory");
+        setPaymentData(response.data.data);
+        console.log(response.data.data);
+      } catch (error) {
+        console.error("Error fetching transaction history:", error);
+      }
+    };
+
+    fetchTransactionHistory();
+  }, []);
 
   const handleDeleteHost = () => {
     confirm({
@@ -247,7 +235,7 @@ const DisplayBookingsPaid = () => {
             </div>
             <div className="overflow-x-auto">
               {filteredData.length > 0 ? (
-                <Table columns={columns} dataSource={filteredData} />
+                <Table columns={columns} dataSource={paymentData} />
               ) : (
                 <div>No data found.</div>
               )}

@@ -1,20 +1,39 @@
-import React, { useState } from "react";
-import { Table, Modal, Button, Input, Select, Form } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Modal, Button, Input, Form } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
-
-const { Option } = Select;
+import Axios from "../../Axios";
 
 const AdminSupportPage = () => {
-  const [supportTickets, setSupportTickets] = useState([
-    { id: 1, subject: "Issue 1", status: "Open", replies: [],rentalName:" 2b Admiralty way",disputeMessage: "this man no dey clean e house everywhere just dey smell",disputeEmail:"myemail@gmail.com"  },
-    { id: 2, subject: "Issue 2", status: "Open", replies: [] ,rentalName:"Entire rental unit hosted by Goodie",disputeMessage:"omo i have complained to the host several times he refuses to give us clean towels",disputeEmail: "nameme@gmail.com"},
-    // Add more support tickets data as needed
-  ]);
-
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [supportTickets, setSupportTickets] = useState([]);
+  const [selectedTicket, setSelectedTicket] = useState({
+    id: null,
+    subject: "",
+    status: "",
+    replies: [],
+    rentalName: "",
+    disputeMessage: "",
+    disputeEmail: "",
+  });
   const [ticketModalVisible, setTicketModalVisible] = useState(false);
   const [replyForm] = Form.useForm();
+  const [loading, setLoading] = useState(true);
+
+  const fetchReportedIssues = async () => {
+    try {
+      const response = await Axios.get("/reporthosthome");
+      const data = response.data.data;
+      setSupportTickets(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching reported issues:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReportedIssues();
+  }, []);
 
   const columns = [
     {
@@ -24,8 +43,8 @@ const AdminSupportPage = () => {
     },
     {
       title: "Subject",
-      dataIndex: "subject",
-      key: "subject",
+      dataIndex: "title",
+      key: "title",
     },
     {
       title: "Status",
@@ -34,13 +53,13 @@ const AdminSupportPage = () => {
     },
     {
       title: "Rental Name",
-      dataIndex: "rentalName",
-      key: "rentalName",
+      dataIndex: "homeName",
+      key: "homeName",
     },
     {
       title: "Dispute Message",
-      dataIndex: "disputeMessage",
-      key: "disputeMessage",
+      dataIndex: "reasonforreporting",
+      key: "reasonforreporting",
     },
     {
       title: "Dispute Email",
@@ -57,7 +76,15 @@ const AdminSupportPage = () => {
   ];
 
   const showTicketModal = (ticket) => {
-    setSelectedTicket(ticket);
+    setSelectedTicket({
+      id: ticket.id,
+      subject: ticket.title,
+      status: ticket.status,
+      replies: ticket.replies || [],
+      rentalName: ticket.homeName,
+      disputeMessage: ticket.reasonforreporting,
+      disputeEmail: ticket.disputeEmail,
+    });
     setTicketModalVisible(true);
   };
 
@@ -87,11 +114,16 @@ const AdminSupportPage = () => {
         </div>
 
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
-        <h1 className="text-2xl font-semibold mb-4">Support Tickets</h1>
+          <h1 className="text-2xl font-semibold mb-4">Support Tickets</h1>
           <div className="mb-4">
           </div>
           <div className="overflow-x-auto">
-            <Table columns={columns} dataSource={supportTickets} />
+            <Table
+              columns={columns}
+              dataSource={supportTickets}
+              rowKey="id"
+              loading={loading} // Show loader inside the table
+            />
           </div>
           <Modal
             title="Support Ticket Details"
