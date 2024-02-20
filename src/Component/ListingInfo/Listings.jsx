@@ -198,7 +198,7 @@ useEffect(() => {
   ));
 
 
-
+            console.log("listings",listings)
 
 
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Tabs, Modal, Checkbox, Select } from "antd";
 import HostHeader from "../Navigation/HostHeader";
 import Room from "../../assets/room.jpeg";
@@ -12,6 +12,7 @@ import {
   PointElement,
 } from "chart.js";
 import HostBottomNavigation from "./HostBottomNavigation";
+import axios from"../../Axios";
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
@@ -22,7 +23,76 @@ export default function HostAnalysis() {
   const [activeTab, setActiveTab] = useState("1");
   const [showListingsModal, setShowListingsModal] = useState(false);
   const [selectedApartment, setSelectedApartment] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState(null); // Add selectedMonth state
+  const currentDate = new Date();
+  const  defaultSelectedMonth = `${currentDate.toLocaleString("default", { month: "long" })} ${currentDate.getFullYear()}`;
+  const [selectedMonth, setSelectedMonth] = useState(defaultSelectedMonth); // Add selectedMonth state
+  const [views,setViews]=useState();
+  const [apartmentDataMain,setApartmentData]=useState([]);
+  const [reviewsMain,setReviews]=useState([]);
+
+  
+  useEffect(()=>{
+
+  if(!selectedMonth){
+      return;
+  }
+    const month=selectedMonth.split(/[ ]+/)[0].toLowerCase();
+    const year=selectedMonth.split(/[ ]+/)[1].toString();
+
+    console.log(month);
+    console.log(year);
+    
+
+    axios.get(`/hostAnalyticsByMonthYear/${month}/${year}`).then(response=>{
+
+      const formattedViews={
+        host_view_count:response.data.data.host_view_count,
+        new_bookings_count:response.data.data.new_bookings_count,
+        booking_rate:response.data.data.booking_rate,
+      }
+
+      setViews(formattedViews);
+      console.log(formattedViews);
+
+    }).catch(err=>{
+      console.log(err)
+    });
+
+ },[selectedMonth]);
+
+ useEffect(()=>{
+
+  axios.get(`/hostReview/47`).then(response=>{
+    const formattedApartmentData=response.data.data.hosthomeDetails.map(item=>({
+
+      id: item.hosthome_id,
+      name: item.hosthome_title,
+      image: item.photo_image,
+      // datePosted: "2023-09-01",
+      earnings: [
+        { date: "2023-09-01", amount: 150 },
+        { date: "2023-09-02", amount: 250 },
+      ],
+
+    }));
+
+    const formattedReviews=response.data.data.actualReviews.map(item=>({
+      apartmentId: item.host_home_id,
+      personName: "John Doe",
+      comment: item.comment,
+      starRating: item.ratings,
+      nights: 3,
+      date: item.created_at,    
+    }));
+
+    setReviews(formattedReviews)
+    setApartmentData(formattedApartmentData);
+  }).catch(err=>{
+    console.log(err);
+  });
+
+ },[]);
+
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
@@ -42,7 +112,7 @@ export default function HostAnalysis() {
 
   const apartmentData = [
     {
-      id: 1,
+      id: "a",
       name: "Apartment 1",
       image: Room,
       datePosted: "2023-10-01",
@@ -52,7 +122,7 @@ export default function HostAnalysis() {
       ],
     },
     {
-      id: 2,
+      id: "b",
       name: "Apartment 2",
       image: Room,
       datePosted: "2023-09-01",
@@ -61,6 +131,7 @@ export default function HostAnalysis() {
         { date: "2023-09-02", amount: 250 },
       ],
     },
+    ...apartmentDataMain,
   ];
 
   const selectedApartmentData = apartmentData.find(
@@ -69,7 +140,7 @@ export default function HostAnalysis() {
 
   const reviews = [
     {
-      apartmentId: 1,
+      apartmentId: "a",
       personName: "John Doe",
       comment: "Great place to stay!",
       starRating: 5,
@@ -77,7 +148,7 @@ export default function HostAnalysis() {
       date: "2023-10-04",
     },
     {
-      apartmentId: 1,
+      apartmentId: "a",
       personName: "Jane Smith",
       comment: "Lovely apartment with a nice view.",
       starRating: 4,
@@ -86,7 +157,7 @@ export default function HostAnalysis() {
     },
 
     {
-      apartmentId: 1,
+      apartmentId: "a",
       personName: "Jane Smith",
       comment: "Lovely apartment with a nice view.",
       starRating: 4,
@@ -94,13 +165,14 @@ export default function HostAnalysis() {
       date: "2023-10-03",
     },
     {
-      apartmentId: 2,
+      apartmentId: "b",
       personName: "Alice Johnson",
       comment: "Very comfortable and clean.",
       starRating: 5,
       nights: 4,
       date: "2023-10-02",
     },
+    ...reviewsMain,
     // Add more reviews here
   ];
 
@@ -109,25 +181,58 @@ export default function HostAnalysis() {
   );
 
   const generateMonths = () => {
-    const startDate = new Date("November 2023");
-    const endDate = new Date("December 2024");
+    const currentDate = new Date();
+    const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 11, 1);
+    const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 
     const months = [];
-    let currentDate = startDate;
+    let currentMonth = startDate;
 
-    while (currentDate <= endDate) {
-      const year = currentDate.getFullYear();
-      const month = currentDate.toLocaleString("default", { month: "long" });
-      months.push({ value: `${month} ${year}`, date: currentDate });
-      currentDate = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth() + 1,
-        1
-      );
+    while (currentMonth <= endDate) {
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.toLocaleString("default", { month: "long" });
+        months.push({ value: `${month} ${year}`, date: new Date(currentMonth) });
+        currentMonth.setMonth(currentMonth.getMonth() + 1);
     }
 
     return months;
-  };
+};
+
+// const generateMonths = () => {
+//   // Get the current date from the browser
+//   const currentDate = new Date();
+//   const currentYear = currentDate.getFullYear();
+//   const currentMonth = currentDate.getMonth() + 1; // Adding 1 because getMonth() returns zero-based index
+
+//   // Calculate start date as 12 months before the current month and year
+//   const startYear = currentMonth <= 12 ? currentYear - 1 : currentYear;
+//   const startMonth = currentMonth <= 12 ? currentMonth + 1 : currentMonth - 11;
+//   const startDate = new Date(`${startYear}-${startMonth}-01`);
+
+//   // End date is the current month and year
+//   const endDate = currentDate;
+
+//   const months = [];
+//   let tempDate = new Date(startDate);
+
+//   while (tempDate <= endDate) {
+//       const year = tempDate.getFullYear();
+//       const month = tempDate.toLocaleString("default", { month: "long" });
+//       months.push({ value: `${month} ${year}`, date: new Date(tempDate) });
+//       tempDate.setMonth(tempDate.getMonth() + 1);
+//   }
+
+//   return months;
+// };
+
+// const months = generateMonths();
+// console.log(months);
+
+
+// // Example usage
+// const result = generateMonths();
+// console.log(result);
+
 
   const generateMonthss = () => {
     const startDate = new Date("November 2023");
@@ -233,7 +338,7 @@ export default function HostAnalysis() {
                     {generateMonths().map((monthItem) => (
                       <Option
                         key={monthItem.date.toISOString()}
-                        value={monthItem.date.toISOString()}
+                        value={monthItem.value}
                       >
                         {monthItem.value}
                       </Option>
@@ -327,9 +432,9 @@ export default function HostAnalysis() {
                   onChange={(value) => setSelectedMonth(value)}
                   value={selectedMonth}
                 >
-                  {generateMonthss().map((monthYear) => (
-                    <Option key={monthYear} value={monthYear}>
-                      {monthYear}
+                  {generateMonths().map((monthYear) => (
+                    <Option key={monthYear.value} value={monthYear.value}>
+                      {monthYear.value}
                     </Option>
                   ))}
                 </Select>
@@ -338,13 +443,13 @@ export default function HostAnalysis() {
               <div className="flex flex-wrap">
                 <div>
                   <div className="flex flex-col mr-6">
-                    <span className="text-4xl font-bold mb-2">0</span>
+                    <span className="text-4xl font-bold mb-2">{views?views.host_view_count:2}</span>
                     <span className="text-base">Views, past 30 days</span>
                   </div>
                 </div>
                 <div>
                   <div className="flex flex-col mr-7">
-                    <span className="text-4xl font-bold mb-2">0</span>
+                    <span className="text-4xl font-bold mb-2">{views?views.new_bookings_count:0}</span>
                     <span className="text-base">
                       New bookings, past 30 days
                     </span>
@@ -352,7 +457,7 @@ export default function HostAnalysis() {
                 </div>
                 <div>
                   <div className="flex flex-col">
-                    <span className="text-4xl font-bold mb-2">0%</span>
+                    <span className="text-4xl font-bold mb-2">{views?views.booking_rate:0}%</span>
                     <span className="text-base">Booking rate</span>
                   </div>
                 </div>
@@ -377,7 +482,10 @@ export default function HostAnalysis() {
               className="flex items-center justify-between my-4"
             >
               <Checkbox onChange={() => handleApartmentClick(apartment.id)}>
-                {apartment.name}
+                <div className="  overflow-hidden w-[50vw] md:w-[360px]  text-ellipsis whitespace-nowrap ">
+                 {apartment.name}
+                  </div>
+               
               </Checkbox>
               <img src={apartment.image} className="w-10" alt="" />
             </li>

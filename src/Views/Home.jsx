@@ -413,7 +413,7 @@ export default function Home() {
   await  axios
       .get(token ? `/hosthomesForAuthUser?per_page=${per_page}` : `/hosthomesForUnAuthUser?per_page=${per_page}`)
       .then((response) => {
-        console.log(response.data.data);
+        console.log("homeList",response.data.data);
         const formattedHostHomes = response.data.data.map((item) => ({
           id: item.id,
           pictures: item.hosthomephotos,
@@ -429,12 +429,8 @@ export default function Home() {
         setListingType("NoFilter");
         setCurrent_page(response.data.meta.current_page);
         setLast_page(response.data.meta.last_page);
-        if(per_page>2&&(response.data.meta.total!=formattedHostHomes.length)){
-          setListings((prevlisting)=>{[...prevlisting,formattedHostHomes.slice(-2)]}); 
-        }else{
-  
-          setListings(formattedHostHomes);
-        }
+        setListings(formattedHostHomes);
+   
       })
       .catch((err) => {
         console.log("Listing", err);
@@ -548,12 +544,8 @@ export default function Home() {
       setListingType("FilterbyPropertTypes");
       setCurrent_page(response.data.meta.current_page);
       setLast_page(response.data.meta.last_page);
-      if(per_page>2&&(response.data.meta.total!=formattedHostHomes.length)){
-        setListings((prevlisting)=>{[...prevlisting,formattedHostHomes.slice(-2)]}); 
-      }else{
+      setListings(formattedHostHomes);
 
-        setListings(formattedHostHomes);
-      }
     }).catch((error) => {
       console.log(error);
     }).finally(() => setListingLoading(false));
