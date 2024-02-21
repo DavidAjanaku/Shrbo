@@ -301,7 +301,7 @@ export default function HostHomes({ match }) {
         break;
 
       case 7:
-        if (uploadedImageCount < 5) {
+        if (step === 7 && uploadedImages.length < 5) {
           isValid = false;
           Modal.error({
             title: "Validation Error",
@@ -1217,6 +1217,7 @@ export default function HostHomes({ match }) {
     const updatedImages = uploadedImages.filter((image) => image.id !== id);
     setUploadedImages(updatedImages);
   };
+  
   const renderContent = () => {
     switch (step) {
       case 0:
