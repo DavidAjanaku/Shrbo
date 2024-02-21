@@ -168,6 +168,11 @@ export default function AdminSidebar() {
             Admin Support Page
           </li>
         </Link>
+        <Link to="/AdminDamagePage">
+          <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+            Admin Damage Page
+          </li>
+        </Link>
         <Link to="/AnnouncementPage">
           <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
             Announcement Page
