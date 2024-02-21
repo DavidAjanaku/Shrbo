@@ -21,10 +21,10 @@ const RequestBook = () => {
     pets,
     priceDetails,
     setPriceDetails,
-    hostFees, 
-    serviceFee, 
+    hostFees,
+    serviceFee,
     tax,
-    totalPrice, 
+    totalPrice,
     totalCost,
     housePrice,
     cancellationPolicy,
@@ -32,7 +32,7 @@ const RequestBook = () => {
     address,
     photo,
     securityDeposit,
-    discounts
+    discounts,
   } = useDateContext();
 
   console.log("checkInDate:", checkInDate);
@@ -53,6 +53,7 @@ const RequestBook = () => {
   const handleGoBack = () => {
     navigate(-1);
   };
+
   return (
     <div>
       <Header />
@@ -111,7 +112,7 @@ const RequestBook = () => {
         </div>
 
         <div className="listing-preview w-full mb-4 gap-4 flex flex-col md:hidden  ">
-          <div className="flex gap-2">
+          <div className="flex justify-center gap-2">
             {photo.slice(0, 3).map((item, index) => (
               <div className="image-preview relative" key={index}>
                 <div className="flex box-border">
@@ -132,13 +133,10 @@ const RequestBook = () => {
           <div className=" w-full flex flex-col justify-between relative">
             <div className="booking-details w-full block box-border ">
               <div className=" block relative">
-                <h3 className="    text-sm font-medium ">
-                  {title}
-                </h3>
+                <h3 className="    text-sm font-medium ">{title}</h3>
               </div>
             </div>
             <div className=" text-xs">
-            
               <span className="location box-border block  overflow-hidden text-ellipsis  ">
                 {address}
               </span>

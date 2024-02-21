@@ -228,7 +228,7 @@ export default function Listings() {
         <div className="flex justify-between items-center mb-10">
           <div>
             <h1 className="text-xl font mb-4 italic text-gray-500">
-              2 Listings found
+              {listings.length} Listings found
             </h1>
           </div>
           <div>

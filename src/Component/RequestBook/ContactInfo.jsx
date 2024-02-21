@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import { useDateContext } from "../../ContextProvider/BookingInfo";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { useNavigate } from "react-router-dom";
+import { Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 import Axios from "../../Axios";
 export default function Example() {
@@ -11,6 +13,7 @@ export default function Example() {
   const [showAddNewCardModal, setShowAddNewCardModal] = useState(false);
   const [existingCard, setExistingCard] = useState(null);
   const [showPayNowModal, setShowPayNowModal] = useState(false); // State for Pay Now modal
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -151,6 +154,7 @@ export default function Example() {
     }
 
     console.log("Form data:", payload);
+    setLoading(true);
 
     try {
       const response = await Axios.post(
@@ -162,34 +166,36 @@ export default function Example() {
 
       // window.open(response.url, '_blank');
       console.log("Payment initiated:", response.url);
+      setLoading(false);
 
       // Show success message to the user
       // Handle success: redirect user to payment link or show success message
       console.log("Payment initiated successfully");
       // Show success message to the user
       alert("Payment initiated successfully");
-      navigate("/trip");
+      // navigate("/trip");
     } catch (error) {
       console.error("Error initiating payment:", error.response.data);
       // Handle error: show error message to user
       console.log("Error initiating payment:", error.response.data);
       // Show error message to the user
       alert("Error initiating payment. Please try again later.");
+      setLoading(false);
     }
   };
 
   return (
-    <div className=" bg-white  lg:py-24 py-12">
-      <div className="mx-auto max-w-2xl text-center">
+    <div className=" bg-white  lg:py-4 ">
+      {/* <div className="mx-auto max-w-2xl text-center">
         <h2 className="text-3xl font-semibold tracking-tight text-gray-900 text-left sm:text-2xl">
           Contact details
         </h2>
         <p className="mt-2 text-lg text-left leading-8 text-gray-600">
           Aute magna irure deserunt veniam aliqua magna enim voluptate.
         </p>
-      </div>
+      </div> */}
 
-      <form
+      {/* <form
         action="#"
         method="POST"
         className="mx-auto mt-16 max-w-xl sm:mt-20"
@@ -296,16 +302,16 @@ export default function Example() {
             </div>
           </div>
         </div>
-        <div className="mt-10">
-          <button
-            type="button"
-            onClick={handleBookNow} // Call handleBookNow when the button is clicked
-            className="block w-full rounded-md  px-3.5 bg-orange-500 py-2.5 text-center text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
-          >
-            Book now
-          </button>
-        </div>
-      </form>
+      </form> */}
+      <div className="mt-10">
+        <button
+          type="button"
+          onClick={handleBookNow} // Call handleBookNow when the button is clicked
+          className="block w-full rounded-md  px-3.5 bg-orange-500 py-2.5 text-center text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
+        >
+          Book now
+        </button>
+      </div>
       {showExistingCardModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center">
           <div className="bg-slate-200 rounded-lg overflow-hidden shadow-xl h-full md:h-1/2 md:max-w-lg w-full relative">
@@ -314,7 +320,7 @@ export default function Example() {
                 onClick={closeExistingCardModal}
                 className="inline-flex justify-center absolute left-5 rounded-md   sm:w-auto sm:text-sm"
               >
-                <FaTimes />
+                <FaTimes size={25} />
               </div>{" "}
               Select Existing Card
               <div
@@ -388,33 +394,46 @@ export default function Example() {
             className="fixed inset-0 transition-opacity"
             onClick={() => setShowPayNowModal(false)}
           >
-            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            <div className="absolute inset-0 bg-gray-300 opacity-75"></div>
           </div>
-          <div className="bg-white rounded-lg overflow-hidden shadow-xl z-50 w-full max-w-md p-6">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">
-              Pay Now
-            </h3>
-            <div className="mt-2">
-              <p className="text-sm text-gray-500">
-                Are you sure you want to pay now?
-              </p>
+          {loading ? (
+            <div className="z-50">
+              <Spin
+                indicator={
+                  <LoadingOutlined
+                    style={{ fontSize: 40, color: "#FB923C" }}
+                    spin
+                  />
+                }
+              />
             </div>
-            <div className="mt-4 flex  w-full">
-              <button
-                type="button"
-                onClick={handleBooking}
-                className="mr-2 inline-flex justify-center  rounded-md border border-transparent px-4 py-2 bg-orange-500 text-base font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-              >
+          ) : (
+            <div className="bg-white rounded-lg overflow-hidden shadow-xl z-50 w-full max-w-md p-6">
+              <h3 className="text-lg font-medium leading-6 text-gray-900">
                 Pay Now
-              </button>
-              <button
-                onClick={() => setShowPayNowModal(false)}
-                className="inline-flex justify-center  rounded-md border border-gray-300 px-4 py-2 bg-gray-300 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-              >
-                Cancel
-              </button>
+              </h3>
+              <div className="mt-2">
+                <p className="text-sm text-gray-500">
+                  Are you sure you want to pay now?
+                </p>
+              </div>
+              <div className="mt-4 flex  w-full">
+                <button
+                  type="button"
+                  onClick={handleBooking}
+                  className="mr-2 inline-flex justify-center  rounded-md border border-transparent px-4 py-2 bg-orange-500 text-base font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                >
+                  Pay Now
+                </button>
+                <button
+                  onClick={() => setShowPayNowModal(false)}
+                  className="inline-flex justify-center  rounded-md border border-gray-300 px-4 py-2 bg-gray-300 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 

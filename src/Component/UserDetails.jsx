@@ -27,11 +27,6 @@ const UserDetails = () => {
       } catch (error) {
         console.error("Error fetching user details:", error);
         // Handle error, show error message, etc.
-      } finally {
-        // Set loading state to false after 10 seconds
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 10000); // 10 seconds delay
       }
     };
 
@@ -63,12 +58,12 @@ const UserDetails = () => {
             <p className="text-gray-600 blur-sm">Email: {userData.email}</p>
             <p className="text-gray-600">Reviews: {userData.reviews}</p>
             <p className="text-gray-600">Rating: {userData.rating}</p>
-            <p className="text-gray-600">
+            {/* <p className="text-gray-600">
               Houses Listed: {userData.totalHomes}
             </p>
             <p className="text-gray-600">
               Years Hosting: {userData.yearsOfHosting}
-            </p>
+            </p> */}
           </div>
         </div>
 
@@ -85,28 +80,39 @@ const UserDetails = () => {
               Reviews by {userData.name}
             </h3>
             <ul className="list-disc list-inside flex space-x-6 whitespace-nowrap overflow-scroll w-full example">
-              {userData.actualReviews.map((review, index) => (
-                <li
-                  key={index}
-                  className="mt-2 rounded-3xl mb-3 list-none shadow-lg bg-slate-100   p-4 "
-                >
-                  <div className="flex items-center space-x-4 ">
-                    <div className="w-[120px]">
-                      <img src={review.houseImage} className=" h-32" alt="" />
-                    </div>
-                    <div className="w-[300px] whitespace-normal">
-                      <strong>Rating:</strong> {review.rating}
-                      <br />
-                      <strong>Comment:</strong> {review.comment}
-                      <br />
-                      <strong>Property:</strong> {review.propertyName}
-                      <br />
-                      <strong>Date:</strong> {review.date}
-                      <br />
+              {userData.actualReviews.map((review, index) => {
+                const date = new Date(review.created_at);
+                const formattedDate = `${date.toLocaleDateString("en-US", {
+                  weekday: "long",
+                })}, ${date.toLocaleDateString("en-US", {
+                  month: "long",
+                })} ${date.getDate()}, ${date.getFullYear()}`;
+
+                return (
+                  <div
+                    key={index}
+                    className="mt-4 bg-white w-72 rounded-lg  overflow-hidden"
+                  >
+                    <img
+                      src={review.houseImage}
+                      alt=""
+                      className="w-full h-32 object-cover"
+                    />
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold whitespace-nowrap overflow-hidden overflow-ellipsis">
+                        {review.title}
+                      </h3>
+                      <p className="text-gray-600 mb-2">
+                        Rating: {review.ratings}
+                      </p>
+                      <p className="text-gray-600 mb-2">
+                        Comment: {review.comment}
+                      </p>
+                      <p className="text-gray-600">Date: {formattedDate}</p>
                     </div>
                   </div>
-                </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
         )}
@@ -201,10 +207,6 @@ const UserDetails = () => {
                 </Link>
               ))}
             </div>
-          </>
-        )}
-        {userData.Status === "Host And Guest" && (
-          <>
             <h3 className="text-xl font-semibold mt-4">
               Houses {userData.name} has stayed in
             </h3>

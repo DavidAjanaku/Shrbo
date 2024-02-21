@@ -15,9 +15,8 @@ const BookingInfo = () => {
   // const [checkOutDate, setCheckOutDate] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   // const [adults, setAdults] = useState(0);
-  const [children, setChildren] = useState(0);
   // const [pets, setPets] = useState(0);
-  const [infants, setInfants] = useState(0);
+  
   const [show, setShow] = useState(false);
   const toggleShow = () => setShow(!show);
   const {
@@ -84,6 +83,8 @@ const BookingInfo = () => {
     return "";
   };
 
+  
+
   return (
     <div>
       <div className="reservation-input mb ">
@@ -104,6 +105,7 @@ const BookingInfo = () => {
                 id="checkInInput" // Assign an ID to the check-in input
                 selected={checkInDate}
                 onChange={handleCheckIn}
+                readOnly
                 placeholderText={
                   checkInDate ? formatDate(checkInDate) : "Check-in"
                 }
@@ -131,6 +133,7 @@ const BookingInfo = () => {
                 id="checkOutInput" // Assign an ID to the check-out input
                 selected={checkOutDate}
                 onChange={handlecheckOut}
+                readOnly
                 className=""
                 placeholderText={
                   checkOutDate ? formatDate(checkOutDate) : "Check-out"
@@ -162,9 +165,7 @@ const BookingInfo = () => {
               {/* <input className=' border rounded text-base font-normal '/> */}
               <MyDropdown
                 adults={adults}
-                children={children}
                 pets={pets}
-                infants={infants}
               />
               {/* <MyPopover /> */}
 
@@ -344,11 +345,9 @@ const BookingInfo = () => {
 
 export default BookingInfo;
 
-function MyDropdown({ adults, children, pets, infants }) {
+function MyDropdown({ adults, pets }) {
   const [adultCount, setAdultCount] = useState(adults);
-  const [childCount, setChildCount] = useState(children);
   const [petCount, setPetCount] = useState(pets);
-  const [infantCount, setInfantCount] = useState(infants);
   const [visible, setVisible] = useState(false);
 
   const handleDecrease = (setter, value) => {
@@ -393,25 +392,8 @@ function MyDropdown({ adults, children, pets, infants }) {
         </div>
       </div>
       <div className="flex items-center justify-between">
-        <div className="flex-col">
-          <span className="text-lg">Children:</span>
-          <p className="text-gray-400">Ages 2–12</p>
-        </div>
-        <div className="space-x-2">
-          <Button
-            shape="circle"
-            onClick={() => handleDecrease(setChildCount, childCount)}
-          >
-            -
-          </Button>
-          <span>{childCount}</span>
-          <Button
-            shape="circle"
-            onClick={() => handleIncrease(setChildCount, childCount)}
-          >
-            +
-          </Button>
-        </div>
+        
+      
       </div>
       <div className="flex items-center justify-between">
         <div className="flex-col">
@@ -438,27 +420,7 @@ function MyDropdown({ adults, children, pets, infants }) {
           </Button>
         </div>
       </div>
-      <div className="flex items-center justify-between">
-        <div className="flex-col">
-          <span className="text-lg">Infants:</span>
-          <p className="text-gray-400">Under 2</p>
-        </div>
-        <div className="space-x-2">
-          <Button
-            shape="circle"
-            onClick={() => handleDecrease(setInfantCount, infantCount)}
-          >
-            -
-          </Button>
-          <span>{infantCount}</span>
-          <Button
-            shape="circle"
-            onClick={() => handleIncrease(setInfantCount, infantCount)}
-          >
-            +
-          </Button>
-        </div>
-      </div>
+     
     </div>,
   ];
 
@@ -490,13 +452,10 @@ function MyDropdown({ adults, children, pets, infants }) {
         >
           <span className="block">Guests</span>
           <span className="text-gray-500">
-            {adultCount + childCount > 1
-              ? `${adultCount + childCount} guests`
-              : `${adultCount + childCount} guest`}{" "}
-            {infantCount != 0 &&
-              (infantCount > 1
-                ? `,${infantCount} infants`
-                : `,${infantCount} infant`)}{" "}
+            {adultCount  > 1
+              ? `${adultCount } guests`
+              : `${adultCount } guest`}{" "}
+          
             {petCount != 0 &&
               (petCount > 1 ? `,${petCount} pets` : `,${petCount} pet`)}
           </span>

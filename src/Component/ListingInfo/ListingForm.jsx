@@ -11,7 +11,7 @@ import { FlagOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import Axios from "../../Axios";
 import { useDateContext } from "../../ContextProvider/BookingInfo";
-
+import PriceSkeleton from "../../SkeletonLoader/PriceSkeleton";
 export default function ListingForm({ reservations, reservation, guest }) {
   function showModal(e) {
     e.preventDefault();
@@ -110,15 +110,19 @@ export default function ListingForm({ reservations, reservation, guest }) {
         console.log(response.data.data);
         setPrice(response.data.data.price); // Adjust this line based on your API response structure
         setHousePrice(price);
-        const checkoutTimeDate = (response.data.data.checkout);
+        const checkoutTimeDate = response.data.data.checkout;
         setSecurityDeposit(parseInt(response.data.data.securityDeposit));
         setGuestFee(response.data.data.guest_fee);
         setSecurityDeposits(parseInt(response.data.data.securityDeposit));
 
         // Extract booked dates and convert them to Date objects
-        const bookedDates = response.data.data.bookedDates.map(
-          (date) => new Date(date.check_in)
-        );
+        const bookedDates = response.data.data.bookedDates.map((date) => {
+          const checkInDate = new Date(date.check_in);
+          const checkOutDate = new Date(date.check_out);
+          return { checkInDate, checkOutDate };
+        });
+
+        console.log(bookedDates);
 
         // Set the booked dates to exclude them in the DatePicker
         setBookedDates(bookedDates);
@@ -140,12 +144,12 @@ export default function ListingForm({ reservations, reservation, guest }) {
     calculateTotalPrice(date, checkOutDate);
   };
 
-  
-
   const handleCheckOut = (date) => {
     setCheckOutDate(date);
     calculateTotalPrice(checkInDate, date);
   };
+
+  
 
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
@@ -213,12 +217,16 @@ export default function ListingForm({ reservations, reservation, guest }) {
                 <div className=" gap-2 justify-start flex-wrap flex-row items-center flex">
                   <div>
                     <span aria-hidden="true">
-                      <div className="font-medium text-xl box-border">
-                        ₦
-                        {totalPrice !== null
-                          ? Number(totalPrice).toLocaleString()
-                          : Number(price).toLocaleString()}
-                      </div>
+            
+
+<div className="font-medium text-xl box-border">
+  {price === null || totalPrice === 0
+    ? <PriceSkeleton />
+    : `₦${Number(price).toLocaleString()}`}
+</div>
+
+
+
                     </span>
                   </div>
 
@@ -246,9 +254,18 @@ export default function ListingForm({ reservations, reservation, guest }) {
                   placeholderText="Check in"
                   dateFormat="dd/MM/yyyy"
                   minDate={new Date()}
-                  excludeDates={bookedDates}
-                  filterDate={(date) => date.getTime() >= new Date().getTime()} // Filter out dates later than the current time
-
+                  excludeDates={bookedDates.flatMap(
+                    ({ checkInDate, checkOutDate }) =>
+                      Array.from(
+                        {
+                          length:
+                            (checkOutDate - checkInDate) /
+                              (1000 * 60 * 60 * 24) +
+                            1,
+                        },
+                        (_, i) => addDays(checkInDate, i)
+                      )
+                  )}
                 />
 
                 <img
@@ -265,7 +282,18 @@ export default function ListingForm({ reservations, reservation, guest }) {
                   placeholderText="Check out"
                   dateFormat="dd/MM/yyyy"
                   minDate={checkInDate ? addDays(checkInDate, 1) : new Date()} // Use checkInDate as the minimum date
-                  excludeDates={bookedDates}
+                  excludeDates={bookedDates.flatMap(
+                    ({ checkInDate, checkOutDate }) =>
+                      Array.from(
+                        {
+                          length:
+                            (checkOutDate - checkInDate) /
+                              (1000 * 60 * 60 * 24) +
+                            1,
+                        },
+                        (_, i) => addDays(checkInDate, i)
+                      )
+                  )}
                 />
 
                 <img src={DateIcon} className="w-4" alt="Check out" />

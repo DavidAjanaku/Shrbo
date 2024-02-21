@@ -22,12 +22,29 @@ export default function AdminAnalytical() {
       } catch (error) {
         console.error("Error fetching host analytics:", error);
         setLoading(false); // Set loading to false even if there's an error
-        setError("Error fetching data. Please try again."); // Set error message
       }
     }
 
     fetchHostAnalytics();
   }, []);
+
+
+  useEffect(() => {
+    async function fetchHostAnalytics() {
+      try {
+        const response = await Axios.get(`/filterAnalyticalData/${selectedFilter}`);
+        setAnalyticsData(response.data.data);
+        setLoading(false); // Set loading to false when data is fetched
+        console.log(response.data.data);
+      } catch (error) {
+        console.error("Error fetching host analytics:", error);
+        setLoading(false); // Set loading to false even if there's an error
+      }
+    }
+  
+    fetchHostAnalytics();
+  }, [selectedFilter]);
+  
 
   const handleFilterChange = (value) => {
     setSelectedFilter(value);
@@ -90,10 +107,10 @@ export default function AdminAnalytical() {
                 onChange={(e) => setSelectedFilter(e.target.value)}
               >
                 <option value="today">Today</option>
-                <option value="week">Week</option>
-                <option value="month">Month</option>
-                <option value="year">Year</option>
-                <option value="all-time">All Time</option>
+                <option value="this_week">Week</option>
+                <option value="this_month">Month</option>
+                <option value="this_year">Year</option>
+                <option value="all_time">All Time</option>
               </select>
             </div>
 
@@ -103,11 +120,11 @@ export default function AdminAnalytical() {
                   <h2 className="text-base font-semibold">
                     {selectedFilter === "today"
                       ? "Today's Summary"
-                      : selectedFilter === "week"
+                      : selectedFilter === "this_week"
                       ? "This Week's Summary"
-                      : selectedFilter === "month"
+                      : selectedFilter === "this_month"
                       ? "This Month's Summary"
-                      : selectedFilter === "year"
+                      : selectedFilter === "this_year"
                       ? "This Year's Summary"
                       : "All Time Summary"}
                   </h2>
@@ -146,14 +163,14 @@ export default function AdminAnalytical() {
                 </div>
 
                 <div className="bg-gray-200 p-4 rounded shadow">
-                  <h2 className="text-base font-semibold">
+                <h2 className="text-base font-semibold">
                     {selectedFilter === "today"
                       ? "Today's Summary"
-                      : selectedFilter === "week"
+                      : selectedFilter === "this_week"
                       ? "This Week's Summary"
-                      : selectedFilter === "month"
+                      : selectedFilter === "this_month"
                       ? "This Month's Summary"
-                      : selectedFilter === "year"
+                      : selectedFilter === "this_year"
                       ? "This Year's Summary"
                       : "All Time Summary"}
                   </h2>
@@ -174,14 +191,14 @@ export default function AdminAnalytical() {
                 </div>
 
                 <div className="bg-gray-200 p-4 rounded shadow">
-                  <h2 className="text-base font-semibold">
+                <h2 className="text-base font-semibold">
                     {selectedFilter === "today"
                       ? "Today's Summary"
-                      : selectedFilter === "week"
+                      : selectedFilter === "this_week"
                       ? "This Week's Summary"
-                      : selectedFilter === "month"
+                      : selectedFilter === "this_month"
                       ? "This Month's Summary"
-                      : selectedFilter === "year"
+                      : selectedFilter === "this_year"
                       ? "This Year's Summary"
                       : "All Time Summary"}
                   </h2>
