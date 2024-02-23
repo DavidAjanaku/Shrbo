@@ -30,6 +30,10 @@ const CompletedBooking = () => {
     fetchCompletedBookings();
   }, []);
 
+  const checkInDate = new Date(selectedBooking["check-In"]).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+const checkOutDate = new Date(selectedBooking["check-out"]).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
 
   const columns = [
@@ -45,24 +49,24 @@ const CompletedBooking = () => {
     },
     {
       title: "Number of Guests",
-      dataIndex: "numGuests",
-      key: "numGuests",
+      dataIndex: "number_of_guest",
+      key: "number_of_guest",
     },
     {
-      title: "Property ID",
-      dataIndex: "propertyId",
-      key: "propertyId",
+      title: "Booking ID",
+      dataIndex: "paymentId",
+      key: "paymentId",
     },
     {
       title: "Payment Amount",
       dataIndex: "totalamount",
       key: "totalamount",
     },
-    {
-      title: "Taxes",
-      dataIndex: "taxes",
-      key: "taxes",
-    },
+    // {
+    //   title: "Taxes",
+    //   dataIndex: "taxes",
+    //   key: "taxes",
+    // },
     {
       title: "Action",
       key: "action",
@@ -118,7 +122,8 @@ const CompletedBooking = () => {
                 <div>Loading...</div>
               ) : (
                 <div className="overflow-x-auto">
-                  <Table columns={columns} dataSource={completedBooking} />
+                  <Table columns={columns} dataSource={completedBooking}                   rowKey={(record) => record.id} // Set the rowKey to the guest's id
+ />
                 </div>
               )}
             </div>
@@ -132,7 +137,7 @@ const CompletedBooking = () => {
               </h2>
               <p>Guest Name: {selectedBooking.guestName}</p>
               <p>Email: {selectedBooking.guestEmail}</p>
-              <p>Number of Guests: {selectedBooking.beds}</p>
+              <p>Number of Guests: {selectedBooking.number_of_guest}</p>
               <p>Check-In Date: {selectedBooking["check-In"]}</p>
               <p>Check-Out Date: {selectedBooking["check-out"]}</p>
               {/* Include more booking details as needed... */}
@@ -162,9 +167,9 @@ const CompletedBooking = () => {
               </h2>
               <p>Guest Name: {selectedBooking.guestName}</p>
               <p>Email: {selectedBooking.guestEmail}</p>
-              <p>Number of Guests: {selectedBooking.bedroom}</p>
-              <p>Check-In Date: {selectedBooking["check-In"]}</p>
-              <p>Check-Out Date: {selectedBooking["check-out"]}</p>
+              <p>Number of Guests: {selectedBooking.number_of_guest}</p>
+              <p>Check-In Date: {checkInDate}</p>
+    <p>Check-Out Date: {checkOutDate}</p>
 
               <h2 className="text-base font-semibold mt-4 mb-2">
                 Host Information:
@@ -175,19 +180,19 @@ const CompletedBooking = () => {
               <h2 className="text-base font-semibold mt-4 mb-2">
                 Property Selection:
               </h2>
-              <p>Property Name: {selectedBooking.homeName}</p>
+              <p>Property Name: {selectedBooking.property_name}</p>
               <p>Property Type: {selectedBooking.homeType}</p>
 
               <h2 className="text-base font-semibold mt-4 mb-2">
                 Pricing and Payments:
               </h2>
-              <p>Total Booking Cost: ${selectedBooking.totalamount}</p>
+              <p>Total Booking Cost: ₦{selectedBooking.totalamount.toLocaleString('en-US')}</p>
               <p>Payment Type: {selectedBooking.paymentType}</p>
               <p>Payment ID: {selectedBooking.paymentId}</p>
-              <p>Tax: ${selectedBooking.tax}</p>
-              <p>
+              {/* <p>Tax: ${selectedBooking.tax}</p> */}
+              {/* <p>
                 Guest Service Charge: ${selectedBooking.guest_service_charge}
-              </p>
+              </p> */}
 
               <button
                 onClick={() =>

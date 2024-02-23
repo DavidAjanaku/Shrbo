@@ -21,8 +21,9 @@ const AdminDamagePage = () => {
 
   const fetchReportedIssues = async () => {
     try {
-      const response = await Axios.get("/reporthosthome");
+      const response = await Axios.get("/getReportDamagesForAdmin");
       const data = response.data.data;
+      console.log(data);
       setSupportTickets(data);
       setLoading(false);
     } catch (error) {
@@ -52,7 +53,7 @@ const AdminDamagePage = () => {
         key: "reporterPhone",
       },
       {
-        title: "Apartment ID",
+        title: "Booking ID",
         dataIndex: ["apartment", "id"],
         key: "apartmentId",
       },
@@ -111,9 +112,10 @@ const AdminDamagePage = () => {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
-        <Button onClick={() => showTicketModal(record)}>View Details</Button>
+        <Button onClick={() => showTicketModal(record)}>Message Host</Button>
       ),
     },
+    
   ];
 
   const showTicketModal = (ticket) => {

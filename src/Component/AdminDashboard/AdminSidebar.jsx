@@ -113,10 +113,10 @@ export default function AdminSidebar() {
               <Link to="/FailedPayment"><div>
               Failed Payment</div></Link>
             </li>
-            <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+            {/* <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
               <Link to="/ReceivablePayable"><div>
               Recievable & Payable</div></Link>
-            </li>
+            </li> */}
           </ul>
         </li>
 
@@ -142,10 +142,10 @@ export default function AdminSidebar() {
               <Link to="/CompletedBooking"><div>
               Completed Booking</div></Link>
             </li>
-            <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+            {/* <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
               <Link to="/ReceivablePayable"><div>
               Recievable & Payable</div></Link>
-            </li>
+            </li> */}
           </ul>
         </li>
         <Link to="/UserVerificationPage">
@@ -165,12 +165,12 @@ export default function AdminSidebar() {
         </Link>
         <Link to="/AdminSupportPage">
           <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
-            Admin Support Page
+          Apartment Reporting
           </li>
         </Link>
         <Link to="/AdminDamagePage">
           <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
-            Admin Damage Page
+          Report Damage
           </li>
         </Link>
         <Link to="/AnnouncementPage">

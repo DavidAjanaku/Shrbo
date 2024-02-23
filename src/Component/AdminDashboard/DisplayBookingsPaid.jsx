@@ -29,7 +29,7 @@ const DisplayBookingsPaid = () => {
   useEffect(() => {
     const fetchTransactionHistory = async () => {
       try {
-        const response = await Axios.get("/transactionHistory");
+        const response = await Axios.get("/paidPayments");
         setPaymentData(response.data.data);
         console.log(response.data.data);
       } catch (error) {
@@ -87,29 +87,25 @@ const DisplayBookingsPaid = () => {
   const columns = [
     {
       title: "Email",
-      dataIndex: "username",
-      key: "username",
+      dataIndex: "hostEmail",
+      key: "hostEmail",
     },
     {
       title: "Payment Date",
-      dataIndex: "paymentDate",
-      key: "paymentDate",
+      dataIndex: "paidHostdate",
+      key: "paidHostdate",
     },
     {
       title: "Booking No",
-      dataIndex: "bookingNo",
-      key: "bookingNo",
+      dataIndex: "paymentId",
+      key: "paymentId",
     },
     {
       title: "Total Amount",
-      dataIndex: "totalAmount",
-      key: "totalAmount",
+      dataIndex: "amountToHost",
+      key: "amountToHost",
     },
-    {
-      title: "Payment Type",
-      dataIndex: "paymentType",
-      key: "paymentType",
-    },
+   
     {
       title: "Status",
       dataIndex: "status",
@@ -120,19 +116,8 @@ const DisplayBookingsPaid = () => {
       key: "actions",
       render: (text, record) => (
         <div className=" flex space-x-4">
-          <Dropdown
-            menu={{
-              items,
-            }}
-            trigger={["click"]}
-          >
-            <a onClick={(e) => e.preventDefault()}>
-              <Space>Edit</Space>
-            </a>
-          </Dropdown>
-          <div onClick={() => handleDeleteHost()} className="cursor-pointer">
-            Delete
-          </div>
+       
+          
           <div
             onClick={() => handleViewDetails(record)}
             className="cursor-pointer"
@@ -272,24 +257,21 @@ const DisplayBookingsPaid = () => {
                         </h2>
                         <div className="flex justify-between mb-2">
                           <span>Email:</span>
-                          <span>{selectedPayment.username}</span>
+                          <span>{selectedPayment.hostEmail}</span>
                         </div>
                         <div className="flex justify-between mb-2">
                           <span>Payment Date:</span>
-                          <span>{selectedPayment.paymentDate}</span>
+                          <span>{selectedPayment.paidHostdate}</span>
                         </div>
                         <div className="flex justify-between mb-2">
                           <span>Booking No:</span>
-                          <span>{selectedPayment.bookingNo}</span>
+                          <span>{selectedPayment.paymentId}</span>
                         </div>
                         <div className="flex justify-between mb-2">
                           <span>Total Amount:</span>
-                          <span>{selectedPayment.totalAmount}</span>
+                          <span>{selectedPayment.amountToHost.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between mb-2">
-                          <span>Payment Type:</span>
-                          <span>{selectedPayment.paymentType}</span>
-                        </div>
+                        
                         <div className="flex justify-between mb-2">
                           <span>Status:</span>
                           <span>{selectedPayment.status}</span>

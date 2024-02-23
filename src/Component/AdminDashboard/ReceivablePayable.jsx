@@ -1,19 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
 import AdminHeader from './AdminNavigation/AdminHeader';
 import AdminSidebar from './AdminSidebar';
-
+import Axios from "../../Axios"
+import moment from 'moment';
 const ReceivablePayable = () => {
+  const [data, setData] = useState([]);
+
   const columns = [
     {
       title: 'Date',
       dataIndex: 'date',
       key: 'date',
+      render: (text) => {
+        return moment(text).format('dddd, D MMMM YYYY');
+      },
     },
     {
       title: 'Booking No',
-      dataIndex: 'bookingNo',
-      key: 'bookingNo',
+      dataIndex: 'paymentId',
+      key: 'paymentId',
     },
     {
       title: 'Host Email',
@@ -47,41 +53,22 @@ const ReceivablePayable = () => {
     },
   ];
 
-  const data = [
-    {
-      key: '1',
-      date: '2023-10-15',
-      bookingNo: 'B001',
-      hostEmail: 'host1@example.com',
-      totalAmount: '$200',
-      guestServiceCharge: '$30',
-      hostServiceCharge: '$20',
-      netProfit: '$150',
-      amountToHost: '$180',
-    },
-    {
-      key: '2',
-      date: '2023-10-14',
-      bookingNo: 'B002',
-      hostEmail: 'host2@example.com',
-      totalAmount: '$250',
-      guestServiceCharge: '$40',
-      hostServiceCharge: '$30',
-      netProfit: '$180',
-      amountToHost: '$220',
-    },
-    {
-      key: '3',
-      date: '2023-10-13',
-      bookingNo: 'B003',
-      hostEmail: 'host3@example.com',
-      totalAmount: '$220',
-      guestServiceCharge: '$35',
-      hostServiceCharge: '$25',
-      netProfit: '$160',
-      amountToHost: '$195',
-    },
-  ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await Axios.get('/receivablePayable');
+        setData(response.data.data);
+        console.log(response.data.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+
+  
 
   return (
     <div className="bg-gray-100 h-[100vh]">

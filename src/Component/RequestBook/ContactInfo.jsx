@@ -1,5 +1,5 @@
 import React, { useEffect, useId, useState } from "react";
-import { FaPlus, FaTimes } from "react-icons/fa";
+import { FaPlus, FaPlusCircle, FaTimes, FaTimesCircle } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { useDateContext } from "../../ContextProvider/BookingInfo";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
@@ -49,11 +49,36 @@ export default function Example() {
     cvv: "",
   });
   const [existingCards, setExistingCards] = useState([
-    { cardNumber: "1234 5678 9012 3456", expiryDate: "12/24", cvv: "123" },
-    { cardNumber: "9876 5432 1098 7654", expiryDate: "06/23", cvv: "456" },
-    { cardNumber: "4084 0840 8408 4081", expiryDate: "02/25", cvv: "408" },
-    { cardNumber: "9876 5432 1098 7654", expiryDate: "06/23", cvv: "456" },
-    { cardNumber: "9876 5432 1098 7653", expiryDate: "06/23", cvv: "456" },
+    {
+      name: "John Doe",
+      cardNumber: "1234 5678 9012 3456",
+      expiryDate: "12/24",
+      cvv: "123",
+    },
+    {
+      name: "Jane Smith",
+      cardNumber: "9876 5432 1098 7654",
+      expiryDate: "06/23",
+      cvv: "456",
+    },
+    {
+      name: "Alice Johnson",
+      cardNumber: "4084 0840 8408 4081",
+      expiryDate: "02/25",
+      cvv: "408",
+    },
+    {
+      name: "Bob Brown",
+      cardNumber: "9876 5432 1098 7654",
+      expiryDate: "06/23",
+      cvv: "456",
+    },
+    {
+      name: "Eve Wilson",
+      cardNumber: "9876 5432 1098 7653",
+      expiryDate: "06/23",
+      cvv: "456",
+    },
   ]);
 
   const openExistingCardModal = () => {
@@ -314,26 +339,35 @@ export default function Example() {
       </div>
       {showExistingCardModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center">
-          <div className="bg-slate-200 rounded-lg overflow-hidden shadow-xl h-full md:h-1/2 md:max-w-lg w-full relative">
-            <h3 className="text-lg font-medium leading-6 text-center bg-white py-5 sticky top-0 z-50">
+          <div className="bg-white pb-10 px-5 rounded-2xl  overflow-hidden shadow-xl h-full md:h-1/2 md:max-w-lg w-full relative">
+            <div className="flex items-center justify-between text-lg font-medium leading-6 text-center bg-white border-b-2 py-5 sticky top-0 z-50">
               <div
                 onClick={closeExistingCardModal}
-                className="inline-flex justify-center absolute left-5 rounded-md   sm:w-auto sm:text-sm"
+                className="  rounded-md   sm:w-auto sm:text-sm"
               >
-                <FaTimes size={25} />
+                <FaTimesCircle size={25} />
               </div>{" "}
-              Select Existing Card
+              <div>
+                <p className="text-orange-400"> Select Existing Card</p>
+              </div>
               <div
                 onClick={handleAddNewCard}
-                className="inline-flex justify-center rounded-md border border-transparent  px-4 py-2  text-base font-medium  absolute right-0"
+                className="flex items-center gap-3  rounded-md border border-transparent cursor-pointer  px-4 py-2 text-orange-400  text-base font-medium  "
               >
-                <FaPlus />
+                <FaPlusCircle />
+                Add a new bank card
               </div>
-            </h3>
-            <div className="px-6 py-4 h-3/4  overflow-scroll example">
-              <div className="mt-4">
+            </div>
+            <div className="px-7 py-4">
+              <h1 className="text-orange-400 font-bold">Use Debit Card</h1>
+              <p>
+                Select a payment provider to add your debit card for payment
+              </p>
+            </div>
+            <div className="px-6 pb-10 h-3/4 relative overflow-scroll example">
+              <div className="pb-10">
                 {existingCards.map((card, index) => (
-                  <div key={index} className="flex items-center mb-3">
+                  <div key={index} className="flex w-full items-center mb-3">
                     <input
                       type="radio"
                       id={`card-${index}`}
@@ -347,20 +381,21 @@ export default function Example() {
                     />
                     <label
                       htmlFor={`card-${index}`}
-                      className={`ml-2 text-sm cursor-pointer ${
+                      className={`ml-2 text-sm w-full cursor-pointer ${
                         existingCard &&
                         existingCard.cardNumber === card.cardNumber
                           ? "border-8 border-orange-400 rounded-2xl"
                           : ""
                       }`}
                     >
-                      <div className="relative w-56 h-32 rounded-lg bg-orange-600  flex justify-center items-center">
-                        <div className="absolute inset-0 flex flex-col justify-between px-4">
-                          <div className="flex justify-between py-5">
-                            <div className="text-xl text-white">
+                      <div className="relative w-full h-28  rounded-lg text-black border-[1px] flex justify-center items-center">
+                        <div className="absolute inset-0 flex flex-col  px-4">
+                          <div className="flex justify-between items-center py-2">
+                            <div className="text-sm "> {card.name}</div>
+                            <div className="text-sm "></div>
+                            <div className="text-sm ">
                               {card.cardNumber.substr(0, 4)}
-                            </div>
-                            <div className="text-xl text-white">
+
                               {"*".repeat(card.cardNumber.length - 8)}
                               {card.cardNumber.substr(
                                 card.cardNumber.length - 4,
@@ -368,23 +403,28 @@ export default function Example() {
                               )}
                             </div>
                           </div>
-                          <div className="flex justify-between mt-2 py-5">
-                            <div className="text-xs text-white">
+                          <div className="flex justify-between mt-2 py-2">
+                            <div className="text-xs ">
                               Exp: {card.expiryDate.split("/").join("")}
                             </div>
-                            <div className="text-xs text-white">
+                            <div className="text-xs ">
                               CVV: {"*".repeat(card.cvv.length)}
                             </div>
                           </div>
+                          <p className="text-orange-400">
+                            Click to pay with this card
+                          </p>
                         </div>
                       </div>
                     </label>
                   </div>
                 ))}
               </div>
+              {/* <div className="bg-white h-10 hidden md:block fixed bottom-[14.5rem] w-[35%] z-10 px-6 py-3 flex justify-between"></div> */}
+
             </div>
             {/* Modal footer */}
-            <div className="bg-gray-200 px-6 py-3 flex justify-between"></div>
+            {/* <div className="bg-gray-200 h-10 px-6 py-3 flex justify-between"></div> */}
           </div>
         </div>
       )}
