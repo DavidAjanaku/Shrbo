@@ -131,7 +131,7 @@ export default function PayoutTable() {
 
   const fetchData = async () => {
     setLoading(true);
-    await axios.get(`/transactionHistory?${qs.stringify(getRandomuserParams(tableParams))}`).then(response => {
+    await axios.get(`/hostCompletedPayoutsHistory?${qs.stringify(getRandomuserParams(tableParams))}`).then(response => {
       const results = response.data.data.map(item => ({
 
 
