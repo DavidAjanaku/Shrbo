@@ -99,11 +99,24 @@ useEffect(() => {
 
   useEffect(() => {
     if (homes) {
-
+    
       setListings(homes);
     }
 
   }, [homes, isDeleted]);
+
+  function formatAmountWithCommas(amount) {
+    // Convert the amount to a string and split it into integer and decimal parts
+    const [integerPart, decimalPart] = amount.toString().split('.');
+
+    // Add commas to the integer part
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    // Combine the integer and decimal parts with a dot if there is a decimal part
+    const formattedAmount = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+
+    return formattedAmount;
+  }
 
 
 
@@ -190,7 +203,7 @@ useEffect(() => {
           <p className="text-gray-400 text-base">{listing.location}</p>
 
           <p className="text-gray-400 text-base">{listing.date}</p>
-          <p className="font-medium text-gray-700 text-base">{listing.price}</p>
+          <p className="font-medium text-gray-700 text-base">{formatAmountWithCommas(listing.price)}</p>
         </div>
       </Link>
       <ToastContainer />

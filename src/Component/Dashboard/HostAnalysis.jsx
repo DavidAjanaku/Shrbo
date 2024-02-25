@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import HostBottomNavigation from "./HostBottomNavigation";
 import axios from"../../Axios";
+import { useStateContext } from "../../ContextProvider/ContextProvider";
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
@@ -23,14 +24,52 @@ export default function HostAnalysis() {
   const [activeTab, setActiveTab] = useState("1");
   const [showListingsModal, setShowListingsModal] = useState(false);
   const [selectedApartment, setSelectedApartment] = useState(null);
+  const {user,setUser,setHost,setAdminStatus}=useStateContext();
   const currentDate = new Date();
   const  defaultSelectedMonth = `${currentDate.toLocaleString("default", { month: "long" })} ${currentDate.getFullYear()}`;
   const [selectedMonth, setSelectedMonth] = useState(defaultSelectedMonth); // Add selectedMonth state
   const [views,setViews]=useState();
-  const [apartmentDataMain,setApartmentData]=useState([]);
-  const [reviewsMain,setReviews]=useState([]);
+  const [apartmentData,setApartmentData]=useState([]);
+  const [reviews,setReviews]=useState([]);
+  const [payment,setPayment]=useState();
 
-  
+  function formatAmountWithCommas(amount) {
+    // Convert the amount to a string and split it into integer and decimal parts
+    const [integerPart, decimalPart] = amount.toString().split('.');
+
+    // Add commas to the integer part
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    // Combine the integer and decimal parts with a dot if there is a decimal part
+    const formattedAmount = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+
+    return formattedAmount;
+  }
+
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Make a request to get the user data
+        const response = await axios.get('/user'); // Adjust the endpoint based on your API
+        
+
+        // Set the user data in state
+        setUser(response.data);
+        setHost(response.data.host);
+        setAdminStatus(response.data.adminStatus);
+      
+
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+    
+      }
+    };
+
+    fetchUserData();
+  }, []); 
+
   useEffect(()=>{
 
   if(!selectedMonth){
@@ -58,11 +97,46 @@ export default function HostAnalysis() {
       console.log(err)
     });
 
+    axios.get(`/hostAnalyticsEarningsByMonthYear/${month}/${year}`).then(response=>{
+      const formattedEarnings={
+        hostTotalAmountAllBookings:formatAmountWithCommas(response.data.hostTotalAmountAllBookings),
+        hostTotalAmountPaidBookings:formatAmountWithCommas(response.data.hostTotalAmountPaidBookings),
+        hostTotalAmountUnpaidBookings:formatAmountWithCommas(response.data.hostTotalAmountUnpaidBookings),
+      }
+
+      setPayment(formattedEarnings);
+      console.log("WW",response)
+
+
+
+
+    }).catch(err=>{
+      console.log(err);
+    });
+
  },[selectedMonth]);
 
- useEffect(()=>{
+ function convertTimestampToReadable(timestampString) {
+  const timestamp = new Date(timestampString);
+  
+  const formattedDate = timestamp.toISOString().split('T')[0];
+  const formattedTime = timestamp.toTimeString().split(' ')[0];
 
-  axios.get(`/hostReview/47`).then(response=>{
+  return `${formattedDate} ${formattedTime}`;
+}
+
+
+
+
+
+
+ useEffect(()=>{
+  if(!(user.id)){
+
+    return;
+  }
+
+  axios.get(`/hostReview/${user.id}`).then(response=>{
     const formattedApartmentData=response.data.data.hosthomeDetails.map(item=>({
 
       id: item.hosthome_id,
@@ -78,20 +152,20 @@ export default function HostAnalysis() {
 
     const formattedReviews=response.data.data.actualReviews.map(item=>({
       apartmentId: item.host_home_id,
-      personName: "John Doe",
+      personName: item.user_name,
       comment: item.comment,
       starRating: item.ratings,
-      nights: 3,
-      date: item.created_at,    
+      date: convertTimestampToReadable(item.created_at),    
     }));
 
     setReviews(formattedReviews)
     setApartmentData(formattedApartmentData);
+    console.log(response);
   }).catch(err=>{
     console.log(err);
   });
 
- },[]);
+ },[user]);
 
 
   const handleTabChange = (tabKey) => {
@@ -110,71 +184,71 @@ export default function HostAnalysis() {
     setShowListingsModal(false);
   };
 
-  const apartmentData = [
-    {
-      id: "a",
-      name: "Apartment 1",
-      image: Room,
-      datePosted: "2023-10-01",
-      earnings: [
-        { date: "2023-10-01", amount: 100 },
-        { date: "2023-10-02", amount: 200 },
-      ],
-    },
-    {
-      id: "b",
-      name: "Apartment 2",
-      image: Room,
-      datePosted: "2023-09-01",
-      earnings: [
-        { date: "2023-09-01", amount: 150 },
-        { date: "2023-09-02", amount: 250 },
-      ],
-    },
-    ...apartmentDataMain,
-  ];
+  // const apartmentData = [
+  //   {
+  //     id: "a",
+  //     name: "Apartment 1",
+  //     image: Room,
+  //     datePosted: "2023-10-01",
+  //     earnings: [
+  //       { date: "2023-10-01", amount: 100 },
+  //       { date: "2023-10-02", amount: 200 },
+  //     ],
+  //   },
+  //   {
+  //     id: "b",
+  //     name: "Apartment 2",
+  //     image: Room,
+  //     datePosted: "2023-09-01",
+  //     earnings: [
+  //       { date: "2023-09-01", amount: 150 },
+  //       { date: "2023-09-02", amount: 250 },
+  //     ],
+  //   },
+  //   ...apartmentDataMain,
+  // ];
 
   const selectedApartmentData = apartmentData.find(
     (apartment) => apartment.id === selectedApartment
   );
 
-  const reviews = [
-    {
-      apartmentId: "a",
-      personName: "John Doe",
-      comment: "Great place to stay!",
-      starRating: 5,
-      nights: 3,
-      date: "2023-10-04",
-    },
-    {
-      apartmentId: "a",
-      personName: "Jane Smith",
-      comment: "Lovely apartment with a nice view.",
-      starRating: 4,
-      nights: 2,
-      date: "2023-10-03",
-    },
+  // const reviews = [
+  //   {
+  //     apartmentId: "a",
+  //     personName: "John Doe",
+  //     comment: "Great place to stay!",
+  //     starRating: 5,
+  //     nights: 3,
+  //     date: "2023-10-04",
+  //   },
+  //   {
+  //     apartmentId: "a",
+  //     personName: "Jane Smith",
+  //     comment: "Lovely apartment with a nice view.",
+  //     starRating: 4,
+  //     nights: 2,
+  //     date: "2023-10-03",
+  //   },
 
-    {
-      apartmentId: "a",
-      personName: "Jane Smith",
-      comment: "Lovely apartment with a nice view.",
-      starRating: 4,
-      nights: 2,
-      date: "2023-10-03",
-    },
-    {
-      apartmentId: "b",
-      personName: "Alice Johnson",
-      comment: "Very comfortable and clean.",
-      starRating: 5,
-      nights: 4,
-      date: "2023-10-02",
-    },
-    ...reviewsMain,
-    // Add more reviews here
-  ];
+  //   {
+  //     apartmentId: "a",
+  //     personName: "Jane Smith",
+  //     comment: "Lovely apartment with a nice view.",
+  //     starRating: 4,
+  //     nights: 2,
+  //     date: "2023-10-03",
+  //   },
+  //   {
+  //     apartmentId: "b",
+  //     personName: "Alice Johnson",
+  //     comment: "Very comfortable and clean.",
+  //     starRating: 5,
+  //     nights: 4,
+  //     date: "2023-10-02",
+  //   },
+  //   ...reviewsMain,
+  //   // Add more reviews here
+  // ];
 
   const apartmentReviews = reviews.filter(
     (review) => review.apartmentId === selectedApartment
@@ -300,14 +374,12 @@ export default function HostAnalysis() {
                                 alt=""
                               />
                             </div>
-                            <div className="w-[300px] whitespace-normal">
+                            <div className="w-[300px] break-words  whitespace-normal">
                               <strong>Guest Name:</strong> {review.personName}
                               <br />
                               <strong>Comment:</strong> {review.comment}
                               <br />
                               <strong>Rating:</strong> {review.starRating}
-                              <br />
-                              <strong>Nights:</strong> {review.nights}
                               <br />
                               <strong>Date:</strong> {review.date}
                               <br />
@@ -348,7 +420,7 @@ export default function HostAnalysis() {
 
                 <div className="">
                   <div className="my-4">
-                    <div className="text-4xl font-bold">$0.00</div>
+                    <div className="text-4xl font-bold">₦{payment&&payment.hostTotalAmountAllBookings}</div>
                     <div>
                       <p className="">Booked Earnings for 2023</p>
                     </div>
@@ -357,7 +429,7 @@ export default function HostAnalysis() {
                   <div className="flex items-center space-x-3">
                     <span className="bg-red-400 h-4 w-4"></span>
                     <div className="text-xl font-bold text-[color-for-amount]">
-                      $0.00
+                      ₦{payment&&payment.hostTotalAmountPaidBookings}
                     </div>
                     <div>
                       <p className="text-[color-for-label]">Paid out</p>
@@ -367,7 +439,7 @@ export default function HostAnalysis() {
                     <span className="bg-green-500 h-4 w-4"></span>
 
                     <div className="text-xl font-bold text-[color-for-amount]">
-                      $0.00
+                      ₦{payment&&payment.hostTotalAmountUnpaidBookings}
                     </div>
                     <div>
                       <p className="text-[color-for-label]">Expected</p>
@@ -457,7 +529,7 @@ export default function HostAnalysis() {
                 </div>
                 <div>
                   <div className="flex flex-col">
-                    <span className="text-4xl font-bold mb-2">{views?views.booking_rate:0}%</span>
+                    <span className="text-4xl font-bold mb-2">{(views?views.booking_rate:0).toFixed(1)}%</span>
                     <span className="text-base">Booking rate</span>
                   </div>
                 </div>
@@ -475,13 +547,14 @@ export default function HostAnalysis() {
         title="Apartment Listings"
         footer={null}
       >
+        {apartmentData.length>0?
         <ul>
           {apartmentData.map((apartment) => (
             <li
               key={apartment.id}
               className="flex items-center justify-between my-4"
             >
-              <Checkbox onChange={() => handleApartmentClick(apartment.id)}>
+              <Checkbox  checked={selectedApartment === apartment.id} onChange={() => handleApartmentClick(apartment.id)}>
                 <div className="  overflow-hidden w-[50vw] md:w-[360px]  text-ellipsis whitespace-nowrap ">
                  {apartment.name}
                   </div>
@@ -491,6 +564,16 @@ export default function HostAnalysis() {
             </li>
           ))}
         </ul>
+        :
+        <div className=" w-full h-32 text-center py-10 font-medium text-lg flex items-center justify-center " >
+        <svg xmlns="http://www.w3.org/2000/svg" 
+        width={"34px"}
+        viewBox="0 0 24 24"><title>alert-octagon</title>
+        <path d="M3,16V9L8,4H15L20,9V16.03L15.03
+        ,21H8L3,16M8.39,5L4,9.39V15.6L8.4,20H14.61L19,15.61V9.39L14.61,
+        5H8.39M11,8H12V13H11V8M11,15H12V17H11V15Z"/></svg>
+          You have no active Listings
+          </div>}
       </Modal>
 
       <HostBottomNavigation/>

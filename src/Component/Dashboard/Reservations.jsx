@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Tabs, Table, Button, DatePicker, Dropdown } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import GoBackButton from "../GoBackButton";
@@ -9,6 +9,7 @@ import {
   RightOutlined,
 } from "@ant-design/icons";
 import Logo from "../../assets/logo.png";
+import axios from '../../Axios';
 
 const Reservations = () => {
   const [allKey, setAllKey] = useState("1");
@@ -19,16 +20,73 @@ const Reservations = () => {
   const [show, setShow] = useState(false);
   const toggleShow = () => setShow(!show);
   const [drawer,setDrawer]=useState(false);
+  const [dataMain,setData]=useState([]);
+
+  const calculateDaysDifference = (date1, date2) => {
+    const startDate = new Date(date1);
+    const endDate = new Date(date2);
+    const daysDifference = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+    return daysDifference;
+};
+
+function formatDate(inputDate) {
+  const dateObject = new Date(inputDate);
+  
+  const year = dateObject.getFullYear();
+  const month = String(dateObject.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObject.getDate()).padStart(2, '0');
+
+  return `${day}-${month}-${year}`;
+}
+
+function formatAmountWithCommas(amount) {
+  // Convert the amount to a string and split it into integer and decimal parts
+  const [integerPart, decimalPart] = amount.toString().split('.');
+
+  // Add commas to the integer part
+  const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  // Combine the integer and decimal parts with a dot if there is a decimal part
+  const formattedAmount = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+
+  return formattedAmount;
+}
+
+
+  useEffect(()=>{
+    axios.get('/allReservation').then(response=>{
+
+    const formattedData=response.data.bookings.map(item=>({
+        key: item.aboutGuest.id,
+        status: item.status.toLowerCase(),
+        guests: `${item.guests} guest(s)`,
+        checkIn: item.check_in_date,
+        checkOut: item.check_out_date,
+        booked: formatDate(item.bookedDate),
+        listing: item.title,
+        confirmationCode: "ABC123",
+        totalPayout: `  ₦ ${formatAmountWithCommas(item.amount)}`,
+        guestName: item.aboutGuest.name,
+        nights: calculateDaysDifference(item.check_in_date,item.check_out_date),
+        profilePic:item.profilepic,
+        rating:item.aboutGuest.rating,
+        cancelationPolicy:item.cancelationPolicy,
+        link:`/UserDetails/${item.aboutGuest.id}`,
+        guest_service_fee: `  ₦ ${formatAmountWithCommas(item.guest_service_fee)}`,
+        host_service_fee:`  ₦  ${formatAmountWithCommas(item.host_service_fee)}`,
+        dateUserJoined:item.dateUserJoined,
+      })
+      );
+
+      setData(formattedData);
+
+
+    }).catch();
+
+
+  },[]);
 
  
-
-  const showDrawer = (key) => {
-    setDrawer(true)
-    setIsModalVisible(true);
-    setSelectedReservation(key);
-    console.log(key);
-  };
-
 
 
   const handleSubmit = () => {
@@ -76,168 +134,48 @@ const Reservations = () => {
   );
 
   const data = [
-    {
-      key: "1",
-      status: "Upcoming",
-      guests: "4 adults",
-      checkIn: "2023-11-01",
-      checkOut: "2023-11-05",
-      booked: "2023-10-27",
-      listing: "Sample Listing",
-      confirmationCode: "ABC123",
-      totalPayout: "$500.00",
-      guestName: "Ben Ten",
-      nights: 10,
-    },
-    {
-      key: "2",
-      status: "Completed",
-      guests: "2 adults",
-      checkIn: "2023-11-01",
-      checkOut: "2023-11-05",
-      booked: "2023-10-27",
-      listing: "Stunning 2 bedroom Loft",
-      confirmationCode: "ABC123",
-      totalPayout: "$500.00",
-      guestName: "Duncan",
-      nights: 5,
-    },
-    {
-      key: "3",
-      status: "Canceled by Airbnb",
-      guests: "1 adults",
-      checkIn: "2023-11-03",
-      checkOut: "2023-11-04",
-      booked: "2023-10-27",
-      listing: "Penthouse in La juarez",
-      confirmationCode: "ABC123",
-      totalPayout: "$500.00",
-      guestName: "Jova Larkin",
-      nights: 2,
-    },
-    {
-      key: "4",
-      status: "Pending",
-      guests: "4 adults 2 children",
-      checkIn: "2023-11-01",
-      checkOut: "2023-11-05",
-      booked: "2023-10-27",
-      listing: "Penthouse in La juarez",
-      confirmationCode: "ABC123",
-      totalPayout: "$500.00",
-      guestName: "Rick Sanchez",
-      nights: 12,
-    },
-    {
-      key: "5",
-      status: "Canceled by Airbnb",
-      guests: "1 adult 1 pet",
-      checkIn: "2023-11-03",
-      checkOut: "2023-11-07",
-      booked: "2023-10-27",
-      listing: "Penthouse in La juarez",
-      confirmationCode: "ABC123",
-      totalPayout: "$500.00",
-      guestName: "Bruce Wayne",
-      nights: 15,
-    },
-    {
-      key: "6",
-      status: "Pending",
-      guests: "4 adults 2 infants",
-      checkIn: "2023-11-02",
-      checkOut: "2023-11-05",
-      booked: "2023-10-27",
-      listing: "Penthouse in La juarez",
-      confirmationCode: "ABC123",
-      totalPayout: "$500.00",
-      guestName: "Jova Larkin",
-      nights: 100,
-    },
-
+   ...dataMain,
     // Add more data objects for other rows
   ];
 
-  const columns = [
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-    },
-    {
-      title: "Guests",
-      dataIndex: "guests",
-      key: "guests",
-    },
-    {
-      title: "Check-In",
-      dataIndex: "checkIn",
-      key: "checkIn",
-    },
-    {
-      title: "Check-Out",
-      dataIndex: "checkOut",
-      key: "checkOut",
-    },
-    {
-      title: "Booked",
-      dataIndex: "booked",
-      key: "booked",
-    },
-    {
-      title: "Listing",
-      dataIndex: "listing",
-      key: "listing",
-    },
-    {
-      title: "Confirmation Code",
-      dataIndex: "confirmationCode",
-      key: "confirmationCode",
-    },
-    {
-      title: "Total Payout",
-      dataIndex: "totalPayout",
-      key: "totalPayout",
-    },
-    {
-      // title: "Details",
-      key: "action",
-      render: () => (
-        <Button type="primary" onClick={() => handleDetails()}>
-          Details
-        </Button>
-      ),
-    },
-  ];
+  const statusMap = {
+    "1": "upcoming",
+    "2": "completed",
+    "3": "canceled",
+    "4": "pending",
+    "5": "ongoing",
+    "6": "", // "All" tab
+  };
+  
+
+  
 
   // Function to filter the table based on the selected date range
-  const handleFilter = (dates) => {
-    setFilterDate(dates);
-  };
+  // ... (existing code)
 
-  // Filter function to check if a reservation falls within the selected date range
-  const filterFunction = (record) => {
-    if (!filterDate) return true; // If no date is selected, show all records
-    const [checkIn, checkOut] = filterDate.map((date) => new Date(date));
-    console.log(checkIn);
-    const recordCheckIn = new Date(record.checkIn);
-    const recordCheckOut = new Date(record.checkOut);
+// Function to filter the table based on the selected date range and status
+const handleFilter = (dates) => {
+  setFilterDate(dates);
+};
 
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    };
+// Updated filter function to consider both date range and status
+const filterFunction = (record) => {
+  const dateFilter =
+    !filterDate ||
+    (filterDate &&
+      filterDate[0] <= new Date(record.checkOut) &&
+      filterDate[1] >= new Date(record.checkIn));
 
-    // Use toDateString() to format the dates as "yyyy-mm-dd" for comparison
-    return (
-      formatDate(recordCheckIn) >= formatDate(checkIn) &&
-      formatDate(recordCheckOut) <= formatDate(checkOut)
-    );
-  };
+  const statusFilter =
+    !allKey || (allKey === "6" ? true : record.status === statusMap[allKey]);
 
-  const filteredData = data.filter(filterFunction);
+  return dateFilter && statusFilter;
+};
+
+const filteredData = data.filter(filterFunction);
+
+// ... (rest of your code)
+
   // console.log(filteredData)
 
   const children1 = null;
@@ -247,57 +185,66 @@ const Reservations = () => {
       label: (
         <div className=" text-neutral-700      rounded-t-lg">Upcoming</div>
       ),
-      children: children1 || empty("6", "upcoming"),
+      children: filteredData.length > 0 ?  (
+        <CardTable
+          dataSource={filteredData}
+          handlePopup={(key) => handlePopup(key)}
+        />
+      ) : empty("6", "upcoming"),
     },
     {
       key: "2",
       label: <div className="text-neutral-700     rounded-t-lg">Completed</div>,
-      children:
-        (
-          <CardTable
-            dataSource={filteredData}
-            handlePopup={(key) => handlePopup(key)}
-          />
-        ) || empty("6", "completed"),
+      children: filteredData.length > 0 ? (
+        <CardTable
+          dataSource={filteredData}
+          handlePopup={(key) => handlePopup(key)}
+        />
+      ) : (
+        empty("6", "completed")
+      ),
     },
     {
       key: "3",
       label: <div className="text-neutral-700   rounded-t-lg">Canceled</div>,
       children:
+      filteredData.length > 0 ?
         (
           <CardTable
             dataSource={filteredData}
             handlePopup={(key) => handlePopup(key)}
           />
-        ) || empty("6", "canceled"),
+        ) : empty("6", "canceled"),
     },
     {
       key: "4",
       label: <div className="text-neutral-700   rounded-t-lg">Pending</div>,
       children:
+      filteredData.length > 0 ?
         (
           <CardTable
             dataSource={filteredData}
             handlePopup={(key) => handlePopup(key)}
           />
-        ) || empty("6", "pending"),
+        ) : empty("6", "pending"),
     },
     {
       key: "5",
       label: <div className="text-neutral-700   rounded-t-lg">Ongoing</div>,
       children:
+      filteredData.length > 0 ?
         (
           <CardTable
             dataSource={filteredData}
             handlePopup={(key) => handlePopup(key)}
           />
-        ) || empty("6", "ongoing"),
+        ) : empty("6", "ongoing"),
     },
     {
       key: "6",
       label: <div className="text-neutral-700      rounded-t-lg">All</div>,
       children:
-      filteredData ? (
+      filteredData.length > 0 ? (
           <CardTable
             dataSource={filteredData}
             handlePopup={(key) => handlePopup(key)}
@@ -309,7 +256,7 @@ const Reservations = () => {
   // Define data for the table
 
   return (
-    <div className="px-6 md:px-10 xl:px-20 max-w-7xl  h-screen  m-auto  flex  flex-col md:gap-4 relative ">
+    <div className="px-6 md:px-10 xl:px-20 max-w-7xl max-h-screen h-screen overflow-hidden  m-auto  flex  flex-col md:gap-4 relative ">
       <div
         className="  py-[18px]  sticky  w-full top-0 block  bg-white
                                          box-border z-[50]   md:px-10 lg:px-6    "
@@ -456,7 +403,7 @@ const Reservations = () => {
                         {filteredData[selectedReservation].guestName}
                       </p>
                       <p className=" pb-1">
-                        Sep 22 - Oct 2{" "}
+                      {filteredData[selectedReservation].checkIn} - {filteredData[selectedReservation].checkOut}{" "}
                         {`(${filteredData[selectedReservation].nights} nights)`}{" "}
                       </p>
                       <p className=" ">
@@ -473,9 +420,9 @@ const Reservations = () => {
                   <div className="  ">
                     <div className="rounded-xl  relative ">
                       <div
-                        className=" relative   box-border block md:h-[50px] md:w-[50px] h-[45px] w-[45px] 
-                                          bg-[url('https://a0.muscache.com/im/pictures/user/82130759-fbba-4012-ac60-51d5b0e4801e.jpg?im_w=240')] 
-                                          bg-center rounded-[50%] bg-cover bg-no-repeat   "
+                         style={{ backgroundImage: `url(${filteredData[selectedReservation].profilePic})` }}
+                        className={` relative   box-border block md:h-[50px] md:w-[50px] h-[45px] w-[45px] 
+                                          bg-center rounded-[50%] bg-cover bg-no-repeat   `}
                       ></div>
 
                       {/* <div className=" border-white border-2  box-border block h-[40px] w-[40px] 
@@ -527,7 +474,7 @@ const Reservations = () => {
                   <ul className=" pb-3">
                     <li>
                       <StarOutlined />
-                      <label className=" pl-1 ">5.0 rating </label>
+                      <label className=" pl-1 ">{filteredData[selectedReservation].rating}.0 rating </label>
                     </li>
                     <li>
                       {" "}
@@ -535,11 +482,11 @@ const Reservations = () => {
                       <label className=" pl-1 ">Verified identity </label>
                     </li>
                     <li className=" flex  ">
-                      <label className=" pl-1 ">Joined Shrbo in 2020 </label>{" "}
+                      <label className=" pl-1 ">Joined Shrbo in {filteredData[selectedReservation].dateUserJoined} </label>{" "}
                     </li>
                   </ul>
                   <Link
-                    to={"/UserDetails"}
+                    to={filteredData[selectedReservation].link}
                     className=" underline font-medium hover:text-black "
                   >
                     View guest Profile{" "}
@@ -574,7 +521,7 @@ const Reservations = () => {
                         Booking Details
                       </header>
 
-                      <div className="property-info-details flex items-center justify-between py-4 text-gray-500 border-b-[1px]">
+                      {/* <div className="property-info-details flex items-center justify-between py-4 text-gray-500 border-b-[1px]">
                         <div>
                           {filteredData[selectedReservation].guestName}{" "}
                         </div>
@@ -585,7 +532,7 @@ const Reservations = () => {
                             alt=""
                           />
                         </div>
-                      </div>
+                      </div> */}
                       <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
                         <div className=" font-normal">Guests</div>
                         <div className=" font-medium">
@@ -610,15 +557,15 @@ const Reservations = () => {
                           {filteredData[selectedReservation].booked}{" "}
                         </div>
                       </div>
-                      <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
+                      {/* <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
                         <div className=" font-normal">Confirmation code</div>
                         <div className=" font-medium">
                           {filteredData[selectedReservation].confirmationCode}{" "}
                         </div>
-                      </div>
+                      </div> */}
                       <div className="property-info-details flex justify-between py-4 text-gray-500 border-b-[1px]">
                         <div className=" font-normal">Cancellation policy</div>
-                        <div className=" font-medium">Flexible</div>
+                        <div className=" font-medium">{filteredData[selectedReservation].cancelationPolicy}</div>
                       </div>
                     </div>
                   </div>
@@ -629,8 +576,8 @@ const Reservations = () => {
                     <div className="payment-details-info w-full ">
                       <div className="property-info-details flex justify-between py-4 text-gray-500 ">
                         <div>
-                          {filteredData[selectedReservation].totalPayout} x{" "}
-                          {filteredData[selectedReservation].nights} nights{" "}
+                          {/* {filteredData[selectedReservation].totalPayout} x{" "} */}
+                          {filteredData[selectedReservation].nights} night(s){" "}
                         </div>
                         <div className=" ">
                           {filteredData[selectedReservation].totalPayout}{" "}
@@ -638,7 +585,7 @@ const Reservations = () => {
                       </div>
                       <div className="property-info-details flex justify-between py-4 text-gray-500   ">
                         <div>Guest service fee</div>
-                        <div>$138.00</div>
+                        <div> {filteredData[selectedReservation].guest_service_fee}</div>
                       </div>
                       <div className="property-info-details flex justify-between py-4 text-gray-500 ">
                         <div className=" font-medium text-base">Total</div>
@@ -656,20 +603,20 @@ const Reservations = () => {
                       <div className="property-info-details flex justify-between py-4 text-gray-500 ">
                         <div>
                           {" "}
-                          {filteredData[selectedReservation].nights} nights room
+                          {filteredData[selectedReservation].nights} night(s) room
                           fee{" "}
                         </div>
                         <div className=" ">
                           {filteredData[selectedReservation].totalPayout}{" "}
                         </div>
                       </div>
-                      <div className="property-info-details flex justify-between py-4 text-gray-500 ">
+                      {/* <div className="property-info-details flex justify-between py-4 text-gray-500 ">
                         <div>Nightly rate adjustment</div>
                         <div className=" ">-$50</div>
-                      </div>
+                      </div> */}
                       <div className="property-info-details flex justify-between py-4 text-gray-500  ">
-                        <div>Host service fee (10%)</div>
-                        <div>-$38.00</div>
+                        <div>Host service fee</div>
+                        <div>-{filteredData[selectedReservation].host_service_fee}</div>
                       </div>
                       <div className="property-info-details flex justify-between py-4 text-gray-500  ">
                         <div className=" font-medium text-base">Total</div>
@@ -704,12 +651,14 @@ export default Reservations;
 
 const CardTable = ({ dataSource, handlePopup }) => {
   return (
-    <div className=" example overflow-y-scroll  w-full    gap-2 md:gap-0 flex items-stretch justify-start lg:h-[438px] md:h-[530px]   h-[638px] flex-col md:flex-row   md:flex-wrap    ">
+    <div className="overflow-y-scroll h-[65vh] ">
+
+    <div className="    w-full h-auto    gap-2 md:gap-4 grid grid-cols-1 md:grid-cols-2     ">
      {(dataSource&&dataSource.length !=0 )? <>
       {dataSource.map((data, index) => (
         <div
           key={index}
-          className=" relative  h-fit   w-full md:w-1/2 md:mt-2  md:px-2 "
+          className=" relative  h-fit row-span-1    w-full  md:mt-2  md:px-2 "
         >
           <div
             onClick={() => handlePopup(index)}
@@ -723,10 +672,10 @@ const CardTable = ({ dataSource, handlePopup }) => {
                 <p className="text-ellipsis overflow-hidden whitespace-nowrap w-[50%] ">
                   {data.guestName}
                 </p>
-                <p>Sep 22 - Oct 2 </p>
+                <p>{data.checkIn} - {data.checkOut}</p>
               </div>
               <div className="listing text-gray-500 text-sm     ">
-                <p className=" text-ellipsis overflow-hidden whitespace-nowrap w-[80%]   ">
+                <p className=" text-ellipsis overflow-hidden whitespace-nowrap w-[50vw] md:w-[23vw]  ">
                   {data.listing}{" "}
                 </p>
               </div>
@@ -735,9 +684,10 @@ const CardTable = ({ dataSource, handlePopup }) => {
             <div className="  ">
               <div className="rounded-xl  relative ">
                 <div
-                  className=" relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
-                            bg-[url('https://a0.muscache.com/im/pictures/user/82130759-fbba-4012-ac60-51d5b0e4801e.jpg?im_w=240')] 
-                            bg-center rounded-[50%] bg-cover bg-no-repeat   "
+                  style={{ backgroundImage: `url(${data.profilePic})` }}
+                  className={ `relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
+                        
+                            bg-center rounded-[50%] bg-cover bg-no-repeat  ` }
                 ></div>
 
                 {/* <div className=" border-white border-2  box-border block h-[40px] w-[40px] 
@@ -757,6 +707,7 @@ const CardTable = ({ dataSource, handlePopup }) => {
       </div>
     }
      
+    </div>
     </div>
   );
 };

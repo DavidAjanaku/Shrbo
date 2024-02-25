@@ -281,7 +281,7 @@ export default function Profile() {
     },
     {
       title: "Government ID",
-      value: (user.government_id===null ?"Not provided":(user.verified==="Not Verified"?"Pending Verification":"Veified")),
+      value: (user.government_id===null ?"Not provided":(user.verified==="Not Verified"?"Pending Verification":"Verified")),
       action: "Add",
       link: "/AddGovvernmentId",
     },

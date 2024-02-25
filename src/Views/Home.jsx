@@ -133,7 +133,7 @@ export default function Home() {
         console.log(response.data.id);
         console.log(response.data.host);
 
-        console.log("yes");
+        console.log("yes",response.data);
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
       } catch (error) {
@@ -421,7 +421,7 @@ export default function Home() {
           price: `₦${item.price} per night`,
           date: item.created_on,
           title: item.title,
-          rating: item.rating ? item.rating : 4,
+          rating: item.ratings,
           link: "/ListingInfoMain",
           isFavorite: item.addedToWishlist,
         }));
@@ -430,6 +430,7 @@ export default function Home() {
         setCurrent_page(response.data.meta.current_page);
         setLast_page(response.data.meta.last_page);
         setListings(formattedHostHomes);
+        console.log("HMMM",response);
    
       })
       .catch((err) => {
@@ -468,7 +469,7 @@ export default function Home() {
           price: `₦${item.price} per night`,
           date: item.created_on,
           title: item.title,
-          rating: item.rating ? item.rating : 4,
+          rating: item.ratings,
           link: "/ListingInfoMain",
           isFavorite: item.addedToWishlist,
         }));
@@ -511,7 +512,7 @@ export default function Home() {
           price: `₦${item.price} per night`,
           date: item.created_on,
           title: item.title,
-          rating: item.rating ? item.rating : 4,
+          rating: item.ratings,
           link: "/ListingInfoMain",
           isFavorite: item.addedToWishlist,
         }));
@@ -536,7 +537,7 @@ export default function Home() {
         price: `₦${item.price} per night`,
         date: item.created_on,
         title: item.title,
-        rating: item.rating ? item.rating : 4,
+        rating: item.ratings,
         link: "/ListingInfoMain",
         isFavorite: item.addedToWishlist,
       }));
@@ -591,6 +592,7 @@ export default function Home() {
         hosthomeid: item.hosthomeid,
       }));
       setHouseDetails(formattedHostHomes);
+      console.log("pendingReviews",response.data.data)
 
     }).catch(error => {
 

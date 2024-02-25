@@ -306,6 +306,21 @@ export default function Trip() {
   }
 
 
+  function formatAmountWithCommas(amount) {
+    // Convert the amount to a string and split it into integer and decimal parts
+    const [integerPart, decimalPart] = amount.toString().split('.');
+
+    // Add commas to the integer part
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    // Combine the integer and decimal parts with a dot if there is a decimal part
+    const formattedAmount = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+
+    return formattedAmount;
+  }
+
+
+
 
 
 
@@ -433,7 +448,7 @@ export default function Trip() {
                       </p>
                     </div>
                     <div className="text-lg text-orange-400 font-bold mt-2">
-                      ₦{trip.price}
+                      ₦{formatAmountWithCommas(trip.price)}
                     </div>
                     <div>
                       <span>{trip.checkingInDate}</span>
@@ -560,7 +575,7 @@ export default function Trip() {
                 </div>
                 <div className="text-lg text-orange-400 font-medium mt-2">
                   <span className="text-black"> Price: </span> ₦
-                  {selectedTrip.price}
+                  {formatAmountWithCommas(selectedTrip.price)}
                 </div>
 
                 <div className="text-base break-words  text-black  mt-2">
