@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
-import { Table, Button, Modal, Form, Input, Space, Select, Spin } from "antd";
+import { Table, Button, Modal, Form, Input, Space, Select, Spin,notification } from "antd";
 import Axios from ".././../Axios";
 import { LoadingOutlined } from "@ant-design/icons";
 
@@ -15,6 +15,7 @@ export default function UserVerificationPage() {
   const [selectedUserPhoto, setSelectedUserPhoto] = useState("");
   const [selectedUserLivePhoto, setSelectedUserLivePhoto] = useState("");
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false); // State for submitting status
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -42,21 +43,65 @@ export default function UserVerificationPage() {
     setVerificationModalVisible(false);
   };
 
-  const handleVerificationSubmit = (values) => {
-    const updatedUsers = users.map((user) => {
-      if (user.id === selectedUserId) {
-        return {
-          ...user,
-          idStatus: values.idStatus,
-        };
-      }
+  const handleVerificationSubmit = async (values) => {
+    try {
+      setSubmitting(true); // Set submitting to true when starting the update
 
-      return user;
-    });
+      const { idStatus, firstName, lastName, email, verification_type, government_id, live_photo, country, street, emergency_no, zipCode, state, city, profilePicture } = values;
 
-    setUsers(updatedUsers);
-    setVerificationModalVisible(false);
+      await Axios.put(`/userDetail/${selectedUserId}`, {
+        idStatus,
+        firstName,
+        lastName,
+        email,
+        verification_type,
+        government_id,
+        live_photo,
+        country,
+        street,
+        emergency_no,
+        zipCode,
+        state,
+        city,
+        status: idStatus,
+        profilePicture
+      });
+
+      const updatedUsers = users.map((user) => {
+        if (user.id === selectedUserId) {
+          return {
+            ...user,
+            idStatus,
+            firstName,
+            lastName,
+            email,
+            verification_type,
+            government_id,
+            live_photo,
+            country,
+            street,
+            emergency_no,
+            zipCode,
+            state,
+            city,
+            status: idStatus,
+            profilePicture
+          };
+        }
+        return user;
+      });
+      setUsers(updatedUsers);
+      setVerificationModalVisible(false);
+      notification.success({ message: "Update Successful", description: "User details have been updated successfully" });
+    } catch (error) {
+      console.error("Error updating user details:", error);
+      notification.error({ message: "Update Failed", description: "Failed to update user details. Please try again later" });
+    } finally {
+      setSubmitting(false); // Set submitting back to false after update is finished
+    }
   };
+
+
 
   const openPhotoModal = (photoUrl) => {
     setSelectedUserPhoto(photoUrl);

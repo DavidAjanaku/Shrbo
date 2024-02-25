@@ -34,7 +34,9 @@ export default function Listings() {
   const [selectedHouseId, setSelectedHouseId] = useState(null);
   const [listings, setListings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [coHostModalVisible, setCoHostModalVisible] = useState(false);
+  const [coHostEmail, setCoHostEmail] = useState("");
+  
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -43,6 +45,47 @@ export default function Listings() {
     setSearchQuery(value);
   };
 
+
+  const handleCheckboxChanges = (listingId) => {
+    if (selectedListings.includes(listingId)) {
+      setSelectedListings(selectedListings.filter((id) => id !== listingId));
+    } else {
+      setSelectedListings([listingId]);
+    }
+  
+    // Update the state to determine whether to show the "Edit" button
+    setIsEditButtonVisible(selectedListings.length === 0);
+  
+    // Open the co-host modal
+    setCoHostModalVisible(true);
+  };
+  const handleAddCoHost = async () => {
+    try {
+      // Send a request to add the co-host
+      await Axois.post(`/addCoHost/{${selectedHouseId}`, {
+        email: coHostEmail,
+      });
+  
+      // Close the modal
+      setCoHostModalVisible(false);
+  
+      // Show success notification
+      notification.success({
+        message: "Co-host added successfully",
+        description: "An email has been sent to the co-host.",
+        placement: "topRight",
+      });
+    } catch (error) {
+      console.error("Error adding co-host:", error);
+      // Handle errors as needed (e.g., display an error message to the user)
+      notification.error({
+        message: "Error adding co-host",
+        description:
+          "There was an error adding the co-host. Please try again.",
+      });
+    }
+  };
+  
   const fetchListings = async () => {
     try {
       setLoading(true); // Set loading to true before fetching data
@@ -94,7 +137,7 @@ export default function Listings() {
       title: "Title",
       dataIndex: "title",
       key: "title",
-      render: (title) => <Link to={`/HostHomes`}>{title}</Link>,
+      render: (title) => <Link to={``}>{title}</Link>,
     },
     {
       title: "Listing Status",
@@ -120,6 +163,23 @@ export default function Listings() {
       title: "address",
       dataIndex: "address",
       key: "address",
+    },
+
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, listing) => {
+        // Check if the host type is "I'm hosting as a business"
+        if (listing.host_type === "I'm hosting as a business") {
+          return (
+            <Link onClick={handleCheckboxChanges}>
+              <Button type="primary">Add a Co-host</Button>
+            </Link>
+          );
+        } else {
+          return null; // Render nothing if the host type is different
+        }
+      },
     },
   ];
 
@@ -228,8 +288,9 @@ export default function Listings() {
         <div className="flex justify-between items-center mb-10">
           <div>
             <h1 className="text-xl font mb-4 italic text-gray-500">
-              2 Listings found
+              {listings.length} Listings found
             </h1>
+            <p className="text-gray-500 text-sm">If you selected Hosting as a Business,please click on the apartment to add a co-host.</p>
           </div>
           <div>
             <Link to="/HostHomes">
@@ -419,6 +480,30 @@ export default function Listings() {
           </div>
         </Modal>
       </div>
+      <Modal
+  isOpen={coHostModalVisible}
+  onRequestClose={() => setCoHostModalVisible(false)}
+  contentLabel="Add Co-host Modal"
+  style={{
+    content: {
+      width: "300px",
+      height: "200px", // Set the width of the modal
+      margin: "auto", // Center the modal horizontally
+      boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
+    },
+  }}
+>
+  <h2>Add Co-host</h2>
+  <Input
+    placeholder="Enter co-host email"
+    value={coHostEmail}
+    onChange={(e) => setCoHostEmail(e.target.value)}
+  />
+
+  <Button className="mt-5" onClick={handleAddCoHost}>Add Co-host</Button>
+</Modal>
+
+
       <BottomNavigation />
       <Footer />
     </div>

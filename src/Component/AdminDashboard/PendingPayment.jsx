@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Space, Input, DatePicker, Select, Dropdown } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import { parse, isAfter } from 'date-fns';
+import Axios from "../../Axios"
+import moment from "moment";
 
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const PendingPayment = () => {
+  const [data, setData] = useState([]);
 
   const [filters, setFilters] = useState({
     hostName: "",
@@ -17,58 +20,63 @@ const PendingPayment = () => {
   });
 
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await Axios.get('/receivablePayable');
+        setData(response.data.data);
+        console.log(response.data.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
   const columns = [
     {
-      title: "Host",
-      dataIndex: "hostName",
-      key: "hostName",
-    },
-    {
-      title: "Payment Date",
-      dataIndex: "paymentDate",
-      key: "paymentDate",
-    },
-    {
-      title: "Booking No",
-      dataIndex: "bookingNo",
-      key: "bookingNo",
-    },
-    {
-      title: "Total Amount",
-      dataIndex: "totalAmount",
-      key: "totalAmount",
-    },
-    {
-      title: "Payment Type",
-      dataIndex: "paymentType",
-      key: "paymentType",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-    },
-
-    {
-        title: 'Guest Service Charge',
-        dataIndex: 'guestServiceCharge',
-        key: 'guestServiceCharge',
+      title: 'Date',
+      dataIndex: 'Date',
+      key: 'Date',
+      render: (text) => {
+        return moment(text).format('dddd, D MMMM YYYY');
       },
-      {
-        title: 'Host Service Charge',
-        dataIndex: 'hostServiceCharge',
-        key: 'hostServiceCharge',
-      },
-      {
-        title: 'Net Profit',
-        dataIndex: 'netProfit',
-        key: 'netProfit',
-      },
-      {
-        title: 'Amount to Host',
-        dataIndex: 'amountToHost',
-        key: 'amountToHost',
-      },
+    },
+    {
+      title: 'Booking No',
+      dataIndex: 'paymentId',
+      key: 'paymentId',
+    },
+    {
+      title: 'Host Email',
+      dataIndex: 'hostEmail',
+      key: 'hostEmail',
+    },
+    {
+      title: 'Total Amount',
+      dataIndex: 'totalAmount',
+      key: 'totalAmount',
+    },
+    {
+      title: 'Guest Service Charge',
+      dataIndex: 'guestServiceCharge',
+      key: 'guestServiceCharge',
+    },
+    {
+      title: 'Host Service Charge',
+      dataIndex: 'hostServiceCharge',
+      key: 'hostServiceCharge',
+    },
+    {
+      title: 'Net Profit',
+      dataIndex: 'netProfit',
+      key: 'netProfit',
+    },
+    {
+      title: 'Amount to Host',
+      dataIndex: 'amountToHost',
+      key: 'amountToHost',
+    },
     {
       title: "Actions",
       key: "actions",
@@ -84,73 +92,33 @@ const PendingPayment = () => {
               <Space>Edit</Space>
             </a>
           </Dropdown>
-          <a>Delete</a>
+       
         </Space>
       ),
     },
   ];
 
-  const data = [
-    {
-      key: "1",
-      hostName: "Darwin Nuez",
-      paymentDate: "2023-10-15",
-      bookingNo: "B001",
-      totalAmount: "$100",
-      paymentType: "Visa Card",
-      status: "Pending",
-      guestServiceCharge: '$30',
-      hostServiceCharge: '$20',
-      netProfit: '$150',
-      amountToHost: '$180',
-    },
-    {
-      key: "2",
-      hostName: "kobiko",
-      paymentDate: "2023-10-14",
-      bookingNo: "B002",
-      totalAmount: "$150",
-      paymentType: "Transfer",
-      status: "Pending",
-      guestServiceCharge: '$40',
-      hostServiceCharge: '$30',
-      netProfit: '$180',
-      amountToHost: '$220',
-    },
-    {
-      key: "3",
-      hostName: "myemailaddress23",
-      paymentDate: "2023-10-13",
-      bookingNo: "B003",
-      totalAmount: "$120",
-      paymentType: "Verve Card",
-      status: "Pending",
-      guestServiceCharge: '$35',
-      hostServiceCharge: '$25',
-      netProfit: '$160',
-      amountToHost: '$195',
-    },
-  ];
 
-  const filteredData = data.filter((record) => {
-    const { hostName, amount, dateRange } = filters;
-    const paymentDate = parse(record.paymentDate, 'yyyy-MM-dd', new Date());
+
+  // const filteredData = data.filter((record) => {
+  //   const { hostName, amount, dateRange } = filters;
+  //   const paymentDate = parse(record.paymentDate, 'yyyy-MM-dd', new Date());
   
-    const matchesEmail = record.hostName.toLowerCase().includes(hostName.toLowerCase());
-    const matchesAmount = record.totalAmount.toLowerCase().includes(amount.toLowerCase());
+  //   const matchesEmail = record.hostName.toLowerCase().includes(hostName.toLowerCase());
+  //   const matchesAmount = record.totalAmount.toLowerCase().includes(amount.toLowerCase());
   
-    // Check if the payment date is within the selected date range
-    let matchesDate = true;
-    if (dateRange) {
-      const [startDate, endDate] = dateRange;
-      if (startDate && endDate) {
-        matchesDate =
-          isAfter(paymentDate, startDate) && isAfter(endDate, paymentDate);
-      }
-    }
+  //   // Check if the payment date is within the selected date range
+  //   let matchesDate = true;
+  //   if (dateRange) {
+  //     const [startDate, endDate] = dateRange;
+  //     if (startDate && endDate) {
+  //       matchesDate =
+  //         isAfter(paymentDate, startDate) && isAfter(endDate, paymentDate);
+  //     }
+  //   }
   
-    return matchesEmail && matchesAmount && matchesDate;
-  });
+  //   return matchesEmail && matchesAmount && matchesDate;
+  // });
   
 
   const handleFilterChange = (name, value) => {
@@ -200,11 +168,8 @@ const PendingPayment = () => {
               />
             </div>
             <div className="overflow-x-auto">
-              {filteredData.length > 0 ? (
-                <Table columns={columns} dataSource={filteredData} />
-              ) : (
-                <div>No data found.</div>
-              )}
+            <Table columns={columns} dataSource={data} />
+
             </div>
           </div>
         </div>

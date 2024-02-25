@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Input, Select, Modal, Space, Dropdown, Spin } from "antd";
+import { Table, Input, Select, Modal, Space, Dropdown, Spin, notification } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
@@ -50,51 +50,55 @@ export default function ReviewListings() {
     setSearchQuery(event.target.value);
   };
 
-  const handleDeleteReview = (reviewId) => {
-    confirm({
-      title: "Do you want to delete this review?",
-      icon: <ExclamationCircleOutlined />,
-      onOk() {
-        const updatedReviews = reviews.filter(
-          (review) => review.id !== reviewId
-        );
-        setReviews(updatedReviews);
-      },
-    });
+
+
+  const ConfirmDeleteReview = async (reviewId) => {
+    try {
+      await Axios.delete(`/deleteReviews/${reviewId}`);
+      const updatedReviews = reviews.filter((review) => review.id !== reviewId);
+      setReviews(updatedReviews);
+      notification.success({
+        message: "Review Deleted",
+        description: "The review has been successfully deleted.",
+      });
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      notification.error({
+        message: "Failed to Delete Review",
+        description: "An error occurred while deleting the review.",
+      });
+    }
   };
+  
 
   const columns = [
     {
       title: "Rental Name",
-      dataIndex: "rentalName",
-      key: "rentalName",
+      dataIndex: "propertyName",
+      key: "propertyName",
     },
     {
       title: "Rating",
-      dataIndex: "rating",
-      key: "rating",
+      dataIndex: "ratings",
+      key: "ratings",
     },
     {
       title: "Email Address",
-      dataIndex: "emailAddress",
-      key: "emailAddress",
+      dataIndex: "guestemail",
+      key: "guestemail",
     },
 
     {
       title: "Comments",
-      dataIndex: "comments",
-      key: "comments",
+      dataIndex: "comment",
+      key: "comment",
     },
     {
       title: "Date Added",
-      dataIndex: "dateAdded",
-      key: "dateAdded",
+      dataIndex: "created_at",
+      key: "created_at",
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-    },
+    
     {
       title: "Actions",
       key: "actions",
@@ -126,7 +130,7 @@ export default function ReviewListings() {
           </Dropdown>
           &nbsp;
           <span
-            onClick={() => handleDeleteReview(record.id)}
+            onClick={() => ConfirmDeleteReview(record.id)}
             className="cursor-pointer"
           >
             Delete
@@ -138,15 +142,16 @@ export default function ReviewListings() {
 
   const filteredReviews = reviews.filter((review) => {
     const { status } = filters;
-
+  
     const matchesStatus = status === "Any" || review.status === status;
-
+  
     const matchesSearch =
-      review.rentalName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      review.emailAddress.toLowerCase().includes(searchQuery.toLowerCase());
-
+      (review.rentalName && review.rentalName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (review.emailAddress && review.emailAddress.toLowerCase().includes(searchQuery.toLowerCase()));
+  
     return matchesStatus && matchesSearch;
   });
+  
 
   return (
     <div className="bg-gray-100 h-[100vh]">
@@ -182,7 +187,7 @@ export default function ReviewListings() {
             {loading ? (
                 <Spin size="large" />
               ) : (
-                <Table columns={columns} rowKey="id" dataSource={filteredReviews} />
+                <Table columns={columns} rowKey="id" dataSource={reviews} />
               )}            </div>
           </div>
         </div>

@@ -73,7 +73,7 @@ import Public from "./PublicRoutes";
 import PageNotFound from "./PageNotFound";
 import PaymentsTab from "./Component/Settings/PaymentsTab";
 import OtpPage from "./Component/Settings/OtpPage";
-
+import AdminDamagePage from "./Component/AdminDashboard/AdminDamagePage";
 function App() {
 
   return (
@@ -157,6 +157,7 @@ function App() {
                 element={<CanceledReservationTable />}
               />
               <Route path="/TransactionHistory" element={<TransactionHistory />} />
+              <Route path="/AdminDamagePage" element={<AdminDamagePage />} />
 
               <Route
                 path="/UserVerificationDashboard"

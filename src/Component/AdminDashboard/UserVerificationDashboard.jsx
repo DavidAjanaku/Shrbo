@@ -49,7 +49,7 @@ const UserVerificationDashboard = () => {
   const fetchUnverifiedUsers = async () => {
     try {
       setLoading(true);
-      const response = await Axios.get("/userDetail");
+      const response = await Axios.get("/getVerifiedUsers");
       setFilteredData(response.data.data);
       console.log(response.data.data);
       setLoading(false);
@@ -204,9 +204,9 @@ const UserVerificationDashboard = () => {
                 />
               </p>
               <p className="text-base font-semibold mt-4 mb-2">
-                Selfie Photo:{" "}
+                Live Photo:{" "}
                 <img
-                  src={selectedUser.selfiePhoto}
+                  src={selectedUser.live_photo}
                   className="h-64"
                   alt="User Photo"
                 />
