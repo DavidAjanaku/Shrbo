@@ -319,7 +319,11 @@ export default function Trip() {
     return formattedAmount;
   }
 
-
+  const formatDate = (dateString) => {
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', options);
+  };
 
 
 
@@ -413,10 +417,10 @@ export default function Trip() {
               filteredTrips.map((trip, index) => (
                 <div
                   key={index}
-                  className="md:w-2/5 m-5 cursor-pointer w-full   rounded-lg"
+                  className="md:w-[20%] m-5 cursor-pointer w-full   rounded-lg"
                 >
                   <div className="relative">
-                    <div className="absolute p-4 uppercase text-white bg-orange-400">
+                    <div className="absolute p-2 uppercase text-sm text-white bg-orange-400">
                       {trip.checkedIn}
                     </div>
                     <img
@@ -426,15 +430,16 @@ export default function Trip() {
                     />
                   </div>
                   <div className="mt-4">
-                    <h2 className="font-bold text-xl">{trip.destination}</h2>
+                    <h2 className="font-bold text-lg">{trip.destination}</h2>
                     <div className="flex flex-wrap  my-1">
                       <p className="flex items-center mr-2 text-sm">
                         <img src={calender} className="w-4 mr-3" alt="" />{" "}
-                        {trip.startDate}
+                        {formatDate(trip.startDate)}
                       </p>
                       <p className="flex items-center text-sm">
                         <img src={calender} className="w-4 mr-3" alt="" />{" "}
-                        {trip.endDate}
+                     
+                        {formatDate(trip.endDate)}
                       </p>
                     </div>
                     <div className="flex space-x-2">
@@ -455,7 +460,7 @@ export default function Trip() {
                     </div>
                     <div>
                       <button
-                        className="bg-orange-400 p-4 rounded-full mt-7 text-white text-lg"
+                        className="bg-orange-400 p-2  mt-7 text-white text-sm"
                         onClick={() => openModal(trip)}
                       >
                         More Details

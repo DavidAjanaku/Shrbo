@@ -170,7 +170,7 @@ export default function AdminSidebar() {
         </Link>
         <Link to="/AdminDamagePage">
           <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
-          Report Damage
+          Report Damages
           </li>
         </Link>
         <Link to="/AnnouncementPage">

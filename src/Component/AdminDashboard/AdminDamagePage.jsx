@@ -38,87 +38,56 @@ const AdminDamagePage = () => {
 
   const columns = [
     {
-        title: "Reporter Name",
-        dataIndex: ["reporter", "name"],
-        key: "reporterName",
-      },
-      {
-        title: "Reporter Email",
-        dataIndex: ["reporter", "email"],
-        key: "reporterEmail",
-      },
-      {
-        title: "Reporter Phone",
-        dataIndex: ["reporter", "phone"],
-        key: "reporterPhone",
-      },
-      {
-        title: "Booking ID",
-        dataIndex: ["apartment", "id"],
-        key: "apartmentId",
-      },
-      {
-        title: "Apartment Address",
-        dataIndex: ["apartment", "address"],
-        key: "apartmentAddress",
-      },
-      {
-        title: "Apartment Description",
-        dataIndex: ["apartment", "description"],
-        key: "apartmentDescription",
-      },
-      {
-        title: "Damage Details",
-        dataIndex: ["apartment", "damageDetails"],
-        key: "damageDetails",
-      },
-      {
-        title: "Police Report Filed",
-        dataIndex: ["apartment", "policeReportFiled"],
-        key: "policeReportFiled",
-        render: (text) => (text ? "Yes" : "No"),
-      },
-      {
-        title: "Guest Name",
-        dataIndex: ["guest", "name"],
-        key: "guestName",
-      },
-      {
-        title: "Guest Email",
-        dataIndex: ["guest", "email"],
-        key: "guestEmail",
-      },
-      {
-        title: "Guest Phone",
-        dataIndex: ["guest", "phone"],
-        key: "guestPhone",
-      },
-      {
-        title: "Incident Date",
-        dataIndex: "incidentDate",
-        key: "incidentDate",
-      },
-      {
-        title: "Report Date",
-        dataIndex: "reportDate",
-        key: "reportDate",
-      },
-      {
-        title: "Additional Notes",
-        dataIndex: "additionalNotes",
-        key: "additionalNotes",
-      },
+      title: "Guest Name",
+      dataIndex: ["guest", "name"],
+      key: "guestName",
+    },
+    {
+      title: "Guest Email",
+      dataIndex: ["guest", "email"],
+      key: "guestEmail",
+    },
+    {
+      title: "Guest Phone",
+      dataIndex: ["guest", "phone_number"],
+      key: "guestPhone",
+    },
+    {
+      title: "Apartment Address",
+      dataIndex: ["hosthome", "address"],
+      key: "apartmentAddress",
+    },
+    {
+      title: "Check-in Date",
+      dataIndex: ["hosthome", "checkin"],
+      key: "checkinDate",
+    },
+    {
+      title: "Check-out Date",
+      dataIndex: ["hosthome", "checkout"],
+      key: "checkoutDate",
+    },
+    {
+      title: "Apartment Description",
+      dataIndex: ["hosthome", "description"],
+      key: "apartmentDescription",
+    },
+    {
+      title: "Damage Description",
+      dataIndex: "damage_description",
+      key: "damageDescription",
+    },
     {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
-        <Button onClick={() => showTicketModal(record)}>Message Host</Button>
+        <Button onClick={() => showTicketModal(record)}>Show Details</Button>
       ),
     },
-    
   ];
 
   const showTicketModal = (ticket) => {
+    console.log("Ticket data:", ticket); // Debugging
     setSelectedTicket({
       id: ticket.id,
       subject: ticket.title,
@@ -127,6 +96,12 @@ const AdminDamagePage = () => {
       rentalName: ticket.homeName,
       disputeMessage: ticket.reasonforreporting,
       disputeEmail: ticket.disputeEmail,
+      hosthome: ticket.hosthome, // Ensure hosthome is properly set
+      name: ticket.guest.name,
+      email: ticket.guest.email,
+      phone_number: ticket.guest.phone_number,
+      reportDate: ticket.reportDate,
+      damage_description: ticket.damage_description,
     });
     setTicketModalVisible(true);
   };
@@ -157,9 +132,8 @@ const AdminDamagePage = () => {
         </div>
 
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
-        <h1 className="text-2xl font-semibold mb-4">Damage Reports</h1>
-          <div className="mb-4">
-          </div>
+          <h1 className="text-2xl font-semibold mb-4">Damage Reports</h1>
+          <div className="mb-4"></div>
           <div className="overflow-x-auto">
             <Table
               columns={columns}
@@ -169,36 +143,52 @@ const AdminDamagePage = () => {
             />
           </div>
           <Modal
-            title="Damage Report  Details"
+            title="Damage Report Details"
             open={ticketModalVisible}
             onCancel={() => setTicketModalVisible(false)}
             footer={null}
           >
             {selectedTicket && (
               <div>
-                <p>Ticket ID: {selectedTicket.id}</p>
-                <p>Subject: {selectedTicket.subject}</p>
-                <p>Status: {selectedTicket.status}</p>
-                <h3>Replies:</h3>
-                <ul>
-                  {selectedTicket.replies.map((reply, index) => (
-                    <li key={index}>{reply}</li>
-                  ))}
-                </ul>
-                <Form form={replyForm} layout="vertical">
-                  <Form.Item
-                    name="reply"
-                    label="Reply"
-                    rules={[
-                      { required: true, message: "Please enter a reply" },
-                    ]}
-                  >
-                    <Input.TextArea rows={4} />
-                  </Form.Item>
-                  <Button type="primary" onClick={handleReplySubmit}>
-                    Add Reply
-                  </Button>
-                </Form>
+                <p>
+                  <strong>ID:</strong> {selectedTicket.id}
+                </p>
+                <p>
+                  <strong>Name:</strong> {selectedTicket.name}
+                </p>
+                <p>
+                  <strong>Email:</strong> {selectedTicket.email}
+                </p>
+                <p>
+                  <strong>Phone Number:</strong> {selectedTicket.phone_number}
+                </p>
+                {selectedTicket.hosthome && (
+                  <>
+                    <p>
+                      <strong>Address:</strong>{" "}
+                      {selectedTicket.hosthome.address}
+                    </p>
+                    <p>
+                      <strong>Check-in Date:</strong>{" "}
+                      {selectedTicket.hosthome.checkin}
+                    </p>
+                    <p>
+                      <strong>Check-out Date:</strong>{" "}
+                      {selectedTicket.hosthome.checkout}
+                    </p>
+                    <p>
+                      <strong>Description:</strong>{" "}
+                      {selectedTicket.hosthome.description}
+                    </p>
+                  </>
+                )}
+                <p>
+                  <strong>Damage Description:</strong>{" "}
+                  {selectedTicket.damage_description}
+                </p>
+                <p>
+                  <strong>Report Date:</strong> {selectedTicket.reportDate}
+                </p>
               </div>
             )}
           </Modal>
