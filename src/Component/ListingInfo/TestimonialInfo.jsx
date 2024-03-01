@@ -6,7 +6,6 @@ import { Pagination } from "antd";
 const TestimonialInfo = ({ reviews }) => {
   const [current, setCurrent] = useState(3);
   const onChange = (page) => {
-    console.log(page);
     setCurrent(page);
   };
 
@@ -146,7 +145,7 @@ const TestimonialInfo = ({ reviews }) => {
             </div>
             <div className=" text-sm md:text-base">
               <label>
-                {new Date(client.created_at).toLocaleDateString("en-US", {
+                {new Date(client.datePosted).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",

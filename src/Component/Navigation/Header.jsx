@@ -98,7 +98,7 @@ export default function Header() {
 
   const deleteNotification=(notification)=>{
     const response=axios.delete(`/notification/${notification}`);
-    console.log("Deleted Notification",response.data)
+    // console.log("Deleted Notification",response.data)
 
 
   }
@@ -132,9 +132,9 @@ export default function Header() {
 
         axios.get("/notification").then(response=>{
           setNotifications([...notifications ,response.data.data]);
-            console.log("notification",response.data);
+            // console.log("notification",response.data);
         }).catch(error=>{
-            console.log("Error",error);
+            // console.log("Error",error);
         });
 
 
@@ -143,8 +143,8 @@ export default function Header() {
 
   },[]);
 
-  console.log("adminStatus",adminStatus);
-  console.log("host",host);
+  // console.log("adminStatus",adminStatus);
+  // console.log("host",host);
   
 
  const logOut=async ()=>{
@@ -152,7 +152,7 @@ export default function Header() {
    try {
     await axios.get("/logout").then(response=>{
  
-       console.log("logout",response);
+      //  console.log("logout",response);
        localStorage.removeItem("Shbro");
        localStorage.removeItem("A_Status");
        localStorage.removeItem("H_Status");
@@ -161,7 +161,7 @@ export default function Header() {
      });
    } catch (error) {
 
-     console.log("Error",error);
+    //  console.log("Error",error);
    }
 
 

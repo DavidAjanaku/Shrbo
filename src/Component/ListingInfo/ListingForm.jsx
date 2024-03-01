@@ -56,7 +56,7 @@ export default function ListingForm({
       try {
         const response = await Axios.get("/user");
         
-        console.log(response.data.verified);
+        // console.log(response.data.verified);
         setVerified(response.data.verified); // Set the verified status
 
       } catch (error) {
@@ -67,7 +67,7 @@ export default function ListingForm({
 
     fetchUsers();
   }, []);
-  console.log(verified);
+  // console.log(verified);
   const {
     checkInDate,
     setCheckInDate,
@@ -103,7 +103,7 @@ export default function ListingForm({
     const message = form.getFieldValue("message");
 
     // Log the message to the console
-    console.log("Message:", message);
+    // console.log("Message:", message);
 
     // Perform the logic to send the message here
 
@@ -132,7 +132,7 @@ export default function ListingForm({
       try {
         const response = await Axios.get(`showGuestHome/${id}`);
         setListingDetails(response.data.data);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setPrice(response.data.data.price); // Adjust this line based on your API response structure
         setHousePrice(price);
         const checkoutTimeDate = response.data.data.checkout;
@@ -147,7 +147,7 @@ export default function ListingForm({
           return { checkInDate, checkOutDate };
         });
 
-        console.log(bookedDates);
+        // console.log(bookedDates);
 
         // Set the booked dates to exclude them in the DatePicker
         setBookedDates(bookedDates);
@@ -187,20 +187,20 @@ export default function ListingForm({
       // const tax = 0.05 * basePrice;
 
       const guest_fee = guestFee * nights;
-      console.log(guest_fee);
+      // console.log(guest_fee);
       const securityDeposits = securityDeposit;
       const totalPrice = nights * nightlyPrice;
       const TotalPrice = basePrice + securityDeposits;
 
       setHousePrice(price);
-      console.log(nights);
+      // console.log(nights);
       setNights(nights);
       setTotalPrice(totalPrice);
       setHostFee(hostFees);
       setHostFees(hostFees);
 
       setTotalCosts(totalCosts);
-      console.log(totalCosts);
+      // console.log(totalCosts);
       setServiceFee(serviceFees);
       setServiceFees(serviceFees);
       // setTaxFees(tax);
@@ -479,7 +479,6 @@ export default function ListingForm({
                             setShowVerifyModal(true);
                           } else {
                             navigate('/RequestBook');
-                            console.log("working");
 
                           }
                         }}
@@ -511,7 +510,6 @@ export default function ListingForm({
                         setShowVerifyModal(true);
                       } else  {
                         navigate('/RequestBook');
-                        console.log("working");
                       }
                     }}
                     disabled={!checkInDate || !checkOutDate}

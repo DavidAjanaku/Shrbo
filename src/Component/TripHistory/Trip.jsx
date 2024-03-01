@@ -156,11 +156,10 @@ export default function Trip() {
 
       setTrips(filteredTripsData);
       setFilteredTrips(filteredTripsData);
-      console.log(response.data.data);
 
 
     }).catch(error => {
-      console.log(error);
+      // console.log(error);
     }).finally(() => setLoading(false));
 
 
@@ -273,15 +272,13 @@ export default function Trip() {
       host_id: selectedTrip.hostId,
       reasonforcancel: reasoms
     }
-    console.log(data)
 
     await axios.post("/createCancelTrips", data).then(response => {
       // setGoNext(true);
-      console.log(response.data);
       setReasons('');
 
     }).catch(error => {
-      console.log(error)
+      // console.log(error)
 
     }).finally(()=>{
       window.location.href='/trip';
@@ -340,7 +337,7 @@ export default function Trip() {
     setSelectedTab(tab);
   };
 
-  console.log(goNext)
+  // console.log(goNext)
 
   return (
     <div className=" h-[100vh]  overflow-auto example">

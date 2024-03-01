@@ -63,14 +63,14 @@ const HostProfilePreview = ({
       </div>
     </span>
   ));
-  console.log(userId);
+  // console.log(userId);
 
   useEffect(() => {
     // Fetch host information and reviews
     Axios.get(`/hostReview/${userId}`)
       .then((response) => {
         setHostInfo(response.data);
-         console.log(userId);
+        //  console.log(userId);
 
         setLoading(false);
       })

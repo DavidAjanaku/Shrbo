@@ -33,7 +33,7 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
   const imageUrls = hosthomephotos || []; // Use hosthomephotos prop or provide a default empty array
 
   const imageUrlss = imageUrls.map(photo => photo.images);
-  console.log(imageUrlss);
+  // console.log(imageUrlss);
 
 
   useEffect(() => {
