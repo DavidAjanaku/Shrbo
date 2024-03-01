@@ -104,7 +104,7 @@ export default function ReviewListings() {
       key: "actions",
       render: (text, record) => (
         <div>
-          <Dropdown
+          {/* <Dropdown
             menu={{
               items: [
                 {
@@ -127,7 +127,7 @@ export default function ReviewListings() {
             trigger={["click"]}
           >
             <a onClick={(e) => e.preventDefault()}>Action</a>
-          </Dropdown>
+          </Dropdown> */}
           &nbsp;
           <span
             onClick={() => ConfirmDeleteReview(record.id)}

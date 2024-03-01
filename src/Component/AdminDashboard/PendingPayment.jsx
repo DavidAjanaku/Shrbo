@@ -168,7 +168,7 @@ const PendingPayment = () => {
               />
             </div>
             <div className="overflow-x-auto">
-            <Table columns={columns} dataSource={data} />
+            <Table columns={columns} dataSource={data} rowKey="paymentId" />
 
             </div>
           </div>

@@ -30,9 +30,9 @@ const CompletedBooking = () => {
     fetchCompletedBookings();
   }, []);
 
-  const checkInDate = new Date(selectedBooking["check-In"]).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-const checkOutDate = new Date(selectedBooking["check-out"]).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
+  const checkInDate = selectedBooking ? new Date(selectedBooking["check-In"]).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : "";
+  const checkOutDate = selectedBooking ? new Date(selectedBooking["check-out"]).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : "";
+  
 
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
 

@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import DateIcon from "../../assets/svg/date-icon.svg";
 import "react-datepicker/dist/react-datepicker.css";
 import { Modal, Button, Dropdown, Space, message, Form, Input } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Popup from "../../hoc/Popup";
 import ReportListing from "./ReportListing";
 import CustomModal from "../CustomModal";
@@ -12,16 +12,23 @@ import { useParams } from "react-router-dom";
 import Axios from "../../Axios";
 import { useDateContext } from "../../ContextProvider/BookingInfo";
 import PriceSkeleton from "../../SkeletonLoader/PriceSkeleton";
-export default function ListingForm({ reservations, reservation, guest }) {
+export default function ListingForm({
+  reservations,
+  reservation,
+  guest,
+  
+}) {
   function showModal(e) {
     e.preventDefault();
     setIsModalVisible(true);
   }
+  const [verified, setVerified] = useState(false);
 
   const [messageModalVisible, setMessageModalVisible] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
   const [showMessageHostButton, setShowMessageHostButton] = useState(true);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
 
   const messageRef = useRef(null);
   // const [checkInDate, setCheckInDate] = useState(null);
@@ -43,6 +50,24 @@ export default function ListingForm({ reservations, reservation, guest }) {
   const [securityDeposit, setSecurityDeposit] = useState(0);
   const [guestFee, setGuestFee] = useState(0);
 
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await Axios.get("/user");
+        
+        console.log(response.data.verified);
+        setVerified(response.data.verified); // Set the verified status
+
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        // Handle error, show error message, etc.
+      }
+    };
+
+    fetchUsers();
+  }, []);
+  console.log(verified);
   const {
     checkInDate,
     setCheckInDate,
@@ -149,8 +174,6 @@ export default function ListingForm({ reservations, reservation, guest }) {
     calculateTotalPrice(checkInDate, date);
   };
 
-  
-
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
     if (checkIn instanceof Date && checkOut instanceof Date) {
@@ -203,6 +226,8 @@ export default function ListingForm({ reservations, reservation, guest }) {
   };
   let pricePerNight = Number(price).toLocaleString();
 
+  const navigate = useNavigate();
+
   return (
     <div className=" block w-full h-full">
       <div
@@ -217,16 +242,13 @@ export default function ListingForm({ reservations, reservation, guest }) {
                 <div className=" gap-2 justify-start flex-wrap flex-row items-center flex">
                   <div>
                     <span aria-hidden="true">
-            
-
-<div className="font-medium text-xl box-border">
-  {price === null || totalPrice === 0
-    ? <PriceSkeleton />
-    : `₦${Number(price).toLocaleString()}`}
-</div>
-
-
-
+                      <div className="font-medium text-xl box-border">
+                        {price === null || totalPrice === 0 ? (
+                          <PriceSkeleton />
+                        ) : (
+                          `₦${Number(price).toLocaleString()}`
+                        )}
+                      </div>
                     </span>
                   </div>
 
@@ -441,7 +463,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
                     </div>
                   </div>
                   <div className="p-2">
-                    <Link to="/RequestBook">
+                    <Link to={verified !== null ? "/RequestBook" : undefined}>
                       <button
                         type="button"
                         className="block w-full h-11 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
@@ -451,6 +473,16 @@ export default function ListingForm({ reservations, reservation, guest }) {
                             dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]]"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          if (verified == null) {
+                            setShowVerifyModal(true);
+                          } else {
+                            navigate('/RequestBook');
+                            console.log("working");
+
+                          }
+                        }}
                       >
                         Book
                       </button>
@@ -463,16 +495,25 @@ export default function ListingForm({ reservations, reservation, guest }) {
             {/* <!--Submit button--> */}
             <div className="p-2">
               {showMessageHostButton && (
-                <Link to="/RequestBook">
+                <Link to={verified !== null ? "/RequestBook" : undefined}>
                   <button
                     type="button"
                     className="block w-full h-11 mt-3 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
-          text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
-          focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
-          focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
-          dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
-          dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
-          ,0_4px_18px_0_rgba(59,113,202,0.1)]"
+      text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
+      focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+      focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+      dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
+      dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
+      ,0_4px_18px_0_rgba(59,113,202,0.1)]"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      if (verified == null) {
+                        setShowVerifyModal(true);
+                      } else  {
+                        navigate('/RequestBook');
+                        console.log("working");
+                      }
+                    }}
                     disabled={!checkInDate || !checkOutDate}
                   >
                     Book
@@ -495,6 +536,35 @@ export default function ListingForm({ reservations, reservation, guest }) {
             </div>
           </form>
         </div>
+
+        {showVerifyModal && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-4 rounded">
+              <h2 className="text-lg font-bold mb-2">Verification Required</h2>
+              <p className="text-sm mb-4">
+                Please verify your account before booking.
+              </p>
+              <div className="flex justify-between">
+                <button
+                  onClick={() => setShowVerifyModal(false)}
+                  className="bg-orange-400 text-white px-4 py-2 rounded mr-2"
+                >
+                  OK
+                </button>
+                <Link to="/profile">
+                  <button
+                    onClick={() => {
+                      // Add logic to navigate to settings page
+                    }}
+                    className="bg-orange-400 text-white px-4 py-2 rounded"
+                  >
+                    Go to Settings
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className=" font-normal text-sm box-border flex items-end justify-center break-words pt-3  pl-3    ">
           {/* <span> see full price</span> */}
@@ -521,7 +591,6 @@ export default function ListingForm({ reservations, reservation, guest }) {
           </CustomModal> */}
       </div>
 
-      {/* Message Modal */}
       <Modal
         title="Message Host"
         open={messageModalVisible}

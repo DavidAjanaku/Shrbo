@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Input, Button } from "antd";
+import { Input, Button,notification } from "antd";
 import AdminSidebar from "../AdminSidebar";
 import AdminHeader from "./AdminHeader";
+import Axios from "../../../Axios"
 
 const ServiceChargeSettings = () => {
   const [guestServiceCharge, setGuestServiceCharge] = useState(0);
@@ -15,12 +16,28 @@ const ServiceChargeSettings = () => {
     setHostServiceCharge(value);
   };
 
-  const handleSaveChanges = () => {
-    // Implement logic to save the updated service charges to the backend
-    console.log("Guest Service Charge:", guestServiceCharge);
-    console.log("Host Service Charge:", hostServiceCharge);
-    // You can make API calls to update the service charges in your backend here
+  const handleSaveChanges = async () => {
+    try {
+      const response = await Axios.post("/updateServiceCharges", {
+        guest_services_charge: guestServiceCharge,
+        host_services_charge: hostServiceCharge,
+      });
+      notification.success({
+        message: "Success",
+        description: "Service charges updated successfully",
+      });
+      console.log("Service charges updated successfully:", response.data);
+      // You can update your UI or show a success message here
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Failed to update service charges",
+      });
+      console.error("Failed to update service charges:", error);
+      // Handle the error or show an error message to the user
+    }
   };
+  
 
   return (
     <div>

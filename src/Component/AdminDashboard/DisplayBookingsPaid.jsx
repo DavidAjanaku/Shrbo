@@ -220,7 +220,7 @@ const DisplayBookingsPaid = () => {
             </div>
             <div className="overflow-x-auto">
               {filteredData.length > 0 ? (
-                <Table columns={columns} dataSource={paymentData} />
+                <Table columns={columns} dataSource={paymentData} rowKey="paymentId" />
               ) : (
                 <div>No data found.</div>
               )}
