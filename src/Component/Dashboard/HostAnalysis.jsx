@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, Modal, Checkbox, Select } from "antd";
 import HostHeader from "../Navigation/HostHeader";
 import Room from "../../assets/room.jpeg";
@@ -12,7 +12,7 @@ import {
   PointElement,
 } from "chart.js";
 import HostBottomNavigation from "./HostBottomNavigation";
-import axios from"../../Axios";
+import axios from "../../Axios";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
@@ -24,14 +24,15 @@ export default function HostAnalysis() {
   const [activeTab, setActiveTab] = useState("1");
   const [showListingsModal, setShowListingsModal] = useState(false);
   const [selectedApartment, setSelectedApartment] = useState(null);
-  const {user,setUser,setHost,setAdminStatus}=useStateContext();
+  const { user, setUser, setHost, setAdminStatus } = useStateContext();
   const currentDate = new Date();
-  const  defaultSelectedMonth = `${currentDate.toLocaleString("default", { month: "long" })} ${currentDate.getFullYear()}`;
+  const defaultSelectedMonth = `${currentDate.toLocaleString("default", { month: "long" })} ${currentDate.getFullYear()}`;
   const [selectedMonth, setSelectedMonth] = useState(defaultSelectedMonth); // Add selectedMonth state
-  const [views,setViews]=useState();
-  const [apartmentData,setApartmentData]=useState([]);
-  const [reviews,setReviews]=useState([]);
-  const [payment,setPayment]=useState();
+  const [views, setViews] = useState();
+  const [apartmentData, setApartmentData] = useState([]);
+  const [earningsApartmentData, setEarningsApartmentData] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [payment, setPayment] = useState();
 
   function formatAmountWithCommas(amount) {
     // Convert the amount to a string and split it into integer and decimal parts
@@ -52,120 +53,130 @@ export default function HostAnalysis() {
       try {
         // Make a request to get the user data
         const response = await axios.get('/user'); // Adjust the endpoint based on your API
-        
+
 
         // Set the user data in state
         setUser(response.data);
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
-      
+
 
       } catch (error) {
         console.error('Error fetching user data:', error);
       } finally {
-    
+
       }
     };
 
     fetchUserData();
-  }, []); 
+  }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
 
-  if(!selectedMonth){
+    if (!selectedMonth) {
       return;
-  }
-    const month=selectedMonth.split(/[ ]+/)[0].toLowerCase();
-    const year=selectedMonth.split(/[ ]+/)[1].toString();
+    }
+    const month = selectedMonth.split(/[ ]+/)[0].toLowerCase();
+    const year = selectedMonth.split(/[ ]+/)[1].toString();
 
     console.log(month);
     console.log(year);
-    
 
-    axios.get(`/hostAnalyticsByMonthYear/${month}/${year}`).then(response=>{
 
-      const formattedViews={
-        host_view_count:response.data.data.host_view_count,
-        new_bookings_count:response.data.data.new_bookings_count,
-        booking_rate:response.data.data.booking_rate,
+    axios.get(`/hostAnalyticsByMonthYear/${month}/${year}`).then(response => {
+
+      const formattedViews = {
+        host_view_count: response.data.data.host_view_count,
+        new_bookings_count: response.data.data.new_bookings_count,
+        booking_rate: response.data.data.booking_rate,
       }
 
       setViews(formattedViews);
       console.log(formattedViews);
 
-    }).catch(err=>{
+    }).catch(err => {
       console.log(err)
     });
 
-    axios.get(`/hostAnalyticsEarningsByMonthYear/${month}/${year}`).then(response=>{
-      const formattedEarnings={
-        hostTotalAmountAllBookings:formatAmountWithCommas(response.data.hostTotalAmountAllBookings),
-        hostTotalAmountPaidBookings:formatAmountWithCommas(response.data.hostTotalAmountPaidBookings),
-        hostTotalAmountUnpaidBookings:formatAmountWithCommas(response.data.hostTotalAmountUnpaidBookings),
+    axios.get(`/hostAnalyticsEarningsByMonthYear/${month}/${year}`).then(response => {
+      const formattedEarnings = {
+        hostTotalAmountAllBookings: formatAmountWithCommas(response.data.totalAmountAllBookings),
+        hostTotalAmountPaidBookings: formatAmountWithCommas(response.data.totalAmountPaidBookings),
+        hostTotalAmountUnpaidBookings: formatAmountWithCommas(response.data.totalAmountUnpaidBookings),
       }
 
+      const formattedApartmentEarnings = response.data.earnings.map((item,index) => ({
+        id:index,
+        name: item.title,
+        image: item.images[0].images,
+        datePosted: item.creationDate,
+        earnings:formatAmountWithCommas(item.earnings)
+
+      }));
+
       setPayment(formattedEarnings);
-      console.log("WW",response)
+      setEarningsApartmentData(formattedApartmentEarnings);
+      console.log("WW", response)
 
 
 
 
-    }).catch(err=>{
+    }).catch(err => {
       console.log(err);
     });
 
- },[selectedMonth]);
+  }, [selectedMonth]);
 
- function convertTimestampToReadable(timestampString) {
-  const timestamp = new Date(timestampString);
-  
-  const formattedDate = timestamp.toISOString().split('T')[0];
-  const formattedTime = timestamp.toTimeString().split(' ')[0];
+  function convertTimestampToReadable(timestampString) {
+    const timestamp = new Date(timestampString);
 
-  return `${formattedDate} ${formattedTime}`;
-}
+    const formattedDate = timestamp.toISOString().split('T')[0];
+    const formattedTime = timestamp.toTimeString().split(' ')[0];
 
-
-
-
-
-
- useEffect(()=>{
-  if(!(user.id)){
-
-    return;
+    return `${formattedDate} ${formattedTime}`;
   }
 
-  axios.get(`/hostReview/${user.id}`).then(response=>{
-    const formattedApartmentData=response.data.data.hosthomeDetails.map(item=>({
 
-      id: item.hosthome_id,
-      name: item.hosthome_title,
-      image: item.photo_image,
-      // datePosted: "2023-09-01",
-      earnings: [
-        { date: "2023-09-01", amount: 150 },
-        { date: "2023-09-02", amount: 250 },
-      ],
 
-    }));
 
-    const formattedReviews=response.data.data.actualReviews.map(item=>({
-      apartmentId: item.host_home_id,
-      personName: item.user_name,
-      comment: item.comment,
-      starRating: item.ratings,
-      date: convertTimestampToReadable(item.created_at),    
-    }));
 
-    setReviews(formattedReviews)
-    setApartmentData(formattedApartmentData);
-    console.log(response);
-  }).catch(err=>{
-    console.log(err);
-  });
 
- },[user]);
+  useEffect(() => {
+    if (!(user.id)) {
+
+      return;
+    }
+
+    axios.get(`/hostReview/${user.id}`).then(response => {
+      const formattedApartmentData = response.data.data.hosthomeDetails.map(item => ({
+
+        id: item.hosthome_id,
+        name: item.hosthome_title,
+        image: item.photo_image,
+        // datePosted: "2023-09-01",
+        earnings: [
+          { date: "2023-09-01", amount: 150 },
+          { date: "2023-09-02", amount: 250 },
+        ],
+
+      }));
+
+      const formattedReviews = response.data.data.actualReviews.map(item => ({
+        apartmentId: item.host_home_id,
+        personName: item.user_name,
+        comment: item.comment,
+        starRating: item.ratings,
+        date: convertTimestampToReadable(item.created_at),
+      }));
+
+      setReviews(formattedReviews)
+      setApartmentData(formattedApartmentData);
+      console.log(response);
+    }).catch(err => {
+      console.log(err);
+    });
+
+  }, [user]);
 
 
   const handleTabChange = (tabKey) => {
@@ -263,49 +274,49 @@ export default function HostAnalysis() {
     let currentMonth = startDate;
 
     while (currentMonth <= endDate) {
-        const year = currentMonth.getFullYear();
-        const month = currentMonth.toLocaleString("default", { month: "long" });
-        months.push({ value: `${month} ${year}`, date: new Date(currentMonth) });
-        currentMonth.setMonth(currentMonth.getMonth() + 1);
+      const year = currentMonth.getFullYear();
+      const month = currentMonth.toLocaleString("default", { month: "long" });
+      months.push({ value: `${month} ${year}`, date: new Date(currentMonth) });
+      currentMonth.setMonth(currentMonth.getMonth() + 1);
     }
 
     return months;
-};
+  };
 
-// const generateMonths = () => {
-//   // Get the current date from the browser
-//   const currentDate = new Date();
-//   const currentYear = currentDate.getFullYear();
-//   const currentMonth = currentDate.getMonth() + 1; // Adding 1 because getMonth() returns zero-based index
+  // const generateMonths = () => {
+  //   // Get the current date from the browser
+  //   const currentDate = new Date();
+  //   const currentYear = currentDate.getFullYear();
+  //   const currentMonth = currentDate.getMonth() + 1; // Adding 1 because getMonth() returns zero-based index
 
-//   // Calculate start date as 12 months before the current month and year
-//   const startYear = currentMonth <= 12 ? currentYear - 1 : currentYear;
-//   const startMonth = currentMonth <= 12 ? currentMonth + 1 : currentMonth - 11;
-//   const startDate = new Date(`${startYear}-${startMonth}-01`);
+  //   // Calculate start date as 12 months before the current month and year
+  //   const startYear = currentMonth <= 12 ? currentYear - 1 : currentYear;
+  //   const startMonth = currentMonth <= 12 ? currentMonth + 1 : currentMonth - 11;
+  //   const startDate = new Date(`${startYear}-${startMonth}-01`);
 
-//   // End date is the current month and year
-//   const endDate = currentDate;
+  //   // End date is the current month and year
+  //   const endDate = currentDate;
 
-//   const months = [];
-//   let tempDate = new Date(startDate);
+  //   const months = [];
+  //   let tempDate = new Date(startDate);
 
-//   while (tempDate <= endDate) {
-//       const year = tempDate.getFullYear();
-//       const month = tempDate.toLocaleString("default", { month: "long" });
-//       months.push({ value: `${month} ${year}`, date: new Date(tempDate) });
-//       tempDate.setMonth(tempDate.getMonth() + 1);
-//   }
+  //   while (tempDate <= endDate) {
+  //       const year = tempDate.getFullYear();
+  //       const month = tempDate.toLocaleString("default", { month: "long" });
+  //       months.push({ value: `${month} ${year}`, date: new Date(tempDate) });
+  //       tempDate.setMonth(tempDate.getMonth() + 1);
+  //   }
 
-//   return months;
-// };
+  //   return months;
+  // };
 
-// const months = generateMonths();
-// console.log(months);
+  // const months = generateMonths();
+  // console.log(months);
 
 
-// // Example usage
-// const result = generateMonths();
-// console.log(result);
+  // // Example usage
+  // const result = generateMonths();
+  // console.log(result);
 
 
   const generateMonthss = () => {
@@ -420,16 +431,16 @@ export default function HostAnalysis() {
 
                 <div className="">
                   <div className="my-4">
-                    <div className="text-4xl font-bold">₦{payment&&payment.hostTotalAmountAllBookings}</div>
+                    <div className="text-4xl font-bold">₦{payment && payment.hostTotalAmountAllBookings}</div>
                     <div>
-                      <p className="">Booked Earnings for 2023</p>
+                      <p className="">Booked Earnings for {selectedMonth}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-3">
                     <span className="bg-red-400 h-4 w-4"></span>
                     <div className="text-xl font-bold text-[color-for-amount]">
-                      ₦{payment&&payment.hostTotalAmountPaidBookings}
+                      ₦{payment && payment.hostTotalAmountPaidBookings}
                     </div>
                     <div>
                       <p className="text-[color-for-label]">Paid out</p>
@@ -439,7 +450,7 @@ export default function HostAnalysis() {
                     <span className="bg-green-500 h-4 w-4"></span>
 
                     <div className="text-xl font-bold text-[color-for-amount]">
-                      ₦{payment&&payment.hostTotalAmountUnpaidBookings}
+                      ₦{payment && payment.hostTotalAmountUnpaidBookings}
                     </div>
                     <div>
                       <p className="text-[color-for-label]">Expected</p>
@@ -490,8 +501,8 @@ export default function HostAnalysis() {
               </div>
             </div>
             <div className="my-20">
-              <h1 className="text-2xl font-bold">2023 Details</h1>
-              <TopEarningApartments apartments={apartmentData} />
+              <h1 className="text-2xl font-bold">{selectedMonth} Details</h1>
+              <TopEarningApartments apartments={earningsApartmentData} />
             </div>
           </items>
 
@@ -515,13 +526,13 @@ export default function HostAnalysis() {
               <div className="flex flex-wrap">
                 <div>
                   <div className="flex flex-col mr-6">
-                    <span className="text-4xl font-bold mb-2">{views?views.host_view_count:2}</span>
+                    <span className="text-4xl font-bold mb-2">{views ? views.host_view_count : 2}</span>
                     <span className="text-base">Views, past 30 days</span>
                   </div>
                 </div>
                 <div>
                   <div className="flex flex-col mr-7">
-                    <span className="text-4xl font-bold mb-2">{views?views.new_bookings_count:0}</span>
+                    <span className="text-4xl font-bold mb-2">{views ? views.new_bookings_count : 0}</span>
                     <span className="text-base">
                       New bookings, past 30 days
                     </span>
@@ -529,7 +540,7 @@ export default function HostAnalysis() {
                 </div>
                 <div>
                   <div className="flex flex-col">
-                    <span className="text-4xl font-bold mb-2">{(views?views.booking_rate:0).toFixed(1)}%</span>
+                    <span className="text-4xl font-bold mb-2">{(views ? views.booking_rate : 0).toFixed(1)}%</span>
                     <span className="text-base">Booking rate</span>
                   </div>
                 </div>
@@ -537,7 +548,7 @@ export default function HostAnalysis() {
             </div>
           </items>
 
-         
+
         </Tabs>
       </div>
 
@@ -547,36 +558,36 @@ export default function HostAnalysis() {
         title="Apartment Listings"
         footer={null}
       >
-        {apartmentData.length>0?
-        <ul>
-          {apartmentData.map((apartment) => (
-            <li
-              key={apartment.id}
-              className="flex items-center justify-between my-4"
-            >
-              <Checkbox  checked={selectedApartment === apartment.id} onChange={() => handleApartmentClick(apartment.id)}>
-                <div className="  overflow-hidden w-[50vw] md:w-[360px]  text-ellipsis whitespace-nowrap ">
-                 {apartment.name}
+        {apartmentData.length > 0 ?
+          <ul>
+            {apartmentData.map((apartment) => (
+              <li
+                key={apartment.id}
+                className="flex items-center justify-between my-4"
+              >
+                <Checkbox checked={selectedApartment === apartment.id} onChange={() => handleApartmentClick(apartment.id)}>
+                  <div className="  overflow-hidden w-[50vw] md:w-[360px]  text-ellipsis whitespace-nowrap ">
+                    {apartment.name}
                   </div>
-               
-              </Checkbox>
-              <img src={apartment.image} className="w-10" alt="" />
-            </li>
-          ))}
-        </ul>
-        :
-        <div className=" w-full h-32 text-center py-10 font-medium text-lg flex items-center justify-center " >
-        <svg xmlns="http://www.w3.org/2000/svg" 
-        width={"34px"}
-        viewBox="0 0 24 24"><title>alert-octagon</title>
-        <path d="M3,16V9L8,4H15L20,9V16.03L15.03
+
+                </Checkbox>
+                <img src={apartment.image} className="w-10" alt="" />
+              </li>
+            ))}
+          </ul>
+          :
+          <div className=" w-full h-32 text-center py-10 font-medium text-lg flex items-center justify-center " >
+            <svg xmlns="http://www.w3.org/2000/svg"
+              width={"34px"}
+              viewBox="0 0 24 24"><title>alert-octagon</title>
+              <path d="M3,16V9L8,4H15L20,9V16.03L15.03
         ,21H8L3,16M8.39,5L4,9.39V15.6L8.4,20H14.61L19,15.61V9.39L14.61,
         5H8.39M11,8H12V13H11V8M11,15H12V17H11V15Z"/></svg>
-          You have no active Listings
+            You have no active Listings
           </div>}
       </Modal>
 
-      <HostBottomNavigation/>
+      <HostBottomNavigation />
     </div>
   );
 }

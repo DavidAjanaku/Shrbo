@@ -85,7 +85,7 @@ export default function TransactionHistory() {
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
-      pageSize: 1,
+      pageSize: 4,
     },
   });
   const pdfRef = useRef(); // Create a ref for the PDF content

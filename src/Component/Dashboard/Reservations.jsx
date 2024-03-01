@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, Table, Button, DatePicker, Dropdown } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import GoBackButton from "../GoBackButton";
@@ -10,53 +10,56 @@ import {
 } from "@ant-design/icons";
 import Logo from "../../assets/logo.png";
 import axios from '../../Axios';
+import Rating from "../ListingInfo/Ratings";
 
 const Reservations = () => {
-  const [allKey, setAllKey] = useState("1");
+  const [allKey, setAllKey] = useState("6");
   const [filterDate, setFilterDate] = useState(null);
   const [visible, setVisible] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [show, setShow] = useState(false);
   const toggleShow = () => setShow(!show);
-  const [drawer,setDrawer]=useState(false);
-  const [dataMain,setData]=useState([]);
+  const [drawer, setDrawer] = useState(false);
+  const [dataMain, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const calculateDaysDifference = (date1, date2) => {
     const startDate = new Date(date1);
     const endDate = new Date(date2);
     const daysDifference = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
     return daysDifference;
-};
+  };
 
-function formatDate(inputDate) {
-  const dateObject = new Date(inputDate);
-  
-  const year = dateObject.getFullYear();
-  const month = String(dateObject.getMonth() + 1).padStart(2, '0');
-  const day = String(dateObject.getDate()).padStart(2, '0');
+  function formatDate(inputDate) {
+    const dateObject = new Date(inputDate);
 
-  return `${day}-${month}-${year}`;
-}
+    const year = dateObject.getFullYear();
+    const month = String(dateObject.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObject.getDate()).padStart(2, '0');
 
-function formatAmountWithCommas(amount) {
-  // Convert the amount to a string and split it into integer and decimal parts
-  const [integerPart, decimalPart] = amount.toString().split('.');
+    return `${day}-${month}-${year}`;
+  }
 
-  // Add commas to the integer part
-  const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  function formatAmountWithCommas(amount) {
+    // Convert the amount to a string and split it into integer and decimal parts
+    const [integerPart, decimalPart] = amount.toString().split('.');
 
-  // Combine the integer and decimal parts with a dot if there is a decimal part
-  const formattedAmount = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+    // Add commas to the integer part
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-  return formattedAmount;
-}
+    // Combine the integer and decimal parts with a dot if there is a decimal part
+    const formattedAmount = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+
+    return formattedAmount;
+  }
 
 
-  useEffect(()=>{
-    axios.get('/allReservation').then(response=>{
+  useEffect(() => {
+    setLoading(true);
+    axios.get('/allReservation').then(response => {
 
-    const formattedData=response.data.bookings.map(item=>({
+      const formattedData = response.data.bookings.map(item => ({
         key: item.aboutGuest.id,
         status: item.status.toLowerCase(),
         guests: `${item.guests} guest(s)`,
@@ -67,26 +70,27 @@ function formatAmountWithCommas(amount) {
         confirmationCode: "ABC123",
         totalPayout: `  ₦ ${formatAmountWithCommas(item.amount)}`,
         guestName: item.aboutGuest.name,
-        nights: calculateDaysDifference(item.check_in_date,item.check_out_date),
-        profilePic:item.profilepic,
-        rating:item.aboutGuest.rating,
-        cancelationPolicy:item.cancelationPolicy,
-        link:`/UserDetails/${item.aboutGuest.id}`,
+        nights: calculateDaysDifference(item.check_in_date, item.check_out_date),
+        profilePic: item.profilepic,
+        rating: item.userReviews ? item.userReviews.ratings : "",
+        comment: item.userReviews ? item.userReviews.comment : "",
+        cancelationPolicy: item.cancelationPolicy,
+        link: `/UserDetails/${item.aboutGuest.id}`,
         guest_service_fee: `  ₦ ${formatAmountWithCommas(item.guest_service_fee)}`,
-        host_service_fee:`  ₦  ${formatAmountWithCommas(item.host_service_fee)}`,
-        dateUserJoined:item.dateUserJoined,
+        host_service_fee: `  ₦  ${formatAmountWithCommas(item.host_service_fee)}`,
+        dateUserJoined: item.dateUserJoined,
       })
       );
 
       setData(formattedData);
 
 
-    }).catch();
+    }).catch().finally(() => setLoading(false));
 
 
-  },[]);
+  }, []);
 
- 
+
 
 
   const handleSubmit = () => {
@@ -95,10 +99,10 @@ function formatAmountWithCommas(amount) {
   };
 
   const handlePopup = (key) => {
-    if(window.innerWidth < 768){
-      setDrawer(true); 
-    }else{
-      setDrawer(false);    
+    if (window.innerWidth < 768) {
+      setDrawer(true);
+    } else {
+      setDrawer(false);
     }
     setIsModalVisible(true);
     setSelectedReservation(key);
@@ -134,58 +138,57 @@ function formatAmountWithCommas(amount) {
   );
 
   const data = [
-   ...dataMain,
+    ...dataMain,
     // Add more data objects for other rows
   ];
 
   const statusMap = {
     "1": "upcoming",
     "2": "completed",
-    "3": "canceled",
+    "3": "cancelled",
     "4": "pending",
     "5": "ongoing",
     "6": "", // "All" tab
   };
-  
 
-  
+
+
 
   // Function to filter the table based on the selected date range
   // ... (existing code)
 
-// Function to filter the table based on the selected date range and status
-const handleFilter = (dates) => {
-  setFilterDate(dates);
-};
+  // Function to filter the table based on the selected date range and status
+  const handleFilter = (dates) => {
+    setFilterDate(dates);
+  };
 
-// Updated filter function to consider both date range and status
-const filterFunction = (record) => {
-  const dateFilter =
-    !filterDate ||
-    (filterDate &&
-      filterDate[0] <= new Date(record.checkOut) &&
-      filterDate[1] >= new Date(record.checkIn));
+  // Updated filter function to consider both date range and status
+  const filterFunction = (record) => {
+    const dateFilter =
+      !filterDate ||
+      (filterDate &&
+        filterDate[0] <= new Date(record.checkOut) &&
+        filterDate[1] >= new Date(record.checkIn));
 
-  const statusFilter =
-    !allKey || (allKey === "6" ? true : record.status === statusMap[allKey]);
+    const statusFilter =
+      !allKey || (allKey === "6" ? true : record.status === statusMap[allKey]);
 
-  return dateFilter && statusFilter;
-};
+    return dateFilter && statusFilter;
+  };
 
-const filteredData = data.filter(filterFunction);
+  const filteredData = data.filter(filterFunction);
 
-// ... (rest of your code)
+
 
   // console.log(filteredData)
 
-  const children1 = null;
   const items = [
     {
       key: "1",
       label: (
         <div className=" text-neutral-700      rounded-t-lg">Upcoming</div>
       ),
-      children: filteredData.length > 0 ?  (
+      children: filteredData.length > 0 ? (
         <CardTable
           dataSource={filteredData}
           handlePopup={(key) => handlePopup(key)}
@@ -206,45 +209,45 @@ const filteredData = data.filter(filterFunction);
     },
     {
       key: "3",
-      label: <div className="text-neutral-700   rounded-t-lg">Canceled</div>,
+      label: <div className="text-neutral-700   rounded-t-lg">Cancelled</div>,
       children:
-      filteredData.length > 0 ?
-        (
-          <CardTable
-            dataSource={filteredData}
-            handlePopup={(key) => handlePopup(key)}
-          />
-        ) : empty("6", "canceled"),
+        filteredData.length > 0 ?
+          (
+            <CardTable
+              dataSource={filteredData}
+              handlePopup={(key) => handlePopup(key)}
+            />
+          ) : empty("6", "cancelled"),
     },
     {
       key: "4",
       label: <div className="text-neutral-700   rounded-t-lg">Pending</div>,
       children:
-      filteredData.length > 0 ?
-        (
-          <CardTable
-            dataSource={filteredData}
-            handlePopup={(key) => handlePopup(key)}
-          />
-        ) : empty("6", "pending"),
+        filteredData.length > 0 ?
+          (
+            <CardTable
+              dataSource={filteredData}
+              handlePopup={(key) => handlePopup(key)}
+            />
+          ) : empty("6", "pending"),
     },
     {
       key: "5",
       label: <div className="text-neutral-700   rounded-t-lg">Ongoing</div>,
       children:
-      filteredData.length > 0 ?
-        (
-          <CardTable
-            dataSource={filteredData}
-            handlePopup={(key) => handlePopup(key)}
-          />
-        ) : empty("6", "ongoing"),
+        filteredData.length > 0 ?
+          (
+            <CardTable
+              dataSource={filteredData}
+              handlePopup={(key) => handlePopup(key)}
+            />
+          ) : empty("6", "ongoing"),
     },
     {
       key: "6",
       label: <div className="text-neutral-700      rounded-t-lg">All</div>,
       children:
-      filteredData.length > 0 ? (
+        filteredData.length > 0 ? (
           <CardTable
             dataSource={filteredData}
             handlePopup={(key) => handlePopup(key)}
@@ -253,7 +256,47 @@ const filteredData = data.filter(filterFunction);
     },
   ];
 
-  // Define data for the table
+  const skeletonLoader = Array.from({ length: 6 }).map((group, index) =>
+    <div
+      key={index}
+      className=" relative  h-fit row-span-1    w-full  md:mt-2  md:px-2 "
+    >
+      <div
+        className=" rounded-xl h-32 skeleton-loader cursor-pointer p-4  flex hover:bg-slate-100/10 max-w-[100%]  "
+      >
+        <div className=" flex-1 gap-3 flex flex-col   ">
+          <div className="status font-medium text-orange-300 ">
+
+          </div>
+          <div className="name-checkin-checkout text-base  font-medium text-ellipsis   ">
+            <p className="text-ellipsis overflow-hidden whitespace-nowrap w-[50%] ">
+
+            </p>
+
+          </div>
+          <div className="listing text-gray-500 text-sm     ">
+            <p className=" text-ellipsis overflow-hidden whitespace-nowrap w-[50vw] md:w-[23vw]  ">
+
+            </p>
+          </div>
+        </div>
+
+        <div className="  ">
+          <div className="rounded-xl  relative ">
+            <div
+              className={`relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
+                        
+                            bg-center rounded-[50%] bg-cover bg-no-repeat  ` }
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  );
+
+
+
 
   return (
     <div className="px-6 md:px-10 xl:px-20 max-w-7xl max-h-screen h-screen overflow-hidden  m-auto  flex  flex-col md:gap-4 relative ">
@@ -261,7 +304,7 @@ const filteredData = data.filter(filterFunction);
         className="  py-[18px]  sticky  w-full top-0 block  bg-white
                                          box-border z-[50]   md:px-10 lg:px-6    "
       >
-        <div className=" flex items-center gap-16 w-full relative  ">
+        <div className={`flex items-center gap-16 w-full relative  `}>
           <GoBackButton />
 
           <div className=" pr-[18px] -ml-8 mt-[10px]  md:block cursor-pointer hidden  md:relative ">
@@ -277,7 +320,7 @@ const filteredData = data.filter(filterFunction);
               </svg>
             </button>
           </div>
-          <Dropdown
+        {!loading&&  <Dropdown
             // menu={{
             //  items:dropdownItems,
             // }}
@@ -336,7 +379,7 @@ const filteredData = data.filter(filterFunction);
                 </svg>
               </button>
             </div>
-          </Dropdown>
+          </Dropdown>}
         </div>
         {/* <DatePicker.RangePicker
           onChange={handleFilter}
@@ -358,12 +401,21 @@ const filteredData = data.filter(filterFunction);
         </div>
 
         <div className=" max-w-full  h-full   ">
-          <Tabs
+       {!loading?   <Tabs
             defaultActiveKey="1"
             onTabClick={onTabClick}
             activeKey={allKey}
             items={items}
           />
+          :
+          <div className=" mt-5 ">
+
+            <div className="    w-full h-auto    gap-2 md:gap-4 grid grid-cols-1 md:grid-cols-2     ">
+              {skeletonLoader}
+            </div>
+          </div>
+          }
+
         </div>
 
         {/* Reservation Details ------------------------------------------------------------------------------------- */}
@@ -385,7 +437,7 @@ const filteredData = data.filter(filterFunction);
             </div>
           }
         >
-          <div className={`  ${drawer?"h-full overflow-y-scroll":"h-[80vh] overflow-y-scroll"}`}>
+          <div className={`  ${drawer ? "h-full overflow-y-scroll" : "h-[80vh] overflow-y-scroll"}`}>
             {selectedReservation != null ? (
               <div className=" flex-col flex gap-2  pt-2 h-full    ">
                 {/* {filteredData[selectedReservation].status} */}
@@ -403,7 +455,7 @@ const filteredData = data.filter(filterFunction);
                         {filteredData[selectedReservation].guestName}
                       </p>
                       <p className=" pb-1">
-                      {filteredData[selectedReservation].checkIn} - {filteredData[selectedReservation].checkOut}{" "}
+                        {filteredData[selectedReservation].checkIn} - {filteredData[selectedReservation].checkOut}{" "}
                         {`(${filteredData[selectedReservation].nights} nights)`}{" "}
                       </p>
                       <p className=" ">
@@ -420,7 +472,7 @@ const filteredData = data.filter(filterFunction);
                   <div className="  ">
                     <div className="rounded-xl  relative ">
                       <div
-                         style={{ backgroundImage: `url(${filteredData[selectedReservation].profilePic})` }}
+                        style={{ backgroundImage: `url(${filteredData[selectedReservation].profilePic})` }}
                         className={` relative   box-border block md:h-[50px] md:w-[50px] h-[45px] w-[45px] 
                                           bg-center rounded-[50%] bg-cover bg-no-repeat   `}
                       ></div>
@@ -437,22 +489,19 @@ const filteredData = data.filter(filterFunction);
 
                 {/* Guests Review if Reservation has been completed meaning the gueest has stayed there else it shouldn't show  */}
 
-                <div className="p-2 md:p-3 w-full bg-slate-200/10 rounded-lg">
+                {filteredData[selectedReservation].rating != "" && <div className="p-2 md:p-3 w-full bg-slate-200/10 rounded-lg">
                   <p className=" font-medium md:text-lg   ">
                     {" "}
                     {`${filteredData[selectedReservation].guestName}'s  review`}
                     :
                   </p>
                   <div
-                    className={` text-ellipsis overflow-hidden    w-[95%] md:w-[80%] ${
-                      show ? " whitespace-normal" : "whitespace-nowrap"
-                    }   `}
+                    className={` text-ellipsis overflow-hidden    w-[95%] md:w-[80%] ${show ? " whitespace-normal" : "whitespace-nowrap"
+                      }   `}
                   >
                     <label className=" text-sm text-gray-600 ">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Obcaecati, itaque vel quis quia mollitia nulla aspernatur
-                      non numquam eveniet pariatur in quisquam impedit nesciunt
-                      architecto, iusto aperiam, sequi illum ullam?
+                      <Rating rating={filteredData[selectedReservation].rating} />
+                      {filteredData[selectedReservation].comment}
                     </label>
                   </div>
                   <button
@@ -462,7 +511,7 @@ const filteredData = data.filter(filterFunction);
                   >
                     Show {show ? " less" : "more"}{" "}
                   </button>
-                </div>
+                </div>}
 
                 {/* Guests info  */}
 
@@ -653,61 +702,61 @@ const CardTable = ({ dataSource, handlePopup }) => {
   return (
     <div className="overflow-y-scroll h-[65vh] ">
 
-    <div className="    w-full h-auto    gap-2 md:gap-4 grid grid-cols-1 md:grid-cols-2     ">
-     {(dataSource&&dataSource.length !=0 )? <>
-      {dataSource.map((data, index) => (
-        <div
-          key={index}
-          className=" relative  h-fit row-span-1    w-full  md:mt-2  md:px-2 "
-        >
-          <div
-            onClick={() => handlePopup(index)}
-            className=" rounded-xl cursor-pointer p-4 border-slate border flex hover:bg-slate-100/10 max-w-[100%]  "
-          >
-            <div className=" flex-1 gap-3 flex flex-col   ">
-              <div className="status font-medium text-orange-300 ">
-                <p>{data.status}</p>{" "}
-              </div>
-              <div className="name-checkin-checkout text-base  font-medium text-ellipsis   ">
-                <p className="text-ellipsis overflow-hidden whitespace-nowrap w-[50%] ">
-                  {data.guestName}
-                </p>
-                <p>{data.checkIn} - {data.checkOut}</p>
-              </div>
-              <div className="listing text-gray-500 text-sm     ">
-                <p className=" text-ellipsis overflow-hidden whitespace-nowrap w-[50vw] md:w-[23vw]  ">
-                  {data.listing}{" "}
-                </p>
-              </div>
-            </div>
+      <div className="    w-full h-auto    gap-2 md:gap-4 grid grid-cols-1 md:grid-cols-2     ">
+        {(dataSource && dataSource.length != 0) ? <>
+          {dataSource.map((data, index) => (
+            <div
+              key={index}
+              className=" relative  h-fit row-span-1    w-full  md:mt-2  md:px-2 "
+            >
+              <div
+                onClick={() => handlePopup(index)}
+                className=" rounded-xl cursor-pointer p-4 border-slate border flex hover:bg-slate-100/10 max-w-[100%]  "
+              >
+                <div className=" flex-1 gap-3 flex flex-col   ">
+                  <div className="status font-medium text-orange-300 ">
+                    <p>{data.status}</p>{" "}
+                  </div>
+                  <div className="name-checkin-checkout text-base  font-medium text-ellipsis   ">
+                    <p className="text-ellipsis overflow-hidden whitespace-nowrap w-[50%] ">
+                      {data.guestName}
+                    </p>
+                    <p>{data.checkIn} - {data.checkOut}</p>
+                  </div>
+                  <div className="listing text-gray-500 text-sm     ">
+                    <p className=" text-ellipsis overflow-hidden whitespace-nowrap w-[50vw] md:w-[23vw]  ">
+                      {data.listing}{" "}
+                    </p>
+                  </div>
+                </div>
 
-            <div className="  ">
-              <div className="rounded-xl  relative ">
-                <div
-                  style={{ backgroundImage: `url(${data.profilePic})` }}
-                  className={ `relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
+                <div className="  ">
+                  <div className="rounded-xl  relative ">
+                    <div
+                      style={{ backgroundImage: `url(${data.profilePic})` }}
+                      className={`relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
                         
                             bg-center rounded-[50%] bg-cover bg-no-repeat  ` }
-                ></div>
+                    ></div>
 
-                {/* <div className=" border-white border-2  box-border block h-[40px] w-[40px] 
+                    {/* <div className=" border-white border-2  box-border block h-[40px] w-[40px] 
                             bg-[url('https://a0.muscache.com/im/pictures/user/82130759-fbba-4012-ac60-51d5b0e4801e.jpg?im_w=240')] 
                             bg-center rounded-[50%] bg-cover bg-no-repeat absolute top-0 right-2    ">
 
                             </div> */}
+                  </div>
+                </div>
               </div>
             </div>
+          ))}
+        </>
+          :
+          <div className=" text-center w-full text-base font-medium mt-10">
+            No Reservations Found ,<br></br>Clear date filter
           </div>
-        </div>
-      ))}
-      </>
-      :
-      <div className=" text-center w-full text-base font-medium mt-10">
-        No Reservations Found ,<br></br>Clear date filter 
+        }
+
       </div>
-    }
-     
-    </div>
     </div>
   );
 };

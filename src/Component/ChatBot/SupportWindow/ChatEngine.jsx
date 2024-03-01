@@ -102,7 +102,7 @@ const ChatEngine= (props) => {
       delayBot = setTimeout(() => {
         setMessages([...messages, ...newMessages]);
         setIsTyping(false);
-       
+        messageSentSound.play();
       }, 900)
       
       
@@ -310,9 +310,9 @@ const ChatEngine= (props) => {
 
     {/*typing indicator  */}
         {isTyping && (
-            <div className="self-start bg-gray-300 p-2 rounded-lg max-w-[200px]">
-             <div className="dot-pulse">
-              <div className="dot-pulse__dot"></div>
+            <div className="self-start  bg-gray-300 p-2 rounded-lg max-w-[200px]">
+             <div className="dot-pulse1">
+              <div className="dot-pulse1__dot"></div>
               </div>
           </div>
             )}
@@ -375,7 +375,7 @@ const ChatEngine= (props) => {
             className=" text-white rounded-r-lg p-2 right-12 absolute  "
             onClick={clickImage}
             >
-            <svg xmlns="http://www.w3.org/2000/svg" width={"24px"} height={"24px"} viewBox="0 0 24 24"><title>paperclip</title><path d="M16.5,6V17.5A4,4 0 0,1 12.5,21.5A4,4 0 0,1 8.5,17.5V5A2.5,2.5 0 0,1 11,2.5A2.5,2.5 0 0,1 13.5,5V15.5A1,1 0 0,1 12.5,16.5A1,1 0 0,
+            <svg xmlns="http://www.w3.org/2000/svg" width={"24px"} height={"24px"} viewBox="0 0 24 24"><title>Upload Image</title><path d="M16.5,6V17.5A4,4 0 0,1 12.5,21.5A4,4 0 0,1 8.5,17.5V5A2.5,2.5 0 0,1 11,2.5A2.5,2.5 0 0,1 13.5,5V15.5A1,1 0 0,1 12.5,16.5A1,1 0 0,
             1 11.5,15.5V6H10V15.5A2.5,2.5 0 0,0 12.5,18A2.5,2.5 0 0,0 15,15.5V5A4,4 0 0,0 11,1A4,4 0 0,0 7,5V17.5A5.5,5.5 0 0,0 12.5,23A5.5,5.5 0 0,0 18,17.5V6H16.5Z" /></svg>
           </button>
          

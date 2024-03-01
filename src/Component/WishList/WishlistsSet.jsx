@@ -18,8 +18,9 @@ import { useStateContext } from "../../ContextProvider/ContextProvider";
 
 
 const WishlistsSet = () => {
+  const { id, wishList } = useParams();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [textField, setTextField] = useState(null);
+  const [textField, setTextField] = useState(wishList);
   const [wishTitle, setWishTitle] = useState();
   const [loading, setLoading] = useState(true);
   const {user}=useStateContext();
@@ -74,8 +75,7 @@ const WishlistsSet = () => {
   ]);
 
   // const {id}=props.match.params;
-  const { id, wishList } = useParams();
-
+ 
   useEffect(() => {
 
     if (id) {
@@ -98,7 +98,7 @@ const WishlistsSet = () => {
           setListings(formattedHostHomes)
         }
 
-        console.log(formattedHostHomes)
+        console.log(response)
 
       }).catch(err => {
         console.error(err)
@@ -150,6 +150,11 @@ const WishlistsSet = () => {
   const handleRename = async (e) => {
     e.preventDefault();
 
+    if(textField===""){
+      handleCancel();
+      return;
+    }
+
     const data = {
       name: textField,
     }
@@ -172,7 +177,7 @@ const WishlistsSet = () => {
       setWishTitle(wishList);
     });
     
-    handleCancel()
+    handleCancel();
     
   }
   
@@ -601,7 +606,7 @@ const WishlistsSet = () => {
                               </div>
                               <div className=' box-border block'>
                                 <div className=' flex opacity-100'>
-                                  <input maxLength="50" className=' p-0 border-none mt-[26px] mr-3 mb-[6px] ml-3 w-full   ' onChange={onTextChange} />
+                                  <input maxLength="50" value={textField} className=' p-0 border-none mt-[26px] mr-3 mb-[6px] ml-3 w-full   ' onChange={onTextChange} />
                                 </div>
                               </div>
                             </label>

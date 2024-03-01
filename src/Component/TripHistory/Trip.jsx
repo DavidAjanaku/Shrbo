@@ -238,16 +238,15 @@ export default function Trip() {
   const SkeletonLoader = Array.from({ length: 8 }).map((group, index) => (
     <div
       key={index}
-      className="max-w-[26rem] md:max-w-[18rem] rounded overflow-hidden   m-4 cursor-pointer  "
+      className="md:w-2/5 m-4 max-w-[80vw] cursor-pointer w-full  rounded overflow-hidden    "
     >
 
-      <div className=''>
+      <div className='w-full   '>
 
-        <div className='  h-[250px] w-[330px]  md:w-[270px] rounded-xl object-cover skeleton-loader text-transparent' />
+        <div className=' w-full md:h-[310px] h-[210px]   rounded-xl object-cover skeleton-loader text-transparent' />
       </div>
 
-
-      <div className=" py-4">
+      <div className=" py-4 h-full w-full">
         <div className="font-medium text-base mb-2 skeleton-loader text-transparent">dddddddddd</div>
         {/* <Rating rating={group.rating} /> */}
         <br></br>
@@ -256,6 +255,7 @@ export default function Trip() {
         <br></br>
         <p className="font-medium text-gray-700 text-base skeleton-loader text-transparent">dddddddd</p>
       </div>
+
 
     </div>
 
@@ -485,7 +485,7 @@ export default function Trip() {
             )}
           </div>
           :
-          <div className="flex flex-wrap justify-center">
+          <div className="flex flex-wrap ">
 
             {SkeletonLoader}
           </div>
