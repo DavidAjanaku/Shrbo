@@ -417,7 +417,7 @@ export default function Trip() {
               filteredTrips.map((trip, index) => (
                 <div
                   key={index}
-                  className="md:w-[20%] m-5 cursor-pointer w-full   rounded-lg"
+                  className="md:w-[40%] m-5 cursor-pointer w-full   rounded-lg"
                 >
                   <div className="relative">
                     <div className="absolute p-2 uppercase text-sm text-white bg-orange-400">
