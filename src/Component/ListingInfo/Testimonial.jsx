@@ -94,17 +94,22 @@ const Testimonial = ({ reviews }) => {
           >
             <SplideSlide>
               <div className="slide my-3">
-                <div className="relative rounded-2xl border p-5 md:p-7 shadow-md flex flex-col justify-between h-[258px] md:h-[300px]">
-                  <div className="overflow-hidden text-ellipsis box-border block">
-                    <p className="text-lg text-ellipsis overflow-clip md:text-xl font-semibold pb-3">
+                <div className="relative rounded-2xl border p-5 md:p-10 shadow-md flex flex-col justify-between h-[258px] md:h-[300px]">
+                  <img
+                    src={reviews[0].user_profilePic}
+                    alt={reviews[0].title}
+                    className="object-cover w-[80px] h-[80px] rounded-full absolute top-10 left-4"
+                  />
+                  <div className="ml-20">
+                    <p className="text-lg font-semibold pb-3">
                       {reviews[0].title}
                     </p>
-                    <div className="overflow-hidden text-ellipsis box-border block text-sm md:text-lg">
-                      <label className="sm overflow-clip">{reviews[0].comment}</label>
+                    <div className="text-sm">
+                      <label>{reviews[0].comment}</label>
                     </div>
                   </div>
-                  <span className="absolute right-10 bottom-10 flex gap-[2px] justify-end items-center box-border md:font-semibold font-bold md:text-2xl text-base">
-                    <div className="flex flex-row items-center gap-[2px]">
+                  <span className="absolute right-2 bottom-2 flex gap-2 items-center">
+                    <div className="flex items-center gap-2">
                       {reviews[0].ratings}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -114,11 +119,11 @@ const Testimonial = ({ reviews }) => {
                       >
                         <path
                           d="M12.1,18.55L12,18.65L11.89,18.55C7.14,14.24 4,11.39 4,8.5C4,6.5 5.5,
-                            5 7.5,5C9.04,5 10.54,6 11.07,7.36H12.93C13.46,6 14.96,
-                            5 16.5,5C18.5,5 20,6.5 20,8.5C20,11.39 16.86,14.24 12.1,18.55M16.5,
-                            3C14.76,3 13.09,3.81 12,5.08C10.91,3.81 9.24,3 7.5,3C4.42,3 2,
-                            5.41 2,8.5C2,12.27 5.4,15.36 10.55,20.03L12,21.35L13.45,
-                            20.03C18.6,15.36 22,12.27 22,8.5C22,5.41 19.58,3 16.5,3Z"
+            5 7.5,5C9.04,5 10.54,6 11.07,7.36H12.93C13.46,6 14.96,
+            5 16.5,5C18.5,5 20,6.5 20,8.5C20,11.39 16.86,14.24 12.1,18.55M16.5,
+            3C14.76,3 13.09,3.81 12,5.08C10.91,3.81 9.24,3 7.5,3C4.42,3 2,
+            5.41 2,8.5C2,12.27 5.4,15.36 10.55,20.03L12,21.35L13.45,
+            20.03C18.6,15.36 22,12.27 22,8.5C22,5.41 19.58,3 16.5,3Z"
                         />
                       </svg>
                     </div>
@@ -128,7 +133,7 @@ const Testimonial = ({ reviews }) => {
             </SplideSlide>
           </Splide>
         </div>
-    
+
         <div className="mt-8 md:mt-8 ">
           <button
             type="button"
@@ -137,14 +142,13 @@ const Testimonial = ({ reviews }) => {
           >
             See all {reviews.length} reviews
           </button>
-    
+
           <PopupFull title={""} open={open} onClose={closePopup}>
             <TestimonialInfo reviews={reviews} />
           </PopupFull>
         </div>
       </>
     );
-    
   }
 
   const getReviewText = () => {
