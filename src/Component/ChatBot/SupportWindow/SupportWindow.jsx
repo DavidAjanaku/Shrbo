@@ -52,7 +52,7 @@ const SupportWindow = (props) => {
          {/* <OptionWindow/> */}
 
 
-         {props.selectedOption==="Live chat"&&<WelcomeForm visible={_user===null || chat===null} setUser={(user)=>_setUser(user)}
+         {(props.selectedOption==="Live chat"&&token===null)&&<WelcomeForm visible={_user===null || chat===null} setUser={(user)=>_setUser(user)}
                 setChat={(chat)=>setChat(chat)}/>}
 
 
@@ -67,7 +67,7 @@ const SupportWindow = (props) => {
 
         {props.botMessage&&
            <ChatEngine
-           visible={props.selectedOption==="Live chat"?!(_user===null || chat===null):true}
+           visible={props.selectedOption==="Live chat"?!token!=null:true}
            chat={chat}
            user={_user}
            botMessage={props.botMessage}

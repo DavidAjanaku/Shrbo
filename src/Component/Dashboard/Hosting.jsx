@@ -194,7 +194,7 @@ useEffect(() => {
   const fetchUpcomingData= async()=>{
    await axios.get("/upcomingReservation").then(response=>{
             const filteredUpcoming=response.data.bookings.map(item=>({
-              
+              id:item.aboutGuest.id,
                 name: item.name,
                 checkInDate: item.check_in_date,
                 checkOutDate: item.check_out_date,
@@ -216,6 +216,7 @@ useEffect(() => {
       const filteredData = response.data.data.map(item => ({
         name: item.username,
         checkInDate: item.check_in,
+        id:item.aboutGuest.id,
         reservationId:item.id,
         image:item.guestProfilePic?item.guestProfilePic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
       }));
@@ -235,6 +236,7 @@ useEffect(() => {
       const response = await axios.get("/arrivingSoon");
       const filteredData = response.data.bookings.map(item => ({
         name: item.name,
+        id:item.aboutGuest.id,
         date: item.check_in_date,
         time:item.check_in_time,
         image:item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
@@ -255,6 +257,7 @@ useEffect(() => {
       const response = await axios.get("/currentlyHosting");
       const filteredData = response.data.bookings.map(item => ({
         name: item.name,
+        id:item.aboutGuest.id,
         date: item.check_in_date+"-"+item.check_out_date,
         image:item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
       }));
@@ -273,6 +276,7 @@ useEffect(() => {
       const response = await axios.get("/checkingOut");
       const filteredData = response.data.bookings.map(item => ({
         name: item.name,
+        id:item.aboutGuest.id,
         date: item.check_out_date,
         time: item.check_in_time,
         image:item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
@@ -463,7 +467,7 @@ useEffect(() => {
                         <p>{host.time}</p>
                       </div>
                       <div className="guest-image">
-                        <Link to="/UserDetails">
+                        <Link to={`/UserDetails/${host.id}`}>
                           <img
                             src={host.image}
                             className="w-10 h-10 object-cover rounded-full"
@@ -509,7 +513,7 @@ useEffect(() => {
                         <p>{host.date}</p>
                       </div>
                       <div className="guest-image">
-                        <Link to="/UserDetails">
+                        <Link to={`/UserDetails/${host.id}`}>
                           <img
                             src={host.image}
                             className="w-10 h-10 object-cover rounded-full"
@@ -559,7 +563,7 @@ useEffect(() => {
                         </div>
                       </div>
                       <div className="guest-image">
-                        <Link to="/UserDetails">
+                        <Link to={`/UserDetails/${reservation.id}`}>
                           <img
                             src={reservation.image}
                             className="w-10 h-10 object-cover rounded-full"
@@ -610,7 +614,7 @@ useEffect(() => {
                         <p>{reservation.amountPaid}</p>
                       </div>
                       <div className="guest-image">
-                        <Link to="/UserDetails">
+                        <Link to={`/UserDetails/${reservation.id}`}>
                           <img
                             src={reservation.image}
                             className="w-10 h-10 object-cover rounded-full"
@@ -656,7 +660,7 @@ useEffect(() => {
                         <p>Check-In Date: {review.checkInDate}</p>
                       </div>
                       <div className="guest-image">
-                        <Link to="/UserDetails">
+                        <Link to={`/UserDetails/${review.id}`}>
                           <img
                             src={review.image}
                             className="w-10 h-10 object-cover rounded-full"

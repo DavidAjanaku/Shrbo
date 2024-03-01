@@ -255,7 +255,7 @@ The slider*/
 
 
 
-.dot-pulse {
+.dot-pulse1 {
   --uib-size: 30px;
   --uib-speed: 1.3s;
   --uib-color: rgb(68, 67, 67);
@@ -268,9 +268,9 @@ The slider*/
   height: calc(var(--uib-size) * 0.27);
 }
 
-.dot-pulse__dot,
-.dot-pulse::before,
-.dot-pulse::after {
+.dot-pulse1__dot,
+.dot-pulse1::before,
+.dot-pulse1::after {
   content: '';
   display: block;
   height: calc(var(--uib-size) * 0.18);
@@ -280,21 +280,21 @@ The slider*/
   transform: scale(0);
 }
 
-.dot-pulse::before {
-  animation: pulse var(--uib-speed) ease-in-out infinite;
+.dot-pulse1::before {
+  animation: pulse1 var(--uib-speed) ease-in-out infinite;
 }
 
-.dot-pulse__dot {
-  animation: pulse var(--uib-speed) ease-in-out
+.dot-pulse1__dot {
+  animation: pulse1 var(--uib-speed) ease-in-out
     calc(var(--uib-speed) * 0.125) infinite both;
 }
 
-.dot-pulse::after {
-  animation: pulse var(--uib-speed) ease-in-out
+.dot-pulse1::after {
+  animation: pulse1 var(--uib-speed) ease-in-out
     calc(var(--uib-speed) * 0.25) infinite;
 }
 
-@keyframes pulse {
+@keyframes pulse1 {
   0%,
   100% {
     transform: scale(0);
