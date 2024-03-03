@@ -59,32 +59,40 @@ export default function Listings() {
     // Open the co-host modal
     setCoHostModalVisible(true);
   };
-  const handleAddCoHost = async () => {
+   const handleAddCoHost = async (houseId) => {
+    console.log("Selected House ID:", houseId); // Log the selected house ID
     try {
-      // Send a request to add the co-host
-      await Axois.post(`/addCoHost/{${selectedHouseId}`, {
-        email: coHostEmail,
-      });
-  
-      // Close the modal
-      setCoHostModalVisible(false);
-  
-      // Show success notification
-      notification.success({
-        message: "Co-host added successfully",
-        description: "An email has been sent to the co-host.",
-        placement: "topRight",
-      });
+        if (!coHostEmail) {
+            // Show an error message if the email is empty
+            notification.error({
+                message: "Error adding co-host",
+                description: "Please enter a co-host email address.",
+            });
+            return;
+        }
+
+        // Send a request to add the co-host with email as a URL parameter
+        await Axois.get(`/addCoHost/${houseId}?email=${coHostEmail}`);
+
+        // Close the modal
+        setCoHostModalVisible(false);
+
+        // Show success notification
+        notification.success({
+            message: "Co-host added successfully",
+            description: "An email has been sent to the co-host.",
+            placement: "topRight",
+        });
     } catch (error) {
-      console.error("Error adding co-host:", error);
-      // Handle errors as needed (e.g., display an error message to the user)
-      notification.error({
-        message: "Error adding co-host",
-        description:
-          "There was an error adding the co-host. Please try again.",
-      });
+        console.error("Error adding co-host:", error);
+        // Handle errors as needed (e.g., display an error message to the user)
+        notification.error({
+            message: "Error adding co-host",
+            description:
+                "There was an error adding the co-host. Please try again.",
+        });
     }
-  };
+};
   
   const fetchListings = async () => {
     try {

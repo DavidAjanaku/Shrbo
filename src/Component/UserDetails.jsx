@@ -8,6 +8,7 @@ import Axios from "../Axios";
 import Header from "./Navigation/Header";
 import BottomNavigation from "./Navigation/BottomNavigation";
 import UserDetailsSkeleton from "../SkeletonLoader/UserDetailsSkeleton";
+import {  StarFilled } from "@ant-design/icons";
 
 const UserDetails = () => {
   const [showReviews, setShowReviews] = useState(false);
@@ -37,6 +38,25 @@ const UserDetails = () => {
     return <UserDetailsSkeleton />;
   }
 
+  const getStarRating = (rating) => {
+    const totalStars = 5;
+    const filledStars = rating;
+    const emptyStars = totalStars - filledStars;
+    const stars = [];
+  
+    // Add filled stars
+    for (let i = 0; i < filledStars; i++) {
+      stars.push(<StarFilled key={i} style={{ color: 'gold' }} />);
+    }
+  
+    // Add empty stars
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<StarFilled key={filledStars + i} style={{ color: 'gray' }} />);
+    }
+  
+    return stars;
+  };
+
   return (
     <div>
       <Header />
@@ -57,7 +77,7 @@ const UserDetails = () => {
             </h2>
             <p className="text-gray-600 blur-sm">Email: {userData.email}</p>
             <p className="text-gray-600">Reviews: {userData.reviews}</p>
-            <p className="text-gray-600">Rating: {userData.rating}</p>
+            <p className="text-gray-600">Rating: {getStarRating(userData.rating)}</p>
             {/* <p className="text-gray-600">
               Houses Listed: {userData.totalHomes}
             </p>
