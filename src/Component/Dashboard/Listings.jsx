@@ -203,29 +203,33 @@ export default function Listings() {
         // Check if the host type is "I'm hosting as a business" and if co-hosts are present
         if (
           listing.host_type === "I'm hosting as a business" &&
-          cohosts.length > 0
+          cohosts !== null
         ) {
           return (
             <div>
               <Button
                 type="link"
-                onClick={() => handleViewCoHosts(cohosts)}
+                onClick={() => {
+                  setCoHostsModalVisible(true); // Update the state here
+                  setSelectedListingCoHosts(cohosts); // Set the selected cohosts for the modal
+                }}
               >
                 View Co-hosts
               </Button>
               <ListingsModal
-        isOpen={coHostsModalVisible}
-        onRequestClose={() => setCoHostsModalVisible(false)}
-        coHosts={selectedListingCoHosts}
-        handleRemoveCoHost={handleRemoveCoHost}
-      />
+                isOpen={coHostsModalVisible}
+                onRequestClose={() => setCoHostsModalVisible(false)}
+                coHosts={selectedListingCoHosts}
+                handleRemoveCoHost={handleRemoveCoHost}
+              />
             </div>
           );
         } else {
           return null; // Render nothing if the condition is not met
         }
       },
-    },
+    }
+    
     
   ];
 

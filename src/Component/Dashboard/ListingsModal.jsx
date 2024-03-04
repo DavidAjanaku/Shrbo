@@ -5,7 +5,7 @@ import { Button } from "antd";
 
 const ListingsModal = ({ isOpen, onRequestClose, coHosts, handleRemoveCoHost }) => {
   return (
-    <div className={`fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 ${isOpen ? "" : "hidden"}`}>
+    <div className={`fixed top-0 left-0 w-full h-full flex justify-center z-50 items-center bg-black bg-opacity-50 ${isOpen ? "" : "hidden"}`}>
       <div className="bg-white md:w-1/2 rounded-lg p-4">
         <h2 className="text-lg font-bold mb-4">Co-hosts</h2>
         {coHosts.map((cohost) => (
