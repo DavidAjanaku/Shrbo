@@ -12,12 +12,7 @@ import { useParams } from "react-router-dom";
 import Axios from "../../Axios";
 import { useDateContext } from "../../ContextProvider/BookingInfo";
 import PriceSkeleton from "../../SkeletonLoader/PriceSkeleton";
-export default function ListingForm({
-  reservations,
-  reservation,
-  guest,
-  
-}) {
+export default function ListingForm({ reservations, reservation, guest }) {
   function showModal(e) {
     e.preventDefault();
     setIsModalVisible(true);
@@ -29,6 +24,8 @@ export default function ListingForm({
   const [messageSent, setMessageSent] = useState(false);
   const [showMessageHostButton, setShowMessageHostButton] = useState(true);
   const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [discount, setDiscount] = useState([]); // State to store the discount value
+  const [appliedDiscount, setAppliedDiscount] = useState("");
 
   const messageRef = useRef(null);
   // const [checkInDate, setCheckInDate] = useState(null);
@@ -49,16 +46,15 @@ export default function ListingForm({
   const [totalCosts, setTotalCosts] = useState(0);
   const [securityDeposit, setSecurityDeposit] = useState(0);
   const [guestFee, setGuestFee] = useState(0);
-
+  const [bookingCount, setBookingCount] = useState(0);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await Axios.get("/user");
-        
+
         // console.log(response.data.verified);
         setVerified(response.data.verified); // Set the verified status
-
       } catch (error) {
         console.error("Error fetching users:", error);
         // Handle error, show error message, etc.
@@ -139,6 +135,13 @@ export default function ListingForm({
         setSecurityDeposit(parseInt(response.data.data.securityDeposit));
         setGuestFee(response.data.data.guest_fee);
         setSecurityDeposits(parseInt(response.data.data.securityDeposit));
+        const discounts = response.data.data.discounts;
+        let discountValue = null;
+        setBookingCount(response.data.data.bookingCount);
+        const discountValues = discounts.map((discount) => discount.discount); // Get an array of all discount values
+
+        console.log("Discount values:", discountValues);
+        setDiscount(discountValues);
 
         // Extract booked dates and convert them to Date objects
         const bookedDates = response.data.data.bookedDates.map((date) => {
@@ -174,6 +177,22 @@ export default function ListingForm({
     calculateTotalPrice(checkInDate, date);
   };
 
+  const predefinedDiscounts = [
+    "20% New listing promotion",
+    "5% Weekly discount",
+    "10% Monthly discount",
+  ];
+
+  const matchingDiscounts = discount.filter((discount) =>
+    predefinedDiscounts.includes(discount)
+  );
+
+  console.log(
+    matchingDiscounts.length > 0 ? matchingDiscounts : "No matches found"
+  );
+
+  console.log(bookingCount);
+
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
     if (checkIn instanceof Date && checkOut instanceof Date) {
@@ -206,12 +225,46 @@ export default function ListingForm({
       // setTaxFees(tax);
       // setTax(tax);
 
-      setTotalCost(TotalPrice);
+      // Check if the booking count is less than 15 days and the discount contains the "20% New listing promotion"
+      if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
+        setAppliedDiscount("20% New listing promotion (20% off)");
+
+        console.log(basePrice);
+        const totalPrice = basePrice + securityDeposits;
+
+        // Apply a 5% discount for stays of 7 nights or more
+        const discountedPrice = totalPrice * 0.2; // 5% off
+        setTotalCost(totalPrice - discountedPrice);
+        console.log(securityDeposits);
+      } else if (nights >= 28) {
+        // Calculate total price
+        setAppliedDiscount("10% Monthly discount (10% off)");
+
+        const totalPrice = basePrice + securityDeposits;
+
+        // Apply a 10% discount for stays of 28 nights or more
+        const discountedPrice = totalPrice * 0.1; // 10% off
+        setTotalCost(totalPrice - discountedPrice);
+      } else if (nights >= 7) {
+        // Calculate total price
+        setAppliedDiscount("5% Weekly discount (5% off)");
+
+        const totalPrice = basePrice + securityDeposits;
+
+        // Apply a 5% discount for stays of 7 nights or more
+        const discountedPrice = totalPrice * 0.05; // 5% off
+        setTotalCost(totalPrice - discountedPrice);
+      } else {
+        setAppliedDiscount("");
+
+        setTotalCost(TotalPrice);
+      }
     } else {
       // Set a default value when dates are not selected
       setTotalPrice(null);
     }
   };
+
   const addDays = (date, days) => {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -347,6 +400,16 @@ export default function ListingForm({
             {/* <!--total before and after tax--> */}
             <div className=" min-h-[1.5rem] w-full   p-3">
               <div className=" border-t py-4 flex flex-col gap-1">
+              {appliedDiscount && (
+                  <div className=" text-sm text-gray-500 italic">
+                    <div className="mb-2 box-border block">
+                      <div className="flex justify-between items-end break-words">
+                        <span>Discount Applied:</span>
+                        <span>{appliedDiscount}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {checkInDate && checkOutDate && (
                   <div className=" font-medium text-base box-border flex items-end justify-between break-words    ">
                     <span> Total before </span>
@@ -369,6 +432,7 @@ export default function ListingForm({
                   </div>
                 )}
 
+            
                 {/* handles the modal  when price details is clicked  */}
                 <Popup
                   isModalVisible={isModalVisible}
@@ -427,6 +491,17 @@ export default function ListingForm({
                                   </div>
                                 </div>
                               </div>
+                              {appliedDiscount && (
+                                <div className="">
+                                  <div className="mb-2 box-border block">
+                                    <div className="flex justify-between items-end break-words">
+                                      <span>Discount Applied:</span>
+                                      <span>{appliedDiscount}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
                               {/* <div className=" mb-2t box-border block">
                                 <div className=" flex items-end justify-between break-words    ">
                                   <div className=" block box-border">
@@ -462,6 +537,7 @@ export default function ListingForm({
                       </div>
                     </div>
                   </div>
+
                   <div className="p-2">
                     <Link to={verified !== null ? "/RequestBook" : undefined}>
                       <button
@@ -478,8 +554,7 @@ export default function ListingForm({
                           if (verified == null) {
                             setShowVerifyModal(true);
                           } else {
-                            navigate('/RequestBook');
-
+                            navigate("/RequestBook");
                           }
                         }}
                       >
@@ -508,8 +583,8 @@ export default function ListingForm({
                       event.preventDefault();
                       if (verified == null) {
                         setShowVerifyModal(true);
-                      } else  {
-                        navigate('/RequestBook');
+                      } else {
+                        navigate("/RequestBook");
                       }
                     }}
                     disabled={!checkInDate || !checkOutDate}
