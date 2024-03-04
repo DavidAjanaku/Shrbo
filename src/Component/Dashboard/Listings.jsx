@@ -45,22 +45,14 @@ export default function Listings() {
     setSearchQuery(value);
   };
 
-
   const handleCheckboxChanges = (listingId) => {
-    if (selectedListings.includes(listingId)) {
-      setSelectedListings(selectedListings.filter((id) => id !== listingId));
-    } else {
-      setSelectedListings([listingId]);
-    }
-  
-    // Update the state to determine whether to show the "Edit" button
-    setIsEditButtonVisible(selectedListings.length === 0);
-  
-    // Open the co-host modal
-    setCoHostModalVisible(true);
+    setSelectedHouseId(listingId); // Set the selectedHouseId
+    setCoHostModalVisible(true); // Open the co-host modal
   };
-   const handleAddCoHost = async (houseId) => {
-    console.log("Selected House ID:", houseId); // Log the selected house ID
+  
+  
+   const handleAddCoHost = async () => {
+    console.log("Selected House ID:", selectedHouseId); // Log the selected house ID
     try {
         if (!coHostEmail) {
             // Show an error message if the email is empty
@@ -72,7 +64,7 @@ export default function Listings() {
         }
 
         // Send a request to add the co-host with email as a URL parameter
-        await Axois.get(`/addCoHost/${houseId}?email=${coHostEmail}`);
+        await Axois.get(`/addCoHost/${selectedHouseId}?email=${coHostEmail}`);
 
         // Close the modal
         setCoHostModalVisible(false);
@@ -180,9 +172,12 @@ export default function Listings() {
         // Check if the host type is "I'm hosting as a business"
         if (listing.host_type === "I'm hosting as a business") {
           return (
-            <Link onClick={handleCheckboxChanges}>
-              <Button type="primary">Add a Co-host</Button>
+            <Button type="primary">
+            <Link onClick={() => handleCheckboxChanges(listing.id)}>
+              Add a Co-host
             </Link>
+          </Button>
+          
           );
         } else {
           return null; // Render nothing if the host type is different
