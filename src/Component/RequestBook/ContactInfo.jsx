@@ -339,7 +339,7 @@ export default function Example() {
       </div>
       {showExistingCardModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center">
-          <div className="bg-white pb-10 px-5 rounded-2xl  overflow-hidden shadow-xl h-full md:h-1/2 md:max-w-lg w-full relative">
+          <div className="bg-white pb-10 px-1 rounded-2xl  overflow-hidden shadow-xl h-full md:h-1/2 md:max-w-2xl w-full relative">
             <div className="flex items-center justify-between text-lg font-medium leading-6 text-center bg-white border-b-2 py-5 sticky top-0 z-50">
               <div
                 onClick={closeExistingCardModal}
@@ -364,7 +364,7 @@ export default function Example() {
                 Select a payment provider to add your debit card for payment
               </p>
             </div>
-            <div className="px-6 pb-10 h-3/4 relative overflow-scroll example">
+            <div className="px-6 pb-20 md:pb-12 h-3/4 relative overflow-scroll example">
               <div className="pb-10">
                 {existingCards.map((card, index) => (
                   <div key={index} className="flex w-full items-center mb-3">

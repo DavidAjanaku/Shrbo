@@ -24,6 +24,7 @@ export const BookingInfoData = ({ children }) => {
   const [user, setUser] = useState(null); // Add user state variable and its setter
   const [securityDeposit, setSecurityDeposits] = useState(0); // New state variable for security deposit
   const [discounts, setDiscounts] = useState([]); // New state variable for discounts
+  const [appliedDiscounts, setAppliedDiscounts] = useState("");
 
   return (
     <DateContext.Provider
@@ -66,6 +67,8 @@ export const BookingInfoData = ({ children }) => {
         setSecurityDeposits, 
         discounts,
         setDiscounts,
+        setAppliedDiscounts,
+        appliedDiscounts
       }}
     >
       {children}

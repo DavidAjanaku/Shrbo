@@ -86,6 +86,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
     nights,
     setNights,
     setSecurityDeposits,
+    setAppliedDiscounts
   } = useDateContext();
 
   const [form] = Form.useForm(); // Define the form variable
@@ -226,9 +227,9 @@ export default function ListingForm({ reservations, reservation, guest }) {
       // setTax(tax);
 
       // Check if the booking count is less than 15 days and the discount contains the "20% New listing promotion"
-      if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
+      if (bookingCount < 15 && discount.includes("20% New listing promotion")) {
         setAppliedDiscount("20% New listing promotion (20% off)");
-
+        setAppliedDiscounts("20% New listing promotion (20% off)")
         console.log(basePrice);
         const totalPrice = basePrice + securityDeposits;
 
@@ -239,7 +240,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
       } else if (nights >= 28) {
         // Calculate total price
         setAppliedDiscount("10% Monthly discount (10% off)");
-
+        setAppliedDiscounts("10% Monthly discount (10% off)")
         const totalPrice = basePrice + securityDeposits;
 
         // Apply a 10% discount for stays of 28 nights or more
@@ -248,6 +249,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
       } else if (nights >= 7) {
         // Calculate total price
         setAppliedDiscount("5% Weekly discount (5% off)");
+        setAppliedDiscounts("5% Weekly discount (5% off)")
 
         const totalPrice = basePrice + securityDeposits;
 
