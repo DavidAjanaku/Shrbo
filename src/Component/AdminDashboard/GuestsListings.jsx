@@ -261,46 +261,48 @@ export default function GuestsListings() {
   };
 
   const handleDeleteeGuest = (record) => {
-    // Make an API call to update the ban status of the guest
+    // Make an API call to update the delete status of the guest
     if (record && record.id) {
       const guestIdString = record.id.toString();
-      const messageObject = { message: "DD" };
-
-      // Determine the action based on the current ban status of the guest
-      const isDeleted = record.banned;
-
-      // Define the API endpoint based on the action (ban/unban)
-      const endpoint = isDeleted
-        ? `/unDeleteGuest/${guestIdString}`
+      const messageObject = { message: "Hello Your Account has been Deleted" }; // Provide a default message
+  
+      // Define the API endpoint based on the action (delete/undelete)
+      const endpoint = record.banned
+        ? `/undeleteGuest/${guestIdString}`
         : `/deleteGuest/${guestIdString}`;
-
+  
       axiosInstance
-        .put(endpoint, messageObject)
+        .delete(endpoint, { data: messageObject }) // Pass the messageObject as the request body
         .then((response) => {
           // Update the local state with the updated data
           const updatedGuests = guests.map((guest) =>
             guest.id === record.id
-              ? { ...guest, banned: !isDeleted } // Toggle the ban status
+              ? { ...guest, banned: !record.banned } // Toggle the delete status
               : guest
           );
-
+  
           notification.success({
-            message: isDeleted ? "Guest Deleted" : "Guest Deleted",
+            message: record.banned ? "Guest Restored" : "Guest Deleted",
             description: `The Guest has been successfully ${
-              isDeleted ? "UnDeleted" : "Deleted"
+              record.banned ? "Restored" : "Deleted"
             }.`,
           });
-
+  
           setGuests(updatedGuests);
-
+  
+          // Reload the page after the guest has been deleted
+          window.location.reload();
+  
           // You can also show a success message or perform other actions if needed
         })
         .catch((error) => {
-          console.error("Error changing guest ban status:", error);
+          console.error("Error changing guest delete status:", error);
           notification.error({
-            message: `Error ${isDeleted ? "UnDeleting" : "Deleting"} Guest`,
+            message: `Error ${
+              record.banned ? "Restoring" : "Deleting"
+            } Guest`,
             description: `Failed to ${
-              isDeleted ? "unDelete" : "Delete"
+              record.banned ? "restore" : "delete"
             } the guest. Please try again later.`,
           });
           // Handle error scenarios, show an error message, etc.
@@ -309,6 +311,9 @@ export default function GuestsListings() {
       console.error("Invalid record:", record);
     }
   };
+  
+  
+  
 
 
   const handleConfirmSuspend = async (guest) => {

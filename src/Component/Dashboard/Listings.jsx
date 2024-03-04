@@ -11,15 +11,22 @@ import HostHeader from "../Navigation/HostHeader";
 import Axois from "../../Axios";
 import { Pagination, Spin } from "antd"; // Import Pagination component from Ant Design
 import { LoadingOutlined } from "@ant-design/icons";
+import ListingsModal from "./ListingsModal";
 
 const { Search } = Input;
 const { Option } = Select;
+
+Modal.setAppElement('#root'); // Assuming '#root' is the ID of your root element
+
 
 export default function Listings() {
   const [selectedListings, setSelectedListings] = useState([]);
   const [isEditButtonVisible, setIsEditButtonVisible] = useState(false);
   const [loading, setLoading] = useState(false); // Add loading state
+  const [coHostsModalVisible, setCoHostsModalVisible] = useState(false);
 
+  // State to store the co-hosts for the selected listing
+  const [selectedListingCoHosts, setSelectedListingCoHosts] = useState([]);
   const [filters, setFilters] = useState({
     rooms: "Any",
     beds: "Any",
@@ -50,6 +57,10 @@ export default function Listings() {
     setCoHostModalVisible(true); // Open the co-host modal
   };
   
+  const handleViewCoHosts = (cohosts) => {
+    setSelectedListingCoHosts(cohosts);
+    setCoHostsModalVisible(true);
+};
   
    const handleAddCoHost = async () => {
     console.log("Selected House ID:", selectedHouseId); // Log the selected house ID
@@ -184,8 +195,65 @@ export default function Listings() {
         }
       },
     },
+    {
+      title: "Co-host Email",
+      dataIndex: "cohosts",
+      key: "cohosts",
+      render: (cohosts, listing) => {
+        // Check if the host type is "I'm hosting as a business" and if co-hosts are present
+        if (
+          listing.host_type === "I'm hosting as a business" &&
+          cohosts.length > 0
+        ) {
+          return (
+            <div>
+              <Button
+                type="link"
+                onClick={() => handleViewCoHosts(cohosts)}
+              >
+                View Co-hosts
+              </Button>
+              <ListingsModal
+        isOpen={coHostsModalVisible}
+        onRequestClose={() => setCoHostsModalVisible(false)}
+        coHosts={selectedListingCoHosts}
+        handleRemoveCoHost={handleRemoveCoHost}
+      />
+            </div>
+          );
+        } else {
+          return null; // Render nothing if the condition is not met
+        }
+      },
+    },
+    
   ];
 
+
+  const handleRemoveCoHost = async (cohostId) => {
+    try {
+      // Send a request to remove the co-host
+      await Axois.delete(`/removeCoHost/${cohostId}`);
+  
+      // Fetch updated listings
+      await fetchListings();
+  
+      // Show success notification
+      notification.success({
+        message: "Co-host removed successfully",
+        description: "The co-host has been removed from the listing.",
+        placement: "topRight",
+      });
+    } catch (error) {
+      console.error("Error removing co-host:", error);
+      // Handle errors as needed (e.g., display an error message to the user)
+      notification.error({
+        message: "Error removing co-host",
+        description:
+          "There was an error removing the co-host. Please try again.",
+      });
+    }
+  };
   const handleCheckboxChange = (listingId) => {
     if (selectedListings.includes(listingId)) {
       setSelectedListings(selectedListings.filter((id) => id !== listingId));
