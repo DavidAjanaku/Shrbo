@@ -56,6 +56,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import { Modal } from "antd";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { Spin } from 'antd';
 
 import AddressForm from "../AddressFrom";
 import Axios from "../../Axios";
@@ -334,7 +335,7 @@ export default function HostHomes({ match }) {
         break;
 
       case 10:
-        if (selectedHouseDescriptions.length === 1) {
+        if (selectedHouseDescriptions.length <= 1) {
           isValid = false;
           Modal.error({
             title: "Validation Error",
@@ -388,6 +389,11 @@ export default function HostHomes({ match }) {
         // Check if at least one discount is selected
         if (selectedDiscounts.length === 0) {
           isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+            "Please select a discount before proceeding to the next step",
+          });
           break;
         }
         break;
@@ -2156,7 +2162,7 @@ export default function HostHomes({ match }) {
           <div className=" mx-auto  flex justify-center p-4">
             {isSubmitting && (
               <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-400 bg-opacity-80 z-50">
-                <p className="text-xl text-gray-800">Loading...</p>
+               <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: 'orange' }} spin />} />
               </div>
             )}
 

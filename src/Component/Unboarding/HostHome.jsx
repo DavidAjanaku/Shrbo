@@ -829,12 +829,15 @@ export default function HostHome({ match }) {
           return prev.filter((id) => id !== selectedId);
         } else {
           // Select if not selected
-          setVisibilities((prevVisibilities) => [...prevVisibilities, selectedId]);
+          setVisibilities((prevVisibilities) => [
+            ...prevVisibilities,
+            selectedId,
+          ]);
           return [...prev, selectedId];
         }
       });
     };
-    ((prevVisibility) => {
+    (prevVisibility) => {
       // Check if the typeId is already in the array
       if (prevVisibility.includes(typeId)) {
         // If yes, remove it (deselect)
@@ -843,7 +846,7 @@ export default function HostHome({ match }) {
         // If not, add it (select)
         return [...prevVisibility, typeId];
       }
-    });
+    };
   };
 
   const handleInstantBookSelection = (selectedId) => {
@@ -1659,20 +1662,22 @@ export default function HostHome({ match }) {
               <div className="pb-32">
                 <div className="space-y-4">
                   <div className="flex flex-wrap w-full">
-                  {caution.map((type) => (
-    <div
-        key={type.id}
-        className={`property-type m-3 flex ${
-            apartment.notices.some((notice) => notice.notice === type.id)
-                ? "bg-orange-300 border-2 border-black text-white"
-                : "bg-gray-200 text-black"
-        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
-        onClick={() => handleCautionTypeSelection(type.id)}
-    >
-        <span className="mr-2 text-2xl">{type.icon}</span>
-        {type.id}
-    </div>
-))}
+                    {caution.map((type) => (
+                      <div
+                        key={type.id}
+                        className={`property-type m-3 flex ${
+                          apartment.notices.some(
+                            (notice) => notice.notice === type.id
+                          )
+                            ? "bg-orange-300 border-2 border-black text-white"
+                            : "bg-gray-200 text-black"
+                        } px-4 py-2 rounded-md cursor-pointer flex-col justify-between`}
+                        onClick={() => handleCautionTypeSelection(type.id)}
+                      >
+                        <span className="mr-2 text-2xl">{type.icon}</span>
+                        {type.id}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1762,7 +1767,14 @@ export default function HostHome({ match }) {
           <div className=" mx-auto  flex justify-center p-4">
             {isSubmitting && (
               <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-400 bg-opacity-80 z-50">
-                <p className="text-xl text-gray-800">Loading...</p>
+                <Spin
+                  indicator={
+                    <LoadingOutlined
+                      style={{ fontSize: 24, color: "orange" }}
+                      spin
+                    />
+                  }
+                />{" "}
               </div>
             )}
 
