@@ -627,8 +627,8 @@ export default function ListingForm({ reservations, reservation, guest }) {
                         navigate("/RequestBook");
                       }
                     }}
-                    disabled={!checkInDate || !checkOutDate}
-                  >
+                    disabled={isBookButtonDisabled || !checkInDate || !checkOutDate}
+                    >
                     Book
                   </button>
                 </Link>
