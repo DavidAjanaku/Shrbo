@@ -227,7 +227,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
       // setTax(tax);
 
       // Check if the booking count is less than 15 days and the discount contains the "20% New listing promotion"
-      if (bookingCount < 15 && discount.includes("20% New listing promotion")) {
+      if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
         setAppliedDiscount("20% New listing promotion (20% off)");
         setAppliedDiscounts("20% New listing promotion (20% off)")
         console.log(basePrice);
