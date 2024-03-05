@@ -14,6 +14,7 @@ export default function Example() {
   const [existingCard, setExistingCard] = useState(null);
   const [showPayNowModal, setShowPayNowModal] = useState(false); // State for Pay Now modal
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
@@ -35,9 +36,25 @@ export default function Example() {
     title,
     address,
     apartment,
-    user,
+   
     securityDepsoit,
   } = useDateContext();
+
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await Axios.get("user");
+        setUser(response.data.id);
+        console.log(response.data.id);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   console.log(user);
   console.log(apartment);
@@ -197,14 +214,12 @@ export default function Example() {
       // Handle success: redirect user to payment link or show success message
       console.log("Payment initiated successfully");
       // Show success message to the user
-      alert("Payment initiated successfully");
       // navigate("/trip");
     } catch (error) {
       console.error("Error initiating payment:", error.response.data);
       // Handle error: show error message to user
       console.log("Error initiating payment:", error.response.data);
       // Show error message to the user
-      alert("Error initiating payment. Please try again later.");
       setLoading(false);
     }
   };

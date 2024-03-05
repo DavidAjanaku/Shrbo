@@ -231,31 +231,36 @@ export default function ListingForm({ reservations, reservation, guest }) {
         setAppliedDiscount("20% New listing promotion (20% off)");
         setAppliedDiscounts("20% New listing promotion (20% off)")
         console.log(basePrice);
-        const totalPrice = basePrice + securityDeposits;
+       const totalPrice = basePrice * 0.8 ;
+        console.log(basePrice);
+        console.log(totalPrice);
 
-        // Apply a 5% discount for stays of 7 nights or more
-        const discountedPrice = totalPrice * 0.2; // 5% off
-        setTotalCost(totalPrice - discountedPrice);
-        console.log(securityDeposits);
+        // Apply a 10% discount for stays of 28 nights or more
+        const discountedPrice = totalPrice + securityDeposits; // 10% off
+        setTotalCost(discountedPrice);
       } else if (nights >= 28) {
         // Calculate total price
         setAppliedDiscount("10% Monthly discount (10% off)");
         setAppliedDiscounts("10% Monthly discount (10% off)")
-        const totalPrice = basePrice + securityDeposits;
+        const totalPrice = basePrice * 0.9 ;
+        console.log(basePrice);
+        console.log(totalPrice);
 
         // Apply a 10% discount for stays of 28 nights or more
-        const discountedPrice = totalPrice * 0.1; // 10% off
-        setTotalCost(totalPrice - discountedPrice);
+        const discountedPrice = totalPrice + securityDeposits; // 10% off
+        setTotalCost(discountedPrice);
       } else if (nights >= 7) {
         // Calculate total price
         setAppliedDiscount("5% Weekly discount (5% off)");
         setAppliedDiscounts("5% Weekly discount (5% off)")
 
-        const totalPrice = basePrice + securityDeposits;
+        const totalPrice = basePrice * 0.95 ;
+        console.log(basePrice);
+        console.log(totalPrice);
 
-        // Apply a 5% discount for stays of 7 nights or more
-        const discountedPrice = totalPrice * 0.05; // 5% off
-        setTotalCost(totalPrice - discountedPrice);
+        // Apply a 10% discount for stays of 28 nights or more
+        const discountedPrice = totalPrice + securityDeposits; // 10% off
+        setTotalCost(discountedPrice);
       } else {
         setAppliedDiscount("");
 

@@ -18,6 +18,7 @@ import { useDateContext } from "../ContextProvider/BookingInfo";
 const ListingInfoMain = () => {
   const { id } = useParams();
   const [listingDetails, setListingDetails] = useState(null);
+  const [refreshed, setRefreshed] = useState(false);
 
   console.log(id);
   const {
@@ -45,9 +46,13 @@ const ListingInfoMain = () => {
         // Handle error, show error message, etc.
       }
     };
+    
 
     fetchUsers();
   }, []);
+
+
+  
 
   useEffect(() => {
     const fetchListingDetails = async () => {
