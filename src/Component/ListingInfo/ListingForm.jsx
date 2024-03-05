@@ -26,6 +26,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [discount, setDiscount] = useState([]); // State to store the discount value
   const [appliedDiscount, setAppliedDiscount] = useState("");
+  const [isBookButtonDisabled, setIsBookButtonDisabled] = useState(false);
 
   const messageRef = useRef(null);
   // const [checkInDate, setCheckInDate] = useState(null);
@@ -205,6 +206,15 @@ export default function ListingForm({ reservations, reservation, guest }) {
     "10% Monthly discount",
   ];
 
+  useEffect(() => {
+    if (checkInDate && checkOutDate && checkOutDate < checkInDate) {
+      setIsBookButtonDisabled(true);
+    } else {
+      setIsBookButtonDisabled(false);
+    }
+  }, [checkInDate, checkOutDate]);
+
+  
   const matchingDiscounts = discount.filter((discount) =>
     predefinedDiscounts.includes(discount)
   );
