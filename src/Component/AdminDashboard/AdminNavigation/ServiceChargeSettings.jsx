@@ -7,6 +7,8 @@ import Axios from "../../../Axios"
 const ServiceChargeSettings = () => {
   const [guestServiceCharge, setGuestServiceCharge] = useState(0);
   const [hostServiceCharge, setHostServiceCharge] = useState(0);
+  const [taxServiceCharge, setTaxServiceCharge] = useState(0);
+
 
   const handleGuestServiceChargeChange = (value) => {
     setGuestServiceCharge(value);
@@ -16,11 +18,16 @@ const ServiceChargeSettings = () => {
     setHostServiceCharge(value);
   };
 
+  const handleTaxServiceChargeChange = (value) => {
+    setTaxServiceCharge(value);
+  };
+
   const handleSaveChanges = async () => {
     try {
       const response = await Axios.post("/updateServiceCharges", {
         guest_services_charge: guestServiceCharge,
         host_services_charge: hostServiceCharge,
+        tax: taxServiceCharge,
       });
       notification.success({
         message: "Success",
@@ -67,6 +74,14 @@ const ServiceChargeSettings = () => {
                 type="number"
                 value={hostServiceCharge}
                 onChange={(e) => handleHostServiceChargeChange(e.target.value)}
+              />
+            </div>
+            <div>
+              <label>Tax Service Charge:</label>
+              <Input
+                type="number"
+                value={taxServiceCharge}
+                onChange={(e) => handleTaxServiceChargeChange(e.target.value)}
               />
             </div>
             <div>

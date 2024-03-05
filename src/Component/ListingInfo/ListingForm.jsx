@@ -47,6 +47,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
   const [securityDeposit, setSecurityDeposit] = useState(0);
   const [guestFee, setGuestFee] = useState(0);
   const [bookingCount, setBookingCount] = useState(0);
+  
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -127,6 +128,8 @@ export default function ListingForm({ reservations, reservation, guest }) {
   useEffect(() => {
     const fetchListingDetails = async () => {
       try {
+        resetStateValues(); // Reset state values before fetching listing details
+
         const response = await Axios.get(`showGuestHome/${id}`);
         setListingDetails(response.data.data);
         // console.log(response.data.data);
@@ -163,6 +166,24 @@ export default function ListingForm({ reservations, reservation, guest }) {
 
     fetchListingDetails();
   }, [id]);
+
+  const resetStateValues = () => {
+    setCheckInDate(null);
+    setCheckOutDate(null);
+    setTotalPrice(null);
+    setHousePrice(null);
+    setNights(0);
+    setHostFee(0);
+    setHostFees(0);
+    setTotalCosts(0);
+    setServiceFee(0);
+    setServiceFees(0);
+    setTaxFees(0);
+    setTotalCost(0);
+    setSecurityDeposit(0);
+    setGuestFee(0);
+    setBookingCount(0);
+  };
 
   function handleCancel() {
     setIsModalVisible(false);
@@ -242,7 +263,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
         // Calculate total price
         setAppliedDiscount("10% Monthly discount (10% off)");
         setAppliedDiscounts("10% Monthly discount (10% off)")
-        const totalPrice = basePrice * 0.9 ;
+        const totalPrice = basePrice * 0.90 ;
         console.log(basePrice);
         console.log(totalPrice);
 
@@ -287,6 +308,8 @@ export default function ListingForm({ reservations, reservation, guest }) {
   let pricePerNight = Number(price).toLocaleString();
 
   const navigate = useNavigate();
+
+
 
   return (
     <div className=" block w-full h-full">
