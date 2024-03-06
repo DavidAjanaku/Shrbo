@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const DiscountCustomModal = ({ visible, onClose, onSubmit }) => {
+const DiscountCustomModal = ({ visible, onClose, onSubmit,discountType }) => {
   const [discountDuration, setDiscountDuration] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState("");
 
@@ -39,7 +39,7 @@ const DiscountCustomModal = ({ visible, onClose, onSubmit }) => {
         >
           &times;
         </span>
-        <h2 className="text-5xl text-gray-700 mb-4 font-extrabold">Set Discounts</h2>
+        <h2 className="text-5xl text-gray-700 mb-4 font-extrabold">Set {discountType} Discounts</h2>
         <div className="mb-4">
           <p className="text-base ">Select duration:</p>
           <select

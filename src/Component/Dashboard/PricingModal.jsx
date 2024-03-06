@@ -2,13 +2,16 @@ import Popup from "../../hoc/Popup";
 import React, { useState, useRef, useEffect } from "react";
 import { Radio } from "antd";
 
-const PricingModal = ({ visible, onClose }) => {
+const PricingModal = ({ visible, onClose,showBlocker,title,onSave,date,price }) => {
   const [show, setShow] = useState(false);
   const toggleShow = () => setShow(!show);
+ 
+
   const [inputShow, setInputShow] = useState(false);
   //   const [loading,setLoading]=useState(false);
   const inputRef = useRef(null);
-  const handleEdit = () => {
+  const handleEdit = (e) => {
+    e.preventDefault();
     //   console.log('radio checked', e.target.value);
 
     setInputShow(!inputShow);
@@ -19,6 +22,10 @@ const PricingModal = ({ visible, onClose }) => {
       inputRef.current.focus();
     }
   }, [inputShow]);
+
+  
+  
+  
   const [selectedButton, setSelectedButton] = useState(null);
 
   const handleButtonSelection = (buttonId) => {
@@ -36,20 +43,40 @@ const PricingModal = ({ visible, onClose }) => {
   ];
 
   const [inputValue, setInputValue] = useState("42");
-
+  
   const handleInputChange = (e) => {
     const newInputValue = e.target.value;
 
     if (/^\d*$/.test(newInputValue) && newInputValue.length <= 8) {
       setInputValue(newInputValue);
   }
-  };
+};
+useEffect(() => {
+  if (price) {
+    const priceWithoutComma = price.replace(/,/g, ''); // Remove commas from the price
+    setInputValue(priceWithoutComma);
+  }
+}, [price,onClose]);
+
+const saveChangedPrice=(e)=>{
+  e.preventDefault();
+
+  if(price.replace(/,/g, '') !=inputValue){
+    console.log("saved")
+      onSave(inputValue,date);
+
+    }
+    onClose();
+
+  }
 
   return (
     <>
       <Popup isModalVisible={visible} handleCancel={onClose}>
-        <div className="   py-8 md:px-8 px-3    ">
-          {/* start Blocked and Unblocked should only show when they click on a particular date or highlight dates in the calender     */}
+        <div className="   py-8 md:px-16 px-3    ">
+
+         {showBlocker&& 
+        //  start Blocked and Unblocked should only show when they click on a particular date or highlight dates in the calender     
           <div className="flex justify-center items-center">
             <div className=" flex mb-4 items-center justify-center border h-10 rounded-md ">
               {/* {buttons.map((button) => ( */}
@@ -99,7 +126,8 @@ const PricingModal = ({ visible, onClose }) => {
               {/* ))} */}
             </div>
           </div>
-          {/* end */}
+          // {/* end */}
+          }
 
           <div className=" mb-0 box-border block">
             <div className=" flex items-baseline box-border ">
@@ -107,14 +135,14 @@ const PricingModal = ({ visible, onClose }) => {
                 <section>
                   <h2 className=" m-0 p-0 text-base">
                     <div className=" text-base mb-1 font-medium   ">
-                      Per night
+                    {title}
                     </div>
                   </h2>
                 </section>
               </div>
             </div>
           </div>
-          <form className=" contents box-border mt-0 ">
+          <form className=" contents box-border mt-0 " onSubmit={(e)=>{  e.preventDefault();}}>
             <div className=" lg:my-10 m-auto box-border block ">
               <div className=" pl-4  pb-3 ">
                 <div className=" h-auto visible w-full text-center box-border block    ">
@@ -152,7 +180,7 @@ const PricingModal = ({ visible, onClose }) => {
                   </div>
                 </div>
               </div>
-              <div className=" mt-4 gap-1 flex  flex-col-reverse min-h-[20px]">
+              {/* <div className=" mt-4 gap-1 flex  flex-col-reverse min-h-[20px]">
                 <div
                   className={` transition-all  ${
                     show ? "block " : " hidden"
@@ -212,11 +240,12 @@ const PricingModal = ({ visible, onClose }) => {
                     </div>
                   </button>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className=" mt-4 flex flex-col gap-3 ">
               <button
                 type="button"
+                onClick={saveChangedPrice}
                 className={`rounded-md transition-colors transition-3 text-white bg-orange-400 ring-1 font-medium ring-orange-400 p-2 px-3 opacity-100 disabled:cursor-not-allowed disabled:hover:bg-white hover:bg-orange-400/90`}
               >
                 Save
@@ -225,6 +254,8 @@ const PricingModal = ({ visible, onClose }) => {
                 type="button"
                 className={`rounded-md transition-3 transition-colors text-orange-400 ring-1 font-medium ring-orange-400 p-2 px-3 opacity-100 disabled:cursor-not-allowed disabled:hover:bg-white hover:bg-slate-50`}
                 onClick={() => {
+                  const priceWithoutComma = price.replace(/,/g, ''); // Remove commas from the price
+                  setInputValue(priceWithoutComma);
                   onClose();
                 }}
               >
