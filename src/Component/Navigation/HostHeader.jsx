@@ -59,7 +59,7 @@ export default function HostHeader() {
           <Link to="/HostAnalysis" className="text-white hover:text-gray-300 ml-4">
             Analysis
           </Link>
-          <Link to="/Schduler" className="text-white hover:text-gray-300 ml-4">
+          <Link to="/Scheduler" className="text-white hover:text-gray-300 ml-4">
             Calender
             </Link>
             <Link to="/HostPayment" className="text-white hover:text-gray-300 ml-4">
