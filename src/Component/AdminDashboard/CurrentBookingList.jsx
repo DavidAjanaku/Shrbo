@@ -31,7 +31,7 @@ export default function CurrentBookingsList() {
   const columns = [
     {
       title: 'Property Name',
-      dataIndex: 'propertyName',
+      dataIndex: 'property_name',
       key: 'propertyName',
       render: (text, record) => (
         <Link to={`/property/${record.propertyId}`}>{text}</Link>

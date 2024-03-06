@@ -18,6 +18,7 @@ import { useDateContext } from "../ContextProvider/BookingInfo";
 const ListingInfoMain = () => {
   const { id } = useParams();
   const [listingDetails, setListingDetails] = useState(null);
+  const [refreshed, setRefreshed] = useState(false);
 
   console.log(id);
   const {
@@ -30,21 +31,28 @@ const ListingInfoMain = () => {
     setDiscounts,
   } = useDateContext();
 
+  const [hostId, setHostId] = useState(null); // State for hostId
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await Axios.get("/user");
         setUser(response.data.id);
+        setHostId(response.data.id)
+
         console.log(response.data.id);
       } catch (error) {
         console.error("Error fetching users:", error);
         // Handle error, show error message, etc.
       }
     };
+    
 
     fetchUsers();
   }, []);
+
+
+  
 
   useEffect(() => {
     const fetchListingDetails = async () => {
@@ -53,6 +61,7 @@ const ListingInfoMain = () => {
         setListingDetails(response.data.data);
         setApartment(id); // Set the ID parameter to the apartment state
         setUser(response.data.data.user.id);
+        setHostId(response.data.data.user.id)
         setTitle(response.data.data.title);
         setCancellationPolicy(response.data.data.cancelPolicy);
         setAddress(response.data.data.address);
@@ -62,14 +71,31 @@ const ListingInfoMain = () => {
         
       } catch (error) {
         console.error("Error fetching listing details:", error);
-        // Handle error, show error message, etc.
       }
     };
 
     fetchListingDetails();
   }, [id]);
   
+
+  const recordHostHomeView = async (hostHomeId, hostId) => {
+    try {
+      const response = await Axios.get(`/hostHomeView/${hostHomeId}/${hostId}`);
+      console.log("Host home view recorded successfully:", response.data);
+    } catch (error) {
+      console.error("Error recording host home view:", error);
+    }
+  };
+
+  console.log(hostId);
   
+  useEffect(() => {
+    if (hostId) {
+      recordHostHomeView(id, hostId);
+    }
+  }, [hostId]);
+  
+
 
   if (!listingDetails) {
     // Loading state or return null

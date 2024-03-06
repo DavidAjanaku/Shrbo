@@ -33,13 +33,7 @@ const HouseRules = () => {
     <div className="py-3 mb-6">
       <p className="text-2xl w-[90%] mb-4 lg:mb-6 font-semibold block box-border bg-white">House Rules & Important Information</p>
       <div>
-        <Tabs defaultActiveKey="1" onChange={onChange} type="card">
-          {items.map((item) => (
-            <TabPane tab={item.label} key={item.key}>
-              {item.children}
-            </TabPane>
-          ))}
-        </Tabs>
+        <Tabs defaultActiveKey="1" onChange={onChange} type="card" items={items} />
       </div>
     </div>
   );

@@ -58,7 +58,7 @@ const MainSlider = (props) => {
       try {
         const response = await Axios.get(`showGuestHome/${id}`);
         setListingDetails(response.data.data);
-        console.log(response.data.data);
+        // console.log(response.data.data);
       } catch (error) {
         console.error("Error fetching listing details:", error);
         // Handle error, show error message, etc.
@@ -102,7 +102,6 @@ const MainSlider = (props) => {
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
   };
-  console.log(imageUrls[0]);
 
   const slides = pics.map((slide, index) => (
     <SplideSlide key={slide.id}>

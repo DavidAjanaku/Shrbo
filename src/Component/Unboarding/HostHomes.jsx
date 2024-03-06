@@ -53,9 +53,12 @@ import {
   FaExclamationTriangle,
   FaBan,
 } from "react-icons/fa";
+import { LoadingOutlined } from '@ant-design/icons';
+
 import { useParams, useNavigate } from "react-router-dom";
 import { Modal } from "antd";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { Spin } from 'antd';
 
 import AddressForm from "../AddressFrom";
 import Axios from "../../Axios";
@@ -232,7 +235,7 @@ export default function HostHomes({ match }) {
       await Axios.post("/hosthomes", formDetails);
 
       // Redirect to the homepage after successful submission
-      navigate("/");
+      navigate("/Hosting");
       console.log("Form submitted successfully", formDetails);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -334,7 +337,7 @@ export default function HostHomes({ match }) {
         break;
 
       case 10:
-        if (selectedHouseDescriptions.length === 1) {
+        if (selectedHouseDescriptions.length <= 1) {
           isValid = false;
           Modal.error({
             title: "Validation Error",
@@ -360,6 +363,11 @@ export default function HostHomes({ match }) {
       case 12:
         if (!selectedInstantBookType) {
           isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+              "Decide how you’ll confirm reservations before proceeding to the next step",
+          });
           break;
         }
         break;
@@ -367,6 +375,11 @@ export default function HostHomes({ match }) {
       case 13:
         if (visiblities.length === 0) {
           isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+            "Please choose who to welcome for your first reservation before proceeding to the next step",
+          });
           break;
         }
         break;
@@ -388,6 +401,11 @@ export default function HostHomes({ match }) {
         // Check if at least one discount is selected
         if (selectedDiscounts.length === 0) {
           isValid = false;
+          Modal.error({
+            title: "Validation Error",
+            content:
+            "Please select a discount before proceeding to the next step",
+          });
           break;
         }
         break;
@@ -2155,8 +2173,8 @@ export default function HostHomes({ match }) {
         return (
           <div className=" mx-auto  flex justify-center p-4">
             {isSubmitting && (
-              <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-400 bg-opacity-80 z-50">
-                <p className="text-xl text-gray-800">Loading...</p>
+              <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-white  bg-opacity-90 z-50">
+               <Spin indicator={<LoadingOutlined style={{ fontSize: 54, color: 'orange' }} spin />} />
               </div>
             )}
 

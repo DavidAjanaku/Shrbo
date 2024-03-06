@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Input, Button } from "antd";
+import { Input, Button,notification } from "antd";
 import AdminSidebar from "../AdminSidebar";
 import AdminHeader from "./AdminHeader";
+import Axios from "../../../Axios"
 
 const ServiceChargeSettings = () => {
   const [guestServiceCharge, setGuestServiceCharge] = useState(0);
   const [hostServiceCharge, setHostServiceCharge] = useState(0);
+  const [taxServiceCharge, setTaxServiceCharge] = useState(0);
+
 
   const handleGuestServiceChargeChange = (value) => {
     setGuestServiceCharge(value);
@@ -15,12 +18,33 @@ const ServiceChargeSettings = () => {
     setHostServiceCharge(value);
   };
 
-  const handleSaveChanges = () => {
-    // Implement logic to save the updated service charges to the backend
-    console.log("Guest Service Charge:", guestServiceCharge);
-    console.log("Host Service Charge:", hostServiceCharge);
-    // You can make API calls to update the service charges in your backend here
+  const handleTaxServiceChargeChange = (value) => {
+    setTaxServiceCharge(value);
   };
+
+  const handleSaveChanges = async () => {
+    try {
+      const response = await Axios.post("/updateServiceCharges", {
+        guest_services_charge: guestServiceCharge,
+        host_services_charge: hostServiceCharge,
+        tax: taxServiceCharge,
+      });
+      notification.success({
+        message: "Success",
+        description: "Service charges updated successfully",
+      });
+      console.log("Service charges updated successfully:", response.data);
+      // You can update your UI or show a success message here
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Failed to update service charges",
+      });
+      console.error("Failed to update service charges:", error);
+      // Handle the error or show an error message to the user
+    }
+  };
+  
 
   return (
     <div>
@@ -50,6 +74,14 @@ const ServiceChargeSettings = () => {
                 type="number"
                 value={hostServiceCharge}
                 onChange={(e) => handleHostServiceChargeChange(e.target.value)}
+              />
+            </div>
+            <div>
+              <label>Tax Service Charge:</label>
+              <Input
+                type="number"
+                value={taxServiceCharge}
+                onChange={(e) => handleTaxServiceChargeChange(e.target.value)}
               />
             </div>
             <div>

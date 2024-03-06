@@ -25,6 +25,7 @@ const AdminSupportPage = () => {
       const data = response.data.data;
       setSupportTickets(data);
       setLoading(false);
+      console.log(data);
     } catch (error) {
       console.error("Error fetching reported issues:", error);
       setLoading(false);
@@ -46,11 +47,7 @@ const AdminSupportPage = () => {
       dataIndex: "title",
       key: "title",
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-    },
+   
     {
       title: "Rental Name",
       dataIndex: "homeName",
@@ -62,9 +59,14 @@ const AdminSupportPage = () => {
       key: "reasonforreporting",
     },
     {
-      title: "Dispute Email",
-      dataIndex: "disputeEmail",
-      key: "disputeEmail",
+      title: "Host Email",
+      dataIndex: "hostEmail",
+      key: "hostEmail",
+    },
+    {
+      title: "Guest Email",
+      dataIndex: "guestEmail",
+      key: "guestEmail",
     },
     {
       title: "Actions",

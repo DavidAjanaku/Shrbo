@@ -23,7 +23,8 @@ const BookInfoCard = () => {
     title,
     address,
     photo,
-    securityDeposit
+    securityDeposit,
+    appliedDiscounts
   } = useDateContext();
 
   return (
@@ -159,6 +160,18 @@ const BookInfoCard = () => {
                         ₦  {securityDeposit}
                         </div>
                       </div>
+                      
+                    </div>
+                    <div className=" mb-2 box-border block italic text-sm text-gray-400">
+                      <div className=" flex items-end justify-between break-words    ">
+                        <div className=" block box-border">
+                          <span>Applied Discount</span>
+                        </div>
+                        <div className=" ml-4 whitespace-nowrap block box-border   ">
+                          {appliedDiscounts}
+                        </div>
+                      </div>
+                      
                     </div>
                   </div>
                   <div className=" border-b py-4">
@@ -169,6 +182,7 @@ const BookInfoCard = () => {
                       </div>
                     </div>
                   </div>
+                  
                 </div>
               </div>
             </div>

@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import DateIcon from "../../assets/svg/date-icon.svg";
 import "react-datepicker/dist/react-datepicker.css";
 import { Modal, Button, Dropdown, Space, message, Form, Input } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Popup from "../../hoc/Popup";
 import ReportListing from "./ReportListing";
 import CustomModal from "../CustomModal";
@@ -17,11 +17,16 @@ export default function ListingForm({ reservations, reservation, guest }) {
     e.preventDefault();
     setIsModalVisible(true);
   }
+  const [verified, setVerified] = useState(false);
 
   const [messageModalVisible, setMessageModalVisible] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
   const [showMessageHostButton, setShowMessageHostButton] = useState(true);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [discount, setDiscount] = useState([]); // State to store the discount value
+  const [appliedDiscount, setAppliedDiscount] = useState("");
+  const [isBookButtonDisabled, setIsBookButtonDisabled] = useState(false);
 
   const messageRef = useRef(null);
   // const [checkInDate, setCheckInDate] = useState(null);
@@ -42,7 +47,25 @@ export default function ListingForm({ reservations, reservation, guest }) {
   const [totalCosts, setTotalCosts] = useState(0);
   const [securityDeposit, setSecurityDeposit] = useState(0);
   const [guestFee, setGuestFee] = useState(0);
+  const [bookingCount, setBookingCount] = useState(0);
+  
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await Axios.get("/user");
+
+        // console.log(response.data.verified);
+        setVerified(response.data.verified); // Set the verified status
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        // Handle error, show error message, etc.
+      }
+    };
+
+    fetchUsers();
+  }, []);
+  // console.log(verified);
   const {
     checkInDate,
     setCheckInDate,
@@ -65,6 +88,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
     nights,
     setNights,
     setSecurityDeposits,
+    setAppliedDiscounts
   } = useDateContext();
 
   const [form] = Form.useForm(); // Define the form variable
@@ -78,7 +102,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
     const message = form.getFieldValue("message");
 
     // Log the message to the console
-    console.log("Message:", message);
+    // console.log("Message:", message);
 
     // Perform the logic to send the message here
 
@@ -105,15 +129,24 @@ export default function ListingForm({ reservations, reservation, guest }) {
   useEffect(() => {
     const fetchListingDetails = async () => {
       try {
+        resetStateValues(); // Reset state values before fetching listing details
+
         const response = await Axios.get(`showGuestHome/${id}`);
         setListingDetails(response.data.data);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setPrice(response.data.data.price); // Adjust this line based on your API response structure
         setHousePrice(price);
         const checkoutTimeDate = response.data.data.checkout;
         setSecurityDeposit(parseInt(response.data.data.securityDeposit));
         setGuestFee(response.data.data.guest_fee);
         setSecurityDeposits(parseInt(response.data.data.securityDeposit));
+        const discounts = response.data.data.discounts;
+        let discountValue = null;
+        setBookingCount(response.data.data.bookingCount);
+        const discountValues = discounts.map((discount) => discount.discount); // Get an array of all discount values
+
+        console.log("Discount values:", discountValues);
+        setDiscount(discountValues);
 
         // Extract booked dates and convert them to Date objects
         const bookedDates = response.data.data.bookedDates.map((date) => {
@@ -122,7 +155,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
           return { checkInDate, checkOutDate };
         });
 
-        console.log(bookedDates);
+        // console.log(bookedDates);
 
         // Set the booked dates to exclude them in the DatePicker
         setBookedDates(bookedDates);
@@ -134,6 +167,24 @@ export default function ListingForm({ reservations, reservation, guest }) {
 
     fetchListingDetails();
   }, [id]);
+
+  const resetStateValues = () => {
+    setCheckInDate(null);
+    setCheckOutDate(null);
+    setTotalPrice(null);
+    setHousePrice(null);
+    setNights(0);
+    setHostFee(0);
+    setHostFees(0);
+    setTotalCosts(0);
+    setServiceFee(0);
+    setServiceFees(0);
+    setTaxFees(0);
+    setTotalCost(0);
+    setSecurityDeposit(0);
+    setGuestFee(0);
+    setBookingCount(0);
+  };
 
   function handleCancel() {
     setIsModalVisible(false);
@@ -149,7 +200,30 @@ export default function ListingForm({ reservations, reservation, guest }) {
     calculateTotalPrice(checkInDate, date);
   };
 
+  const predefinedDiscounts = [
+    "20% New listing promotion",
+    "5% Weekly discount",
+    "10% Monthly discount",
+  ];
+
+  useEffect(() => {
+    if (checkInDate && checkOutDate && checkOutDate < checkInDate) {
+      setIsBookButtonDisabled(true);
+    } else {
+      setIsBookButtonDisabled(false);
+    }
+  }, [checkInDate, checkOutDate]);
+
   
+  const matchingDiscounts = discount.filter((discount) =>
+    predefinedDiscounts.includes(discount)
+  );
+
+  console.log(
+    matchingDiscounts.length > 0 ? matchingDiscounts : "No matches found"
+  );
+
+  console.log(bookingCount);
 
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
@@ -164,31 +238,71 @@ export default function ListingForm({ reservations, reservation, guest }) {
       // const tax = 0.05 * basePrice;
 
       const guest_fee = guestFee * nights;
-      console.log(guest_fee);
+      // console.log(guest_fee);
       const securityDeposits = securityDeposit;
       const totalPrice = nights * nightlyPrice;
       const TotalPrice = basePrice + securityDeposits;
 
       setHousePrice(price);
-      console.log(nights);
+      // console.log(nights);
       setNights(nights);
       setTotalPrice(totalPrice);
       setHostFee(hostFees);
       setHostFees(hostFees);
 
       setTotalCosts(totalCosts);
-      console.log(totalCosts);
+      // console.log(totalCosts);
       setServiceFee(serviceFees);
       setServiceFees(serviceFees);
       // setTaxFees(tax);
       // setTax(tax);
 
-      setTotalCost(TotalPrice);
+      // Check if the booking count is less than 15 days and the discount contains the "20% New listing promotion"
+      if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
+        setAppliedDiscount("20% New listing promotion (20% off)");
+        setAppliedDiscounts("20% New listing promotion (20% off)")
+        console.log(basePrice);
+       const totalPrice = basePrice * 0.8 ;
+        console.log(basePrice);
+        console.log(totalPrice);
+
+        // Apply a 10% discount for stays of 28 nights or more
+        const discountedPrice = totalPrice + securityDeposits; // 10% off
+        setTotalCost(discountedPrice);
+      } else if (nights >= 28) {
+        // Calculate total price
+        setAppliedDiscount("10% Monthly discount (10% off)");
+        setAppliedDiscounts("10% Monthly discount (10% off)")
+        const totalPrice = basePrice * 0.90 ;
+        console.log(basePrice);
+        console.log(totalPrice);
+
+        // Apply a 10% discount for stays of 28 nights or more
+        const discountedPrice = totalPrice + securityDeposits; // 10% off
+        setTotalCost(discountedPrice);
+      } else if (nights >= 7) {
+        // Calculate total price
+        setAppliedDiscount("5% Weekly discount (5% off)");
+        setAppliedDiscounts("5% Weekly discount (5% off)")
+
+        const totalPrice = basePrice * 0.95 ;
+        console.log(basePrice);
+        console.log(totalPrice);
+
+        // Apply a 10% discount for stays of 28 nights or more
+        const discountedPrice = totalPrice + securityDeposits; // 10% off
+        setTotalCost(discountedPrice);
+      } else {
+        setAppliedDiscount("");
+
+        setTotalCost(TotalPrice);
+      }
     } else {
       // Set a default value when dates are not selected
       setTotalPrice(null);
     }
   };
+
   const addDays = (date, days) => {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -202,6 +316,10 @@ export default function ListingForm({ reservations, reservation, guest }) {
     return 1; // Default to 1 night if dates are not selected
   };
   let pricePerNight = Number(price).toLocaleString();
+
+  const navigate = useNavigate();
+
+
 
   return (
     <div className=" block w-full h-full">
@@ -217,16 +335,13 @@ export default function ListingForm({ reservations, reservation, guest }) {
                 <div className=" gap-2 justify-start flex-wrap flex-row items-center flex">
                   <div>
                     <span aria-hidden="true">
-            
-
-<div className="font-medium text-xl box-border">
-  {price === null || totalPrice === 0
-    ? <PriceSkeleton />
-    : `₦${Number(price).toLocaleString()}`}
-</div>
-
-
-
+                      <div className="font-medium text-xl box-border">
+                        {price === null || totalPrice === 0 ? (
+                          <PriceSkeleton />
+                        ) : (
+                          `₦${Number(price).toLocaleString()}`
+                        )}
+                      </div>
                     </span>
                   </div>
 
@@ -325,6 +440,16 @@ export default function ListingForm({ reservations, reservation, guest }) {
             {/* <!--total before and after tax--> */}
             <div className=" min-h-[1.5rem] w-full   p-3">
               <div className=" border-t py-4 flex flex-col gap-1">
+              {appliedDiscount && (
+                  <div className=" text-sm text-gray-500 italic">
+                    <div className="mb-2 box-border block">
+                      <div className="flex justify-between items-end break-words">
+                        <span>Discount Applied:</span>
+                        <span>{appliedDiscount}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {checkInDate && checkOutDate && (
                   <div className=" font-medium text-base box-border flex items-end justify-between break-words    ">
                     <span> Total before </span>
@@ -347,6 +472,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
                   </div>
                 )}
 
+            
                 {/* handles the modal  when price details is clicked  */}
                 <Popup
                   isModalVisible={isModalVisible}
@@ -405,6 +531,17 @@ export default function ListingForm({ reservations, reservation, guest }) {
                                   </div>
                                 </div>
                               </div>
+                              {appliedDiscount && (
+                                <div className="">
+                                  <div className="mb-2 box-border block">
+                                    <div className="flex justify-between items-end break-words">
+                                      <span>Discount Applied:</span>
+                                      <span>{appliedDiscount}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
                               {/* <div className=" mb-2t box-border block">
                                 <div className=" flex items-end justify-between break-words    ">
                                   <div className=" block box-border">
@@ -440,8 +577,9 @@ export default function ListingForm({ reservations, reservation, guest }) {
                       </div>
                     </div>
                   </div>
+
                   <div className="p-2">
-                    <Link to="/RequestBook">
+                    <Link to={verified !== null ? "/RequestBook" : undefined}>
                       <button
                         type="button"
                         className="block w-full h-11 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
@@ -451,6 +589,14 @@ export default function ListingForm({ reservations, reservation, guest }) {
                             dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]]"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          if (verified == null) {
+                            setShowVerifyModal(true);
+                          } else {
+                            navigate("/RequestBook");
+                          }
+                        }}
                       >
                         Book
                       </button>
@@ -463,18 +609,26 @@ export default function ListingForm({ reservations, reservation, guest }) {
             {/* <!--Submit button--> */}
             <div className="p-2">
               {showMessageHostButton && (
-                <Link to="/RequestBook">
+                <Link to={verified !== null ? "/RequestBook" : undefined}>
                   <button
                     type="button"
                     className="block w-full h-11 mt-3 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
-          text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
-          focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
-          focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
-          dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
-          dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
-          ,0_4px_18px_0_rgba(59,113,202,0.1)]"
-                    disabled={!checkInDate || !checkOutDate}
-                  >
+      text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
+      focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+      focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+      dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
+      dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
+      ,0_4px_18px_0_rgba(59,113,202,0.1)]"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      if (verified == null) {
+                        setShowVerifyModal(true);
+                      } else {
+                        navigate("/RequestBook");
+                      }
+                    }}
+                    disabled={isBookButtonDisabled || !checkInDate || !checkOutDate}
+                    >
                     Book
                   </button>
                 </Link>
@@ -495,6 +649,35 @@ export default function ListingForm({ reservations, reservation, guest }) {
             </div>
           </form>
         </div>
+
+        {showVerifyModal && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-4 rounded">
+              <h2 className="text-lg font-bold mb-2">Verification Required</h2>
+              <p className="text-sm mb-4">
+                Please verify your account before booking.
+              </p>
+              <div className="flex justify-between">
+                <button
+                  onClick={() => setShowVerifyModal(false)}
+                  className="bg-orange-400 text-white px-4 py-2 rounded mr-2"
+                >
+                  OK
+                </button>
+                <Link to="/profile">
+                  <button
+                    onClick={() => {
+                      // Add logic to navigate to settings page
+                    }}
+                    className="bg-orange-400 text-white px-4 py-2 rounded"
+                  >
+                    Go to Settings
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className=" font-normal text-sm box-border flex items-end justify-center break-words pt-3  pl-3    ">
           {/* <span> see full price</span> */}
@@ -521,7 +704,6 @@ export default function ListingForm({ reservations, reservation, guest }) {
           </CustomModal> */}
       </div>
 
-      {/* Message Modal */}
       <Modal
         title="Message Host"
         open={messageModalVisible}

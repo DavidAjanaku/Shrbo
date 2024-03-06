@@ -166,9 +166,9 @@ const HouseRulesTab = () => {
                       height="24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
                       <circle cx="12" cy="12" r="8" />
                       <path d="M12 2v4m0 16v4M22 12h-4m-16 0H2M12 2L9 6h6l-3-4z" />
@@ -184,9 +184,9 @@ const HouseRulesTab = () => {
                       height="24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
                       <circle cx="12" cy="12" r="10" />
                       <line x1="15" y1="15" x2="19" y2="19" />
@@ -205,9 +205,9 @@ const HouseRulesTab = () => {
                       height="24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 16h2v-2h-2zm0-4h2V8h-2z" />
                       <circle cx="12" cy="14" r="1" />
