@@ -216,7 +216,7 @@ useEffect(() => {
       const filteredData = response.data.data.map(item => ({
         name: item.username,
         checkInDate: item.check_in,
-        id:item.aboutGuest.id,
+        id:item.aboutGuest?.id,
         reservationId:item.id,
         image:item.guestProfilePic?item.guestProfilePic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
       }));
@@ -756,7 +756,7 @@ useEffect(() => {
           </div>
           <div className="flex flex-wrap my-4 items-center justify-between">
             <h1 className="text-3xl font-medium my-7">Welcome back, {user.name}</h1>
-            <Link to="/Reservations">All Reservations(3)</Link>
+            <Link to="/Reservations" className="">All Reservations <svg xmlns="http://www.w3.org/2000/svg" width={"30px"} height={"30px"} viewBox="0 0 24 24"><title>arrow-right-thin</title><path d="M14 16.94V12.94H5.08L5.05 10.93H14V6.94L19 11.94Z" /></svg></Link>
           </div>
 
           <div>

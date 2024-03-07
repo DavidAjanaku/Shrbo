@@ -295,6 +295,17 @@ const Reservations = () => {
 
   );
 
+  const SkeletonLoaderTabs= Array.from({ length: 4 }).map((group, index) =>(
+    <div
+    key={index}
+    className={`  py-2 px-4 w-28  h-10 rounded-full   skeleton-loader `}
+  >
+        
+  </div>
+
+  ));
+
+
 
 
 
@@ -410,7 +421,9 @@ const Reservations = () => {
           :
           <div className=" mt-5 ">
 
-            <div className="    w-full h-auto    gap-2 md:gap-4 grid grid-cols-1 md:grid-cols-2     ">
+            {SkeletonLoaderTabs}
+
+            <div className=" mt-3    w-full h-auto    gap-2 md:gap-4 grid grid-cols-1 md:grid-cols-2     ">
               {skeletonLoader}
             </div>
           </div>

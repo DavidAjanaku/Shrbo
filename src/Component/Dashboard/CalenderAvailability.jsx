@@ -47,7 +47,7 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
     }
 
     if (advanceNotice !== null) {
-      selectedAdvanceNotice(advanceNotice);
+      setSelectedAdvanceNotice(advanceNotice);
     }
 
 
@@ -138,7 +138,7 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
 
     const id = houseId;
     await axios.put(`/schdulerEditHostHomeAvailabilityWindow/${id}`, { availability_window:inputedAvailabilityWindow }).then(response=>{
-      setSelectedPreparationTime(inputedAvailabilityWindow);
+      setSelectedAvailabilityWindow(inputedAvailabilityWindow);
       console.log(response);
 
     }).catch(err => {

@@ -27,7 +27,7 @@ export default class Scheduler extends Component {
       selectedEditDate: null,
       isEditingPrice: false,
       editedPrice: "",
-      pricingModalVisible:false,
+      pricingModalVisible: false,
       selectedDates: [],
       discountModalVisible: false,
       isApartmentSelected: false,
@@ -63,50 +63,74 @@ export default class Scheduler extends Component {
     }));
   };
 
-  handleDateClick = (dateInfo) => {
-    const { blockedDates, blockingMode, selectedDates } = this.state;
-    const clickedDate = dateInfo.dateStr;
 
-    if (blockingMode) {
-      const updatedBlockedDates = blockedDates.includes(clickedDate)
-        ? blockedDates.filter((date) => date !== clickedDate)
-        : [...blockedDates, clickedDate];
 
-      this.setState({ blockedDates: updatedBlockedDates });
-    } else {
-      if (blockedDates.includes(clickedDate)) {
-        const updatedBlockedDates = blockedDates.filter(
-          (date) => date !== clickedDate
-        );
-        this.setState({ blockedDates: updatedBlockedDates });
-      }
-    }
+  handleDateClick = (date) => {
+    // const { blockedDates, blockingMode, selectedDates } = this.state;
+    const clickedDate = date.dateStr;
 
-    if (!blockingMode) {
-      const { selectedDates } = this.state;
 
-      // Check if the clicked date is in the selectedDates array
-      if (selectedDates.includes(clickedDate)) {
-        // If the date is already selected, remove it
-        const updatedSelectedDates = selectedDates.filter(
-          (date) => date !== clickedDate
-        );
-        this.setState({ selectedDates: updatedSelectedDates });
-      } else {
-        // If the date is not selected, add it
-        this.setState({
-          selectedDates: [...selectedDates, clickedDate],
-          selectedEditDate: dateInfo.dateStr,
-          selectedDatePrice: "",
-          showWeeklyDiscountDetails: true, // Show discount details when a date is clicked
-        });
-      }
-    }
+    // / Check if the clicked date is in the past
+    const isPastDate = date.date < new Date();
+
+    // If it's a past date, prevent the default behavior and apply styles
+    // if (isPastDate) {
+    //   console.log(new Date())
+    //   return ;
+    // } else {
+      // Handle the click for future dates
+      this.openPopup(clickedDate,"");
+      console.log('Clicked on a future date:', date);
+    // }
+
+
+
+
+
+    // if (blockingMode) {
+    //   const updatedBlockedDates = blockedDates.includes(clickedDate)
+    //     ? blockedDates.filter((date) => date !== clickedDate)
+    //     : [...blockedDates, clickedDate];
+
+    //   this.setState({ blockedDates: updatedBlockedDates });
+    // } else {
+    //   if (blockedDates.includes(clickedDate)) {
+    //     const updatedBlockedDates = blockedDates.filter(
+    //       (date) => date !== clickedDate
+    //     );
+    //     this.setState({ blockedDates: updatedBlockedDates });
+    //   }
+    // }
+
+    // if (!blockingMode) {
+    //   const { selectedDates } = this.state;
+
+    //   // Check if the clicked date is in the selectedDates array
+    //   if (selectedDates.includes(clickedDate)) {
+    //     // If the date is already selected, remove it
+    //     const updatedSelectedDates = selectedDates.filter(
+    //       (date) => date !== clickedDate
+    //     );
+    //     this.setState({ selectedDates: updatedSelectedDates });
+    //   } else {
+    //     // If the date is not selected, add it
+    //     this.setState({
+    //       selectedDates: [...selectedDates, clickedDate],
+    //       selectedEditDate: dateInfo.dateStr,
+    //       selectedDatePrice: "",
+    //       showWeeklyDiscountDetails: true, // Show discount details when a date is clicked
+    //     });
+    //   }
+    // }
+  
   };
 
   handleDateSelect = (info) => {
-    const selectedStartDate = info.start;
-    const selectedEndDate = info.end;
+    const selectedStartDate = info.start.toISOString().split('T')[0];
+    const selectedEndDate = info.end.toISOString().split('T')[0];
+
+    console.log(info)
+    
 
     // You can handle date range selection if needed
     console.log('Selected start date:', selectedStartDate);
@@ -118,9 +142,9 @@ export default class Scheduler extends Component {
 
   openPopup = (startDate, endDate) => {
     // Your logic to open a popup with the selected date or date range
-    console.log('Opening popup with date:', startDate.toISOString().split('T')[0]);
+    console.log('Opening popup with date:', startDate);
 
-    this.showPricingModal();
+    this.setState({ pricingModalVisible: true }) // Set the custom modal to be visible
 
     // Example: You can use a modal library or create your own popup component
     // showModal({ startDate, endDate });
@@ -135,36 +159,36 @@ export default class Scheduler extends Component {
     this.setState({ isEditingPrice: true });
   };
 
-  handleSavePrice = (event) => {
-    event.preventDefault();
+  // handleSavePrice = (event) => {
+  //   event.preventDefault();
 
-    const { selectedEditDate, selectedDatePrice } = this.state;
+  //   const { selectedEditDate, selectedDatePrice } = this.state;
 
-    if (selectedEditDate) {
-      Modal.confirm({
-        title: "Save Changes",
-        content: "Are you sure you want to save the changes?",
-        onOk: () => {
-          // User confirmed, proceed with saving the changes
-          console.log("Date:", selectedEditDate);
-          console.log("Price:", selectedDatePrice);
-        },
-        onCancel: () => {
-          // User canceled, do nothing or handle it as needed
-        },
-      });
-    } else {
-      // If a date is not selected, show the "Please select a date" modal
-      Modal.confirm({
-        title: "Error",
-        content: "Please select a date before saving the price.",
-        onOk: () => {
-          // User confirmed, you can choose to handle it as needed
-        },
-        okButtonProps: { className: "orange-button" },
-      });
-    }
-  };
+  //   if (selectedEditDate) {
+  //     Modal.confirm({
+  //       title: "Save Changes",
+  //       content: "Are you sure you want to save the changes?",
+  //       onOk: () => {
+  //         // User confirmed, proceed with saving the changes
+  //         console.log("Date:", selectedEditDate);
+  //         console.log("Price:", selectedDatePrice);
+  //       },
+  //       onCancel: () => {
+  //         // User canceled, do nothing or handle it as needed
+  //       },
+  //     });
+  //   } else {
+  //     // If a date is not selected, show the "Please select a date" modal
+  //     Modal.confirm({
+  //       title: "Error",
+  //       content: "Please select a date before saving the price.",
+  //       onOk: () => {
+  //         // User confirmed, you can choose to handle it as needed
+  //       },
+  //       okButtonProps: { className: "orange-button" },
+  //     });
+  //   }
+  // };
 
   handleBlockMode = () => {
     this.setState({ blockingMode: true });
@@ -176,6 +200,9 @@ export default class Scheduler extends Component {
 
   formatAmountWithCommas = (amount) => {
     // Convert the amount to a string and split it into integer and decimal parts
+    if(amount===""||amount===null){
+      return ""
+    }
     const [integerPart, decimalPart] = amount.toString().split('.');
 
     // Add commas to the integer part
@@ -200,13 +227,13 @@ export default class Scheduler extends Component {
       return;
     }
 
-   await this.fetchData(houseId);
+    await this.fetchData(houseId);
 
 
-    
+
   };
 
-  fetchData= async (houseId)=>{
+  fetchData = async (houseId) => {
 
     await axios.get(`/hosthomes/${houseId}`).then(response => {
 
@@ -296,49 +323,46 @@ export default class Scheduler extends Component {
     this.updateBlockedDates();
 
 
+
   }
 
-  setEditedPrice(price){
+
+  setEditedPrice(price) {
     // gets the changed price from the Pricing component and stores it
     this.setState({ editedPrice: this.formatAmountWithCommas(price) });
   }
 
-   savePrice = async (price, date) => {
+  savePrice = async (price, date) => {
 
-   
 
-    const id =this.state.selectedHouse.id;
+
+    const id = this.state.selectedHouse.id;
     this.setState({ editedPrice: this.formatAmountWithCommas(price) });
-     /// for The calender price to change
-      await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, date:(date?date : "") }).then(response=>{
-          this.fetchData(id)
+    /// for The calender price to change
+    await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, date: (date ? date : "") }).then(response => {
+      this.fetchData(id)
 
-      }).catch(err => {
-        console.log(err)
-        this.setState({ editedPrice: this.state.selectedHouse.basePrice }); /// for The calender price to change
-      });
-
-
-    
+    }).catch(err => {
+      console.log(err)
+      this.setState({ editedPrice: this.state.selectedHouse.basePrice }); /// for The calender price to change
+    });
 
 
-    
+
+
+
+
 
 
   }
 
 
-  showPricingModal = () => {
-   this.setState({pricingModalVisible:true}) // Set the custom modal to be visible
 
-  };
-
- hidePricingModal = () => {
-  this.setState({pricingModalVisible:false}) // Set the custom modal to be visible
+  hidePricingModal = () => {
+    this.setState({ pricingModalVisible: false }) // Set the custom modal to be visible
   };
 
 
-  
   updateBlockedDates = () => {
     const currentDate = new Date();
     const pastYear = new Date();
@@ -360,7 +384,7 @@ export default class Scheduler extends Component {
     let currentDate = new Date(startDate);
 
     // Loop through each day from the start date to the end date
-    while (currentDate <= new Date(endDate)) {
+    while (currentDate < new Date(endDate)) {
       pastDates.push(currentDate.toISOString().split('T')[0]);
       currentDate.setDate(currentDate.getDate() + 1);
     }
@@ -368,7 +392,7 @@ export default class Scheduler extends Component {
     return pastDates;
   };
 
-  
+
 
 
 
@@ -397,7 +421,7 @@ export default class Scheduler extends Component {
           <Pricing
             selectedHouse={selectedHouse}
             isEditingPrice={isEditingPrice}
-            setEditedPrice={(price)=>{this.setEditedPrice(price)}}
+            setEditedPrice={(price) => { this.setEditedPrice(price) }}
             selectedDate={selectedDate}
             selectedDatePrice={selectedDatePrice}
             onEditPrice={this.handleEditPrice}
@@ -426,10 +450,10 @@ export default class Scheduler extends Component {
                 maxNight={selectedHouse.maxNight}
                 advanceNotice={selectedHouse.advanceNotice}
                 prepTime={selectedHouse.prepTime}
-                availabilityWindow={selectedHouse.availabilityWindow} 
+                availabilityWindow={selectedHouse.availabilityWindow}
                 selectedHouse={selectedHouse}
                 houseId={selectedHouse.id}
-                />
+              />
             ) : (
               <div>Select an apartment/house to view details</div>
             )}
@@ -438,38 +462,7 @@ export default class Scheduler extends Component {
       },
     ];
 
-    const apartments = [
-      {
-        name: "Lekki Admiralty",
-        basePrice: "₦400002",
-        customWeekendPrice: "Add",
-        weeklyDiscount: "10%",
-        weeklyAverage: "₦2000065",
-        monthlyDiscount: "20%",
-        monthlyAverage: "₦2000065",
-        moreDiscounts: "Early bird, last-minute, trip length",
-      },
-      {
-        name: "Lekki Phase 1",
-        basePrice: "₦500000",
-        customWeekendPrice: "Add",
-        weeklyDiscount: "15%",
-        weeklyAverage: "₦3000000",
-        monthlyDiscount: "25%",
-        monthlyAverage: "₦3000000",
-        moreDiscounts: "Early bird, last-minute, trip length",
-      },
-      {
-        name: "Lekki Units square",
-        basePrice: "₦400005",
-        customWeekendPrice: "Add",
-        weeklyDiscount: "12%",
-        weeklyAverage: "₦2000080",
-        monthlyDiscount: "22%",
-        monthlyAverage: "₦2000080",
-        moreDiscounts: "Early bird, last-minute, trip length",
-      },
-    ];
+
 
     const houseOptions = this.state.houseOptions.map((options) => ({ name: options.property_name, id: options.id }));
 
@@ -536,21 +529,23 @@ export default class Scheduler extends Component {
                   validRange={validRange}
                   select={this.handleDateSelect}
                   selectable
+                  // eventClick={this.handleDateClick}
+                  selectConstraint={{ start: new Date().setHours(0, 0, 0, 0) }} 
                   dateClick={this.handleDateClick}
                   events={[
                     ...blockedDates.map((date) => ({
-                      // title: "Blocked",
+                      title: '<div><div></div><div class="w-full flex justify-center" > <svg xmlns="http://www.w3.org/2000/svg"  class="md:w-8 w-6"  viewBox="0 0 24 24"><title>cancel</title><path d="M12 2C17.5 2 22 6.5 22 12S17.5 22 12 22 2 17.5 2 12 6.5 2 12 2M12 4C10.1 4 8.4 4.6 7.1 5.7L18.3 16.9C19.3 15.5 20 13.8 20 12C20 7.6 16.4 4 12 4M16.9 18.3L5.7 7.1C4.6 8.4 4 10.1 4 12C4 16.4 7.6 20 12 20C13.9 20 15.6 19.4 16.9 18.3Z" /></svg></div></div>',
                       start: date,
                       allDay: true,
                       display: 'background',
-                      backgroundColor: "rgba(0, 0, 0, 0.1)"
+                      backgroundColor: "rgba(0, 0, 0, 0.1)",
                     })),
                     // ...markedBlockedDates,
                     ...this.getUnblockedDates(),
                   ]}
                   eventContent={(arg) => {
                     const dateStr = arg.event.start.toISOString().split("T")[0];
-                    const price =editedPrice;
+                    const price = editedPrice;
 
                     return {
                       html: `
@@ -592,7 +587,7 @@ export default class Scheduler extends Component {
             </div>
           </div>
           <div className="bg-slate-100 h-2 p-2 w-full md:hidden"></div>
-          <section className=" w-[370px] border-l z-[1] min-[1128px]:block">
+          <section className=" md:w-[370px] w-full border-l z-[1] min-[1128px]:block">
             <div className=" block box-border overflow-auto h-screen relative bg-white">
               <div className="block box-border py-8 px-6">
                 <Tabs defaultActiveKey="1" items={items} />

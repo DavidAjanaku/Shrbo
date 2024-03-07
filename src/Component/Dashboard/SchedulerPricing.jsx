@@ -245,7 +245,7 @@ const Pricing = ({
                       <div className="font-medium mb-2 mr-1 text-sm">Custom Weekend Price</div>
                       <div className="h-auto visible w-full">
                         <div className="text-3xl break-keep inline-block font-extrabold">
-                          <div className="block">₦{formatAmountWithCommas(weekendPrice)}</div>
+                          <div className="block">₦{weekendPrice?formatAmountWithCommas(weekendPrice):formatAmountWithCommas(basePrice)}</div>
                           {/* {editedPrice} */}
                         </div>
                         {/* ... other code ... */}
