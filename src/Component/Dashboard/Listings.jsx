@@ -207,22 +207,24 @@ export default function Listings() {
         ) {
           return (
             <div>
-              <Button
-                type="link"
-                onClick={() => {
-                  setCoHostsModalVisible(true); // Update the state here
-                  setSelectedListingCoHosts(cohosts); // Set the selected cohosts for the modal
-                }}
-              >
-                View Co-hosts
-              </Button>
-              <ListingsModal
-                isOpen={coHostsModalVisible}
-                onRequestClose={() => setCoHostsModalVisible(false)}
-                coHosts={selectedListingCoHosts}
-                handleRemoveCoHost={handleRemoveCoHost}
-              />
-            </div>
+            <Button
+              type="link"
+              onClick={() => {
+                setSelectedHouseId(listing.id); // Set the selectedHouseId
+                setCoHostsModalVisible(true); // Update the state here
+                setSelectedListingCoHosts(cohosts); // Set the selected cohosts for the modal
+              }}
+            >
+              View Co-hosts
+            </Button>
+            <ListingsModal
+              isOpen={coHostsModalVisible}
+              onRequestClose={() => setCoHostsModalVisible(false)}
+              coHosts={selectedListingCoHosts}
+              handleRemoveCoHost={handleRemoveCoHost}
+            />
+          </div>
+          
           );
         } else {
           return null; // Render nothing if the condition is not met
@@ -235,13 +237,17 @@ export default function Listings() {
 
 
   const handleRemoveCoHost = async (cohostId) => {
+    console.log("Selected House ID:", selectedHouseId); // Log the selected house ID
+    console.log("Removing co-host with cohostId:", cohostId, "from host home with selectedHouseId:", selectedHouseId);
+
     try {
       // Send a request to remove the co-host
-      await Axois.delete(`/removeCoHost/${cohostId}`);
+      await Axois.delete(`/removeCoHost/${cohostId}/${selectedHouseId}`);
   
       // Fetch updated listings
       await fetchListings();
-  
+      setSelectedListingCoHosts(prevCoHosts => prevCoHosts.filter(cohost => cohost.id !== cohostId));
+
       // Show success notification
       notification.success({
         message: "Co-host removed successfully",
@@ -258,6 +264,11 @@ export default function Listings() {
       });
     }
   };
+
+
+  
+  
+  
   const handleCheckboxChange = (listingId) => {
     if (selectedListings.includes(listingId)) {
       setSelectedListings(selectedListings.filter((id) => id !== listingId));
@@ -267,6 +278,8 @@ export default function Listings() {
 
     // Update the state to determine whether to show the "Edit" button
     setIsEditButtonVisible(selectedListings.length === 0);
+    setSelectedHouseId(listingId);
+
   };
 
   const handleFilterChange = (event) => {
