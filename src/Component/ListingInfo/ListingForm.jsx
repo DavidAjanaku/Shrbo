@@ -13,8 +13,10 @@ import Axios from "../../Axios";
 import { useDateContext } from "../../ContextProvider/BookingInfo";
 import PriceSkeleton from "../../SkeletonLoader/PriceSkeleton";
 import MessageModal from "../StayLengthModal";
+import { addMonths } from "date-fns";
+
 import StayLengthModal from "../StayLengthModal";
-export default function ListingForm({ reservations, reservation, guest,max_nights, min_nights }) {
+export default function ListingForm({ reservations, reservation, guest,max_nights, min_nights,availability_window }) {
   function showModal(e) {
     e.preventDefault();
     setIsModalVisible(true);
@@ -370,6 +372,27 @@ console.log(max_nights);
   };
 
 
+  // Function to calculate the maximum allowed date based on the availability window
+const calculateMaxDate = (availabilityWindow) => {
+  switch (availabilityWindow) {
+    case "3 months in advance":
+      return addMonths(new Date(), 3);
+    case "6 months in advance":
+      return addMonths(new Date(), 6);
+    case "9 months in advance":
+      return addMonths(new Date(), 9);
+    case "12 months in advance":
+      return addMonths(new Date(), 12);
+    case "24 months in advance":
+      return addMonths(new Date(), 24);
+    default:
+      return addMonths(new Date(), 1); // Default to 1 month in advance if the window is not specified
+  }
+};
+
+// Calculate the max date based on the availability window
+const maxDate = calculateMaxDate(availability_window);
+
   return (
     <div className=" block w-full h-full">
       <div
@@ -418,6 +441,8 @@ console.log(max_nights);
                   placeholderText="Check in"
                   dateFormat="dd/MM/yyyy"
                   minDate={new Date()}
+                  maxDate={maxDate}
+
                   excludeDates={bookedDates.flatMap(
                     ({ checkInDate, checkOutDate }) =>
                       Array.from(
@@ -446,6 +471,8 @@ console.log(max_nights);
                   placeholderText="Check out"
                   dateFormat="dd/MM/yyyy"
                   minDate={checkInDate ? addDays(checkInDate, 1) : new Date()} // Use checkInDate as the minimum date
+                  maxDate={maxDate}
+
                   excludeDates={bookedDates.flatMap(
                     ({ checkInDate, checkOutDate }) =>
                       Array.from(
