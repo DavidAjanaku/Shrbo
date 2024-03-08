@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import AdminHeader from './AdminNavigation/AdminHeader';
 import AdminSidebar from './AdminSidebar';
 import { Link } from 'react-router-dom';
-import { Table, Input, Select, Modal, Space, Dropdown } from "antd";
+import { Table, Input, Select, Modal, Space, Dropdown, Spin } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { LoadingOutlined } from "@ant-design/icons";
+
 const { Option } = Select;
 import Axios from "../../Axios"
 import moment from 'moment';
 
 export default function CurrentBookingsList() {
   const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
 
   const fetchBookings = async () => {
@@ -17,8 +20,12 @@ export default function CurrentBookingsList() {
       const response = await Axios.get('/bookings');
       setBookings(response.data.data);
       console.log(response.data.data);
+      setLoading(false); // Set loading to true before fetching data
+
     } catch (error) {
       console.error('Error fetching bookings:', error);
+      setLoading(false); // Set loading to false after fetching data (whether successful or not)
+
     }
   };
   
@@ -154,11 +161,25 @@ export default function CurrentBookingsList() {
               </Select>
             </div>
             <div className="overflow-x-auto">
-
+            {loading ? ( // Display Spin component when loading is true
+            <div className="flex justify-center h-52 items-center">
+              <Spin
+                indicator={
+                  <LoadingOutlined
+                    style={{
+                      fontSize: 24,
+                    }}
+                    spin
+                  />
+                }
+              />
+            </div>
+          ) : (
             <Table
               dataSource={bookings}
               columns={columns}
             />
+            )}
             </div>
           </div>
         </div>

@@ -72,7 +72,13 @@ export default function PropertyList() {
       title: "Price",
       dataIndex: "price",
       key: "price",
+      render: (price) => (
+        <span>
+          ₦{new Intl.NumberFormat().format(price)}
+        </span>
+      ),
     },
+    
     {
       title: "Added By",
       dataIndex: "user", // Access the 'user' object

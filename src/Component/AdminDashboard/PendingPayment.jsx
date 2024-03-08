@@ -56,26 +56,51 @@ const PendingPayment = () => {
       title: 'Total Amount',
       dataIndex: 'totalAmount',
       key: 'totalAmount',
+      render: (totalAmount) => (
+        <span>
+          ₦{new Intl.NumberFormat().format(totalAmount)}
+        </span>
+      ),
     },
     {
       title: 'Guest Service Charge',
       dataIndex: 'guestServiceCharge',
       key: 'guestServiceCharge',
+      render: (guestServiceCharge) => (
+        <span>
+          ₦{new Intl.NumberFormat().format(guestServiceCharge)}
+        </span>
+      ),
     },
     {
       title: 'Host Service Charge',
       dataIndex: 'hostServiceCharge',
       key: 'hostServiceCharge',
+      render: (hostServiceCharge) => (
+        <span>
+          ₦{new Intl.NumberFormat().format(hostServiceCharge)}
+        </span>
+      ),
     },
     {
       title: 'Net Profit',
       dataIndex: 'netProfit',
       key: 'netProfit',
+      render: (netProfit) => (
+        <span>
+          ₦{new Intl.NumberFormat().format(netProfit)}
+        </span>
+      ),
     },
     {
       title: 'Amount to Host',
       dataIndex: 'amountToHost',
       key: 'amountToHost',
+      render: (amountToHost) => (
+        <span>
+          ₦{new Intl.NumberFormat().format(amountToHost)}
+        </span>
+      ),
     },
     {
       title: "Actions",

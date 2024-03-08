@@ -164,8 +164,13 @@ export default function ApartmentListingApproval() {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (text) => `$${text}`,
+      render: (price) => (
+        <span>
+          ₦{new Intl.NumberFormat().format(price)}
+        </span>
+      ),
     },
+    
     {
       title: "Added By",
       dataIndex: ["user", "name"],

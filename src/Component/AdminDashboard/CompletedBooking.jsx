@@ -61,6 +61,11 @@ const CompletedBooking = () => {
       title: "Payment Amount",
       dataIndex: "totalamount",
       key: "totalamount",
+      render: (totalamount) => (
+        <span>
+          ₦{new Intl.NumberFormat().format(totalamount)}
+        </span>
+      ),
     },
     // {
     //   title: "Taxes",

@@ -52,25 +52,10 @@ export default function AdminAnalytical() {
     setSelectedFilter(value);
   };
  
+  useEffect(() => {
+    setSelectedFilter("today"); // Set the default filter to "today" when the component mounts
+  }, []);
 
-  const data = [
-    {
-      propertyName: "Property 1",
-      guestName: "Guest A",
-      total: 100,
-      startDate: "2023-10-01",
-      endDate: "2023-10-05",
-      status: "Booked",
-    },
-    {
-      propertyName: "Property 2",
-      guestName: "Guest B",
-      total: 150,
-      startDate: "2023-10-06",
-      endDate: "2023-10-10",
-      status: "Confirmed",
-    },
-  ];
 
   return (
     <div className="bg-gray-100 h-[100vh]">
@@ -87,19 +72,20 @@ export default function AdminAnalytical() {
               <label htmlFor="" className="mr-4">
                 Filter by:
               </label>
-              <select
-                name=""
-                className="border border-gray-300 rounded p-2"
-                id=""
-                value={selectedFilter}
-                onChange={(e) => setSelectedFilter(e.target.value)}
-              >
-                <option value="today">Today</option>
-                <option value="this_week">Week</option>
-                <option value="this_month">Month</option>
-                <option value="this_year">Year</option>
-                <option value="all_time">All Time</option>
-              </select>
+             <select
+  name=""
+  className="border border-gray-300 rounded p-2"
+  id=""
+  defaultValue={selectedFilter}
+  onChange={(e) => setSelectedFilter(e.target.value)}
+>
+  <option value="today">Today</option>
+  <option value="this_week">Week</option>
+  <option value="this_month">Month</option>
+  <option value="this_year">Year</option>
+  <option value="all_time">All Time</option>
+</select>
+
             </div>
 
            {loading && (
