@@ -471,7 +471,7 @@ const maxDate = calculateMaxDate(availability_window);
                   placeholderText="Check out"
                   dateFormat="dd/MM/yyyy"
                   minDate={checkInDate ? addDays(checkInDate, 1) : new Date()} // Use checkInDate as the minimum date
-                  maxDate={maxDate}
+                    maxDate={maxDate}
 
                   excludeDates={bookedDates.flatMap(
                     ({ checkInDate, checkOutDate }) =>

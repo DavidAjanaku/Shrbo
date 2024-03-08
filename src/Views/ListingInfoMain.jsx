@@ -138,6 +138,7 @@ const ListingInfoMain = () => {
               min_nights={listingDetails?.min_nights}
               preparation_time={listingDetails?.preparation_time}
               availability_window={listingDetails?.availability_window}
+              advance_notice={listingDetails?.advance_notice}
 
               />
             </div>
@@ -177,6 +178,7 @@ const ListingInfoMain = () => {
               min_nights={listingDetails?.min_nights}
               preparation_time={listingDetails?.preparation_time}
               availability_window={listingDetails?.availability_window}
+              advance_notice={listingDetails?.advance_notice}
 
 
             />
