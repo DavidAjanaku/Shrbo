@@ -28,13 +28,15 @@ export default function AdminAnalytical() {
     fetchHostAnalytics();
   }, []);
 
-
   useEffect(() => {
     async function fetchHostAnalytics() {
       try {
+        setLoading(true); // Set loading to true when fetching data
         const response = await Axios.get(`/filterAnalyticalData/${selectedFilter}`);
         setAnalyticsData(response.data.data);
-        setLoading(false); // Set loading to false when data is fetched
+        setTimeout(() => {
+          setLoading(false); // Set loading to false after 2 seconds
+        }, 2000);
         console.log(response.data.data);
       } catch (error) {
         console.error("Error fetching host analytics:", error);
@@ -49,21 +51,7 @@ export default function AdminAnalytical() {
   const handleFilterChange = (value) => {
     setSelectedFilter(value);
   };
-  if (loading) {
-    return (
-      <div className="w-full  p-4 h-[100vh] flex justify-center items-center overflow-auto example">
-        <Spin size="large" />
-      </div>
-    ); // Show a loading spinner for the right side content
-  }
-
-  if (error) {
-    return (
-      <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
-        {error}
-      </div>
-    ); // Show an error message for the right side content if there was a problem fetching the data
-  }
+ 
 
   const data = [
     {
@@ -114,107 +102,117 @@ export default function AdminAnalytical() {
               </select>
             </div>
 
-            {analyticsData && (
+           {loading && (
+  <div className="bg-white p-4 rounded shadow flex justify-center items-center h-96">
+    <Spin size="large" />
+  </div>
+)}
+
+            {error && <div className="w-full p-4 text-red-500">{error}</div>}
+
+            {!loading && !error && analyticsData && (
               <>
-                <div className="bg-gray-200 p-4 rounded shadow">
-                  <h2 className="text-base font-semibold">
-                    {selectedFilter === "today"
-                      ? "Today's Summary"
-                      : selectedFilter === "this_week"
-                      ? "This Week's Summary"
-                      : selectedFilter === "this_month"
-                      ? "This Month's Summary"
-                      : selectedFilter === "this_year"
-                      ? "This Year's Summary"
-                      : "All Time Summary"}
-                  </h2>
-                  <div className="flex flex-col md:flex-row flex-wrap mt-4 gap-4">
-                    {/* Card for Guests Today */}
-                    <Cards
-                      title="Reg No of Guests"
-                      value={analyticsData.no_of_guests}
-                    />
+                <>
+                  <div className="bg-gray-200 p-4 rounded shadow">
+                    <h2 className="text-base font-semibold">
+                      {selectedFilter === "today"
+                        ? "Today's Summary"
+                        : selectedFilter === "this_week"
+                        ? "This Week's Summary"
+                        : selectedFilter === "this_month"
+                        ? "This Month's Summary"
+                        : selectedFilter === "this_year"
+                        ? "This Year's Summary"
+                        : "All Time Summary"}
+                    </h2>
+                    <div className="flex flex-col md:flex-row flex-wrap mt-4 gap-4">
+                      {/* Card for Guests Today */}
+                      <Cards
+                        title="Reg No of Guests"
+                        value={analyticsData.no_of_guests}
+                      />
 
-                    {/* Cards for Hosts Today */}
-                    <Cards
-                      title="Reg No of Hosts"
-                      value={analyticsData.no_of_hosts}
-                    />
+                      {/* Cards for Hosts Today */}
+                      <Cards
+                        title="Reg No of Hosts"
+                        value={analyticsData.no_of_hosts}
+                      />
 
-                    <Cards
-                      title="Active Guests"
-                      value={analyticsData.active_guests}
-                    />
-                    <Cards
-                      title="Active Hosts"
-                      value={analyticsData.active_hosts}
-                    />
-                    <Cards
-                      title="Property Listings"
-                      value={analyticsData.propertyListings}
-                    />
-                    <Cards
-                      title="Revenue"
-                      value={analyticsData.revenue}
-                      currency="₦"
-                    />
-                    <Cards title="Visitors" value={analyticsData.visitors} />
+                      <Cards
+                        title="Active Guests"
+                        value={analyticsData.active_guests}
+                      />
+                      <Cards
+                        title="Active Hosts"
+                        value={analyticsData.active_hosts}
+                      />
+                      <Cards
+                        title="Property Listings"
+                        value={analyticsData.propertyListings}
+                      />
+                      <Cards
+                        title="Revenue"
+                        value={analyticsData.revenue}
+                        currency="₦"
+                      />
+                      <Cards title="Visitors" value={analyticsData.visitors} />
+                    </div>
                   </div>
-                </div>
 
-                <div className="bg-gray-200 p-4 rounded shadow">
-                <h2 className="text-base font-semibold">
-                    {selectedFilter === "today"
-                      ? "Today's Summary"
-                      : selectedFilter === "this_week"
-                      ? "This Week's Summary"
-                      : selectedFilter === "this_month"
-                      ? "This Month's Summary"
-                      : selectedFilter === "this_year"
-                      ? "This Year's Summary"
-                      : "All Time Summary"}
-                  </h2>
-                  <div className="flex flex-wrap  mt-4 gap-3">
-                    <Cards
-                      title="Users"
-                      value={analyticsData.userCountForPresentDay}
-                    />
-                    <Cards
-                      title="Pending Verified Users"
-                      value={analyticsData.unVerifiedUserForPresentDay}
-                    />
-                    <Cards
-                      title="Pending Approvals"
-                      value={analyticsData.unApprovedHomesCount}
-                    />
+                  <div className="bg-gray-200 p-4 rounded shadow">
+                    <h2 className="text-base font-semibold">
+                      {selectedFilter === "today"
+                        ? "Today's Summary"
+                        : selectedFilter === "this_week"
+                        ? "This Week's Summary"
+                        : selectedFilter === "this_month"
+                        ? "This Month's Summary"
+                        : selectedFilter === "this_year"
+                        ? "This Year's Summary"
+                        : "All Time Summary"}
+                    </h2>
+                    <div className="flex flex-wrap  mt-4 gap-3">
+                      <Cards
+                        title="Users"
+                        value={analyticsData.userCountForPresentDay}
+                      />
+                      <Cards
+                        title="Pending Verified Users"
+                        value={analyticsData.unVerifiedUserForPresentDay}
+                      />
+                      <Cards
+                        title="Pending Approvals"
+                        value={analyticsData.unApprovedHomesCount}
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="bg-gray-200 p-4 rounded shadow">
-                <h2 className="text-base font-semibold">
-                    {selectedFilter === "today"
-                      ? "Today's Summary"
-                      : selectedFilter === "this_week"
-                      ? "This Week's Summary"
-                      : selectedFilter === "this_month"
-                      ? "This Month's Summary"
-                      : selectedFilter === "this_year"
-                      ? "This Year's Summary"
-                      : "All Time Summary"}
-                  </h2>
+                  <div className="bg-gray-200 p-4 rounded shadow">
+                    <h2 className="text-base font-semibold">
+                      {selectedFilter === "today"
+                        ? "Today's Summary"
+                        : selectedFilter === "this_week"
+                        ? "This Week's Summary"
+                        : selectedFilter === "this_month"
+                        ? "This Month's Summary"
+                        : selectedFilter === "this_year"
+                        ? "This Year's Summary"
+                        : "All Time Summary"}
+                    </h2>
 
-                  <div className="flex flex-wrap  mt-4 gap-3">
-                    <Cards title="Booking Requests" value={0} />
-                    <Cards
-                      title="Reservations"
-                      value={analyticsData.activeReservationsCount}
-                    />
-                    <Cards
-                      title="Confirmed Bookings"
-                      value={analyticsData.confirmBookings}
-                    />
+                    <div className="flex flex-wrap  mt-4 gap-3">
+                      <Cards title="Booking Requests" value={0} />
+                      <Cards
+                        title="Reservations"
+                        value={analyticsData.activeReservationsCount}
+                      />
+                      <Cards
+                        title="Confirmed Bookings"
+                        value={analyticsData.confirmBookings}
+                      />
+                    </div>
                   </div>
-                </div>
+                </>
               </>
             )}
 
