@@ -12,6 +12,7 @@ import Axois from "../../Axios";
 import { Pagination, Spin } from "antd"; // Import Pagination component from Ant Design
 import { LoadingOutlined } from "@ant-design/icons";
 import ListingsModal from "./ListingsModal";
+import { Skeleton } from 'antd';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -375,9 +376,14 @@ export default function Listings() {
       <div className="md:flex-col md:w-[80vw] md:mx-auto md:my-10 p-4 md:p-10">
         <div className="flex justify-between items-center mb-10">
           <div>
-            <h1 className="text-xl font mb-4 italic text-gray-500">
-              {listings.length} Listings found
-            </h1>
+          <h1 className="text-xl font mb-4 italic text-gray-500">
+  {loading ? (
+    <Skeleton.Input style={{ width: 100 }} active={true} />
+  ) : (
+    `${listings.length} Listings found`
+  )}
+</h1>
+
             <p className="text-gray-500 text-sm">If you selected Hosting as a Business,please click on the apartment to add a co-host.</p>
           </div>
           <div>
