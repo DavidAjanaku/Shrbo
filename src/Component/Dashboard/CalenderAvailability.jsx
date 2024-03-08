@@ -1,18 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ArrowDown from "../../assets/line-angle-down-icon.svg";
+import axios from "../../Axios";
 
-export default function CalendarAvailability() {
+const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime, advanceNotice, houseId }) => {
   const [advanceNoticeModalVisible, setAdvanceNoticeModalVisible] = useState(false);
   const [preparationTimeModalVisible, setPreparationTimeModalVisible] = useState(false);
-  const [availabilityWindowModalVisible, setAvailabilityWindowModalVisible] = useState(false);
+
+  const [availabilityWindowModalVisible, setAvailabilityWindowModalVisible] = useState(false);//d
   const [minNightsModalVisible, setMinNightsModalVisible] = useState(false);
   const [maxNightsModalVisible, setMaxNightsModalVisible] = useState(false);
 
   const [selectedAdvanceNotice, setSelectedAdvanceNotice] = useState("");
+  const [inputedAdvanceNotice, setInputedAdvanceNotice] = useState("");
+  
   const [selectedPreparationTime, setSelectedPreparationTime] = useState("");
+  const [inputedPreparationTime, setInputedPreparationTime] = useState("");
+
   const [selectedAvailabilityWindow, setSelectedAvailabilityWindow] = useState("");
+  const [inputedAvailabilityWindow,setInputedAvailabilityWindow]=useState("");
+
   const [selectedMinNights, setSelectedMinNights] = useState("");
+  const [inputedMinNights,setInputedMinNights]=useState("");
+  
   const [selectedMaxNights, setSelectedMaxNights] = useState("");
+  const [inputedMaxNights,setInputedMaxNights]=useState("");
+
+  useEffect(() => {
+
+    if (availabilityWindow !== null) {
+      setSelectedAvailabilityWindow(availabilityWindow);
+    }
+
+    if (maxNight !== null) {
+      console.log(maxNight);
+      setSelectedMaxNights(maxNight);
+    }
+
+    if (minNight !== null) {
+
+      setSelectedMinNights(minNight);
+    }
+
+    if (prepTime !== null) {
+
+      setSelectedPreparationTime(prepTime);
+    }
+
+    if (advanceNotice !== null) {
+      setSelectedAdvanceNotice(advanceNotice);
+    }
+
+
+
+  }, [maxNight, availabilityWindow, prepTime, advanceNotice, minNight]);
 
   const advanceNoticeOptions = [
     "Same day",
@@ -39,154 +79,217 @@ export default function CalendarAvailability() {
   ];
 
   const handleAdvanceNoticeSelection = (option) => {
-    setSelectedAdvanceNotice(option);
+    setInputedAdvanceNotice(option);
   };
 
   const handlePreparationTimeSelection = (option) => {
-    setSelectedPreparationTime(option);
+    setInputedPreparationTime(option);
   };
 
   const handleAvailabilityWindowSelection = (option) => {
-    setSelectedAvailabilityWindow(option);
+    setInputedAvailabilityWindow(option);
   };
 
   const handleMinNightsInput = (value) => {
-    setSelectedMinNights(value);
+    setInputedMinNights(value);
   };
 
   const handleMaxNightsInput = (value) => {
-    setSelectedMaxNights(value);
+    setInputedMaxNights(value);
   };
+  ///////////////////
 
-  const handleAdvanceNoticeSubmit = () => {
+  const handleAdvanceNoticeSubmit = async () => {
+    const id=houseId;
     setAdvanceNoticeModalVisible(false);
-  };
 
-  const handlePreparationTimeSubmit = () => {
+    console.log(inputedAdvanceNotice)
+
+    await axios.put(`schdulerEditHostHomeAdvanceNotice/${id}`, { notice:inputedAdvanceNotice }).then(response=>{
+      setSelectedAdvanceNotice(inputedAdvanceNotice);
+      
+      console.log(response);
+
+    }).catch(err => {
+        console.log(err)
+        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+      });
+  };//d
+
+  const handlePreparationTimeSubmit = async () => {
     setPreparationTimeModalVisible(false);
-  };
 
-  const handleAvailabilityWindowSubmit = () => {
+    const id = houseId;
+    await axios.put(`/schdulerEditHostHomePreparationTime/${id}`, { preparation_time:inputedPreparationTime }).then(response=>{
+      setSelectedPreparationTime(inputedPreparationTime);
+      console.log(response);
+
+    }).catch(err => {
+        console.log(err)
+        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+      });
+
+
+  };//d
+
+  const handleAvailabilityWindowSubmit = async () => {
+   
     setAvailabilityWindowModalVisible(false);
-  };
 
-  const handleMinNightsSubmit = () => {
+    const id = houseId;
+    await axios.put(`/schdulerEditHostHomeAvailabilityWindow/${id}`, { availability_window:inputedAvailabilityWindow }).then(response=>{
+      setSelectedAvailabilityWindow(inputedAvailabilityWindow);
+      console.log(response);
+
+    }).catch(err => {
+        console.log(err)
+        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+      });
+
+    
+
+  };//d
+
+  const handleMinNightsSubmit = async () => {
+    
     setMinNightsModalVisible(false);
-  };
+    
+    const id = houseId;
+    await axios.put(`/schdulerEditHostHomeMinNights/${id}`, { night:inputedMinNights }).then(response=>{
+      setSelectedMinNights(inputedMinNights);
+      console.log(response);
 
-  const handleMaxNightsSubmit = () => {
+    }).catch(err => {
+        console.log(err)
+        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+      });
+  };//d
+
+  const handleMaxNightsSubmit = async () => {
+    const id = houseId;
+    
     setMaxNightsModalVisible(false);
-  };
+    
+    await axios.put(`/schdulerEditHostHomeMaxNights/${id}`, { night:inputedMaxNights }).then(response=>{
+      setSelectedMaxNights(inputedMaxNights)
+      
+      console.log(response);
+
+    }).catch(err => {
+        console.log(err)
+        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+      });
+  };//d
 
   return (
     <div>
       <div>
 
-      <div className="mb-10">
-        <h1 className="my-5 font-bold text-2xl">Trips Length</h1>
-      <div className="mb-4">
-          <button
-            className="border w-full py-2 px-4 rounded"
-            onClick={() => setMinNightsModalVisible(true)}
-          >
-            <div className="flex justify-between items-center">
-              <div className="flex text-start flex-col">
-                <div>
-                  <span>Minimum Nights</span>
+        <div className="mb-10">
+          <h1 className="my-5 font-bold text-2xl">Trips Length</h1>
+          <div className="mb-4">
+            <button
+              className="border w-full py-2 px-4 rounded"
+              onClick={() => setMinNightsModalVisible(true)}
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex text-start flex-col">
+                  <div>
+                    <span>Minimum Nights</span>
+                  </div>
+                  <div className=" font-semibold " >{selectedMinNights || ""}</div>
                 </div>
-                <div>{selectedMinNights || ""}</div>
+                <div>
+                  <img src={ArrowDown} className="w-3" alt="" />
+                </div>
               </div>
-              <div>
-                <img src={ArrowDown} className="w-3" alt="" />
+            </button>
+          </div>
+
+
+          <div className="mb-4">
+            <button
+              className="border w-full py-2 px-4 rounded"
+              onClick={() => setMaxNightsModalVisible(true)}
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex text-start flex-col">
+                  <div>
+                    <span>Maximum Nights</span>
+                  </div>
+                  <div className=" font-semibold " >{selectedMaxNights || ""}</div>
+                </div>
+                <div>
+                  <img src={ArrowDown} className="w-3" alt="" />
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
+          </div>
         </div>
 
 
-        <div className="mb-4">
-          <button
-            className="border w-full py-2 px-4 rounded"
-            onClick={() => setMaxNightsModalVisible(true)}
-          >
-            <div className="flex justify-between items-center">
-              <div className="flex text-start flex-col">
-                <div>
-                  <span>Maximum Nights</span>
+        <div>
+          <h1 className="my-5 font-bold text-2xl">Availability</h1>
+          <div className="mb-4">
+            <button
+              className="border w-full py-2 px-4 rounded"
+              onClick={() => setAdvanceNoticeModalVisible(true)}
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex text-start flex-col">
+                  <div>
+                    <span>Advance Notice</span>
+                  </div>
+                  <div className=" font-semibold " >{selectedAdvanceNotice || ""}</div>
                 </div>
-                <div>{selectedMaxNights || ""}</div>
-              </div>
-              <div>
-                <img src={ArrowDown} className="w-3" alt="" />
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
-
-
-      <div>
-      <h1 className="my-5 font-bold text-2xl">Availability</h1>
-      <div className="mb-4">
-          <button
-            className="border w-full py-2 px-4 rounded"
-            onClick={() => setAdvanceNoticeModalVisible(true)}
-          >
-            <div className="flex justify-between items-center">
-              <div className="flex text-start flex-col">
                 <div>
-                  <span>Advance Notice</span>
+                  <img src={ArrowDown} className="w-3" alt="" />
                 </div>
-                <div>{selectedAdvanceNotice || ""}</div>
               </div>
-              <div>
-                <img src={ArrowDown} className="w-3" alt="" />
-              </div>
-            </div>
-          </button>
-        </div>
-        <div className="mb-4">
-          <button
-            className="border w-full py-2 px-4 rounded"
-            onClick={() => setPreparationTimeModalVisible(true)}
-          >
-            <div className="flex justify-between items-center">
-              <div className="flex text-start flex-col">
+            </button>
+          </div>
+          <div className="mb-4">
+            <button
+              className="border w-full py-2 px-4 rounded"
+              onClick={() => setPreparationTimeModalVisible(true)}
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex text-start flex-col">
+                  <div>
+                    <span>Preparation Time</span>
+                  </div>
+                  <div className=" font-semibold " >{selectedPreparationTime || ""}</div>
+                </div>
                 <div>
-                  <span>Preparation Time</span>
+                  <img src={ArrowDown} className="w-3" alt="" />
                 </div>
-                <div>{selectedPreparationTime || ""}</div>
               </div>
-              <div>
-                <img src={ArrowDown} className="w-3" alt="" />
-              </div>
-            </div>
-          </button>
-        </div>
-        <div className="mb-4">
-          <button
-            className="border w-full py-2 px-4 rounded"
-            onClick={() => setAvailabilityWindowModalVisible(true)}
-          >
-            <div className="flex justify-between items-center">
-              <div className="flex text-start flex-col">
+            </button>
+          </div>
+          <div className="mb-4">
+            <button
+              className="border w-full py-2 px-4 rounded"
+              onClick={() => setAvailabilityWindowModalVisible(true)}
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex text-start flex-col">
+                  <div>
+                    <span>Availability Window</span>
+                  </div>
+                  <div className=" font-semibold " >{selectedAvailabilityWindow || ""}</div>
+                </div>
                 <div>
-                  <span>Availability Window</span>
+                  <img src={ArrowDown} className="w-3" alt="" />
                 </div>
-                <div>{selectedAvailabilityWindow || ""}</div>
               </div>
-              <div>
-                <img src={ArrowDown} className="w-3" alt="" />
-              </div>
-            </div>
-          </button>
+            </button>
+          </div>
         </div>
-      </div>
-      
 
 
 
-   
+
+
       </div>
       {advanceNoticeModalVisible && (
         <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
@@ -306,7 +409,7 @@ export default function CalendarAvailability() {
             <div>
               <input
                 type="number"
-                value={selectedMinNights}
+                value={inputedMinNights}
                 onChange={(e) => handleMinNightsInput(e.target.value)}
                 className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
               />
@@ -319,8 +422,8 @@ export default function CalendarAvailability() {
                 Save
               </button>
               <button
-            className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
-            onClick={() => setMinNightsModalVisible(false)}
+                className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
+                onClick={() => setMinNightsModalVisible(false)}
               >
                 Cancel
               </button>
@@ -335,7 +438,7 @@ export default function CalendarAvailability() {
             <div>
               <input
                 type="number"
-                value={selectedMaxNights}
+                value={inputedMaxNights}
                 onChange={(e) => handleMaxNightsInput(e.target.value)}
                 className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
               />
@@ -348,8 +451,8 @@ export default function CalendarAvailability() {
                 Save
               </button>
               <button
-            className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
-            onClick={() => setMaxNightsModalVisible(false)}
+                className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
+                onClick={() => setMaxNightsModalVisible(false)}
               >
                 Cancel
               </button>
@@ -360,3 +463,9 @@ export default function CalendarAvailability() {
     </div>
   );
 }
+
+
+
+
+
+export default CalendarAvailability;
