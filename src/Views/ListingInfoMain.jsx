@@ -163,6 +163,8 @@ const ListingInfoMain = () => {
               reservations={listingDetails?.reservations}
               reservation={listingDetails?.reservation}
               guest={listingDetails?.guest}
+              max_nights={listingDetails?.max_nights}
+              min_nights={listingDetails?.min_nights}
             />
           </div>
         </div>

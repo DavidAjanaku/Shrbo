@@ -79,7 +79,7 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
 
         <div className="flex mt-1">
           <div className="w-[70%]">
-          <label className="text-base">{address}</label>
+          <label className="text-base break-words">{address}</label>
 
           </div>
 
