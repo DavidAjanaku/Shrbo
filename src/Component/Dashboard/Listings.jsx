@@ -25,6 +25,7 @@ export default function Listings() {
   const [isEditButtonVisible, setIsEditButtonVisible] = useState(false);
   const [loading, setLoading] = useState(false); // Add loading state
   const [coHostsModalVisible, setCoHostsModalVisible] = useState(false);
+  const [email, setEmail] = useState(""); // Create a state for the email
 
   // State to store the co-hosts for the selected listing
   const [selectedListingCoHosts, setSelectedListingCoHosts] = useState([]);
@@ -61,6 +62,7 @@ export default function Listings() {
   const handleViewCoHosts = (cohosts) => {
     setSelectedListingCoHosts(cohosts);
     setCoHostsModalVisible(true);
+    
 };
   
    const handleAddCoHost = async () => {
@@ -111,9 +113,28 @@ export default function Listings() {
     }
   };
 
+    
+  const fetchUser = async () => {
+    try {
+      setLoading(true); // Set loading to true before fetching data
+      const response = await Axois.get("/user");
+      console.log(response.data.email);
+      setEmail(response.data.email)
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching data (whether successful or not)
+    }
+  };
+
+
   useEffect(() => {
     // Fetch data when the component mounts
     fetchListings();
+  }, []);
+  useEffect(() => {
+    // Fetch data when the component mounts
+    fetchUser();
   }, []);
   const columns = [
     {
@@ -223,6 +244,8 @@ export default function Listings() {
               onRequestClose={() => setCoHostsModalVisible(false)}
               coHosts={selectedListingCoHosts}
               handleRemoveCoHost={handleRemoveCoHost}
+                userEmail={email} // Pass the email state to the component
+
             />
           </div>
           
@@ -305,15 +328,27 @@ export default function Listings() {
 
   const handleDeleteButtonClick = async () => {
     try {
+      // Check if the user's email is in the list of co-host emails
+      const isCoHost = selectedListingCoHosts.some(cohost => cohost.email === email);
+  
+      if (isCoHost) {
+        // Show a message indicating that co-hosts cannot delete the apartment
+        notification.warning({
+          message: "Permission denied",
+          description: "Co-hosts cannot delete the apartment.",
+        });
+        return;
+      }
+  
       // Send a DELETE request to delete the host home
       await Axois.delete(`/hosthomes/${selectedHouseId}`);
-
+  
       // After successful deletion, close the modal
       closeDeleteModal();
-
+  
       // Fetch updated listings
       await fetchListings();
-
+  
       // Show success notification
       notification.success({
         message: "Deleted successfully",
@@ -343,6 +378,7 @@ export default function Listings() {
       });
     }
   };
+  
 
   // Define your listings data
 
