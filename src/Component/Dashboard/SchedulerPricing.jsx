@@ -12,7 +12,6 @@ const Pricing = ({
   onEditPrice,
   onSavePrice,
   onPriceChange,
-  selectedDate,
   blockingMode,
   selectedDatePrice,
   showWeeklyDiscountDetails,
@@ -54,8 +53,8 @@ const Pricing = ({
   const [pricingModalVisible, setPricingModalVisible] = useState(false);
   const [discountDuration, setDiscountDuration] = useState(""); // Store the selected discount duration
   const [discountPercentage, setDiscountPercentage] = useState(""); // Store the discount percentage
-  const [weeklyDiscount, setWeeklyDiscount] = useState(""); // Store the weekly discount
-  const [monthlyDiscount, setMonthlyDiscount] = useState("");
+  const [customWeeklyDiscount, setCustomWeeklyDiscount] = useState(""); // Store the weekly discount
+  const [customMonthlyDiscount, setCustomMonthlyDiscount] = useState("");
   const [type, setType] = useState("");
   const [discountType, setDiscountType] = useState("");
   const [basePrice, setBasePrice] = useState("");
@@ -154,7 +153,7 @@ const Pricing = ({
     } else if (type === "Per night") {
       setBasePrice(price);
       setEditedPrice(price) /// for The calender price to change
-      await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, date:(date?date : "") }).then(response=>{
+      await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, dates:""}).then(response=>{
 
         fetch(id);
 
@@ -177,6 +176,11 @@ const Pricing = ({
       setBasePrice(selectedHouse.basePrice);
       
        setWeekendPrice(selectedHouse.customWeekendPrice != null ? selectedHouse.customWeekendPrice : selectedHouse.basePrice);
+
+       setCustomWeeklyDiscount(selectedHouse.customWeeklyDiscount?.discount_percentage);
+
+       setCustomMonthlyDiscount(selectedHouse.customMonthlyDiscount?.discount_percentage)
+
       
     }
     
@@ -194,6 +198,12 @@ const Pricing = ({
 
     return formattedAmount;
   }
+
+  // const calculateMonthlyAverage
+
+  
+
+
 
 
 
@@ -269,7 +279,7 @@ const Pricing = ({
                     <p className="text-gray-400">For 7 nights or more</p>
                     <div className="h-auto visible w-full">
                       <div className="text-3xl break-keep inline-block font-extrabold">
-                        {selectedApartment.weeklyDiscount ? extractPercentage(selectedApartment.weeklyDiscount.discount) : '0%'}
+                        {selectedApartment.weeklyDiscount ? extractPercentage(selectedApartment.weeklyDiscount.discount) :( selectedApartment.customWeeklyDiscount ?`${customWeeklyDiscount}%`:'0%' )}
                       </div>
                       {isEditingPrice ? (
                         <div>{/* ... other code ... */}</div>
@@ -294,7 +304,7 @@ const Pricing = ({
                     <p className="text-gray-400">For 28 nights or more</p>
                     <div className="h-auto visible w-full">
                       <div className="text-3xl break-keep inline-block font-extrabold">
-                        {selectedApartment.monthlyDiscount ? extractPercentage(selectedApartment.monthlyDiscount.discount) : '0%'}
+                        {selectedApartment.monthlyDiscount ? extractPercentage(selectedApartment.monthlyDiscount.discount) : ( selectedApartment.MonthlyDiscount ?`${customMonthlyDiscount}%`:'0%' )}
                       </div>
                       {isEditingPrice ? (
                         <div>{/* ... other code ... */}</div>

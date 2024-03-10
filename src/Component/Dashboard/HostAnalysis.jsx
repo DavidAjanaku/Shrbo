@@ -33,7 +33,8 @@ export default function HostAnalysis() {
   const [earningsApartmentData, setEarningsApartmentData] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [payment, setPayment] = useState();
-
+  const [chartData, setChartData] = useState();
+  
   function formatAmountWithCommas(amount) {
     // Convert the amount to a string and split it into integer and decimal parts
     const [integerPart, decimalPart] = amount.toString().split('.');
@@ -105,14 +106,34 @@ export default function HostAnalysis() {
         hostTotalAmountUnpaidBookings: formatAmountWithCommas(response.data.totalAmountUnpaidBookings),
       }
 
-      const formattedApartmentEarnings = response.data.earnings.map((item,index) => ({
-        id:index,
+      const formattedApartmentEarnings = response.data.earnings.map((item, index) => ({
+        id: index,
         name: item.title,
         image: item.images[0].images,
         datePosted: item.creationDate,
-        earnings:formatAmountWithCommas(item.earnings)
+        earnings: formatAmountWithCommas(item.earnings)
 
       }));
+
+      const graphData = response.data.graph.map(item => item.earnings);
+      const graphLabels = response.data.graph.map(item => item.month);
+
+     
+      const chartData = {
+        labels: graphLabels,
+        datasets: [
+          {
+            label: 'Paid out',
+            data: graphData,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            fill: true,
+          },
+        ],
+      };
+      setChartData(chartData);
+
+
 
       setPayment(formattedEarnings);
       setEarningsApartmentData(formattedApartmentEarnings);
@@ -429,7 +450,7 @@ export default function HostAnalysis() {
                   </Select>
                 </div>
 
-                <div className="">
+                <div className=" mb-6">
                   <div className="my-4">
                     <div className="text-4xl font-bold">₦{payment && payment.hostTotalAmountAllBookings}</div>
                     <div>
@@ -438,66 +459,35 @@ export default function HostAnalysis() {
                   </div>
 
                   <div className="flex items-center space-x-3">
-                    <span className="bg-red-400 h-4 w-4"></span>
+                    {/* <span className="bg-red-400 h-4 w-4"></span> */}
                     <div className="text-xl font-bold text-[color-for-amount]">
                       ₦{payment && payment.hostTotalAmountPaidBookings}
                     </div>
                     <div>
-                      <p className="text-[color-for-label]">Paid out</p>
+                      <p className="text-[color-for-label]"> Total Paid out</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <span className="bg-green-500 h-4 w-4"></span>
+                    {/* <span className="bg-green-500 h-4 w-4"></span> */}
 
                     <div className="text-xl font-bold text-[color-for-amount]">
                       ₦{payment && payment.hostTotalAmountUnpaidBookings}
                     </div>
                     <div>
-                      <p className="text-[color-for-label]">Expected</p>
+                      <p className="text-[color-for-label]"> Total Expected Pay out</p>
                     </div>
                   </div>
-                </div>
 
-                <Line
-                  data={{
-                    labels: [
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ],
-                    datasets: [
-                      {
-                        label: "Paid out",
-                        data: [
-                          200, 200, 600, 800, 1000, 1200, 1000, 1200, 1000,
-                          1200, 1000, 1200,
-                        ], // Replace with your actual paid out data
-                        borderColor: "rgba(75, 192, 192, 1)",
-                        backgroundColor: "rgba(75, 192, 192, 0.2)",
-                        fill: true,
-                      },
-                      {
-                        label: "Expected",
-                        data: [
-                          250, 450, 650, 850, 1050, 1250, 200, 600, 800, 1000,
-                          1200, 1400,
-                        ], // Replace with your actual expected data
-                        borderColor: "rgba(255, 99, 132, 1)",
-                        backgroundColor: "rgba(255, 99, 132, 0.2)",
-                        fill: true,
-                      },
-                    ],
-                  }}
-                />
+                  
+                </div>
+                <div className="flex items-center space-x-3">
+                    <span className=" bg-cyan-600 h-4 w-4"></span>
+                    <div>
+                      <p className="text-[color-for-label]"> Earnings</p>
+                    </div>
+                  </div>
+
+                <Line data={chartData}  />
               </div>
             </div>
             <div className="my-20">

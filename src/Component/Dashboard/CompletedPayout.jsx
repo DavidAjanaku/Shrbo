@@ -5,6 +5,7 @@ import axios from "../../Axios"
 
 const getRandomuserParams = (params) => ({
   per_page: params.pagination?.pageSize,
+  page: params.pagination?.current,
   // ...params,
 });
 

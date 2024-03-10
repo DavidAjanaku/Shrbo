@@ -12,6 +12,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [verifyEmailLink, setVerifyEmailLink] = useState([]);
   const verifyEmail = useRef(null);
+  const [loading, setLoading] = useState(false);
  
 
   const [googleUrl, setGoogleUrl] = useState("");
@@ -41,13 +42,14 @@ const SignUp = () => {
     api[type]({
       message: type === "error" ? "Error" : "Succesfull",
       description: error,
-      placement: "bottom",
+      placement: "topRight",
       className: "bg-green",
     });
   };
 
   const handleSubmmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       // Make a POST request to your API endpoint
       const response = await axios.post("/signup", {
@@ -56,10 +58,12 @@ const SignUp = () => {
         password,
       });
 
-      openNotificationWithIcon("success");
+
       // Handle the success response
       console.log(response.data); // You can customize this based on your API response
       if (response.data) {
+        setLoading(false);
+        openNotificationWithIcon("success");
         setVerifyEmailLink(response.data.link);
         // verifyEmail.current.click();
         console.log(response.data.link);
@@ -67,6 +71,7 @@ const SignUp = () => {
       }
       // Show success notification
     } catch (error) {
+      setLoading(false);
       // Handle the error
       console.error("Error:", error);
 
@@ -81,8 +86,16 @@ const SignUp = () => {
   };
 
   return (
+    <>
+     {contextHolder}
+    {loading ? <div className=' w-full h-screen flex items-center justify-center'>
+        <div class="containerld"></div>
+
+      </div>
+        :
+    
     <div className="flex h-full  flex-1 flex-col lg:justify-center px-6 py-16 lg:py-10 bg-slate-50/30 lg:px-8">
-      {contextHolder}
+     
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img className="mx-auto h-16 w-auto" src={logo} alt="Your Company" />
         <h2 className="mt-2 text-center text-2xl md:text-2xl font-medium leading-9  text-gray-900">
@@ -219,6 +232,9 @@ const SignUp = () => {
         </label>
       </div>
     </div>
+    }
+
+    </>
   );
 };
 
