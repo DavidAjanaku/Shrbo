@@ -129,7 +129,18 @@ const ListingInfoMain = () => {
               hostHomeDescriptions={listingDetails?.hosthomedescriptions} // Pass the array as a prop
             />{" "}
             <div className="  md:hidden relative mr-0 ">
-              <ListingForm />
+              <ListingForm     id={id}
+              price={listingDetails?.price}
+              reservations={listingDetails?.reservations}
+              reservation={listingDetails?.reservation}
+              guest={listingDetails?.guest}
+              max_nights={listingDetails?.max_nights}
+              min_nights={listingDetails?.min_nights}
+              preparation_time={listingDetails?.preparation_time}
+              availability_window={listingDetails?.availability_window}
+              advance_notice={listingDetails?.advance_notice}
+
+              />
             </div>
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
             <HostProfilePreview
@@ -163,6 +174,13 @@ const ListingInfoMain = () => {
               reservations={listingDetails?.reservations}
               reservation={listingDetails?.reservation}
               guest={listingDetails?.guest}
+              max_nights={listingDetails?.max_nights}
+              min_nights={listingDetails?.min_nights}
+              preparation_time={listingDetails?.preparation_time}
+              availability_window={listingDetails?.availability_window}
+              advance_notice={listingDetails?.advance_notice}
+
+
             />
           </div>
         </div>

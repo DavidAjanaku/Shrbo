@@ -12,7 +12,11 @@ import { useParams } from "react-router-dom";
 import Axios from "../../Axios";
 import { useDateContext } from "../../ContextProvider/BookingInfo";
 import PriceSkeleton from "../../SkeletonLoader/PriceSkeleton";
-export default function ListingForm({ reservations, reservation, guest }) {
+import MessageModal from "../StayLengthModal";
+import { addMonths } from "date-fns";
+
+import StayLengthModal from "../StayLengthModal";
+export default function ListingForm({ reservations, reservation, guest,max_nights, min_nights,availability_window }) {
   function showModal(e) {
     e.preventDefault();
     setIsModalVisible(true);
@@ -27,11 +31,16 @@ export default function ListingForm({ reservations, reservation, guest }) {
   const [discount, setDiscount] = useState([]); // State to store the discount value
   const [appliedDiscount, setAppliedDiscount] = useState("");
   const [isBookButtonDisabled, setIsBookButtonDisabled] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [numberOfNights, setNumberOfNights] = useState(null);
+  const [modalMessage, setModalMessage] = useState(null);
 
   const messageRef = useRef(null);
   // const [checkInDate, setCheckInDate] = useState(null);
   // const [checkOutDate, setCheckOutDate] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisibles, setIsModalVisibles] = useState(false);
+
   // const [adults, setAdults] = useState(1);
   // const [children, setChildren] = useState(0);
   // const [pets, setPets] = useState(0);
@@ -125,7 +134,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
   }, [reservations]);
 
   const { id } = useParams(); // Get the ID parameter from the route
-
+console.log(max_nights); 
   useEffect(() => {
     const fetchListingDetails = async () => {
       try {
@@ -225,10 +234,20 @@ export default function ListingForm({ reservations, reservation, guest }) {
 
   console.log(bookingCount);
 
+  
+
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
     if (checkIn instanceof Date && checkOut instanceof Date) {
       const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+      setNumberOfNights(nights);
+
+
+      
+
+      if (nights === 2) {
+        setIsDisabled(true); // Disable the book button
+      }
       const nightlyPrice = Number(price) || 0; // Convert price to a number, default to 0 if NaN
       const basePrice = nights * nightlyPrice;
 
@@ -292,6 +311,8 @@ export default function ListingForm({ reservations, reservation, guest }) {
         // Apply a 10% discount for stays of 28 nights or more
         const discountedPrice = totalPrice + securityDeposits; // 10% off
         setTotalCost(discountedPrice);
+
+        
       } else {
         setAppliedDiscount("");
 
@@ -303,6 +324,32 @@ export default function ListingForm({ reservations, reservation, guest }) {
     }
   };
 
+
+  const handleDisableBookButton = (nights) => {
+    if (nights < min_nights) {
+      setIsDisabled(true); // Disable the book button
+      setModalMessage(`Minimum stay is ${min_nights} nights`);
+      setIsModalVisibles(true); // Show the modal
+    } else if (nights > max_nights) {
+      setIsDisabled(true); // Disable the book button
+      setModalMessage(`Maximum stay is ${max_nights} nights`);
+      setIsModalVisibles(true); // Show the modal
+    } else {
+      setIsDisabled(false); // Enable the book button
+      setModalMessage(null); // Clear the modal message
+      setIsModalVisibles(false); // Hide the modal
+    }
+  };
+  
+  // Call this function whenever the number of nights changes
+  useEffect(() => {
+    if (numberOfNights !== null) {
+      handleDisableBookButton(numberOfNights);
+    }
+  }, [numberOfNights]);
+
+
+  
   const addDays = (date, days) => {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -320,6 +367,31 @@ export default function ListingForm({ reservations, reservation, guest }) {
   const navigate = useNavigate();
 
 
+  const closeModal = () => {
+    setIsModalVisibles(false);
+  };
+
+
+  // Function to calculate the maximum allowed date based on the availability window
+const calculateMaxDate = (availabilityWindow) => {
+  switch (availabilityWindow) {
+    case "3 months in advance":
+      return addMonths(new Date(), 3);
+    case "6 months in advance":
+      return addMonths(new Date(), 6);
+    case "9 months in advance":
+      return addMonths(new Date(), 9);
+    case "12 months in advance":
+      return addMonths(new Date(), 12);
+    case "24 months in advance":
+      return addMonths(new Date(), 24);
+    default:
+      return addMonths(new Date(), 1); // Default to 1 month in advance if the window is not specified
+  }
+};
+
+// Calculate the max date based on the availability window
+const maxDate = calculateMaxDate(availability_window);
 
   return (
     <div className=" block w-full h-full">
@@ -369,6 +441,8 @@ export default function ListingForm({ reservations, reservation, guest }) {
                   placeholderText="Check in"
                   dateFormat="dd/MM/yyyy"
                   minDate={new Date()}
+                  maxDate={maxDate}
+
                   excludeDates={bookedDates.flatMap(
                     ({ checkInDate, checkOutDate }) =>
                       Array.from(
@@ -397,6 +471,8 @@ export default function ListingForm({ reservations, reservation, guest }) {
                   placeholderText="Check out"
                   dateFormat="dd/MM/yyyy"
                   minDate={checkInDate ? addDays(checkInDate, 1) : new Date()} // Use checkInDate as the minimum date
+                    maxDate={maxDate}
+
                   excludeDates={bookedDates.flatMap(
                     ({ checkInDate, checkOutDate }) =>
                       Array.from(
@@ -597,7 +673,8 @@ export default function ListingForm({ reservations, reservation, guest }) {
                             navigate("/RequestBook");
                           }
                         }}
-                      >
+                        disabled={isBookButtonDisabled || !checkInDate || !checkOutDate || isDisabled}
+                        >
                         Book
                       </button>
                     </Link>
@@ -627,7 +704,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
                         navigate("/RequestBook");
                       }
                     }}
-                    disabled={isBookButtonDisabled || !checkInDate || !checkOutDate}
+                    disabled={isBookButtonDisabled || !checkInDate || !checkOutDate || isDisabled}
                     >
                     Book
                   </button>
@@ -649,6 +726,7 @@ export default function ListingForm({ reservations, reservation, guest }) {
             </div>
           </form>
         </div>
+        <StayLengthModal message={modalMessage} visible={isModalVisibles} onClose={closeModal} /> {/* Render the modal */}
 
         {showVerifyModal && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">

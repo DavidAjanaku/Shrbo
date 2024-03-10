@@ -48,6 +48,11 @@ const BookingTable = () => {
       title: "Payment Amount",
       dataIndex: "totalamount",
       key: "totalamount",
+      render: (totalamount) => (
+        <span>
+          ₦{new Intl.NumberFormat().format(totalamount)}
+        </span>
+      ),
     },
     {
       title: "Payment ID",
@@ -254,7 +259,7 @@ const BookingTable = () => {
                     <tr className="bg-gray-300">
                       <td>Total Booking Cost:</td>
                       <td className="text-end">
-                        ${selectedBooking.totalamount}
+                      ₦{selectedBooking.totalamount.toLocaleString("en-NG")}
                       </td>
                     </tr>
                     <tr>
@@ -265,7 +270,7 @@ const BookingTable = () => {
                     </tr>
                     <tr className="bg-gray-300">
                       <td>Taxes and Fees:</td>
-                      <td className="text-end">${selectedBooking.tax}</td>
+                      <td className="text-end"> ₦{selectedBooking.tax}</td>
                     </tr>
                     <tr>
                       <td>Confirmation Number:</td>

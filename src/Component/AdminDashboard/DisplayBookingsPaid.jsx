@@ -104,8 +104,16 @@ const DisplayBookingsPaid = () => {
       title: "Total Amount",
       dataIndex: "amountToHost",
       key: "amountToHost",
+      render: (amountToHost) => (
+        <span>
+          ₦{new Intl.NumberFormat().format(amountToHost)}
+        </span>
+      ),
     },
+    
    
+   
+    
     {
       title: "Status",
       dataIndex: "status",
@@ -269,7 +277,7 @@ const DisplayBookingsPaid = () => {
                         </div>
                         <div className="flex justify-between mb-2">
                           <span>Total Amount:</span>
-                          <span>{selectedPayment.amountToHost.toLocaleString()}</span>
+                          <span>₦{selectedPayment.amountToHost.toLocaleString("en-NG")}</span>
                         </div>
                         
                         <div className="flex justify-between mb-2">

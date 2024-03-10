@@ -12,6 +12,7 @@ import Axois from "../../Axios";
 import { Pagination, Spin } from "antd"; // Import Pagination component from Ant Design
 import { LoadingOutlined } from "@ant-design/icons";
 import ListingsModal from "./ListingsModal";
+import { Skeleton } from 'antd';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -24,6 +25,7 @@ export default function Listings() {
   const [isEditButtonVisible, setIsEditButtonVisible] = useState(false);
   const [loading, setLoading] = useState(false); // Add loading state
   const [coHostsModalVisible, setCoHostsModalVisible] = useState(false);
+  const [email, setEmail] = useState(""); // Create a state for the email
 
   // State to store the co-hosts for the selected listing
   const [selectedListingCoHosts, setSelectedListingCoHosts] = useState([]);
@@ -60,6 +62,7 @@ export default function Listings() {
   const handleViewCoHosts = (cohosts) => {
     setSelectedListingCoHosts(cohosts);
     setCoHostsModalVisible(true);
+    
 };
   
    const handleAddCoHost = async () => {
@@ -110,9 +113,28 @@ export default function Listings() {
     }
   };
 
+    
+  const fetchUser = async () => {
+    try {
+      setLoading(true); // Set loading to true before fetching data
+      const response = await Axois.get("/user");
+      console.log(response.data.email);
+      setEmail(response.data.email)
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching data (whether successful or not)
+    }
+  };
+
+
   useEffect(() => {
     // Fetch data when the component mounts
     fetchListings();
+  }, []);
+  useEffect(() => {
+    // Fetch data when the component mounts
+    fetchUser();
   }, []);
   const columns = [
     {
@@ -207,22 +229,26 @@ export default function Listings() {
         ) {
           return (
             <div>
-              <Button
-                type="link"
-                onClick={() => {
-                  setCoHostsModalVisible(true); // Update the state here
-                  setSelectedListingCoHosts(cohosts); // Set the selected cohosts for the modal
-                }}
-              >
-                View Co-hosts
-              </Button>
-              <ListingsModal
-                isOpen={coHostsModalVisible}
-                onRequestClose={() => setCoHostsModalVisible(false)}
-                coHosts={selectedListingCoHosts}
-                handleRemoveCoHost={handleRemoveCoHost}
-              />
-            </div>
+            <Button
+              type="link"
+              onClick={() => {
+                setSelectedHouseId(listing.id); // Set the selectedHouseId
+                setCoHostsModalVisible(true); // Update the state here
+                setSelectedListingCoHosts(cohosts); // Set the selected cohosts for the modal
+              }}
+            >
+              View Co-hosts
+            </Button>
+            <ListingsModal
+              isOpen={coHostsModalVisible}
+              onRequestClose={() => setCoHostsModalVisible(false)}
+              coHosts={selectedListingCoHosts}
+              handleRemoveCoHost={handleRemoveCoHost}
+                userEmail={email} // Pass the email state to the component
+
+            />
+          </div>
+          
           );
         } else {
           return null; // Render nothing if the condition is not met
@@ -235,13 +261,17 @@ export default function Listings() {
 
 
   const handleRemoveCoHost = async (cohostId) => {
+    console.log("Selected House ID:", selectedHouseId); // Log the selected house ID
+    console.log("Removing co-host with cohostId:", cohostId, "from host home with selectedHouseId:", selectedHouseId);
+
     try {
       // Send a request to remove the co-host
-      await Axois.delete(`/removeCoHost/${cohostId}`);
+      await Axois.delete(`/removeCoHost/${cohostId}/${selectedHouseId}`);
   
       // Fetch updated listings
       await fetchListings();
-  
+      setSelectedListingCoHosts(prevCoHosts => prevCoHosts.filter(cohost => cohost.id !== cohostId));
+
       // Show success notification
       notification.success({
         message: "Co-host removed successfully",
@@ -258,6 +288,11 @@ export default function Listings() {
       });
     }
   };
+
+
+  
+  
+  
   const handleCheckboxChange = (listingId) => {
     if (selectedListings.includes(listingId)) {
       setSelectedListings(selectedListings.filter((id) => id !== listingId));
@@ -267,6 +302,8 @@ export default function Listings() {
 
     // Update the state to determine whether to show the "Edit" button
     setIsEditButtonVisible(selectedListings.length === 0);
+    setSelectedHouseId(listingId);
+
   };
 
   const handleFilterChange = (event) => {
@@ -291,15 +328,27 @@ export default function Listings() {
 
   const handleDeleteButtonClick = async () => {
     try {
+      // Check if the user's email is in the list of co-host emails
+      const isCoHost = selectedListingCoHosts.some(cohost => cohost.email === email);
+  
+      if (isCoHost) {
+        // Show a message indicating that co-hosts cannot delete the apartment
+        notification.warning({
+          message: "Permission denied",
+          description: "Co-hosts cannot delete the apartment.",
+        });
+        return;
+      }
+  
       // Send a DELETE request to delete the host home
       await Axois.delete(`/hosthomes/${selectedHouseId}`);
-
+  
       // After successful deletion, close the modal
       closeDeleteModal();
-
+  
       // Fetch updated listings
       await fetchListings();
-
+  
       // Show success notification
       notification.success({
         message: "Deleted successfully",
@@ -329,6 +378,7 @@ export default function Listings() {
       });
     }
   };
+  
 
   // Define your listings data
 
@@ -362,9 +412,14 @@ export default function Listings() {
       <div className="md:flex-col md:w-[80vw] md:mx-auto md:my-10 p-4 md:p-10">
         <div className="flex justify-between items-center mb-10">
           <div>
-            <h1 className="text-xl font mb-4 italic text-gray-500">
-              {listings.length} Listings found
-            </h1>
+          <h1 className="text-xl font mb-4 italic text-gray-500">
+  {loading ? (
+    <Skeleton.Input style={{ width: 100 }} active={true} />
+  ) : (
+    `${listings.length} Listings found`
+  )}
+</h1>
+
             <p className="text-gray-500 text-sm">If you selected Hosting as a Business,please click on the apartment to add a co-host.</p>
           </div>
           <div>
