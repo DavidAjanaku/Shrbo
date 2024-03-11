@@ -872,7 +872,7 @@ export default class Scheduler extends Component {
                   initialView="dayGridMonth"
                   // multiMonthMaxColumns={1}
 
-                  editable
+                  // editable
                   validRange={validRange}
                   select={this.handleDateSelect}
                   selectable
