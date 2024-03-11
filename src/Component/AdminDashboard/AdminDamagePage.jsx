@@ -15,10 +15,14 @@ const AdminDamagePage = () => {
     disputeMessage: "",
     disputeEmail: "",
   });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageModalVisible, setImageModalVisible] = useState(false);
+
   const [ticketModalVisible, setTicketModalVisible] = useState(false);
   const [replyForm] = Form.useForm();
   const [loading, setLoading] = useState(true);
-
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [videoModalVisible, setVideoModalVisible] = useState(false);
   const fetchReportedIssues = async () => {
     try {
       const response = await Axios.get("/getReportDamagesForAdmin");
@@ -102,6 +106,8 @@ const AdminDamagePage = () => {
       phone_number: ticket.guest.phone_number,
       reportDate: ticket.reportDate,
       damage_description: ticket.damage_description,
+      video: ticket.video,
+      images: ticket.images || [], // Add the images array
     });
     setTicketModalVisible(true);
   };
@@ -121,6 +127,16 @@ const AdminDamagePage = () => {
       setSupportTickets(updatedTickets);
       replyForm.resetFields();
     });
+  };
+
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
+    setImageModalVisible(true);
+  };
+
+  const handleVideoClick = (video) => {
+    setSelectedVideo(video);
+    setVideoModalVisible(true);
   };
 
   return (
@@ -180,6 +196,34 @@ const AdminDamagePage = () => {
                       <strong>Description:</strong>{" "}
                       {selectedTicket.hosthome.description}
                     </p>
+                    <div>
+                      {selectedTicket.images &&
+                        selectedTicket.images.length > 0 && (
+                          <div className="grid grid-cols-2 gap-4">
+                            {selectedTicket.images &&
+                              selectedTicket.images.length > 0 &&
+                              selectedTicket.images.map((image) => (
+                                <img
+                                  key={image.id}
+                                  src={image.images}
+                                  alt="Damage Image"
+                                  className="w-full h-auto cursor-pointer"
+                                  onClick={() => handleImageClick(image.images)}
+                                />
+                              ))}
+                          </div>
+                        )}
+                    </div>
+
+                    <p>
+                      <strong>Video:</strong>{" "}
+                      <span
+                        className="text-blue-500 cursor-pointer"
+                        onClick={() => handleVideoClick(selectedTicket.video)}
+                      >
+                        {selectedTicket.video}
+                      </span>{" "}
+                    </p>
                   </>
                 )}
                 <p>
@@ -189,6 +233,34 @@ const AdminDamagePage = () => {
                 <p>
                   <strong>Report Date:</strong> {selectedTicket.reportDate}
                 </p>
+              </div>
+            )}
+          </Modal>
+          <Modal
+            title="Image"
+            open={imageModalVisible}
+            onCancel={() => setImageModalVisible(false)}
+            footer={null}
+          >
+            {selectedImage && (
+              <div>
+                <img
+                  src={selectedImage}
+                  alt="Damage Image"
+                  className="w-full h-auto"
+                />
+              </div>
+            )}
+          </Modal>
+          <Modal
+            title="Video"
+            open={videoModalVisible}
+            onCancel={() => setVideoModalVisible(false)}
+            footer={null}
+          >
+            {selectedVideo && (
+              <div>
+                <video src={selectedVideo} controls className="w-full h-auto" />
               </div>
             )}
           </Modal>

@@ -26,9 +26,8 @@ const AdminRolesPage = () => {
   const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [roleModalVisible, setRoleModalVisible] = useState(false);
   const [newAdminModalVisible, setNewAdminModalVisible] = useState(false);
-  const [adminActionsModalVisible, setAdminActionsModalVisible] = useState(
-    false
-  );
+  const [adminActionsModalVisible, setAdminActionsModalVisible] =
+    useState(false);
   const [viewRolePermissionsChecked, setViewRolePermissionsChecked] =
     useState(false);
   const [permissions, setPermissions] = useState([]);
@@ -76,16 +75,20 @@ const AdminRolesPage = () => {
     setAdminActionsModalVisible(true);
   };
 
-  const handleRoleChange = () => {
-    const updatedAdmins = admins.map((admin) => {
-      if (admin.id === selectedAdmin.id) {
-        return { ...admin, role: form.getFieldValue("role") };
-      }
-      return admin;
-    });
-
-    setAdmins(updatedAdmins);
-    setRoleModalVisible(false);
+  const handleRoleChange = async (role) => {
+    try {
+      await updateAdminStatus(selectedAdmin.id, role);
+      const updatedAdmins = admins.map((admin) => {
+        if (admin.id === selectedAdmin.id) {
+          return { ...admin, role };
+        }
+        return admin;
+      });
+      setAdmins(updatedAdmins);
+      setRoleModalVisible(false);
+    } catch (error) {
+      console.error("Error updating admin role:", error);
+    }
   };
 
   const showRoleModal = (admin) => {
@@ -204,6 +207,31 @@ const AdminRolesPage = () => {
     }
   };
 
+  const updateAdminStatus = async (userId, status) => {
+    try {
+      const response = await Axios.put(`/updateAdminStatus/${userId}`, {
+        adminStatus: status,
+      });
+      console.log("Admin status updated successfully:", response.data);
+      notification.success({
+        message: "Admin Status Updated",
+        description: "The admin status was updated successfully.",
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+      // Optionally, you can handle the response or update your UI
+    } catch (error) {
+      console.error("Error updating admin status:", error);
+      notification.error({
+        message: "Error Updating Admin Status",
+        description: "An error occurred while updating the admin status.",
+      });
+      // Handle error appropriately
+    }
+  };
+  
+
   return (
     <div className="bg-gray-100 h-[100vh]">
       <AdminHeader />
@@ -234,12 +262,22 @@ const AdminRolesPage = () => {
                 onOk={handleRoleChange}
                 onCancel={() => setRoleModalVisible(false)}
               >
-                <Form form={form} layout="vertical">
+                <Form
+                  form={form}
+                  layout="vertical"
+                  onFinish={(values) => handleRoleChange(values.role)}
+                >
                   <Form.Item name="role" label="Select Role">
                     <Select>
-                      <Option value="Super Admin">Super Admin</Option>
-                      <Option value="Admin">Admin</Option>
+                      <Option value="super admin">Super Admin</Option>
+                      <Option value="admin">Admin</Option>
                     </Select>
+                  </Form.Item>
+
+                  <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                      Submit
+                    </Button>
                   </Form.Item>
                 </Form>
               </Modal>
@@ -297,7 +335,9 @@ const AdminRolesPage = () => {
                       {
                         validator: (_, value) => {
                           if (
-                            !/(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z]).{6,}/.test(value)
+                            !/(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z]).{6,}/.test(
+                              value
+                            )
                           ) {
                             return Promise.reject(
                               "Password must contain at least one number, one character, and one uppercase letter"
@@ -313,8 +353,8 @@ const AdminRolesPage = () => {
 
                   <Form.Item name="role" label="Select Role">
                     <Select>
-                      <Option value="Super Admin">Super Admin</Option>
-                      <Option value="Admin">Admin</Option>
+                      <Option value="super admin">Super Admin</Option>
+                      <Option value="admin">Admin</Option>
                     </Select>
                   </Form.Item>
                   <FormItem>
@@ -329,13 +369,17 @@ const AdminRolesPage = () => {
                 onCancel={() => setAdminActionsModalVisible(false)}
                 onSubmit={handleAdminActionsSubmit}
                 selectedPermissions={
-                  selectedAdmin?.adminRoles.map((role) => role.rolePermission) ||
-                  []
+                  selectedAdmin?.adminRoles.map(
+                    (role) => role.rolePermission
+                  ) || []
                 }
-                onPermissionsChange={(permissions) => setPermissions(permissions)}
+                onPermissionsChange={(permissions) =>
+                  setPermissions(permissions)
+                }
                 adminRolesPermissions={
-                  selectedAdmin?.adminRoles.map((role) => role.rolePermission) ||
-                  []
+                  selectedAdmin?.adminRoles.map(
+                    (role) => role.rolePermission
+                  ) || []
                 }
                 userId={selectedAdmin?.id}
               />
