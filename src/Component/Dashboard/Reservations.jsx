@@ -82,6 +82,7 @@ const Reservations = () => {
       })
       );
 
+      console.log(formattedData);
       setData(formattedData);
 
 

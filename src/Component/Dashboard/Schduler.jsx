@@ -20,9 +20,12 @@ export default class Scheduler extends Component {
     this.state = {
       blockingMode: false,
       blockedDates: [],
+      bookedDates: [],
+      customBlockedDates: [],
+      customPriceforCertainDates: [],
+      isBlocked: "",
       selectedHouse: null,
       houseOptions: [],
-      selectedDate: null,
       selectedDatePrice: "",
       selectedEditDate: null,
       isEditingPrice: false,
@@ -65,90 +68,6 @@ export default class Scheduler extends Component {
 
 
 
-  handleDateClick = (date) => {
-    // const { blockedDates, blockingMode, selectedDates } = this.state;
-    const clickedDate = date.dateStr;
-
-
-    // / Check if the clicked date is in the past
-    const isPastDate = date.date < new Date();
-
-    // If it's a past date, prevent the default behavior and apply styles
-    // if (isPastDate) {
-    //   console.log(new Date())
-    //   return ;
-    // } else {
-      // Handle the click for future dates
-      this.openPopup(clickedDate,"");
-      console.log('Clicked on a future date:', date);
-    // }
-
-
-
-
-
-    // if (blockingMode) {
-    //   const updatedBlockedDates = blockedDates.includes(clickedDate)
-    //     ? blockedDates.filter((date) => date !== clickedDate)
-    //     : [...blockedDates, clickedDate];
-
-    //   this.setState({ blockedDates: updatedBlockedDates });
-    // } else {
-    //   if (blockedDates.includes(clickedDate)) {
-    //     const updatedBlockedDates = blockedDates.filter(
-    //       (date) => date !== clickedDate
-    //     );
-    //     this.setState({ blockedDates: updatedBlockedDates });
-    //   }
-    // }
-
-    // if (!blockingMode) {
-    //   const { selectedDates } = this.state;
-
-    //   // Check if the clicked date is in the selectedDates array
-    //   if (selectedDates.includes(clickedDate)) {
-    //     // If the date is already selected, remove it
-    //     const updatedSelectedDates = selectedDates.filter(
-    //       (date) => date !== clickedDate
-    //     );
-    //     this.setState({ selectedDates: updatedSelectedDates });
-    //   } else {
-    //     // If the date is not selected, add it
-    //     this.setState({
-    //       selectedDates: [...selectedDates, clickedDate],
-    //       selectedEditDate: dateInfo.dateStr,
-    //       selectedDatePrice: "",
-    //       showWeeklyDiscountDetails: true, // Show discount details when a date is clicked
-    //     });
-    //   }
-    // }
-  
-  };
-
-  handleDateSelect = (info) => {
-    const selectedStartDate = info.start.toISOString().split('T')[0];
-    const selectedEndDate = info.end.toISOString().split('T')[0];
-
-    console.log(info)
-    
-
-    // You can handle date range selection if needed
-    console.log('Selected start date:', selectedStartDate);
-    console.log('Selected end date:', selectedEndDate);
-
-    // Open your popup or do any other actions with the selected date range
-    this.openPopup(selectedStartDate, selectedEndDate);
-  };
-
-  openPopup = (startDate, endDate) => {
-    // Your logic to open a popup with the selected date or date range
-    console.log('Opening popup with date:', startDate);
-
-    this.setState({ pricingModalVisible: true }) // Set the custom modal to be visible
-
-    // Example: You can use a modal library or create your own popup component
-    // showModal({ startDate, endDate });
-  };
 
   handlePriceChange = (event) => {
     const newPrice = event.target.value;
@@ -200,7 +119,7 @@ export default class Scheduler extends Component {
 
   formatAmountWithCommas = (amount) => {
     // Convert the amount to a string and split it into integer and decimal parts
-    if(amount===""||amount===null){
+    if (amount === "" || amount === null) {
       return ""
     }
     const [integerPart, decimalPart] = amount.toString().split('.');
@@ -252,11 +171,92 @@ export default class Scheduler extends Component {
         advanceNotice: response.data.data.advance_notice,
         prepTime: response.data.data.preparation_time,
         availabilityWindow: response.data.data.availability_window,
+        customWeeklyDiscount: response.data.data.hosthomecustomdiscounts.find(discount => discount.duration.toLowerCase().includes('1 week')),
+        customMonthlyDiscount: response.data.data.hosthomecustomdiscounts.find(discount => discount.duration.toLowerCase().includes('4 weeks')),
       };
 
       this.setState({ selectedHouse: formattedAPartment });
       this.setState({ editedPrice: this.formatAmountWithCommas(response.data.data.price) });
-      console.table(response.data.data);
+
+      //Logic for Adding Booked Dates to blocked daes
+      const newBlockedDates = response.data.data.bookedDates.reduce((acc, booking) => {
+        const datesBetween = this.generateDatesBetween(
+          booking.check_in,
+          booking.check_out
+        );
+        const isDateAlreadyBlocked = datesBetween.some(date => this.state.blockedDates.includes(date));
+
+        // // If not, add them to CustomBlockedDates
+        if (!isDateAlreadyBlocked) {
+          return [...acc, ...datesBetween];
+        }
+
+
+        return acc;
+      }, []);
+      const removedDuplicateDates = new Set(newBlockedDates);
+      // removedDuplicateDates.add("2024-03-12")
+
+      console.log("bookedDates", ...removedDuplicateDates);
+
+      //////////////////////////////////////////////////////////////////
+      const newCustomBlockedDates = response.data.data.hosthomeblockeddates.reduce((acc, dateRangeArray) => {
+        // Extracting the first (and only) object from each inner array
+        const dateRangeObject = dateRangeArray[0];
+
+        if (dateRangeObject) {
+          const datesBetween = this.generateDatesBetween(
+            dateRangeObject.start_date,
+            dateRangeObject.end_date
+          );
+
+          // Check if any date between start_date and end_date is already in blockedDates
+          const isDateAlreadyBlocked = datesBetween.some(date => this.state.blockedDates.includes(date));
+
+          // // If not, add them to CustomBlockedDates
+          if (!isDateAlreadyBlocked) {
+            return [...acc, ...datesBetween];
+          }
+        }
+
+        return acc;
+      }, []);
+
+      const removedDuplicateCustomDates = new Set(newCustomBlockedDates);
+
+      console.log("Customblocked", ...newCustomBlockedDates);
+
+      this.setState({
+        bookedDates: [...removedDuplicateDates],
+        customBlockedDates: [...removedDuplicateCustomDates],
+      });
+
+
+      ///// getting certain Prices for certain days 
+      const reservedPricesForCertainDay = response.data.data.reservedPricesForCertainDay;
+
+      // Process the API response and update the state
+      const formattedPrices = reservedPricesForCertainDay
+        .flatMap((dayArray) =>
+          dayArray.map((entry) => ({
+            price: entry.price,
+            date: entry.date,
+          }))
+        )
+        .filter((entry, index, self) =>
+          index ===
+          self.findIndex(
+            (e) => e.price === entry.price && e.date === entry.date
+          )
+        );
+
+      this.setState({
+        customPriceforCertainDates: formattedPrices,
+        // other state updates if needed
+      });
+
+
+      console.log(response.data.data);
 
 
 
@@ -269,10 +269,20 @@ export default class Scheduler extends Component {
 
 
   }
+  // generates the dates between The check in and Check Out dates of booked dates
+  generateDatesBetween = (startDate, endDate) => {
+    const dates = [];
+    let currentDate = new Date(startDate);
 
-  dateHasBackground = (date) => {
-    return this.state.selectedDates.includes(date);
+    while (currentDate <= new Date(endDate)) {
+      dates.push(currentDate.toISOString().split('T')[0]);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dates;
   };
+
+
 
   toggleBlockMode = () => {
     this.setState((prevState) => ({
@@ -290,7 +300,7 @@ export default class Scheduler extends Component {
   }
 
   getUnblockedDates() {
-    const { blockedDates } = this.state;
+    const { blockedDates, bookedDates, customBlockedDates } = this.state;
     const today = new Date();
     const unblockedDates = [];
 
@@ -299,11 +309,15 @@ export default class Scheduler extends Component {
       currentDate.setDate(today.getDate() + i);
       const currentDateString = currentDate.toISOString().split("T")[0];
 
-      if (!blockedDates.includes(currentDateString)) {
+      if (!blockedDates.includes(currentDateString) &&
+        !bookedDates.includes(currentDateString) &&
+        !customBlockedDates.includes(currentDateString)) {
         unblockedDates.push({
           title: "Available",
           start: currentDateString,
           allDay: true,
+          backgroundColor: "orange "
+
         });
       }
     }
@@ -334,27 +348,73 @@ export default class Scheduler extends Component {
 
   savePrice = async (price, date) => {
 
-
-
     const id = this.state.selectedHouse.id;
-    this.setState({ editedPrice: this.formatAmountWithCommas(price) });
-    /// for The calender price to change
-    await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, date: (date ? date : "") }).then(response => {
-      this.fetchData(id)
 
-    }).catch(err => {
-      console.log(err)
-      this.setState({ editedPrice: this.state.selectedHouse.basePrice }); /// for The calender price to change
-    });
+    const singleDate = date[0];
+    const isSingleDateInCustomPrices = this.state.customPriceforCertainDates.some(entry => entry.date === singleDate)
+
+    if (isSingleDateInCustomPrices) {
+
+      axios.put(`/schdulerUpdatePricesForDateRange/${id}`, {
+        new_price: price,
+        start_date: date[0],
+        end_date: date[0]
+      }).then(response => {
+        this.fetchData(id)
+
+      }).catch(err => {
+        console.log(err)
+        this.setState({ editedPrice: this.state.selectedHouse.basePrice }); /// for The calender price to change
+      });
+
+
+    } else {
+      this.setState({ editedPrice: this.formatAmountWithCommas(price) });
+      /// for The calender price to change
+      await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, dates: (date ? [...date] : "") }).then(response => {
+        this.fetchData(id)
+
+      }).catch(err => {
+        console.log(err)
+        this.setState({ editedPrice: this.state.selectedHouse.basePrice }); /// for The calender price to change
+      });
 
 
 
 
-
-
+    }
 
 
   }
+
+
+  handleBlockchange=async(date,blockID)=>{
+
+    const id = this.state.selectedHouse.id;
+
+    if(blockID===1){// if block is clicked
+      
+      await axios.post(`/schduler/host-homes/${id}/edit-blocked-date`,{dates:[...date]}).then(response=>{
+        this.setState((prevState) => ({
+          customBlockedDates: [...prevState.customBlockedDates, ...date],
+        }));
+        this.hidePricingModal();
+
+      }).catch(error=>{});
+    }else{
+      await axios.post(`/schduler/host-homes/${id}/edit-unblock-date`,{start_date: date[0],
+       end_date: date[0]}).then(response=>{
+        this.setState((prevState) => ({
+          customBlockedDates: prevState.customBlockedDates.filter(d => !date.includes(d)),
+        }));
+        this.hidePricingModal();
+       }).catch(error=>{
+        console.log("error",error);
+       });
+    }
+
+  }
+
 
 
 
@@ -375,6 +435,7 @@ export default class Scheduler extends Component {
 
     const pastDates = this.getPastDates(validRange.start, validRange.end);
 
+
     // Update the blockedDates state with individual past dates
     this.setState({ blockedDates: pastDates });
   };
@@ -383,8 +444,8 @@ export default class Scheduler extends Component {
     const pastDates = [];
     let currentDate = new Date(startDate);
 
-    // Loop through each day from the start date to the end date
-    while (currentDate < new Date(endDate)) {
+    // Loop through each day from the start date to the end date (inclusive)
+    while (currentDate <= new Date(endDate)) {
       pastDates.push(currentDate.toISOString().split('T')[0]);
       currentDate.setDate(currentDate.getDate() + 1);
     }
@@ -395,17 +456,155 @@ export default class Scheduler extends Component {
 
 
 
+  handleDateClick = (date) => {
+    const { blockedDates, customBlockedDates, bookedDates } = this.state;
+    const clickedDate = date.dateStr;
+
+
+    // / Check if the clicked date is in the past
+    const isPastDate = date.date < new Date();
+
+    // If it's a past date, prevent the default behavior and apply styles
+    if (isPastDate) {
+      // console.log(new Date())
+      return;
+    } else {
+      if (blockedDates.includes(clickedDate) || bookedDates.includes(clickedDate)) {
+        return;
+
+      }
+      if (customBlockedDates.includes(clickedDate)) {
+        this.setState({ isBlocked: 1 })// 1 means blocked 
+
+      } else {
+
+        this.setState({ isBlocked: 2 })// 2 means Unblocked 
+      }
+
+      //Logic to know if the selected dates is in THe custom Price
+      const singleDate = clickedDate;
+      const customPriceEntry = this.state.customPriceforCertainDates.find(entry => entry.date === singleDate);
+      
+      if (customPriceEntry) {
+        const price = customPriceEntry.price;
+        this.setState({selectedDatePrice: price });
+      }else{
+        this.setState({selectedDatePrice: this.state.editedPrice });
+      }
+
+
+
+        //END
+
+      // Handle the click for future dates
+      this.setState({ selectedDates: [clickedDate] });
+      this.openPopup(clickedDate, "");
+      // console.log('Clicked on a future date:', date);
+    }
+
+
+    // if (blockingMode) {
+    //   const updatedBlockedDates = blockedDates.includes(clickedDate)
+    //     ? blockedDates.filter((date) => date !== clickedDate)
+    //     : [...blockedDates, clickedDate];
+
+    //   this.setState({ blockedDates: updatedBlockedDates });
+    // } else {
+    //   if (blockedDates.includes(clickedDate)) {
+    //     const updatedBlockedDates = blockedDates.filter(
+    //       (date) => date !== clickedDate
+    //     );
+    //     this.setState({ blockedDates: updatedBlockedDates });
+    //   }
+    // }
+
+    // if (!blockingMode) {
+    //   const { selectedDates } = this.state;
+
+    //   // Check if the clicked date is in the selectedDates array
+    //   if (selectedDates.includes(clickedDate)) {
+    //     // If the date is already selected, remove it
+    //     const updatedSelectedDates = selectedDates.filter(
+    //       (date) => date !== clickedDate
+    //     );
+    //     this.setState({ selectedDates: updatedSelectedDates });
+    //   } else {
+    //     // If the date is not selected, add it
+    //     this.setState({
+    //       selectedDates: [...selectedDates, clickedDate],
+    //       selectedEditDate: dateInfo.dateStr,
+    //       selectedDatePrice: "",
+    //       showWeeklyDiscountDetails: true, // Show discount details when a date is clicked
+    //     });
+    //   }
+    // }
+
+  };
+
+  // handleEventClick = (info) => {
+  //   const clickedDate = info.event.start; // Access the event's start date
+  //   // Handle the clicked date further (e.g., display a modal, update state)
+
+
+  //   // / Check if the clicked date is in the past
+  //   const isPastDate = clickedDate < new Date();
+
+  //   if (isPastDate) {
+  //     console.log("hi")
+  //     return;
+  //   }else {
+  //     // Handle the click for future dates
+  //     console.log('Event clicked:', clickedDate); // Log the date for demonstration
+  //     // console.log('Clicked on a future date:', date);
+  //   }
+  // };
+
+  // handleDateSelect = (info) => {
+  //   const selectedStartDate = info.start.toISOString().split('T')[0];
+  //   const selectedEndDate = info.end.toISOString().split('T')[0];
+
+  //   console.log(info)
+
+
+  //   // You can handle date range selection if needed
+  //   console.log('Selected start date:', selectedStartDate);
+  //   console.log('Selected end date:', selectedEndDate);
+
+  //   // Open your popup or do any other actions with the selected date range
+  //   this.openPopup(selectedStartDate, selectedEndDate);
+  // };
+
+  openPopup = (startDate, endDate) => {
+    // Your logic to open a popup with the selected date or date range
+    console.log('Opening popup with date:', startDate);
+
+    this.setState({ pricingModalVisible: true }) // Set the custom modal to be visible
+
+    // Example: You can use a modal library or create your own popup component
+    // showModal({ startDate, endDate });
+  };
+
+
+
+
+
+
+
 
 
   render() {
     const {
       blockingMode,
       blockedDates,
+      bookedDates,
       selectedHouse,
-      selectedDate,
+      selectedDates,
       selectedDatePrice,
       isEditingPrice,
       editedPrice,
+      isBlocked,
+      customBlockedDates,
+      customPriceforCertainDates,
       pricingModalVisible,
       discountModalVisible, // Include this state variable
 
@@ -422,7 +621,6 @@ export default class Scheduler extends Component {
             selectedHouse={selectedHouse}
             isEditingPrice={isEditingPrice}
             setEditedPrice={(price) => { this.setEditedPrice(price) }}
-            selectedDate={selectedDate}
             selectedDatePrice={selectedDatePrice}
             onEditPrice={this.handleEditPrice}
             onSavePrice={this.handleSavePrice}
@@ -494,12 +692,12 @@ export default class Scheduler extends Component {
         <HostBottomNavigation />
         <div className="flex flex-wrap  box-border w-full">
           <div className="block flex-grow relative overflow-y-scroll example">
-            <div className="flex flex-col relative py-8 px-6">
+            <div className="flex flex-col    relative py-8 px-6">
               <select
                 name="houseSelect"
                 id="houseSelect"
                 onChange={(e) => this.handleHouseSelect(e.target.value)}
-                className="py-5 border pr-4 border-orange-400 mb-4 pl-4"
+                className="py-5 border pr-4 border-orange-400 mb-8 pl-4"
               >
                 <option value="">Select an Apartment</option>
                 {houseOptions.map((house, index) => (
@@ -508,7 +706,7 @@ export default class Scheduler extends Component {
                   </option>
                 ))}
               </select>
-              {selectedHouse && (
+              {/* {selectedHouse && (
                 <div className="mb-4">
                   <button
                     className={`${blockingMode ? "bg-orange-400" : "bg-black"
@@ -518,7 +716,7 @@ export default class Scheduler extends Component {
                     {blockingMode ? "Unblock date" : "Block date"}
                   </button>
                 </div>
-              )}
+              )} */}
               {selectedHouse && (
                 <FullCalendar
                   plugins={[dayGridPlugin, interactionPlugin, multiMonthPlugin]}
@@ -528,35 +726,74 @@ export default class Scheduler extends Component {
                   // editable
                   validRange={validRange}
                   select={this.handleDateSelect}
-                  selectable
-                  // eventClick={this.handleDateClick}
-                  selectConstraint={{ start: new Date().setHours(0, 0, 0, 0) }} 
+                  // selectable
+                  eventClick={this.handleEventClick}
+                  selectConstraint={{ start: new Date().setHours(0, 0, 0, 0) }}
                   dateClick={this.handleDateClick}
                   events={[
                     ...blockedDates.map((date) => ({
-                      title: '<div><div></div><div class="w-full flex justify-center" > <svg xmlns="http://www.w3.org/2000/svg"  class="md:w-8 w-6"  viewBox="0 0 24 24"><title>cancel</title><path d="M12 2C17.5 2 22 6.5 22 12S17.5 22 12 22 2 17.5 2 12 6.5 2 12 2M12 4C10.1 4 8.4 4.6 7.1 5.7L18.3 16.9C19.3 15.5 20 13.8 20 12C20 7.6 16.4 4 12 4M16.9 18.3L5.7 7.1C4.6 8.4 4 10.1 4 12C4 16.4 7.6 20 12 20C13.9 20 15.6 19.4 16.9 18.3Z" /></svg></div></div>',
+                      // Check if the date is already in uniqueEvents
+
+
+                      // If not, add it
+
+
                       start: date,
                       allDay: true,
                       display: 'background',
-                      backgroundColor: "rgba(0, 0, 0, 0.1)",
+                      backgroundColor: "rgba(209, 213, 219, 0.7)",
+
+
+
                     })),
+                    ...bookedDates.map((date) => ({
+                      title: '<div class=" flex justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="md:w-7 w-4" viewBox="0 0 24 24"><title>booked</title><path d="M7 14C8.66 14 10 12.66 10 11C10 9.34 8.66 8 7 8C5.34 8 4 9.34 4 11C4 12.66 5.34 14 7 14M7 10C7.55 10 8 10.45 8 11C8 11.55 7.55 12 7 12C6.45 12 6 11.55 6 11C6 10.45 6.45 10 7 10M19 7H11V15H3V5H1V20H3V17H21V20H23V11C23 8.79 21.21 7 19 7M21 15H13V9H19C20.1 9 21 9.9 21 11Z" /></svg></div>',
+                      start: date,
+                      allDay: true,
+                      display: 'background',
+                      backgroundColor: "rgba(241 ,245 ,249 , 0.7)",
+
+                    })),
+
+                    ...customBlockedDates.map((date) => ({
+                      // Check if the date is already in uniqueEvents
+
+
+                      // If not, add it
+
+                      title: "Blocked",
+                      start: date,
+                      allDay: true,
+                      backgroundColor: "rgba(51, 65, 85,1)"
+
+
+
+                    })),
+
                     // ...markedBlockedDates,
                     ...this.getUnblockedDates(),
                   ]}
                   eventContent={(arg) => {
+                    let price;
                     const dateStr = arg.event.start.toISOString().split("T")[0];
-                    const price = editedPrice;
+                    const isBlocked = blockedDates.includes(dateStr) || bookedDates.includes(dateStr);
+                    const isCustomPrice = customPriceforCertainDates.some(entry => entry.date === dateStr);
+
+                    if (isCustomPrice) {
+                      price = customPriceforCertainDates.find(entry => entry.date === dateStr).price;
+
+                    } else {
+                      price = editedPrice;
+
+                    }
 
                     return {
                       html: `
-                      <div>
-                        <div>${arg.event.title}</div>
-                        <div> ₦${price}</div>
+                      <div class="w-full flex-col flex justify-center overflow-clip ">
+                        <div  >${arg.event.title}</div>
+                        <div class=" text-sm md:text-base ${isBlocked ? " text-center" : ""}  "> ₦${price}</div>
                       </div>
                     `,
-                      backgroundColor: this.dateHasBackground(arg.event.start)
-                        ? "orange"
-                        : "white",
                     };
                   }}
                 />
@@ -593,14 +830,18 @@ export default class Scheduler extends Component {
                 <Tabs defaultActiveKey="1" items={items} />
               </div>
             </div>
-            <PricingModal
+
+            {pricingModalVisible && <PricingModal
               visible={pricingModalVisible}
               onClose={this.hidePricingModal}
               showBlocker={true}
               title={"Per night"}
               onSave={this.savePrice}
-              price={editedPrice}
-            />
+              price={selectedDatePrice}
+              date={selectedDates}
+              isBlocked={isBlocked}
+              onBlockChange={this.handleBlockchange}
+            />}
           </section>
         </div>
       </div>

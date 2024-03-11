@@ -5,6 +5,7 @@ import axios from '../../Axios'
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const submitForm = async (e) => {
     e.preventDefault();

@@ -2,10 +2,13 @@ import Popup from "../../hoc/Popup";
 import React, { useState, useRef, useEffect } from "react";
 import { Radio } from "antd";
 
-const PricingModal = ({ visible, onClose,showBlocker,title,onSave,date,price }) => {
+const PricingModal = ({ visible, onClose,showBlocker,title,onSave,date,price,isBlocked, onBlockChange }) => {
   const [show, setShow] = useState(false);
   const toggleShow = () => setShow(!show);
+  const [dateString,setDateString]=useState(['','']);
  
+  const [selectedButton, setSelectedButton] = useState(null);
+
 
   const [inputShow, setInputShow] = useState(false);
   //   const [loading,setLoading]=useState(false);
@@ -23,17 +26,39 @@ const PricingModal = ({ visible, onClose,showBlocker,title,onSave,date,price }) 
     }
   }, [inputShow]);
 
-  
-  
-  
-  const [selectedButton, setSelectedButton] = useState(null);
 
+  useEffect(() => {
+    if(!date){
+      return;
+    }
+    // Convert the date string to a Date object
+    const formattedDates = date.map((item) => {
+      const dateObject = new Date(item);
+      return dateObject.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+    });
+
+    // Update the state with the formatted date strings
+    setDateString(formattedDates);
+  }, [date]); // I
+
+  useEffect(() => {
+    if(!isBlocked){
+      return;
+    }
+    setSelectedButton(isBlocked);// 1 or 2
+  }, [isBlocked]); // I
+  
   const handleButtonSelection = (buttonId) => {
     if (selectedButton === buttonId) {
       // If the selected button is clicked again, deselect it
       setSelectedButton(null);
     } else {
       setSelectedButton(buttonId);
+      onBlockChange(date,buttonId);
     }
   };
   const buttons = [
@@ -42,7 +67,7 @@ const PricingModal = ({ visible, onClose,showBlocker,title,onSave,date,price }) 
     // { id: 3, label: "Button 3" },
   ];
 
-  const [inputValue, setInputValue] = useState("42");
+  const [inputValue, setInputValue] = useState("");
   
   const handleInputChange = (e) => {
     const newInputValue = e.target.value;
@@ -75,9 +100,12 @@ const saveChangedPrice=(e)=>{
       <Popup isModalVisible={visible} handleCancel={onClose}>
         <div className="   py-8 md:px-16 px-3    ">
 
+         {date&& <div className="flex justify-center items-center mb-3 underline">{dateString[1]?dateString[0]-dateString[1]:dateString[0]} </div>}
          {showBlocker&& 
         //  start Blocked and Unblocked should only show when they click on a particular date or highlight dates in the calender     
           <div className="flex justify-center items-center">
+
+            
             <div className=" flex mb-4 items-center justify-center border h-10 rounded-md ">
               {/* {buttons.map((button) => ( */}
               <div key={1}>
@@ -261,6 +289,14 @@ const saveChangedPrice=(e)=>{
               >
                 Cancel
               </button>
+
+              {/* {isTyping && (
+              <div className="self-start  bg-gray-300 p-2 rounded-lg max-w-[200px]">
+                <div className="dot-pulse1">
+                  <div className="dot-pulse1__dot"></div>
+                </div>
+              </div>
+            )} */}
             </div>
           </form>
         </div>

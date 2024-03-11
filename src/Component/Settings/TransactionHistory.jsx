@@ -334,9 +334,9 @@ export default function TransactionHistory() {
                       <span>
                         ₦
                         {(
-                          formatAmountWithCommas(selectedBooking.paymentAmount)
+                          formatAmountWithCommas(selectedBooking.roomPerNightPrice)
                         )}{" "}
-                        * {selectedBooking.numNights} nights
+                        * {selectedBooking.numNights} night(s)
                       </span>
                     </div>
                     <div className="flex justify-between mb-2">
@@ -348,7 +348,7 @@ export default function TransactionHistory() {
                       <div className="flex justify-between mb-2">
                         <span> Service fee</span>
                         <span>
-                          ₦{formatAmountWithCommas(selectedBooking.guestServiceFee)}
+                          ₦{formatAmountWithCommas(selectedBooking.guestServiceFee)}(Refundable)
                         </span>
                       </div>
 
@@ -364,10 +364,7 @@ export default function TransactionHistory() {
                         <span>
                           ₦
                           {formatAmountWithCommas((
-                            selectedBooking.roomPerNightPrice *
-                            selectedBooking.numNights +
-                            selectedBooking.guestServiceFee +
-                            selectedBooking.nightlyRateAdjustment
+                            selectedBooking.paymentAmount
                           ))}
                         </span>
                       </div>

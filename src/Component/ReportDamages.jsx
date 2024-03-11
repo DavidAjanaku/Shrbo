@@ -117,7 +117,7 @@ const ReportDamage = () => {
       const response = await axios.post('/reportDamage', {
         description: damageDescription,
         photos,
-        video: [videos],
+        video: videos,
         booking_number: bookingNumber,
       });
 
@@ -156,6 +156,7 @@ const ReportDamage = () => {
             <LoadingOutlined
               style={{
                 fontSize: 24,
+                color:'orange',
               }}
               spin
             />
