@@ -38,7 +38,7 @@ const ListingInfoMain = () => {
       try {
         const response = await Axios.get("/user");
         setUser(response.data.id);
-        setHostId(response.data.id)
+        setHostId(response.data.id);
 
         console.log(response.data.id);
       } catch (error) {
@@ -46,13 +46,9 @@ const ListingInfoMain = () => {
         // Handle error, show error message, etc.
       }
     };
-    
 
     fetchUsers();
   }, []);
-
-
-  
 
   useEffect(() => {
     const fetchListingDetails = async () => {
@@ -61,14 +57,13 @@ const ListingInfoMain = () => {
         setListingDetails(response.data.data);
         setApartment(id); // Set the ID parameter to the apartment state
         setUser(response.data.data.user.id);
-        setHostId(response.data.data.user.id)
+        setHostId(response.data.data.user.id);
         setTitle(response.data.data.title);
         setCancellationPolicy(response.data.data.cancelPolicy);
         setAddress(response.data.data.address);
         setPhoto(response.data.data.hosthomephotos);
-        setDiscounts(response.data.data.discounts)
+        setDiscounts(response.data.data.discounts);
         console.log(response.data.data);
-        
       } catch (error) {
         console.error("Error fetching listing details:", error);
       }
@@ -76,7 +71,6 @@ const ListingInfoMain = () => {
 
     fetchListingDetails();
   }, [id]);
-  
 
   const recordHostHomeView = async (hostHomeId, hostId) => {
     try {
@@ -88,14 +82,12 @@ const ListingInfoMain = () => {
   };
 
   console.log(hostId);
-  
+
   useEffect(() => {
     if (hostId) {
       recordHostHomeView(id, hostId);
     }
   }, [hostId]);
-  
-
 
   if (!listingDetails) {
     // Loading state or return null
@@ -129,22 +121,22 @@ const ListingInfoMain = () => {
               hostHomeDescriptions={listingDetails?.hosthomedescriptions} // Pass the array as a prop
             />{" "}
             <div className="  md:hidden relative mr-0 ">
-              <ListingForm     id={id}
-              price={listingDetails?.price}
-              reservations={listingDetails?.reservations}
-              reservation={listingDetails?.reservation}
-              guest={listingDetails?.guest}
-              max_nights={listingDetails?.max_nights}
-              min_nights={listingDetails?.min_nights}
-              preparation_time={listingDetails?.preparation_time}
-              availability_window={listingDetails?.availability_window}
-              advance_notice={listingDetails?.advance_notice}
-
+              <ListingForm
+                id={id}
+                price={listingDetails?.price}
+                reservations={listingDetails?.reservations}
+                reservation={listingDetails?.reservation}
+                guest={listingDetails?.guest}
+                max_nights={listingDetails?.max_nights}
+                min_nights={listingDetails?.min_nights}
+                preparation_time={listingDetails?.preparation_time}
+                availability_window={listingDetails?.availability_window}
+                advance_notice={listingDetails?.advance_notice}
               />
             </div>
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
             <HostProfilePreview
-            userId={listingDetails?.user?.id || ""}
+              userId={listingDetails?.user?.id || ""}
               userProfilePicture={listingDetails?.user?.profilePicture || ""}
               userRating={listingDetails?.user?.rating || 0}
               userReviews={listingDetails?.user?.reviews || 0}
@@ -169,7 +161,7 @@ const ListingInfoMain = () => {
           </div>
           <div className=" md:ml-[8.33333%] md:w-[33.33333%] hidden md:block relative mr-0 ">
             <ListingForm
-            id={id}
+              id={id}
               price={listingDetails?.price}
               reservations={listingDetails?.reservations}
               reservation={listingDetails?.reservation}
@@ -179,8 +171,6 @@ const ListingInfoMain = () => {
               preparation_time={listingDetails?.preparation_time}
               availability_window={listingDetails?.availability_window}
               advance_notice={listingDetails?.advance_notice}
-
-
             />
           </div>
         </div>

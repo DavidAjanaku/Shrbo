@@ -326,12 +326,12 @@ console.log(max_nights);
 
 
   const handleDisableBookButton = (nights) => {
-    if (nights < min_nights) {
-      setIsDisabled(true); // Disable the book button
+    if (nights < min_nights && min_nights != null) {
+      setIsDisabled(true); 
       setModalMessage(`Minimum stay is ${min_nights} nights`);
       setIsModalVisibles(true); // Show the modal
-    } else if (nights > max_nights) {
-      setIsDisabled(true); // Disable the book button
+    } else if (nights > max_nights && max_nights != null) {
+      setIsDisabled(true); 
       setModalMessage(`Maximum stay is ${max_nights} nights`);
       setIsModalVisibles(true); // Show the modal
     } else {
