@@ -16,7 +16,7 @@ import MessageModal from "../StayLengthModal";
 import { addMonths } from "date-fns";
 
 import StayLengthModal from "../StayLengthModal";
-export default function ListingForm({ reservations, reservation, guest,max_nights, min_nights,availability_window }) {
+export default function ListingForm({ reservations, reservation, guest,max_nights, min_nights,availability_window,advance_notice }) {
   function showModal(e) {
     e.preventDefault();
     setIsModalVisible(true);
@@ -40,6 +40,7 @@ export default function ListingForm({ reservations, reservation, guest,max_night
   // const [checkOutDate, setCheckOutDate] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisibles, setIsModalVisibles] = useState(false);
+  const [blockedDates, setBlockedDates] = useState([]);
 
   // const [adults, setAdults] = useState(1);
   // const [children, setChildren] = useState(0);
@@ -164,10 +165,24 @@ console.log(max_nights);
           return { checkInDate, checkOutDate };
         });
 
+
+
         // console.log(bookedDates);
 
         // Set the booked dates to exclude them in the DatePicker
         setBookedDates(bookedDates);
+
+           // Extract blocked dates and convert them to Date objects
+           const blockedDates = response.data.data.hosthomeblockeddates.map((dates) => {
+            const startDate = new Date(dates[0].start_date);
+            const endDate = new Date(dates[0].end_date);
+            return { startDate, endDate };
+          });
+          
+
+    // Set the blocked dates to exclude them in the DatePicker
+    setBlockedDates(blockedDates);
+
       } catch (error) {
         console.error("Error fetching listing details:", error);
         // Handle error, show error message, etc.
@@ -176,6 +191,9 @@ console.log(max_nights);
 
     fetchListingDetails();
   }, [id]);
+
+  console.log(blockedDates);
+  console.log(bookedDates);
 
   const resetStateValues = () => {
     setCheckInDate(null);
@@ -393,6 +411,7 @@ const calculateMaxDate = (availabilityWindow) => {
 // Calculate the max date based on the availability window
 const maxDate = calculateMaxDate(availability_window);
 
+console.log(reservation);
   return (
     <div className=" block w-full h-full">
       <div
@@ -442,19 +461,19 @@ const maxDate = calculateMaxDate(availability_window);
                   dateFormat="dd/MM/yyyy"
                   minDate={new Date()}
                   maxDate={maxDate}
-
-                  excludeDates={bookedDates.flatMap(
-                    ({ checkInDate, checkOutDate }) =>
-                      Array.from(
-                        {
-                          length:
-                            (checkOutDate - checkInDate) /
-                              (1000 * 60 * 60 * 24) +
-                            1,
-                        },
-                        (_, i) => addDays(checkInDate, i)
-                      )
-                  )}
+                  excludeDates={bookedDates.flatMap(({ checkInDate, checkOutDate }) =>
+                  Array.from(
+                    { length: (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24) + 1 },
+                    (_, i) => addDays(checkInDate, i)
+                  )
+                ).concat(
+                  blockedDates.flatMap(({ startDate, endDate }) =>
+                    Array.from(
+                      { length: (endDate - startDate) / (1000 * 60 * 60 * 24) + 1 },
+                      (_, i) => addDays(startDate, i)
+                    )
+                  )
+                )}
                 />
 
                 <img
@@ -473,17 +492,18 @@ const maxDate = calculateMaxDate(availability_window);
                   minDate={checkInDate ? addDays(checkInDate, 1) : new Date()} // Use checkInDate as the minimum date
                     maxDate={maxDate}
 
-                  excludeDates={bookedDates.flatMap(
-                    ({ checkInDate, checkOutDate }) =>
+                    excludeDates={bookedDates.flatMap(({ checkInDate, checkOutDate }) =>
+                    Array.from(
+                      { length: (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24) + 1 },
+                      (_, i) => addDays(checkInDate, i)
+                    )
+                  ).concat(
+                    blockedDates.flatMap(({ startDate, endDate }) =>
                       Array.from(
-                        {
-                          length:
-                            (checkOutDate - checkInDate) /
-                              (1000 * 60 * 60 * 24) +
-                            1,
-                        },
-                        (_, i) => addDays(checkInDate, i)
+                        { length: (endDate - startDate) / (1000 * 60 * 60 * 24) + 1 },
+                        (_, i) => addDays(startDate, i)
                       )
+                    )
                   )}
                 />
 
