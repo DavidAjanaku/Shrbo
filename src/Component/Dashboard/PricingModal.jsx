@@ -100,7 +100,7 @@ const saveChangedPrice=(e)=>{
       <Popup isModalVisible={visible} handleCancel={onClose}>
         <div className="   py-8 md:px-16 px-3    ">
 
-         {date&& <div className="flex justify-center items-center mb-3 underline">{dateString[1]?dateString[0]-dateString[1]:dateString[0]} </div>}
+         {date&& <div className="flex justify-center items-center mb-3 underline">{dateString[1]?`${dateString[0]} - ${dateString[1]}`:dateString[0]} </div>}
          {showBlocker&& 
         //  start Blocked and Unblocked should only show when they click on a particular date or highlight dates in the calender     
           <div className="flex justify-center items-center">

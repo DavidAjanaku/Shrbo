@@ -21,6 +21,7 @@ export default class Scheduler extends Component {
       blockingMode: false,
       blockedDates: [],
       bookedDates: [],
+      unblockedDates: [],
       customBlockedDates: [],
       customPriceforCertainDates: [],
       isBlocked: "",
@@ -201,21 +202,23 @@ export default class Scheduler extends Component {
 
       //////////////////////////////////////////////////////////////////
       const newCustomBlockedDates = response.data.data.hosthomeblockeddates.reduce((acc, dateRangeArray) => {
-        // Extracting the first (and only) object from each inner array
-        const dateRangeObject = dateRangeArray[0];
+        // Extracting the first object from each inner array
+        const firstDateObject = dateRangeArray[0];
+        // Extracting the last object from each inner array
+        const lastDateObject = dateRangeArray[dateRangeArray.length - 1];
 
-        if (dateRangeObject) {
-          const datesBetween = this.generateDatesBetween(
-            dateRangeObject.start_date,
-            dateRangeObject.end_date
-          );
+        if (firstDateObject && lastDateObject) {
+          const startDate = firstDateObject.start_date;
+          const endDate = lastDateObject.end_date ?? lastDateObject.start_date;
+
+          const datesBetween = this.generateDatesBetween(startDate, endDate);
 
           // Check if any date between start_date and end_date is already in blockedDates
           const isDateAlreadyBlocked = datesBetween.some(date => this.state.blockedDates.includes(date));
 
-          // // If not, add them to CustomBlockedDates
+          // If not, add them to CustomBlockedDates
           if (!isDateAlreadyBlocked) {
-            return [...acc, ...datesBetween];
+            acc.push(...datesBetween);
           }
         }
 
@@ -225,6 +228,8 @@ export default class Scheduler extends Component {
       const removedDuplicateCustomDates = new Set(newCustomBlockedDates);
 
       console.log("Customblocked", ...newCustomBlockedDates);
+
+
 
       this.setState({
         bookedDates: [...removedDuplicateDates],
@@ -237,12 +242,19 @@ export default class Scheduler extends Component {
 
       // Process the API response and update the state
       const formattedPrices = reservedPricesForCertainDay
-        .flatMap((dayArray) =>
-          dayArray.map((entry) => ({
-            price: entry.price,
-            date: entry.date,
-          }))
-        )
+        .flatMap((dayArray) => {
+          const startDate = dayArray[0].date; // Get the start date of the first object
+          const endDate = dayArray[dayArray.length - 1].date; // Get the end date of the last object
+      
+          // Generate dates between startDate and endDate
+          const datesBetween = this.generateDatesBetween(startDate, endDate);
+      
+          // Map each date to an object with the price of the start date
+          return datesBetween.map((date) => ({
+            price: dayArray[0].price, // Set the price to the price of the start date
+            date,
+          }));
+        })
         .filter((entry, index, self) =>
           index ===
           self.findIndex(
@@ -250,10 +262,14 @@ export default class Scheduler extends Component {
           )
         );
 
+        console.log("reservedPrice",formattedPrices);
+      
+      
       this.setState({
         customPriceforCertainDates: formattedPrices,
-        // other state updates if needed
+        
       });
+      
 
 
       console.log(response.data.data);
@@ -299,10 +315,11 @@ export default class Scheduler extends Component {
     }));
   }
 
-  getUnblockedDates() {
+  getUnblockedDatesEvent() {
     const { blockedDates, bookedDates, customBlockedDates } = this.state;
     const today = new Date();
     const unblockedDates = [];
+    const dates = [];
 
     for (let i = 0; i < 365; i++) {
       const currentDate = new Date();
@@ -316,14 +333,21 @@ export default class Scheduler extends Component {
           title: "Available",
           start: currentDateString,
           allDay: true,
-          backgroundColor: "orange "
+          backgroundColor: "orange"
 
         });
+        dates.push(currentDateString);
       }
     }
 
+
+    // this.setState({unblockedDates:[...dates]});
     return unblockedDates;
   }
+
+
+
+
 
   componentDidMount() {
     axios.get('/schdulerGetHostHomeAndId').then(response => {
@@ -335,6 +359,7 @@ export default class Scheduler extends Component {
     }).catch();
 
     this.updateBlockedDates();
+    // this.getUnblockedDates();
 
 
 
@@ -347,9 +372,23 @@ export default class Scheduler extends Component {
   }
 
   savePrice = async (price, date) => {
-
     const id = this.state.selectedHouse.id;
+    let startDate = date[0];
+    let endDate = date[0];
+    let datesBetween = [date[0]];
 
+    if (date.length > 1) {
+      datesBetween = this.generateDatesBetween(date[0], date[1]);
+      startDate = date[0];
+      endDate = date[1];
+    }
+
+    console.log("start", startDate)
+    console.log("end", endDate)
+    console.log("datesbetween", ...datesBetween)
+
+    // I'm only checking if one date is in the customPriceforCertainDates because i made sure when selecting dates the user can select dates in customPriceforCertainDates
+    // if all the dates are in customPriceforCertainDates
     const singleDate = date[0];
     const isSingleDateInCustomPrices = this.state.customPriceforCertainDates.some(entry => entry.date === singleDate)
 
@@ -357,8 +396,8 @@ export default class Scheduler extends Component {
 
       axios.put(`/schdulerUpdatePricesForDateRange/${id}`, {
         new_price: price,
-        start_date: date[0],
-        end_date: date[0]
+        start_date: startDate,
+        end_date: endDate,
       }).then(response => {
         this.fetchData(id)
 
@@ -371,7 +410,7 @@ export default class Scheduler extends Component {
     } else {
       this.setState({ editedPrice: this.formatAmountWithCommas(price) });
       /// for The calender price to change
-      await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, dates: (date ? [...date] : "") }).then(response => {
+      await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, dates: (date ? [...datesBetween] : "") }).then(response => {
         this.fetchData(id)
 
       }).catch(err => {
@@ -388,34 +427,47 @@ export default class Scheduler extends Component {
   }
 
 
-  handleBlockchange=async(date,blockID)=>{
+  handleBlockchange = async (date, blockID) => {
 
     const id = this.state.selectedHouse.id;
+    let startDate = date[0];
+    let endDate = date[0];
+    let datesBetween = [date[0]];
 
-    if(blockID===1){// if block is clicked
-      
-      await axios.post(`/schduler/host-homes/${id}/edit-blocked-date`,{dates:[...date]}).then(response=>{
+    if (date.length > 1) {
+      datesBetween = this.generateDatesBetween(date[0], date[1]);
+      startDate = date[0];
+      endDate = date[1];
+    }
+
+    console.log("start", startDate)
+    console.log("end", endDate)
+    console.log("datesbetween", ...datesBetween)
+
+    if (blockID === 1) {// if block is clicked
+
+      await axios.post(`/schduler/host-homes/${id}/edit-blocked-date`, { dates: [...datesBetween] }).then(response => {
         this.setState((prevState) => ({
-          customBlockedDates: [...prevState.customBlockedDates, ...date],
+          customBlockedDates: [...prevState.customBlockedDates, ...datesBetween],
         }));
         this.hidePricingModal();
 
-      }).catch(error=>{});
-    }else{
-      await axios.post(`/schduler/host-homes/${id}/edit-unblock-date`,{start_date: date[0],
-       end_date: date[0]}).then(response=>{
+      }).catch(error => { console.log("could not Block", error) });
+    } else {
+      await axios.post(`/schduler/host-homes/${id}/edit-unblock-date`, {
+        start_date: startDate,
+        end_date: endDate
+      }).then(response => {
         this.setState((prevState) => ({
-          customBlockedDates: prevState.customBlockedDates.filter(d => !date.includes(d)),
+          customBlockedDates: prevState.customBlockedDates.filter(d => !datesBetween.includes(d)),
         }));
         this.hidePricingModal();
-       }).catch(error=>{
-        console.log("error",error);
-       });
+      }).catch(error => {
+        console.log("could not unblock", error);
+      });
     }
 
   }
-
-
 
 
   hidePricingModal = () => {
@@ -454,11 +506,11 @@ export default class Scheduler extends Component {
   };
 
 
-
-
   handleDateClick = (date) => {
     const { blockedDates, customBlockedDates, bookedDates } = this.state;
     const clickedDate = date.dateStr;
+
+    console.log(this.state.customPriceforCertainDates);
 
 
     // / Check if the clicked date is in the past
@@ -484,60 +536,23 @@ export default class Scheduler extends Component {
       //Logic to know if the selected dates is in THe custom Price
       const singleDate = clickedDate;
       const customPriceEntry = this.state.customPriceforCertainDates.find(entry => entry.date === singleDate);
-      
+
       if (customPriceEntry) {
         const price = customPriceEntry.price;
-        this.setState({selectedDatePrice: price });
-      }else{
-        this.setState({selectedDatePrice: this.state.editedPrice });
+        this.setState({ selectedDatePrice: price });
+      } else {
+        this.setState({ selectedDatePrice: this.state.editedPrice });
       }
 
 
 
-        //END
+      //END
 
       // Handle the click for future dates
       this.setState({ selectedDates: [clickedDate] });
       this.openPopup(clickedDate, "");
       // console.log('Clicked on a future date:', date);
     }
-
-
-    // if (blockingMode) {
-    //   const updatedBlockedDates = blockedDates.includes(clickedDate)
-    //     ? blockedDates.filter((date) => date !== clickedDate)
-    //     : [...blockedDates, clickedDate];
-
-    //   this.setState({ blockedDates: updatedBlockedDates });
-    // } else {
-    //   if (blockedDates.includes(clickedDate)) {
-    //     const updatedBlockedDates = blockedDates.filter(
-    //       (date) => date !== clickedDate
-    //     );
-    //     this.setState({ blockedDates: updatedBlockedDates });
-    //   }
-    // }
-
-    // if (!blockingMode) {
-    //   const { selectedDates } = this.state;
-
-    //   // Check if the clicked date is in the selectedDates array
-    //   if (selectedDates.includes(clickedDate)) {
-    //     // If the date is already selected, remove it
-    //     const updatedSelectedDates = selectedDates.filter(
-    //       (date) => date !== clickedDate
-    //     );
-    //     this.setState({ selectedDates: updatedSelectedDates });
-    //   } else {
-    //     // If the date is not selected, add it
-    //     this.setState({
-    //       selectedDates: [...selectedDates, clickedDate],
-    //       selectedEditDate: dateInfo.dateStr,
-    //       selectedDatePrice: "",
-    //       showWeeklyDiscountDetails: true, // Show discount details when a date is clicked
-    //     });
-    //   }
-    // }
 
   };
 
@@ -559,20 +574,154 @@ export default class Scheduler extends Component {
   //   }
   // };
 
-  // handleDateSelect = (info) => {
-  //   const selectedStartDate = info.start.toISOString().split('T')[0];
-  //   const selectedEndDate = info.end.toISOString().split('T')[0];
+  handleDateSelect = (info) => {
+    const selectedStartDate = info.startStr
+    let selectedEndDate = info.end.toISOString().split('T')[0];
 
-  //   console.log(info)
+    // Convert selectedEndDate to a JavaScript Date object
+    const endDate = new Date(selectedEndDate);
+  
+    // Subtract one day from the end date
+    endDate.setDate(endDate.getDate() - 1);
+  
+    // Format the result back to your desired format (e.g., YYYY-MM-DD)
+    selectedEndDate = endDate.toISOString().split('T')[0];
+  
+
+  // // Check if selected dates are in the same month
+  // if (info.start.getMonth() === info.end.getMonth()) {
+  //   // Subtract 1 day in milliseconds for the same month
+  //   selectedEndDate = new Date(info.end.getTime() - 86400000).toISOString().split('T')[0];
+  // }
+
+    console.log(selectedStartDate, selectedEndDate);
+
+    if (selectedStartDate === selectedEndDate) {
+      return;
+    }
+
+    console.log(info);
+    const unblockedDates = this.getUnblockedDatesEvent();
+    console.log(unblockedDates);
+
+    // Generate dates between start and end date
+    const generatedDates = this.generateDatesBetween(selectedStartDate, selectedEndDate);
+
+    console.log(generatedDates);
+
+    // Check if all generated dates belong to the same category (customBlockedDates or bookedDates)
+    const category = this.getCategoryForDates(generatedDates,
+      this.state.customBlockedDates,
+      this.state.bookedDates,
+      this.state.blockedDates,
+      unblockedDates
+    );
+    const anyInCustomPrice = this.areAnyDatesInCustomPrice(generatedDates, this.state.customPriceforCertainDates);
+    const commonPrice = this.getCommonPriceForDates(generatedDates, this.state.customPriceforCertainDates);
+    if (category) {
+      // All dates belong to the same category, perform your actions here
+      console.log(`All dates belong to the ${category} category`);
+
+      if (category === "bookedDates") {
+        return;
+      }
+
+      if (category === "customBlockedDates") {
+
+        this.setState({ isBlocked: 1 })// 1 means blocked 
+
+      } else {
+
+        this.setState({ isBlocked: 2 })// 2 means Unblocked 
+      }
 
 
-  //   // You can handle date range selection if needed
-  //   console.log('Selected start date:', selectedStartDate);
-  //   console.log('Selected end date:', selectedEndDate);
+      if (anyInCustomPrice) {//checks if any of them are in custom price before checking if they all havw the same price
+        // Get the common price for the generated dates in customPriceforCertainDates
+        if (commonPrice) {
+          // const price = customPriceEntry.price;
+          this.setState({ selectedDatePrice: commonPrice });
+        } else {
+          return;
 
-  //   // Open your popup or do any other actions with the selected date range
-  //   this.openPopup(selectedStartDate, selectedEndDate);
-  // };
+        }
+
+
+      }
+      console.log(this.state.customPriceforCertainDates);
+
+      this.setState({ selectedDates: [selectedStartDate, selectedEndDate] });
+      !commonPrice && this.setState({ selectedDatePrice: this.state.editedPrice });
+      this.openPopup(selectedStartDate, selectedEndDate);
+    } else {
+      // Dates belong to different categories or not in customBlockedDates/bookedDates, handle accordingly
+      console.log('Dates belong to different categories or not in customBlockedDates/bookedDates');
+    }
+  };
+
+  getCategoryForDates = (datesToCheck, customBlockedDates, bookedDates, blockedDates, unblockedDates) => {
+    // Initialize a Set to keep track of unique categories
+    const uniqueCategories = new Set();
+
+    // Function to extract date from an object with a 'start' property
+    const extractDate = obj => (obj && obj.start) || null;
+
+    // Check if all datesToCheck are in customBlockedDates
+    if (datesToCheck.every(date => customBlockedDates.includes(date))) {
+      uniqueCategories.add('customBlockedDates');
+    }
+
+    // Check if all datesToCheck are in bookedDates
+    if (datesToCheck.every(date => bookedDates.includes(date))) {
+      uniqueCategories.add('bookedDates');
+    }
+
+    // Check if all datesToCheck are in blockedDates
+    if (datesToCheck.every(date => blockedDates.includes(date))) {
+      uniqueCategories.add('blockedDates');
+    }
+
+    // Check if all datesToCheck are in unblockedDates
+    if (datesToCheck.every(date => unblockedDates.some(obj => extractDate(obj) === date))) {
+      uniqueCategories.add('unblockedDates');
+    }
+
+    // If there is only one unique category, return that category; otherwise, return null
+    return uniqueCategories.size === 1 ? [...uniqueCategories][0] : null;
+  };
+
+  /// checks if the selected dates all have the same price 
+  getCommonPriceForDates(datesToCheck, customPriceforCertainDates) {
+    // Extract date and price from the array of objects
+    const datePriceMap = new Map(customPriceforCertainDates.map(item => [item.date, item.price]));
+
+    // Check if all datesToCheck are in customPriceforCertainDates
+    if (datesToCheck.every(date => datePriceMap.has(date))) {
+      // Extract the prices for the provided dates
+      const pricesForDates = datesToCheck.map(date => datePriceMap.get(date));
+
+      // Check if all prices are the same
+      const uniquePrices = new Set(pricesForDates);
+      if (uniquePrices.size === 1) {
+        // All dates have the same price, return that price
+        return pricesForDates[0];
+      }
+    }
+
+    // Dates are not in customPriceforCertainDates or have different prices
+    return null;
+  }
+
+
+  areAnyDatesInCustomPrice(datesToCheck, customPriceforCertainDates) {
+    // Extract date from the array of objects
+    const extractedDates = customPriceforCertainDates.map(item => item.date);
+
+    // Check if any datesToCheck are in customPriceforCertainDates
+    return datesToCheck.some(date => extractedDates.includes(date));
+  };
+
+
 
   openPopup = (startDate, endDate) => {
     // Your logic to open a popup with the selected date or date range
@@ -723,10 +872,10 @@ export default class Scheduler extends Component {
                   initialView="dayGridMonth"
                   // multiMonthMaxColumns={1}
 
-                  // editable
+                  editable
                   validRange={validRange}
                   select={this.handleDateSelect}
-                  // selectable
+                  selectable
                   eventClick={this.handleEventClick}
                   selectConstraint={{ start: new Date().setHours(0, 0, 0, 0) }}
                   dateClick={this.handleDateClick}
@@ -769,23 +918,24 @@ export default class Scheduler extends Component {
 
 
                     })),
-
+                  
+                  
                     // ...markedBlockedDates,
-                    ...this.getUnblockedDates(),
+                    ...this.getUnblockedDatesEvent(),
                   ]}
                   eventContent={(arg) => {
-                    let price;
-                    const dateStr = arg.event.start.toISOString().split("T")[0];
-                    const isBlocked = blockedDates.includes(dateStr) || bookedDates.includes(dateStr);
-                    const isCustomPrice = customPriceforCertainDates.some(entry => entry.date === dateStr);
-
-                    if (isCustomPrice) {
-                      price = customPriceforCertainDates.find(entry => entry.date === dateStr).price;
-
-                    } else {
-                      price = editedPrice;
-
+                    if (!arg || !arg.event || !arg.event.start) {
+                      console.error('Invalid event data:', arg);
+                      return null; // Or return an empty placeholder to prevent rendering errors
                     }
+                  
+                    // 2. Extract Date String and Check Blocking:
+                    const dateStr = arg.event.start.toISOString().split('T')[0];
+                    const isBlocked = blockedDates.includes(dateStr) || bookedDates.includes(dateStr);
+                  
+                    // 3. Determine Custom Price (Efficient Approach):
+                    const customPriceEntry = customPriceforCertainDates.find(entry => entry && entry.date === dateStr);
+                    const price = customPriceEntry ? customPriceEntry.price : editedPrice;
 
                     return {
                       html: `

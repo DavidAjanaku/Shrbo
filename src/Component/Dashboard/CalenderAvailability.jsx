@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ArrowDown from "../../assets/line-angle-down-icon.svg";
 import axios from "../../Axios";
 
-const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime, advanceNotice, houseId }) => {
+const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime, advanceNotice, houseId}) => {
   const [advanceNoticeModalVisible, setAdvanceNoticeModalVisible] = useState(false);
   const [preparationTimeModalVisible, setPreparationTimeModalVisible] = useState(false);
 
@@ -24,35 +24,16 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
   
   const [selectedMaxNights, setSelectedMaxNights] = useState("");
   const [inputedMaxNights,setInputedMaxNights]=useState("");
+  const [errorMessage,setErrorMessage]=useState("");
 
   useEffect(() => {
-
-    if (availabilityWindow !== null) {
-      setSelectedAvailabilityWindow(availabilityWindow);
-    }
-
-    if (maxNight !== null) {
-      console.log(maxNight);
-      setSelectedMaxNights(maxNight);
-    }
-
-    if (minNight !== null) {
-
-      setSelectedMinNights(minNight);
-    }
-
-    if (prepTime !== null) {
-
-      setSelectedPreparationTime(prepTime);
-    }
-
-    if (advanceNotice !== null) {
-      setSelectedAdvanceNotice(advanceNotice);
-    }
-
-
-
+    setSelectedAvailabilityWindow(availabilityWindow ?? "");
+    setSelectedMaxNights(maxNight ?? 365);
+    setSelectedMinNights(minNight ?? 1);
+    setSelectedPreparationTime(prepTime ?? "");
+    setSelectedAdvanceNotice(advanceNotice ?? "");
   }, [maxNight, availabilityWindow, prepTime, advanceNotice, minNight]);
+  
 
   const advanceNoticeOptions = [
     "Same day",
@@ -91,11 +72,18 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
   };
 
   const handleMinNightsInput = (value) => {
-    setInputedMinNights(value);
+    
+    
+    if (/^\d*$/.test(value) && value.length <= 4) {
+        setInputedMinNights(value);
+     
+    }
   };
 
   const handleMaxNightsInput = (value) => {
-    setInputedMaxNights(value);
+    if (/^\d*$/.test(value) && value.length <= 4) {
+      setInputedMaxNights(value); 
+  }
   };
   ///////////////////
 
@@ -151,6 +139,24 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
   };//d
 
   const handleMinNightsSubmit = async () => {
+
+    if(inputedMinNights.length===0){
+      setErrorMessage("Min Nights can't be empty")
+      return;
+    }
+    
+    if(inputedMinNights > selectedMaxNights){
+      setErrorMessage("Min Nights can't be higher than Max Nights")
+      return;
+    }
+
+    if(inputedMinNights < 1){
+      setErrorMessage("lowest Min Nights allowed is 1")
+      return;
+    }
+
+    setErrorMessage("");
+    setInputedMaxNights("")
     
     setMinNightsModalVisible(false);
     
@@ -167,7 +173,21 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
 
   const handleMaxNightsSubmit = async () => {
     const id = houseId;
+    console.log(inputedMaxNights)
     
+
+    if(inputedMaxNights.length===0){
+      setErrorMessage("Max Nights can't be empty")
+      return;
+    }
+    
+    if(inputedMaxNights < selectedMinNights){
+      setErrorMessage("Max Nights can't be lower than Min Nights")
+      return;
+    }
+
+    setErrorMessage("");
+    setInputedMaxNights("")
     setMaxNightsModalVisible(false);
     
     await axios.put(`/schdulerEditHostHomeMaxNights/${id}`, { night:inputedMaxNights }).then(response=>{
@@ -294,7 +314,8 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
       {advanceNoticeModalVisible && (
         <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
           <div className="bg-white w-full h-full md:h-fit md:w-2/5 p-10 rounded shadow-lg">
-            <h2 className="text-5xl text-gray-700 font-semibold mb-4">Advance Notice</h2>
+            <h2 className="text-5xl text-gray-700 font-semibold mb-2">Advance notice</h2>
+            <p className=" font-light md:text-sm mb-4 ">How much advance notice do you require between a guest's booking and their arrival?</p>
             <div>
               {advanceNoticeOptions.map((option) => (
                 <div key={option} className="mb-2">
@@ -319,7 +340,7 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
                 Save
               </button>
               <button
-                className="border w-full  font-bold py-2 px-4 rounded"
+                className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
                 onClick={() => setAdvanceNoticeModalVisible(false)}
               >
                 Cancel
@@ -331,7 +352,8 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
       {preparationTimeModalVisible && (
         <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
           <div className="bg-white md:w-2/5 w-full h-full md:h-fit p-10 rounded shadow-lg">
-            <h2 className="text-5xl font-semibold text-gray-700 mb-4">Preparation Time</h2>
+            <h2 className="text-5xl font-semibold text-gray-700 mb-3">Preparation time</h2>
+            <p className=" font-light md:text-sm mb-4 ">How many nights do you need to block off before and after each reservation?</p>
             <div>
               {preparationTimeOptions.map((option) => (
                 <div key={option} className="mb-2">
@@ -356,7 +378,7 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
                 Save
               </button>
               <button
-                className="border w-full  font-bold py-2 px-4 rounded"
+              className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
                 onClick={() => setPreparationTimeModalVisible(false)}
               >
                 Cancel
@@ -368,7 +390,8 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
       {availabilityWindowModalVisible && (
         <div className="fixed  top-0 left-0 w-full h-full flex items-center justify-center  bg-opacity-50 z-50">
           <div className="bg-white md:w-2/5 w-full h-full md:h-fit p-10 rounded shadow-lg">
-            <h2 className="text-5xl font-semibold text-gray-700 mb-4">Availability Window</h2>
+            <h2 className="text-5xl font-semibold text-gray-700 mb-4">Availability window</h2>
+            <p className=" font-light md:text-sm mb-4 ">What is the maximum time frame within which guests can make a reservation in advance?</p>
             <div>
               {availabilityWindowOptions.map((option) => (
                 <div key={option} className="mb-2">
@@ -393,7 +416,7 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
                 Save
               </button>
               <button
-                className="border w-full  font-bold py-2 px-4 rounded"
+            className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
                 onClick={() => setAvailabilityWindowModalVisible(false)}
               >
                 Cancel
@@ -408,11 +431,12 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
             <h2 className="text-5xl font-semibold mb-4 text-gray-700">Minimum Nights</h2>
             <div>
               <input
-                type="number"
+                // type="number"
                 value={inputedMinNights}
                 onChange={(e) => handleMinNightsInput(e.target.value)}
                 className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
               />
+              <label className=" text-red-600">{errorMessage}</label>  
             </div>
             <div className="my-5 space-y-2">
               <button
@@ -423,7 +447,7 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
               </button>
               <button
                 className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
-                onClick={() => setMinNightsModalVisible(false)}
+                onClick={() =>{ setMinNightsModalVisible(false); setInputedMinNights("");setErrorMessage(""); }}
               >
                 Cancel
               </button>
@@ -437,11 +461,12 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
             <h2 className="text-5xl font-semibold mb-4 text-gray-700">Maximum Nights</h2>
             <div>
               <input
-                type="number"
+              
                 value={inputedMaxNights}
                 onChange={(e) => handleMaxNightsInput(e.target.value)}
                 className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
               />
+              <label className=" text-red-600">{errorMessage}</label>
             </div>
             <div className="my-5 space-y-2">
               <button
@@ -452,7 +477,7 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
               </button>
               <button
                 className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
-                onClick={() => setMaxNightsModalVisible(false)}
+                onClick={() => {setMaxNightsModalVisible(false); setInputedMaxNights(""); setErrorMessage(""); }}
               >
                 Cancel
               </button>
