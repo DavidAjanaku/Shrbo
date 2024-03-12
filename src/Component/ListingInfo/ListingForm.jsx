@@ -26,7 +26,7 @@ export default function ListingForm({
   advance_notice,
   hosthomecustomdiscounts,
   reservedPricesForCertainDay,
-  weekend
+  weekend,
 }) {
   function showModal(e) {
     e.preventDefault();
@@ -261,152 +261,148 @@ export default function ListingForm({
   const calculateWeekendNights = (checkIn, checkOut) => {
     let weekendNights = 0;
     let currentDate = new Date(checkIn);
-  
+
     while (currentDate < checkOut) {
       const dayOfWeek = currentDate.getDay();
-      if (dayOfWeek === 6 || dayOfWeek === 0) { // 6 is Saturday, 0 is Sunday
+      if (dayOfWeek === 6 || dayOfWeek === 0) {
+        // 6 is Saturday, 0 is Sunday
         weekendNights++;
       }
       currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
     }
-  
+
     return weekendNights;
   };
-  
 
- const calculateTotalPrice = (checkIn, checkOut) => {
-  // Ensure that checkIn and checkOut are valid dates
-  if (checkIn instanceof Date && checkOut instanceof Date) {
-    const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-    setNumberOfNights(nights);
+  const calculateTotalPrice = (checkIn, checkOut) => {
+    // Ensure that checkIn and checkOut are valid dates
+    if (checkIn instanceof Date && checkOut instanceof Date) {
+      const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+      setNumberOfNights(nights);
 
-    if (nights === 2) {
-      setIsDisabled(true); // Disable the book button
-    }
-    const nightlyPrice = Number(price) || 0; // Convert price to a number, default to 0 if NaN
-
-    // Calculate basePrice
-    let basePrice = nights * nightlyPrice;
-
-    // Check if there are reserved prices for certain days
-    if (reservedPricesForCertainDay.length > 0) {
-      // Iterate over reserved prices and update basePrice for the specific dates
-      reservedPricesForCertainDay.forEach((reservedPrice) => {
-        const reservedDate = new Date(reservedPrice[0].start_date);
-        if (reservedDate >= checkIn && reservedDate < checkOut) {
-          // Update basePrice with the reserved price for the specific date
-          basePrice += Number(reservedPrice[0].price);
-          // Subtract one nightlyPrice for each reserved night
-          basePrice -= nightlyPrice;
-        }
-      });
-    }
-
-    
-
-    // This is for weekend calculation
-     // Check if the weekend price should be applied
-     if (weekend !== null && weekend !== "" && !isNaN(Number(weekend))) {
-      const weekendPrice = Number(weekend);
-      const startDate = new Date(checkIn);
-      const endDate = new Date(checkOut);
-      let currentDate = new Date(startDate);
-
-      while (currentDate < endDate) {
-        if (currentDate.getDay() === 6 || currentDate.getDay() === 0) {
-          // If the current date is Saturday or Sunday, update the basePrice with the weekend price
-          basePrice -= nightlyPrice; // Subtract the normal nightly price
-          basePrice += weekendPrice; // Add the weekend price
-        }
-        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+      if (nights === 2) {
+        setIsDisabled(true); // Disable the book button
       }
-    }
-    //  
+      const nightlyPrice = Number(price) || 0; // Convert price to a number, default to 0 if NaN
 
+      // Calculate basePrice
+      let basePrice = nights * nightlyPrice;
 
-    // Assuming host fees is 20%, service fee is 5%, and tax is 4%
-    const hostFees = 0.07 * basePrice;
-    console.log(basePrice);
-
-    const guest_fee = guestFee * nights;
-
-    const securityDeposits = securityDeposit;
-    const totalPrice = nights * nightlyPrice;
-    const TotalPrice = basePrice + securityDeposits;
-
-    setHousePrice(price);
-    setNights(nights);
-    setTotalPrice(totalPrice);
-    setHostFee(hostFees);
-    setHostFees(hostFees);
-    setTotalCosts(totalCosts);
-    setServiceFee(serviceFees);
-    setServiceFees(serviceFees);
-
-    // Check if custom discounts should be applied
-    // Check if custom discounts should be applied
-    if (hosthomecustomdiscounts.length > 0) {
-      let weekDiscount = 0;
-      let monthDiscount = 0;
-
-      // Loop through the custom discounts
-      hosthomecustomdiscounts.forEach((discount) => {
-        if (discount.duration === "1 month") {
-          monthDiscount = Number(discount.discount_percentage);
-        } else if (discount.duration === "1 week") {
-          weekDiscount = Number(discount.discount_percentage);
-        }
-      });
-
-      let customDiscountPercentage = 0; // Default discount percentage
-
-      if (nights >= 30 && monthDiscount > 0) {
-        customDiscountPercentage = monthDiscount / 100; // Convert percentage to decimal
-      } else if (nights >= 7 && weekDiscount > 0) {
-        customDiscountPercentage = weekDiscount / 100; // Convert percentage to decimal
+      // Check if there are reserved prices for certain days
+      if (reservedPricesForCertainDay.length > 0) {
+        // Iterate over reserved prices and update basePrice for the specific dates
+        reservedPricesForCertainDay.forEach((reservedPrice) => {
+          const reservedDate = new Date(reservedPrice[0].start_date);
+          if (reservedDate >= checkIn && reservedDate < checkOut) {
+            // Update basePrice with the reserved price for the specific date
+            basePrice += Number(reservedPrice[0].price);
+            // Subtract one nightlyPrice for each reserved night
+            basePrice -= nightlyPrice;
+          }
+        });
       }
 
-      const baseDiscountedPrice = basePrice * customDiscountPercentage;
-      const securityDepositDiscountedPrice =
-        securityDeposits * customDiscountPercentage;
-      const totalDiscountedPrice =
-        baseDiscountedPrice + securityDepositDiscountedPrice;
-      const discountedPrice =
-        basePrice + securityDeposits - totalDiscountedPrice;
+      // This is for weekend calculation
+      // Check if the weekend price should be applied
+      if (weekend !== null && weekend !== "" && !isNaN(Number(weekend))) {
+        const weekendPrice = Number(weekend);
+        const startDate = new Date(checkIn);
+        const endDate = new Date(checkOut);
+        let currentDate = new Date(startDate);
 
-      if (customDiscountPercentage > 0) {
-        const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
-        setAppliedDiscount(
-          `Custom discount applied (${formattedDiscount}% off)`
-        );
+        while (currentDate < endDate) {
+          if (currentDate.getDay() === 6 || currentDate.getDay() === 0) {
+            // If the current date is Saturday or Sunday, update the basePrice with the weekend price
+            basePrice -= nightlyPrice; // Subtract the normal nightly price
+            basePrice += weekendPrice; // Add the weekend price
+          }
+          currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+        }
+      }
+      //
+
+      // Assuming host fees is 20%, service fee is 5%, and tax is 4%
+      const hostFees = 0.07 * basePrice;
+      console.log(basePrice);
+
+      const guest_fee = guestFee * nights;
+
+      const securityDeposits = securityDeposit;
+      const totalPrice = nights * nightlyPrice;
+      const TotalPrice = basePrice + securityDeposits;
+
+      setHousePrice(price);
+      setNights(nights);
+      setTotalPrice(totalPrice);
+      setHostFee(hostFees);
+      setHostFees(hostFees);
+      setTotalCosts(totalCosts);
+      setServiceFee(serviceFees);
+      setServiceFees(serviceFees);
+
+      // Check if custom discounts should be applied
+      // Check if custom discounts should be applied
+      if (hosthomecustomdiscounts.length > 0) {
+        let weekDiscount = 0;
+        let monthDiscount = 0;
+
+        // Loop through the custom discounts
+        hosthomecustomdiscounts.forEach((discount) => {
+          if (discount.duration === "1 month") {
+            monthDiscount = Number(discount.discount_percentage);
+          } else if (discount.duration === "1 week") {
+            weekDiscount = Number(discount.discount_percentage);
+          }
+        });
+
+        let customDiscountPercentage = 0; // Default discount percentage
+
+        if (nights >= 30 && monthDiscount > 0) {
+          customDiscountPercentage = monthDiscount / 100; // Convert percentage to decimal
+        } else if (nights >= 7 && weekDiscount > 0) {
+          customDiscountPercentage = weekDiscount / 100; // Convert percentage to decimal
+        }
+
+        const baseDiscountedPrice = basePrice * customDiscountPercentage;
+        const securityDepositDiscountedPrice =
+          securityDeposits * customDiscountPercentage;
+        const totalDiscountedPrice =
+          baseDiscountedPrice + securityDepositDiscountedPrice;
+        const discountedPrice =
+          basePrice + securityDeposits - totalDiscountedPrice;
+
+        if (customDiscountPercentage > 0) {
+          const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
+          setAppliedDiscount(
+            `Custom discount applied (${formattedDiscount}% off)`
+          );
+          setTotalCost(discountedPrice);
+          return; // Exit early since custom discount is applied
+        }
+      }
+
+      // Apply predefined discounts if custom discount is not applied
+      if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
+        setAppliedDiscount("20% New listing promotion (20% off)");
+        const discountedPrice = basePrice * 0.8 + securityDeposits;
         setTotalCost(discountedPrice);
-        return; // Exit early since custom discount is applied
+      } else if (nights >= 28 && discount.includes("10% Monthly discount")) {
+        setAppliedDiscount("10% Monthly discount (10% off)");
+        const discountedPrice = basePrice * 0.9 + securityDeposits;
+        setTotalCost(discountedPrice);
+      } else if (nights >= 7 && discount.includes("5% Weekly discount")) {
+        setAppliedDiscount("5% Weekly discount (5% off)");
+        const discountedPrice = basePrice * 0.95 + securityDeposits;
+        setTotalCost(discountedPrice);
+      } else {
+        setAppliedDiscount("");
+        setTotalCost(TotalPrice);
       }
-    }
-
-    // Apply predefined discounts if custom discount is not applied
-    if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
-      setAppliedDiscount("20% New listing promotion (20% off)");
-      const discountedPrice = basePrice * 0.8 + securityDeposits;
-      setTotalCost(discountedPrice);
-    } else if (nights >= 28 && discount.includes("10% Monthly discount")) {
-      setAppliedDiscount("10% Monthly discount (10% off)");
-      const discountedPrice = basePrice * 0.9 + securityDeposits;
-      setTotalCost(discountedPrice);
-    } else if (nights >= 7 && discount.includes("5% Weekly discount")) {
-      setAppliedDiscount("5% Weekly discount (5% off)");
-      const discountedPrice = basePrice * 0.95 + securityDeposits;
-      setTotalCost(discountedPrice);
     } else {
-      setAppliedDiscount("");
-      setTotalCost(TotalPrice);
+      // Set a default value when dates are not selected
+      setTotalPrice(null);
     }
-  } else {
-    // Set a default value when dates are not selected
-    setTotalPrice(null);
-  }
-};
-
+  };
 
   const handleDisableBookButton = (nights) => {
     if (nights < min_nights && min_nights != null) {
@@ -706,17 +702,22 @@ export default function ListingForm({
                                 </div>
                               </div>
                               {weekend && !isNaN(Number(weekend)) && (
-  <div className=" mb-2 box-border block">
-    <div className=" flex items-end justify-between break-words    ">
-      <div className=" block box-border">
-        <span>Weekend Price</span>
-      </div>
-      <div className=" ml-4 whitespace-nowrap block box-border   ">
-        ₦ {Number(weekend).toLocaleString()} ({calculateWeekendNights(checkInDate, checkOutDate)} nights)
-      </div>
-    </div>
-  </div>
-)}
+                                <div className=" mb-2 box-border block">
+                                  <div className=" flex items-end justify-between break-words    ">
+                                    <div className=" block box-border">
+                                      <span>Weekend Price</span>
+                                    </div>
+                                    <div className=" ml-4 whitespace-nowrap block box-border   ">
+                                      ₦ {Number(weekend).toLocaleString()} (
+                                      {calculateWeekendNights(
+                                        checkInDate,
+                                        checkOutDate
+                                      )}{" "}
+                                      nights)
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
 
                               {appliedDiscount && (
                                 <div className="">
