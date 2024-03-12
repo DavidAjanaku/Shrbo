@@ -1,28 +1,36 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
+import { Slider } from "antd";
+// import "antd/dist/antd.css";
 
-const DiscountCustomModal = ({ visible, onClose, onSubmit,discountType }) => {
+const DiscountCustomModal = ({ visible, onClose, onSubmit, discountType,percentage }) => {
   const [discountDuration, setDiscountDuration] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState("");
 
   const handleCancel = () => {
+    // setDiscountPercentage(percentage)
     onClose();
   };
+
+
+  useEffect(()=>{
+    setDiscountPercentage(percentage)
+  },[percentage]);
 
   const handleOK = () => {
     // Calculate and set the discount based on the selected duration and percentage
     const discount = `${discountPercentage}%`;
 
-    if (discountDuration === "7") {
+    if (discountType==="Weekly") {
+      onSubmit("1 week",discountPercentage);
       // Weekly discount
       // Calculate and set the weekly discount
       // For example, update the state or make an API request
-    } else if (discountDuration === "28") {
-      // Monthly discount
-      // Calculate and set the monthly discount
-      // For example, update the state or make an API request
+    } else if (discountType==="Monthly") {
+      onSubmit("1 month",discountPercentage);
+      
     }
 
-    onSubmit(discount);
+    
     onClose();
   };
 
@@ -40,7 +48,7 @@ const DiscountCustomModal = ({ visible, onClose, onSubmit,discountType }) => {
           &times;
         </span>
         <h2 className="text-5xl text-gray-700 mb-4 font-extrabold">Set {discountType} Discounts</h2>
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <p className="text-base ">Select duration:</p>
           <select
             value={discountDuration}
@@ -51,16 +59,41 @@ const DiscountCustomModal = ({ visible, onClose, onSubmit,discountType }) => {
             <option value="2">2 weeks</option>
             <option value="3">3 weeks</option>
           </select>
-        </div>
-        <div className="mb-4">
-          <p className="text-base">Discount percentage:</p>
-          <input
-            type="number"
-            placeholder="Enter discount percentage"
-            value={discountPercentage}
-            onChange={(e) => setDiscountPercentage(e.target.value)}
-            className="w-full p-2 border rounded"
+        </div> */}
+        <div className="mb-5 w-full">
+          {/* <p className="text-base ">Discount percentage:</p> */}
+          <div className="w-full flex justify-center items-center mt-7 mb-2" >
+            <label className=" text-sm">{discountType==="Weekly"? "Discount for a stay of 7-night or more" : "Discount for a stay of 30-night or more "}</label>
+          </div>
+
+
+          <div className="text-center my-4 text-3xl font-bold text-gray-700 min-h-[1lh">{discountPercentage}%</div>
+          <Slider
+            min={0}
+            max={100}
+            tooltip={{
+              formatter: null,
+            }}
+            styles={{
+              track: {
+                background: 'transparent',
+                height:'10px'
+              },
+              tracks: {
+                background: `rgb(251 ,146, 60) `,
+                height:'5px'
+              },
+              handle: {
+                borderColor: "#FFA500", // Set the border color for the handle
+                backgroundColor: "#FFA500",
+              
+              },
+            }}
+            
+            value={parseFloat(discountPercentage)}
+            onChange={(value) => setDiscountPercentage(value.toString())}
           />
+        
         </div>
         <div className="my-5 py-5">
           <button

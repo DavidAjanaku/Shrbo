@@ -173,7 +173,7 @@ export default class Scheduler extends Component {
         prepTime: response.data.data.preparation_time,
         availabilityWindow: response.data.data.availability_window,
         customWeeklyDiscount: response.data.data.hosthomecustomdiscounts.find(discount => discount.duration.toLowerCase().includes('1 week')),
-        customMonthlyDiscount: response.data.data.hosthomecustomdiscounts.find(discount => discount.duration.toLowerCase().includes('4 weeks')),
+        customMonthlyDiscount: response.data.data.hosthomecustomdiscounts.find(discount => discount.duration.toLowerCase().includes('1 month')),
       };
 
       this.setState({ selectedHouse: formattedAPartment });

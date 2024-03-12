@@ -59,16 +59,18 @@ const Pricing = ({
   const [discountType, setDiscountType] = useState("");
   const [basePrice, setBasePrice] = useState("");
   const [weekendPrice, setWeekendPrice] = useState("");
-  const [price,setPrice]=useState(""); // price sent to the price modal
-
+  const [price, setPrice] = useState(""); // price sent to the price modal
+  const [percentage, setPercentage] = useState(""); // percentage sent to the discount modal
+  
   const selectedApartment = selectedHouse;
 
   const clearInputValue = () => {
     onPriceChange({ target: { value: "" } });
   };
 
-  const showDiscountModal = (type) => {
+  const showDiscountModal = (type,percent) => {
     setDiscountType(type);
+    setPercentage(percent);
     setCustomModalVisible(true); // Set the custom modal to be visible
   };
 
@@ -76,14 +78,14 @@ const Pricing = ({
     setPricingModalVisible(true); // Set the custom modal to be visible
     setType(type);
 
-    
+
     if (type === "Custom Weekend Price") {
       setPrice(selectedApartment.customWeekendPrice)
-      
-      
+
+
     } else if (type === "Per night") {
       setPrice(selectedApartment.basePrice)
-    
+
     }
 
 
@@ -94,9 +96,9 @@ const Pricing = ({
     setPricingModalVisible(false); // Set the custom modal to be visible
   };
 
-  const hideDiscountModal = () => {
-    setDiscountModalVisible(false);
-  };
+  // const hideDiscountModal = () => {
+  //   setDiscountModalVisible(false);
+  // };
 
   const isWeeklyDiscountApplicable = () => {
     // Calculate the number of selected nights
@@ -116,9 +118,22 @@ const Pricing = ({
     setCustomModalVisible(false);
   };
 
-  const saveDiscountSettings = (discount) => {
-    // Handle saving the discount (e.g., updating state or making API requests)
-    // Here, `discount` contains the calculated discount (e.g., "10%")
+  const saveDiscountSettings = async (discountType, discountPercentage) => {
+    
+    const id = selectedApartment.id;
+    const data={
+      duration: discountType,
+      discount_percentage: discountPercentage,
+    }
+
+    await axios.post(`/schdulerEditHostHomediscount/${id}`,data).then(response=>{
+      fetch(id);
+      hideCustomModal()
+    }).catch(err=>{
+
+    });
+
+
   };
 
 
@@ -129,16 +144,16 @@ const Pricing = ({
 
 
     const percentageMatch = lowercasedDiscount.match(/(\d+)%/);
-    return percentageMatch ? percentageMatch[0] : null;
+    return percentageMatch ? percentageMatch[1] : null;
 
 
   };
 
   const savePrice = async (price, date) => {
 
-   
 
-    const id =selectedApartment.id;
+
+    const id = selectedApartment.id;
 
 
     if (type === "Custom Weekend Price") {
@@ -153,7 +168,7 @@ const Pricing = ({
     } else if (type === "Per night") {
       setBasePrice(price);
       setEditedPrice(price) /// for The calender price to change
-      await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, dates:""}).then(response=>{
+      await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, dates: "" }).then(response => {
 
         fetch(id);
 
@@ -169,24 +184,25 @@ const Pricing = ({
 
   }
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    if(selectedHouse){
+    if (selectedHouse) {
 
       setBasePrice(selectedHouse.basePrice);
-      
-       setWeekendPrice(selectedHouse.customWeekendPrice != null ? selectedHouse.customWeekendPrice : selectedHouse.basePrice);
 
-       setCustomWeeklyDiscount(selectedHouse.customWeeklyDiscount?.discount_percentage);
+      setWeekendPrice(selectedHouse.customWeekendPrice != null ? selectedHouse.customWeekendPrice : selectedHouse.basePrice);
 
-       setCustomMonthlyDiscount(selectedHouse.customMonthlyDiscount?.discount_percentage)
+      setCustomWeeklyDiscount(selectedHouse.customWeeklyDiscount?.discount_percentage);
+      console.log(selectedHouse.customWeeklyDiscount?.discount_percentage)
 
-      
+      setCustomMonthlyDiscount(selectedHouse.customMonthlyDiscount?.discount_percentage)
+
+
     }
-    
-  },[selectedHouse]);
 
- const formatAmountWithCommas = (amount) => {
+  }, [selectedHouse]);
+
+  const formatAmountWithCommas = (amount) => {
     // Convert the amount to a string and split it into integer and decimal parts
     const [integerPart, decimalPart] = amount.toString().split('.');
 
@@ -201,7 +217,9 @@ const Pricing = ({
 
   // const calculateMonthlyAverage
 
-  
+
+
+
 
 
 
@@ -214,7 +232,7 @@ const Pricing = ({
           <div className="box-border flex justify-between items-baseline mb-6">
             <span>
               <h2 className="m-0 p-0 text-2xl block box-border">
-                <div className="min-[1128px]:text-lg font-semibold capitalize">
+                <div className="min-[1128px]:text-lg font-semibold capitalize overflow-ellipsis whitespace-nowrap overflow-hidden w-[80%]">
                   {selectedApartment.name}
                 </div>
               </h2>
@@ -255,7 +273,7 @@ const Pricing = ({
                       <div className="font-medium mb-2 mr-1 text-sm">Custom Weekend Price</div>
                       <div className="h-auto visible w-full">
                         <div className="text-3xl break-keep inline-block font-extrabold">
-                          <div className="block">₦{weekendPrice?formatAmountWithCommas(weekendPrice):formatAmountWithCommas(basePrice)}</div>
+                          <div className="block">₦{weekendPrice ? formatAmountWithCommas(weekendPrice) : formatAmountWithCommas(basePrice)}</div>
                           {/* {editedPrice} */}
                         </div>
                         {/* ... other code ... */}
@@ -272,14 +290,17 @@ const Pricing = ({
               <div className="space-y-3">
                 <div
                   className="pointer p-4 rounded-2xl border"
-                  onClick={()=>{ showDiscountModal("Weekly")}}
+                  onClick={() => { showDiscountModal("Weekly",selectedApartment.weeklyDiscount 
+                  ? extractPercentage(selectedApartment.weeklyDiscount.discount) :
+                   (selectedApartment.customWeeklyDiscount ? 
+                    customWeeklyDiscount : '0')) }}
                 >
                   <div>
                     <div className="font-medium mb-2 mr-1 text-sm">Weekly</div>
                     <p className="text-gray-400">For 7 nights or more</p>
                     <div className="h-auto visible w-full">
                       <div className="text-3xl break-keep inline-block font-extrabold">
-                        {selectedApartment.weeklyDiscount ? extractPercentage(selectedApartment.weeklyDiscount.discount) :( selectedApartment.customWeeklyDiscount ?`${customWeeklyDiscount}%`:'0%' )}
+                        {selectedApartment.weeklyDiscount ? ` ${extractPercentage(selectedApartment.weeklyDiscount.discount)}%` : (selectedApartment.customWeeklyDiscount ? `${customWeeklyDiscount}%` : '0%')}
                       </div>
                       {isEditingPrice ? (
                         <div>{/* ... other code ... */}</div>
@@ -297,14 +318,19 @@ const Pricing = ({
 
                 <div
                   className="pointer p-6 rounded-2xl border"
-                  onClick={()=>{ showDiscountModal("Monthly")}}
+                  onClick={() => {
+                    showDiscountModal("Monthly",
+                      selectedApartment.monthlyDiscount ?
+                        extractPercentage(selectedApartment.monthlyDiscount.discount) :
+                        (selectedApartment.customMonthlyDiscount ? customMonthlyDiscount : '0'))
+                  }}
                 >
                   <div>
                     <div className="font-medium mb-2 mr-1 text-sm">Monthly</div>
-                    <p className="text-gray-400">For 28 nights or more</p>
+                    <p className="text-gray-400">For 30 nights or more</p>
                     <div className="h-auto visible w-full">
                       <div className="text-3xl break-keep inline-block font-extrabold">
-                        {selectedApartment.monthlyDiscount ? extractPercentage(selectedApartment.monthlyDiscount.discount) : ( selectedApartment.MonthlyDiscount ?`${customMonthlyDiscount}%`:'0%' )}
+                        {selectedApartment.monthlyDiscount ? `${extractPercentage(selectedApartment.monthlyDiscount.discount)}%` : (selectedApartment.customMonthlyDiscount ? `${customMonthlyDiscount}%` : '0%')}
                       </div>
                       {isEditingPrice ? (
                         <div>{/* ... other code ... */}</div>
@@ -326,6 +352,7 @@ const Pricing = ({
               onClose={hideCustomModal}
               onSubmit={saveDiscountSettings}
               discountType={discountType}
+              percentage={percentage}
             />
             <PricingModal
               visible={pricingModalVisible}
