@@ -351,6 +351,8 @@ export default function ListingForm({
       // Calculate basePrice
 
       let basePrice = nights * nightlyPrice;
+      console.log(basePrice);
+      let basenormalPrice = basePrice;
 
       if (reservedPricesForCertainDay.length > 0) {
         const flattenedReservedDates = reservedPricesForCertainDay.flat();
@@ -375,16 +377,16 @@ export default function ListingForm({
               }
             }
       
-            basePrice -= reservedDays * nightlyPrice;
-            basePrice += reservedPriceValue * reservedDays;
+            basenormalPrice -= reservedDays * nightlyPrice;
+            basenormalPrice += reservedPriceValue * reservedDays;
           }
         });
       }
       
-      // Deduct 20,000 from the final basePrice
-      basePrice -= 20000;
+      // Deduct 20,000 from the final basenormalPrice
+      basenormalPrice -= 20000;
       
-      console.log("Base Price:", basePrice);
+      console.log("Base Price:", basenormalPrice);
       
       
       
@@ -438,44 +440,42 @@ export default function ListingForm({
       if (hosthomecustomdiscounts.length > 0) {
         let weekDiscount = 0;
         let monthDiscount = 0;
-
+    
         // Loop through the custom discounts
         hosthomecustomdiscounts.forEach((discount) => {
-          if (discount.duration === "1 month") {
-            monthDiscount = Number(discount.discount_percentage);
-          } else if (discount.duration === "1 week") {
-            weekDiscount = Number(discount.discount_percentage);
-          }
+            if (discount.duration === "1 month") {
+                monthDiscount = Number(discount.discount_percentage);
+            } else if (discount.duration === "1 week") {
+                weekDiscount = Number(discount.discount_percentage);
+            }
         });
-
+    
         let customDiscountPercentage = 0; // Default discount percentage
-
+    
         if (nights >= 30 && monthDiscount > 0) {
-          customDiscountPercentage = monthDiscount / 100; // Convert percentage to decimal
+            customDiscountPercentage = monthDiscount / 100; // Convert percentage to decimal
         } else if (nights >= 7 && weekDiscount > 0) {
-          customDiscountPercentage = weekDiscount / 100;
-          console.log(customDiscountPercentage); // Convert percentage to decimal
+            customDiscountPercentage = weekDiscount / 100;
         }
-
+    
         const baseDiscountedPrice = parseFloat((basePrice * customDiscountPercentage).toFixed(2));
-        console.log(basePrice);
-        console.log(baseDiscountedPrice);
         const securityDepositDiscountedPrice =
-          securityDeposits * customDiscountPercentage;
+            securityDeposits * customDiscountPercentage;
         const totalDiscountedPrice =
-          baseDiscountedPrice + securityDepositDiscountedPrice;
+            baseDiscountedPrice + securityDepositDiscountedPrice;
         const discountedPrice =
-          basePrice + securityDeposits - baseDiscountedPrice;
-
+            basePrice  + securityDeposits - baseDiscountedPrice;
+    
         if (customDiscountPercentage > 0) {
-          const formattedDiscount = (customDiscountPercentage  * 100).toFixed(0); // Format discount percentage
-          setAppliedDiscount(
-            `Custom discount applied (${formattedDiscount}% off)`
-          );
-          setTotalCost(discountedPrice);
-          return; // Exit early since custom discount is applied
+            const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
+            setAppliedDiscount(
+                `Custom discount applied (${formattedDiscount}% off)`
+            );
+            setTotalCost(discountedPrice);
+            return; // Exit early since custom discount is applied
         }
-      }
+    }
+    
       
 
       // Apply predefined discounts if custom discount is not applied
