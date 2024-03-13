@@ -27,6 +27,7 @@ export default function ListingForm({
   hosthomecustomdiscounts,
   reservedPricesForCertainDay,
   weekend,
+  preparation_time
 }) {
   function showModal(e) {
     e.preventDefault();
@@ -69,6 +70,7 @@ export default function ListingForm({
   const [securityDeposit, setSecurityDeposit] = useState(0);
   const [guestFee, setGuestFee] = useState(0);
   const [bookingCount, setBookingCount] = useState(0);
+  const [checkoutDates, setCheckoutDate] = useState(null); // Initialize with null or another default value
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -172,6 +174,9 @@ export default function ListingForm({
         const bookedDates = response.data.data.bookedDates.map((date) => {
           const checkInDate = new Date(date.check_in);
           const checkOutDate = new Date(date.check_out);
+                      setCheckoutDate(checkOutDate);
+                      console.log(checkOutDate);
+
           return { checkInDate, checkOutDate };
         });
 
@@ -199,6 +204,8 @@ export default function ListingForm({
 
     fetchListingDetails();
   }, [id]);
+
+  console.log();
 
   console.log(hosthomecustomdiscounts);
 
@@ -273,6 +280,62 @@ export default function ListingForm({
 
     return weekendNights;
   };
+  console.log(checkoutDates);
+
+  useEffect(() => {
+    if (preparation_time === "1 night before and after each reservation" && checkoutDates) {
+      const blockedDate = new Date(checkoutDates);
+      blockedDate.setDate(checkoutDates.getDate() + 1);
+      const blockedDateString = blockedDate.toISOString().split('T')[0];
+  
+      const isBlockedDateBooked = bookedDates.some((date) =>
+        date.checkInDate <= blockedDateString && date.checkOutDate >= blockedDateString
+      );
+  
+      if (!isBlockedDateBooked) {
+        setBookedDates((prevBookedDates) => [
+          ...prevBookedDates,
+          { checkInDate: blockedDate, checkOutDate: blockedDate }
+        ]);
+      }
+    }
+  
+    if (preparation_time === "2 nights before and after each reservation" && checkoutDates) {
+      const blockedDate1 = new Date(checkoutDates);
+      blockedDate1.setDate(checkoutDates.getDate() + 1);
+      const blockedDateString1 = blockedDate1.toISOString().split('T')[0];
+  
+      const isBlockedDateBooked1 = bookedDates.some((date) =>
+        date.checkInDate <= blockedDateString1 && date.checkOutDate >= blockedDateString1
+      );
+  
+      if (!isBlockedDateBooked1) {
+        setBookedDates((prevBookedDates) => [
+          ...prevBookedDates,
+          { checkInDate: blockedDate1, checkOutDate: blockedDate1 }
+        ]);
+      }
+  
+      const blockedDate2 = new Date(checkoutDates);
+      blockedDate2.setDate(checkoutDates.getDate() + 2);
+      const blockedDateString2 = blockedDate2.toISOString().split('T')[0];
+  
+      const isBlockedDateBooked2 = bookedDates.some((date) =>
+        date.checkInDate <= blockedDateString2 && date.checkOutDate >= blockedDateString2
+      );
+  
+      if (!isBlockedDateBooked2) {
+        setBookedDates((prevBookedDates) => [
+          ...prevBookedDates,
+          { checkInDate: blockedDate2, checkOutDate: blockedDate2 }
+        ]);
+      }
+    }
+  }, [preparation_time, checkoutDates, bookedDates]);
+  
+  
+  
+  
 
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
@@ -321,6 +384,7 @@ export default function ListingForm({
       }
       //
 
+   
       // Assuming host fees is 20%, service fee is 5%, and tax is 4%
       const hostFees = 0.07 * basePrice;
       console.log(basePrice);
@@ -469,6 +533,7 @@ export default function ListingForm({
   const maxDate = calculateMaxDate(availability_window);
 
   console.log(reservation);
+  console.log(bookedDates);
   return (
     <div className=" block w-full h-full">
       <div
