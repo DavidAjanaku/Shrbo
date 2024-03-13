@@ -354,15 +354,35 @@ export default function ListingForm({
       if (reservedPricesForCertainDay.length > 0) {
         // Iterate over reserved prices and update basePrice for the specific dates
         reservedPricesForCertainDay.forEach((reservedPrice) => {
-          const reservedDate = new Date(reservedPrice[0].start_date);
-          if (reservedDate >= checkIn && reservedDate < checkOut) {
-            // Update basePrice with the reserved price for the specific date
-            basePrice += Number(reservedPrice[0].price);
-            // Subtract one nightlyPrice for each reserved night
-            basePrice -= nightlyPrice;
+          const reservedStartDate = new Date(reservedPrice[0].start_date);
+          const reservedEndDate = new Date(reservedPrice[1].end_date);
+          const reservedPriceValue = Number(reservedPrice[0].price);
+      
+          // Check if the reserved dates overlap with the booking date range
+          if (
+            reservedStartDate >= checkIn &&
+            reservedEndDate <= checkOut &&
+            reservedEndDate.getDate() - reservedStartDate.getDate() === 1
+          ) {
+            // Calculate the number of reserved days that match the booking dates
+            let reservedDays = 0;
+            for (
+              let date = reservedStartDate;
+              date <= reservedEndDate;
+              date.setDate(date.getDate() + 1)
+            ) {
+              if (date >= checkIn && date < checkOut) {
+                reservedDays++;
+              }
+            }
+      
+            // Remove reserved days and add reserved prices based on the matching booking dates
+            basePrice += reservedPriceValue * reservedDays;
+            basePrice -= reservedDays * nightlyPrice;
           }
         });
       }
+      
 
       // This is for weekend calculation
       // Check if the weekend price should be applied
