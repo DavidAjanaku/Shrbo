@@ -438,7 +438,7 @@ export default function ListingForm({
           basePrice + securityDeposits - baseDiscountedPrice;
 
         if (customDiscountPercentage > 0) {
-          const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
+          const formattedDiscount = (customDiscountPercentage  * 100).toFixed(0); // Format discount percentage
           setAppliedDiscount(
             `Custom discount applied (${formattedDiscount}% off)`
           );
@@ -446,6 +446,7 @@ export default function ListingForm({
           return; // Exit early since custom discount is applied
         }
       }
+      
 
       // Apply predefined discounts if custom discount is not applied
       if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
@@ -527,8 +528,8 @@ export default function ListingForm({
       case "24 months in advance":
         return addMonths(new Date(), 24);
       default:
-        return addMonths(new Date(), 1); // Default to 1 month in advance if the window is not specified
-    }
+        return new Date(3000, 0, 1); // Default to a date far in the future
+      }
   };
 
   // Calculate the max date based on the availability window
