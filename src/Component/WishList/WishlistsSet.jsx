@@ -249,9 +249,11 @@ const WishlistsSet = () => {
 
 
   const handleDeleteContainer = async () => {
+    setLoading(true);
 
 
     await axios.delete(`/deleteUserWishlistContainer/${id}`).then(response => {
+      setLoading(false);
       console.log(response);
 
       toast.success('Wishlist deleted Successfuly', {
@@ -262,6 +264,7 @@ const WishlistsSet = () => {
 
 
     }).catch(err => {
+      setLoading(false);
       console.error(err);
 
       toast.error(" Couldn't delete Wishlist", {

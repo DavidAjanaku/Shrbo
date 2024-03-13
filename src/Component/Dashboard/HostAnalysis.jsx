@@ -34,7 +34,10 @@ export default function HostAnalysis() {
   const [reviews, setReviews] = useState([]);
   const [payment, setPayment] = useState();
   const [chartData, setChartData] = useState();
-  
+  const [loading, setLoading] = useState(false);
+  const [viewsLoading, setViewsLoading] = useState(false);
+  const [earningsLoading, setEarningsLoading] = useState(false);
+
   function formatAmountWithCommas(amount) {
     // Convert the amount to a string and split it into integer and decimal parts
     const [integerPart, decimalPart] = amount.toString().split('.');
@@ -50,27 +53,52 @@ export default function HostAnalysis() {
 
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       try {
-        // Make a request to get the user data
-        const response = await axios.get('/user'); // Adjust the endpoint based on your API
+        setLoading(true);
+
+        // Fetch user data
+        const userResponse = await axios.get('/user');
+        const userData = userResponse.data;
+
+        // Set user data in state
+        setUser(userData);
+        setHost(userData.host);
+        setAdminStatus(userData.adminStatus);
+
+        // Check if userData.id is truthy before making the second request
+        if (userData.id) {
+          const reviewsResponse = await axios.get(`/hostReview/${userData.id}`);
 
 
-        // Set the user data in state
-        setUser(response.data);
-        setHost(response.data.host);
-        setAdminStatus(response.data.adminStatus);
+          const formattedReviews = reviewsResponse.data.data.actualReviews.map(item => ({
+            apartmentId: item.host_home_id,
+            personName: item.user_name,
+            comment: item.comment,
+            starRating: item.ratings,
+            date: convertTimestampToReadable(item.created_at),
+          }));
 
+          const formattedApartmentData = reviewsResponse.data.data.hosthomeDetails.map(item => ({
+            id: item.hosthome_id,
+            name: item.hosthome_title,
+            image: item.photo_image,
+          }));
 
+          // Update state with formatted data
+          setReviews(formattedReviews);
+          setApartmentData(formattedApartmentData);
+        }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Error fetching data:', error);
       } finally {
-
+        setLoading(false);
       }
     };
 
-    fetchUserData();
-  }, []);
+    fetchData();
+  }, []); // Only run this effect once on component mount
+
 
   useEffect(() => {
 
@@ -83,7 +111,7 @@ export default function HostAnalysis() {
     console.log(month);
     console.log(year);
 
-
+    setViewsLoading(true);
     axios.get(`/hostAnalyticsByMonthYear/${month}/${year}`).then(response => {
 
       const formattedViews = {
@@ -97,8 +125,11 @@ export default function HostAnalysis() {
 
     }).catch(err => {
       console.log(err)
+    }).finally(() => {
+      setViewsLoading(false);
     });
 
+    setEarningsLoading(true)
     axios.get(`/hostAnalyticsEarningsByMonthYear/${month}/${year}`).then(response => {
       const formattedEarnings = {
         hostTotalAmountAllBookings: formatAmountWithCommas(response.data.totalAmountAllBookings),
@@ -118,7 +149,7 @@ export default function HostAnalysis() {
       const graphData = response.data.graph.map(item => item.earnings);
       const graphLabels = response.data.graph.map(item => item.month);
 
-     
+
       const chartData = {
         labels: graphLabels,
         datasets: [
@@ -144,6 +175,8 @@ export default function HostAnalysis() {
 
     }).catch(err => {
       console.log(err);
+    }).finally(() => {
+      setEarningsLoading(false);
     });
 
   }, [selectedMonth]);
@@ -157,50 +190,9 @@ export default function HostAnalysis() {
     return `${formattedDate} ${formattedTime}`;
   }
 
-
-
-
-
-
-  useEffect(() => {
-    if (!(user.id)) {
-
-      return;
-    }
-
-    axios.get(`/hostReview/${user.id}`).then(response => {
-      const formattedApartmentData = response.data.data.hosthomeDetails.map(item => ({
-
-        id: item.hosthome_id,
-        name: item.hosthome_title,
-        image: item.photo_image,
-        // datePosted: "2023-09-01",
-        earnings: [
-          { date: "2023-09-01", amount: 150 },
-          { date: "2023-09-02", amount: 250 },
-        ],
-
-      }));
-
-      const formattedReviews = response.data.data.actualReviews.map(item => ({
-        apartmentId: item.host_home_id,
-        personName: item.user_name,
-        comment: item.comment,
-        starRating: item.ratings,
-        date: convertTimestampToReadable(item.created_at),
-      }));
-
-      setReviews(formattedReviews)
-      setApartmentData(formattedApartmentData);
-      console.log(response);
-    }).catch(err => {
-      console.log(err);
-    });
-
-  }, [user]);
-
-
   const handleTabChange = (tabKey) => {
+  
+    // !loading&&setActiveTab(tabKey);
     setActiveTab(tabKey);
   };
 
@@ -362,6 +354,45 @@ export default function HostAnalysis() {
     return months;
   };
 
+  const skeletonLoader = Array.from({ length: 6 }).map((group, index) =>
+    <div
+      key={index}
+      className=" relative  h-fit row-span-1    w-full  md:mt-2  md:px-2 "
+    >
+      <div
+        className=" rounded-xl h-32 skeleton-loader cursor-pointer p-4  flex hover:bg-slate-100/10 max-w-[100%]  "
+      >
+        <div className=" flex-1 gap-3 flex flex-col   ">
+          <div className="status font-medium text-orange-300 ">
+
+          </div>
+          <div className="name-checkin-checkout text-base  font-medium text-ellipsis   ">
+            <p className="text-ellipsis overflow-hidden whitespace-nowrap w-[50%] ">
+
+            </p>
+
+          </div>
+          <div className="listing text-gray-500 text-sm     ">
+            <p className=" text-ellipsis overflow-hidden whitespace-nowrap w-[50vw] md:w-[23vw]  ">
+
+            </p>
+          </div>
+        </div>
+
+        <div className="  ">
+          <div className="rounded-xl  relative ">
+            <div
+              className={`relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
+                      
+                          bg-center rounded-[50%] bg-cover bg-no-repeat  ` }
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  );
+
   return (
     <div className="">
       <HostHeader />
@@ -372,58 +403,78 @@ export default function HostAnalysis() {
           className="tab-buttons"
         >
           <items tab="Reviews" key="1">
-            <div>
-              <h2 className="text-3xl">Reviews</h2>
+            {!loading ?
+              <div>
+                <h2 className="text-3xl">Reviews</h2>
 
-              <button
-                onClick={showListings}
-                className="border p-2 my-3 rounded-full"
-              >
-                All listings
-              </button>
-              {selectedApartmentData && (
-                <div>
-                  <h2 className="my-4 font-medium text-2xl">
-                    Reviews for {selectedApartmentData.name}
-                  </h2>
-                  {apartmentReviews.length === 0 ? (
-                    <p>
-                      Your first review will show up here. We’ll let you know
-                      when guests leave feedback.
-                    </p>
-                  ) : (
-                    <ul className="list-disc list-inside flex space-x-6 whitespace-nowrap overflow-scroll w-full example">
-                      {apartmentReviews.map((review, index) => (
-                        <li
-                          key={index}
-                          className="mt-2 rounded-3xl mb-3 list-none shadow-lg bg-slate-100   p-4 "
-                        >
-                          <div className="flex items-center space-x-4 ">
-                            <div className="w-[120px]">
-                              <img
-                                src={selectedApartmentData.image}
-                                className="w-32 h-32"
-                                alt=""
-                              />
-                            </div>
-                            <div className="w-[300px] break-words  whitespace-normal">
-                              <strong>Guest Name:</strong> {review.personName}
-                              <br />
-                              <strong>Comment:</strong> {review.comment}
-                              <br />
-                              <strong>Rating:</strong> {review.starRating}
-                              <br />
-                              <strong>Date:</strong> {review.date}
-                              <br />
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                <button
+                  onClick={showListings}
+                  className="border p-2 my-3 rounded-full"
+                >
+                  All listings
+                </button>
+                {!selectedApartmentData && <p className=" mt-10 w-full h-full flex items-center justify-center text-xl text-slate-600">
+                  Click On All Listings To Select A Listing's Review
+                </p>}
+                {selectedApartmentData && (
+                  <div>
+                    <h2 className="my-4 font-medium text-2xl">
+                      Reviews for {selectedApartmentData.name}
+                    </h2>
+                    {apartmentReviews.length === 0 ?
+                      (
+                        <p>
+                          Your first review will show up here. We’ll let you know
+                          when guests leave feedback.
+                        </p>
+                      ) : (
+                        <ul className="list-disc list-inside flex space-x-6 whitespace-nowrap overflow-scroll w-full example">
+                          {apartmentReviews.map((review, index) => (
+                            <li
+                              key={index}
+                              className="mt-2 rounded-3xl mb-3 list-none shadow-lg bg-slate-100   p-4 "
+                            >
+                              <div className="flex items-center space-x-4 ">
+                                <div className="w-[120px]">
+                                  <img
+                                    src={selectedApartmentData.image}
+                                    className="w-32 h-32"
+                                    alt=""
+                                  />
+                                </div>
+                                <div className="w-[300px] break-words  whitespace-normal">
+                                  <strong>Guest Name:</strong> {review.personName}
+                                  <br />
+                                  <strong>Comment:</strong> {review.comment}
+                                  <br />
+                                  <strong>Rating:</strong> {review.starRating}
+                                  <br />
+                                  <strong>Date:</strong> {review.date}
+                                  <br />
+                                </div>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                  </div>
+                )}
+              </div>
+              :
+              <div className="skeletonLoader">
+                <h2 className="  block w-28 h-8 rounded skeleton-loader"></h2>
+
+                <div
+
+                  className=" skeleton-loader h-10 w-24  my-3 rounded-full"
+                >
+
                 </div>
-              )}
-            </div>
+                <div className="list-disc list-inside flex space-x-6 whitespace-nowrap overflow-scroll w-full example">
+                  {skeletonLoader}
+                </div>
+              </div>
+            }
           </items>
           <items tab="Earnings" key="2">
             <div>
@@ -452,48 +503,84 @@ export default function HostAnalysis() {
 
                 <div className=" mb-6">
                   <div className="my-4">
-                    <div className="text-4xl font-bold">₦{payment && payment.hostTotalAmountAllBookings}</div>
-                    <div>
-                      <p className="">Booked Earnings for {selectedMonth}</p>
-                    </div>
+                    {!earningsLoading ? <>
+                      <div className="text-4xl w-full break-words font-bold">₦{payment && payment.hostTotalAmountAllBookings}</div>
+                      <div>
+                        <p className="">Booked Earnings for {selectedMonth}</p>
+                      </div>
+                    </>
+                      :
+                      <>
+                        <div className=" skeleton-loader w-36 mb-2 h-10 block mr-6"></div>
+                        <div className=" skeleton-loader w-52 h-4 mr-6"></div>
+
+                      </>
+                    }
                   </div>
 
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center w-full break-words  space-x-3">
                     {/* <span className="bg-red-400 h-4 w-4"></span> */}
-                    <div className="text-xl font-bold text-[color-for-amount]">
-                      ₦{payment && payment.hostTotalAmountPaidBookings}
-                    </div>
-                    <div>
-                      <p className="text-[color-for-label]"> Total Paid out</p>
-                    </div>
+                    {!earningsLoading ?
+                      <>
+                        <div className="text-xl font-bold  text-[color-for-amount]">
+                          ₦{payment && payment.hostTotalAmountPaidBookings}
+                        </div>
+                        <div>
+                          <p className="text-[color-for-label]"> Total Paid out</p>
+                        </div>
+                      </>
+                      :
+                      <>
+                        <div className=" skeleton-loader w-14 mb-2 h-5 block "></div>
+                        <div className=" skeleton-loader w-24 h-5 "></div>
+                      </>
+                    }
                   </div>
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center w-full break-word  space-x-3 ">
                     {/* <span className="bg-green-500 h-4 w-4"></span> */}
-
-                    <div className="text-xl font-bold text-[color-for-amount]">
-                      ₦{payment && payment.hostTotalAmountUnpaidBookings}
-                    </div>
-                    <div>
-                      <p className="text-[color-for-label]"> Total Expected Pay out</p>
-                    </div>
+                    {!earningsLoading ?
+                      <>
+                        <div className="text-xl font-bold text-[color-for-amount]">
+                          ₦{payment && payment.hostTotalAmountUnpaidBookings}
+                        </div>
+                        <div>
+                          <p className="text-[color-for-label]"> Total Expected Pay out</p>
+                        </div>
+                      </>
+                      :
+                      <>
+                        <div className=" skeleton-loader w-14 mb-2 h-5 block "></div>
+                        <div className=" skeleton-loader w-24 h-5 "></div>
+                      </>
+                    }
                   </div>
 
-                  
+
                 </div>
-                <div className="flex items-center space-x-3">
+                {!earningsLoading ? <>
+                  <div className="flex items-center space-x-3">
                     <span className=" bg-cyan-600 h-4 w-4"></span>
                     <div>
                       <p className="text-[color-for-label]"> Earnings</p>
                     </div>
                   </div>
 
-                <Line data={chartData}  />
+                  {chartData && <Line data={chartData} />}
+                </>
+                  :
+                  <div className="skeleton-loader h-52 md:h-60 w-full"></div>
+                }
               </div>
             </div>
-            <div className="my-20">
-              <h1 className="text-2xl font-bold">{selectedMonth} Details</h1>
-              <TopEarningApartments apartments={earningsApartmentData} />
-            </div>
+            {!earningsLoading ?
+              <div className="my-20">
+                <h1 className="text-2xl font-bold">{selectedMonth} Details</h1>
+                {earningsApartmentData && <TopEarningApartments apartments={earningsApartmentData} />}
+                {!earningsApartmentData&& <p className="w-full text-slate-800 text-center my-16"> Your Listings Earnings Will Show Here. </p>}
+              </div>
+              :
+              <div className="skeleton-loader h-28  w-full"></div>
+            }
           </items>
 
           <items tab="Views" key="3">
@@ -514,25 +601,42 @@ export default function HostAnalysis() {
               </div>
 
               <div className="flex flex-wrap">
-                <div>
-                  <div className="flex flex-col mr-6">
+                <div >
+                  {!viewsLoading ? <div className="flex flex-col mr-6">
                     <span className="text-4xl font-bold mb-2">{views ? views.host_view_count : 2}</span>
                     <span className="text-base">Views, past 30 days</span>
                   </div>
+                    :
+                    <>
+                      <div className=" skeleton-loader w-10 mb-2 h-10 block mr-6"></div>
+                      <div className=" skeleton-loader w-36 h-5 mr-6"></div>
+                    </>}
                 </div>
                 <div>
-                  <div className="flex flex-col mr-7">
-                    <span className="text-4xl font-bold mb-2">{views ? views.new_bookings_count : 0}</span>
-                    <span className="text-base">
-                      New bookings, past 30 days
-                    </span>
-                  </div>
+                  {!viewsLoading ?
+                    <div className="flex flex-col mr-7">
+                      <span className="text-4xl font-bold mb-2">{views ? views.new_bookings_count : 0}</span>
+                      <span className="text-base">
+                        New bookings, past 30 days
+                      </span>
+                    </div>
+                    :
+                    <>
+                      <div className=" skeleton-loader w-10 mb-2 h-10 block mr-6"></div>
+                      <div className=" skeleton-loader w-36 h-5 mr-6"></div>
+                    </>}
                 </div>
                 <div>
-                  <div className="flex flex-col">
-                    <span className="text-4xl font-bold mb-2">{(views ? views.booking_rate : 0).toFixed(1)}%</span>
-                    <span className="text-base">Booking rate</span>
-                  </div>
+                  {!viewsLoading ?
+                    <div className="flex flex-col">
+                      <span className="text-4xl font-bold mb-2">{(views ? views.booking_rate : 0).toFixed(1)}%</span>
+                      <span className="text-base">Booking rate</span>
+                    </div>
+                    :
+                    <>
+                      <div className=" skeleton-loader w-10 mb-2 h-10 block mr-6"></div>
+                      <div className=" skeleton-loader w-36 h-5 mr-6"></div>
+                    </>}
                 </div>
               </div>
             </div>
