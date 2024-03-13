@@ -331,9 +331,8 @@ export default function ListingForm({
         ]);
       }
     }
-  }, [preparation_time, checkoutDates, bookedDates]);
-  
-  
+  }, [preparation_time, checkoutDates]);
+
   
   
 
@@ -424,16 +423,19 @@ export default function ListingForm({
         if (nights >= 30 && monthDiscount > 0) {
           customDiscountPercentage = monthDiscount / 100; // Convert percentage to decimal
         } else if (nights >= 7 && weekDiscount > 0) {
-          customDiscountPercentage = weekDiscount / 100; // Convert percentage to decimal
+          customDiscountPercentage = weekDiscount / 100;
+          console.log(customDiscountPercentage); // Convert percentage to decimal
         }
 
-        const baseDiscountedPrice = basePrice * customDiscountPercentage;
+        const baseDiscountedPrice = parseFloat((basePrice * customDiscountPercentage).toFixed(2));
+        console.log(basePrice);
+        console.log(baseDiscountedPrice);
         const securityDepositDiscountedPrice =
           securityDeposits * customDiscountPercentage;
         const totalDiscountedPrice =
           baseDiscountedPrice + securityDepositDiscountedPrice;
         const discountedPrice =
-          basePrice + securityDeposits - totalDiscountedPrice;
+          basePrice + securityDeposits - baseDiscountedPrice;
 
         if (customDiscountPercentage > 0) {
           const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
