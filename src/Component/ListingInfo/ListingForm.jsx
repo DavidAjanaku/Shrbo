@@ -417,7 +417,7 @@ export default function ListingForm({
 
    
       // Assuming host fees is 20%, service fee is 5%, and tax is 4%
-      const hostFees = 0.07 * basePrice;
+      // const hostFees = 0.07 * basePrice;
       console.log(basePrice);
 
       const guest_fee = guestFee * nights;
