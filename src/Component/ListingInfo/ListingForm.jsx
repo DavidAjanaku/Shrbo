@@ -350,39 +350,54 @@ export default function ListingForm({
       // Calculate basePrice
       let basePrice = nights * nightlyPrice;
 
-      // Check if there are reserved prices for certain days
       if (reservedPricesForCertainDay.length > 0) {
-        // Iterate over reserved prices and update basePrice for the specific dates
-        reservedPricesForCertainDay.forEach((reservedPrice) => {
-          const reservedStartDate = new Date(reservedPrice[0].start_date);
-          const reservedEndDate = new Date(reservedPrice[1].end_date);
-          const reservedPriceValue = Number(reservedPrice[0].price);
+        // Iterate over reserved date ranges and update basePrice for the specific dates
+        reservedPricesForCertainDay.forEach((reservedDateArray) => {
+          reservedDateArray.forEach((reservedDateRange) => {
+            const reservedStartDate = new Date(reservedDateRange.start_date);
+            const reservedEndDate = reservedDateRange.end_date ? new Date(reservedDateRange.end_date) : null;
+            const reservedPriceValue = Number(reservedDateRange.price);
       
-          // Check if the reserved dates overlap with the booking date range
-          if (
-            reservedStartDate >= checkIn &&
-            reservedEndDate <= checkOut &&
-            reservedEndDate.getDate() - reservedStartDate.getDate() === 1
-          ) {
-            // Calculate the number of reserved days that match the booking dates
-            let reservedDays = 0;
-            for (
-              let date = reservedStartDate;
-              date <= reservedEndDate;
-              date.setDate(date.getDate() + 1)
+            console.log(`reservedStartDate: ${reservedStartDate}, reservedEndDate: ${reservedEndDate}, reservedPriceValue: ${reservedPriceValue}`);
+      
+            // Check if the reserved dates overlap with the booking date range
+            if (
+              (reservedStartDate <= checkOut && reservedStartDate >= checkIn) || // Check if reserved start date is within booking dates
+              (reservedEndDate && reservedEndDate <= checkOut && reservedEndDate >= checkIn) || // Check if reserved end date is within booking dates
+              (reservedStartDate <= checkIn && reservedEndDate && reservedEndDate >= checkOut) // Check if booking dates are within reserved dates
             ) {
-              if (date >= checkIn && date < checkOut) {
-                reservedDays++;
+              // Calculate the number of reserved days that match the booking dates
+              let reservedDays = 0;
+              for (
+                let date = reservedStartDate;
+                date <= reservedEndDate;
+                date.setDate(date.getDate() + 1)
+              ) {
+                if (date >= checkIn && date < checkOut) {
+                  reservedDays++;
+                }
               }
-            }
       
-            // Remove reserved days and add reserved prices based on the matching booking dates
-            basePrice += reservedPriceValue * reservedDays;
-            basePrice -= reservedDays * nightlyPrice;
-          }
+              console.log(`Number of reserved dates that match booking dates: ${reservedDays}`);
+      
+              // Remove reserved days and add reserved prices based on the matching booking dates
+              basePrice += reservedPriceValue * reservedDays;
+              basePrice -= reservedDays * nightlyPrice;
+      
+              console.log(`Updated basePrice: ${basePrice}`);
+            }
+          });
         });
       }
       
+      
+      
+      
+    
+
+      
+      
+       
 
       // This is for weekend calculation
       // Check if the weekend price should be applied
