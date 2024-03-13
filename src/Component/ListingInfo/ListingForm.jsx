@@ -236,6 +236,7 @@ export default function ListingForm({
     calculateTotalPrice(date, checkOutDate);
   };
 
+
   const handleCheckOut = (date) => {
     setCheckOutDate(date);
     calculateTotalPrice(checkInDate, date);
@@ -348,44 +349,43 @@ export default function ListingForm({
       const nightlyPrice = Number(price) || 0; // Convert price to a number, default to 0 if NaN
 
       // Calculate basePrice
+
       let basePrice = nights * nightlyPrice;
 
-     if (reservedPricesForCertainDay.length > 0) {
-  // Iterate over reserved date ranges and update basePrice for the specific dates
-  reservedPricesForCertainDay.forEach((reservedDateArray) => {
-    const reservedStartDate = new Date(reservedDateArray[0].start_date);
-    const reservedEndDate = reservedDateArray[1] ? new Date(reservedDateArray[1].end_date) : null;
-    const reservedPriceValue = Number(reservedDateArray[0].price);
-
-    console.log(`reservedStartDate: ${reservedStartDate}, reservedEndDate: ${reservedEndDate}`);
-
-    // Check if the reserved dates overlap with the booking date range
-    if (
-      (reservedStartDate <= checkOut && reservedStartDate >= checkIn) || // Check if reserved start date is within booking dates
-      (reservedEndDate && reservedEndDate <= checkOut && reservedEndDate >= checkIn) || // Check if reserved end date is within booking dates
-      (reservedStartDate <= checkIn && reservedEndDate && reservedEndDate >= checkOut) // Check if booking dates are within reserved dates
-    ) {
-      // Calculate the number of reserved days that match the booking dates
-      let reservedDays = 0;
-      for (
-        let date = reservedStartDate;
-        date <= reservedEndDate;
-        date.setDate(date.getDate() + 1)
-      ) {
-        if (date >= checkIn && date < checkOut) {
-          reservedDays++;
-        }
+      if (reservedPricesForCertainDay.length > 0) {
+        const flattenedReservedDates = reservedPricesForCertainDay.flat();
+        const checkInDate = checkIn.getTime();
+        const checkOutDate = checkOut.getTime();
+      
+        flattenedReservedDates.forEach((reservedDate) => {
+          const reservedStartDate = new Date(reservedDate.start_date).getTime();
+          const reservedEndDate = reservedDate.end_date ? new Date(reservedDate.end_date).getTime() : null;
+          const reservedPriceValue = Number(reservedDate.price);
+      
+          if (
+            (reservedStartDate <= checkOutDate && reservedStartDate >= checkInDate) ||
+            (reservedEndDate && reservedEndDate <= checkOutDate && reservedEndDate >= checkInDate) ||
+            (reservedStartDate <= checkInDate && reservedEndDate && reservedEndDate >= checkOutDate)
+          ) {
+            let reservedDays = 0;
+            for (let date = new Date(reservedStartDate); date <= reservedEndDate; date.setDate(date.getDate() + 1)) {
+              const currentDate = date.getTime();
+              if (currentDate >= checkInDate && currentDate < checkOutDate) {
+                reservedDays++;
+              }
+            }
+      
+            basePrice -= reservedDays * nightlyPrice;
+            basePrice += reservedPriceValue * reservedDays;
+          }
+        });
       }
-
-      console.log(`Number of reserved dates that match booking dates: ${reservedDays}`);
-
-      // Remove reserved days and add reserved prices based on the matching booking dates
-      basePrice += reservedPriceValue * reservedDays;
-      basePrice -= reservedDays * nightlyPrice;
-    }
-  });
-}
-
+      
+      // Deduct 20,000 from the final basePrice
+      basePrice -= 20000;
+      
+      console.log("Base Price:", basePrice);
+      
       
       
     
