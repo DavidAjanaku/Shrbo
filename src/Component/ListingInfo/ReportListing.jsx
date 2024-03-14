@@ -4,8 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import Axios from "../../Axios";
 import { notification } from "antd";
 
-
-const ReportListing = ({id}) => {
+const ReportListing = ({ id }) => {
   const [goNext, setGoNext] = useState(false);
   const [reportCategory, setReportCategory] = useState(0);
   const [reportType, setReportType] = useState();
@@ -38,7 +37,24 @@ const ReportListing = ({id}) => {
 
   const handleReport = (e) => {
     e.preventDefault();
-  
+
+     if (!reportType) {
+    notification.error({
+      message: "Error",
+      description: "Please select a report type.",
+    });
+    return;
+  }
+
+  // Check if a report category is selected (only if goNext is true)
+  if (goNext && reportCategory === 0) {
+    notification.error({
+      message: "Error",
+      description: "Please select a reason for reporting.",
+    });
+    return;
+  }
+
     // Prepare the request body
     const requestBody = {
       title: ReportTypes.find((report) => report.index === reportType).report,
@@ -48,7 +64,7 @@ const ReportListing = ({id}) => {
       host_home_id: id, // Corrected to use 'id' instead of 'host_home_id'
       extrareasonforreporting: extraReason,
     };
-  
+
     // Make the API call
     Axios.post("/reporthosthome", requestBody)
       .then((response) => {
@@ -68,7 +84,6 @@ const ReportListing = ({id}) => {
         });
       });
   };
-  
 
   // Your existing code for rendering the component goes here
 
@@ -109,8 +124,6 @@ const ReportListing = ({id}) => {
       ],
     },
   ];
-
-  
 
   return (
     <div className="w-full flex flex-col gap-3 md:gap-6 ">
@@ -207,16 +220,15 @@ const ReportListing = ({id}) => {
                   </div>
                   <div className="">
                     <div className="mt-2.5">
-                    <textarea
-  name="extraReason"
-  id="extraReason"
-  rows={4}
-  placeholder={`(optional) give us more details on why you think the listing is ${report.report} `}
-  className="block w-full rounded-md ring-0 outline-gray-400 border px-3.5 py-2 text-gray-900 shadow-sm focus:outline-gray-400 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-  value={extraReason}
-  onChange={handleExtraReasonChange}
-/>
-
+                      <textarea
+                        name="extraReason"
+                        id="extraReason"
+                        rows={4}
+                        placeholder={`(optional) give us more details on why you think the listing is ${report.report} `}
+                        className="block w-full rounded-md ring-0 outline-gray-400 border px-3.5 py-2 text-gray-900 shadow-sm focus:outline-gray-400 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                        value={extraReason}
+                        onChange={handleExtraReasonChange}
+                      />
                     </div>
                   </div>
                 </div>
@@ -247,17 +259,16 @@ const ReportListing = ({id}) => {
             Next
           </button>
           <button
-  onClick={(e) => handleReport(e)}
-  disabled={reportType ? false : true}
-  className={`rounded-md text-white ${
-    !goNext ? "hidden" : "block"
-  } hover:bg-orange-500  bg-orange-300 p-2 font-medium  px-4 ${
-    reportType && "bg-orange-400"
-  }`}
->
-  Submit
-</button>
-
+            onClick={(e) => handleReport(e)}
+            disabled={reportType ? false : true}
+            className={`rounded-md text-white ${
+              !goNext ? "hidden" : "block"
+            } hover:bg-orange-500  bg-orange-300 p-2 font-medium  px-4 ${
+              reportType && "bg-orange-400"
+            }`}
+          >
+            Submit
+          </button>
         </div>
       </form>
     </div>

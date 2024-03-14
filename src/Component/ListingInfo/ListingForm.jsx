@@ -27,7 +27,7 @@ export default function ListingForm({
   hosthomecustomdiscounts,
   reservedPricesForCertainDay,
   weekend,
-  preparation_time
+  preparation_time,
 }) {
   function showModal(e) {
     e.preventDefault();
@@ -174,8 +174,8 @@ export default function ListingForm({
         const bookedDates = response.data.data.bookedDates.map((date) => {
           const checkInDate = new Date(date.check_in);
           const checkOutDate = new Date(date.check_out);
-                      setCheckoutDate(checkOutDate);
-                      console.log(checkOutDate);
+          setCheckoutDate(checkOutDate);
+          console.log(checkOutDate);
 
           return { checkInDate, checkOutDate };
         });
@@ -236,7 +236,6 @@ export default function ListingForm({
     calculateTotalPrice(date, checkOutDate);
   };
 
-
   const handleCheckOut = (date) => {
     setCheckOutDate(date);
     calculateTotalPrice(checkInDate, date);
@@ -284,58 +283,67 @@ export default function ListingForm({
   console.log(checkoutDates);
 
   useEffect(() => {
-    if (preparation_time === "1 night before and after each reservation" && checkoutDates) {
+    if (
+      preparation_time === "1 night before and after each reservation" &&
+      checkoutDates
+    ) {
       const blockedDate = new Date(checkoutDates);
       blockedDate.setDate(checkoutDates.getDate() + 1);
-      const blockedDateString = blockedDate.toISOString().split('T')[0];
-  
-      const isBlockedDateBooked = bookedDates.some((date) =>
-        date.checkInDate <= blockedDateString && date.checkOutDate >= blockedDateString
+      const blockedDateString = blockedDate.toISOString().split("T")[0];
+
+      const isBlockedDateBooked = bookedDates.some(
+        (date) =>
+          date.checkInDate <= blockedDateString &&
+          date.checkOutDate >= blockedDateString
       );
-  
+
       if (!isBlockedDateBooked) {
         setBookedDates((prevBookedDates) => [
           ...prevBookedDates,
-          { checkInDate: blockedDate, checkOutDate: blockedDate }
+          { checkInDate: blockedDate, checkOutDate: blockedDate },
         ]);
       }
     }
-  
-    if (preparation_time === "2 nights before and after each reservation" && checkoutDates) {
+
+    if (
+      preparation_time === "2 nights before and after each reservation" &&
+      checkoutDates
+    ) {
       const blockedDate1 = new Date(checkoutDates);
       blockedDate1.setDate(checkoutDates.getDate() + 1);
-      const blockedDateString1 = blockedDate1.toISOString().split('T')[0];
-  
-      const isBlockedDateBooked1 = bookedDates.some((date) =>
-        date.checkInDate <= blockedDateString1 && date.checkOutDate >= blockedDateString1
+      const blockedDateString1 = blockedDate1.toISOString().split("T")[0];
+
+      const isBlockedDateBooked1 = bookedDates.some(
+        (date) =>
+          date.checkInDate <= blockedDateString1 &&
+          date.checkOutDate >= blockedDateString1
       );
-  
+
       if (!isBlockedDateBooked1) {
         setBookedDates((prevBookedDates) => [
           ...prevBookedDates,
-          { checkInDate: blockedDate1, checkOutDate: blockedDate1 }
+          { checkInDate: blockedDate1, checkOutDate: blockedDate1 },
         ]);
       }
-  
+
       const blockedDate2 = new Date(checkoutDates);
       blockedDate2.setDate(checkoutDates.getDate() + 2);
-      const blockedDateString2 = blockedDate2.toISOString().split('T')[0];
-  
-      const isBlockedDateBooked2 = bookedDates.some((date) =>
-        date.checkInDate <= blockedDateString2 && date.checkOutDate >= blockedDateString2
+      const blockedDateString2 = blockedDate2.toISOString().split("T")[0];
+
+      const isBlockedDateBooked2 = bookedDates.some(
+        (date) =>
+          date.checkInDate <= blockedDateString2 &&
+          date.checkOutDate >= blockedDateString2
       );
-  
+
       if (!isBlockedDateBooked2) {
         setBookedDates((prevBookedDates) => [
           ...prevBookedDates,
-          { checkInDate: blockedDate2, checkOutDate: blockedDate2 }
+          { checkInDate: blockedDate2, checkOutDate: blockedDate2 },
         ]);
       }
     }
   }, [preparation_time, checkoutDates]);
-
-  
-  
 
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
@@ -358,43 +366,46 @@ export default function ListingForm({
         const flattenedReservedDates = reservedPricesForCertainDay.flat();
         const checkInDate = checkIn.getTime();
         const checkOutDate = checkOut.getTime();
-      
+
         flattenedReservedDates.forEach((reservedDate) => {
           const reservedStartDate = new Date(reservedDate.start_date).getTime();
-          const reservedEndDate = reservedDate.end_date ? new Date(reservedDate.end_date).getTime() : null;
+          const reservedEndDate = reservedDate.end_date
+            ? new Date(reservedDate.end_date).getTime()
+            : null;
           const reservedPriceValue = Number(reservedDate.price);
-      
+
           if (
-            (reservedStartDate <= checkOutDate && reservedStartDate >= checkInDate) ||
-            (reservedEndDate && reservedEndDate <= checkOutDate && reservedEndDate >= checkInDate) ||
-            (reservedStartDate <= checkInDate && reservedEndDate && reservedEndDate >= checkOutDate)
+            (reservedStartDate <= checkOutDate &&
+              reservedStartDate >= checkInDate) ||
+            (reservedEndDate &&
+              reservedEndDate <= checkOutDate &&
+              reservedEndDate >= checkInDate) ||
+            (reservedStartDate <= checkInDate &&
+              reservedEndDate &&
+              reservedEndDate >= checkOutDate)
           ) {
             let reservedDays = 0;
-            for (let date = new Date(reservedStartDate); date <= reservedEndDate; date.setDate(date.getDate() + 1)) {
+            for (
+              let date = new Date(reservedStartDate);
+              date <= reservedEndDate;
+              date.setDate(date.getDate() + 1)
+            ) {
               const currentDate = date.getTime();
               if (currentDate >= checkInDate && currentDate < checkOutDate) {
                 reservedDays++;
               }
             }
-      
+
             basenormalPrice -= reservedDays * nightlyPrice;
             basenormalPrice += reservedPriceValue * reservedDays;
           }
         });
       }
-      
+
       // Deduct 20,000 from the final basenormalPrice
       basenormalPrice -= 20000;
-      
-      console.log("Base Price:", basenormalPrice);
-      
-      
-      
-    
 
-      
-      
-       
+      console.log("Base Price:", basenormalPrice);
 
       // This is for weekend calculation
       // Check if the weekend price should be applied
@@ -415,7 +426,6 @@ export default function ListingForm({
       }
       //
 
-   
       // Assuming host fees is 20%, service fee is 5%, and tax is 4%
       // const hostFees = 0.07 * basePrice;
       console.log(basePrice);
@@ -440,43 +450,43 @@ export default function ListingForm({
       if (hosthomecustomdiscounts.length > 0) {
         let weekDiscount = 0;
         let monthDiscount = 0;
-    
+
         // Loop through the custom discounts
         hosthomecustomdiscounts.forEach((discount) => {
-            if (discount.duration === "1 month") {
-                monthDiscount = Number(discount.discount_percentage);
-            } else if (discount.duration === "1 week") {
-                weekDiscount = Number(discount.discount_percentage);
-            }
+          if (discount.duration === "1 month") {
+            monthDiscount = Number(discount.discount_percentage);
+          } else if (discount.duration === "1 week") {
+            weekDiscount = Number(discount.discount_percentage);
+          }
         });
-    
+
         let customDiscountPercentage = 0; // Default discount percentage
-    
+
         if (nights >= 30 && monthDiscount > 0) {
-            customDiscountPercentage = monthDiscount / 100; // Convert percentage to decimal
+          customDiscountPercentage = monthDiscount / 100; // Convert percentage to decimal
         } else if (nights >= 7 && weekDiscount > 0) {
-            customDiscountPercentage = weekDiscount / 100;
+          customDiscountPercentage = weekDiscount / 100;
         }
-    
-        const baseDiscountedPrice = parseFloat((basePrice * customDiscountPercentage).toFixed(2));
+
+        const baseDiscountedPrice = parseFloat(
+          (basePrice * customDiscountPercentage).toFixed(2)
+        );
         const securityDepositDiscountedPrice =
-            securityDeposits * customDiscountPercentage;
+          securityDeposits * customDiscountPercentage;
         const totalDiscountedPrice =
-            baseDiscountedPrice + securityDepositDiscountedPrice;
+          baseDiscountedPrice + securityDepositDiscountedPrice;
         const discountedPrice =
-            basePrice  + securityDeposits - baseDiscountedPrice;
-    
+          basePrice + securityDeposits - baseDiscountedPrice;
+
         if (customDiscountPercentage > 0) {
-            const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
-            setAppliedDiscount(
-                `Custom discount applied (${formattedDiscount}% off)`
-            );
-            setTotalCost(discountedPrice);
-            return; // Exit early since custom discount is applied
+          const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
+          setAppliedDiscount(
+            `Custom discount applied (${formattedDiscount}% off)`
+          );
+          setTotalCost(discountedPrice);
+          return; // Exit early since custom discount is applied
         }
-    }
-    
-      
+      }
 
       // Apply predefined discounts if custom discount is not applied
       if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
@@ -559,7 +569,7 @@ export default function ListingForm({
         return addMonths(new Date(), 24);
       default:
         return new Date(3000, 0, 1); // Default to a date far in the future
-      }
+    }
   };
 
   // Calculate the max date based on the availability window
@@ -567,6 +577,69 @@ export default function ListingForm({
 
   console.log(reservation);
   console.log(bookedDates);
+  const isDateBooked = (date) => {
+    return bookedDates.some(
+      (bookedDate) =>
+        date >= new Date(bookedDate.checkInDate) &&
+        date <= new Date(bookedDate.checkOutDate)
+    );
+  };
+
+  
+
+  const isCheckoutDisabled = () => {
+    if (!checkInDate || !checkOutDate) {
+      return true;
+    }
+
+    const startDate = new Date(checkInDate);
+    const endDate = new Date(checkOutDate);
+
+    // Check if any date between start and end date is booked
+    for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+      if (isDateBooked(d)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  console.log(blockedDates);
+
+ // Check if a date is blocked
+const isDateBlocked = (date) => {
+  return blockedDates.some(
+    (blockedDate) =>
+      date >= new Date(blockedDate.startDate) && date <= new Date(blockedDate.endDate)
+  );
+};
+
+// Check if the checkout button should be disabled
+const isCheckoutBlocked = () => {
+  if (!checkInDate || !checkOutDate) {
+    return true; // If check-in or check-out date is not selected, disable checkout
+  }
+
+  const selectedStartDate = new Date(checkInDate);
+  const selectedEndDate = new Date(checkOutDate);
+
+  if (selectedStartDate >= selectedEndDate) {
+    return true; // Check-out date must be after check-in date
+  }
+
+  // Check if any date between check-in and check-out is blocked
+  for (let date = new Date(selectedStartDate); date <= selectedEndDate; date.setDate(date.getDate() + 1)) {
+    if (isDateBlocked(date)) {
+      return true; // If any date is blocked, disable checkout
+    }
+  }
+  console.log('Blocked dates:', blockedDates);
+
+  return false; // Enable checkout if no dates are blocked
+};
+
+
   return (
     <div className=" block w-full h-full">
       <div
@@ -887,7 +960,9 @@ export default function ListingForm({
                           isBookButtonDisabled ||
                           !checkInDate ||
                           !checkOutDate ||
-                          isDisabled
+                          isDisabled ||
+                          isCheckoutDisabled() ||
+                          isCheckoutBlocked()
                         }
                       >
                         Book
@@ -923,7 +998,9 @@ export default function ListingForm({
                       isBookButtonDisabled ||
                       !checkInDate ||
                       !checkOutDate ||
-                      isDisabled
+                      isDisabled ||
+                      isCheckoutDisabled() ||
+                      isCheckoutBlocked()
                     }
                   >
                     Book
