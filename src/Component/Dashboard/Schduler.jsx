@@ -13,6 +13,7 @@ import CalenderAvailability from "./CalenderAvailability";
 import PricingModal from "./PricingModal";
 import axios from "../../Axios";
 import Pricing from "./SchedulerPricing";
+import moment from "moment/moment";
 
 export default class Scheduler extends Component {
   constructor(props) {
@@ -286,17 +287,20 @@ export default class Scheduler extends Component {
 
   }
   // generates the dates between The check in and Check Out dates of booked dates
-  generateDatesBetween = (startDate, endDate) => {
-    const dates = [];
-    let currentDate = new Date(startDate);
-
-    while (currentDate <= new Date(endDate)) {
-      dates.push(currentDate.toISOString().split('T')[0]);
-      currentDate.setDate(currentDate.getDate() + 1);
+  generateDatesBetween(start, end) {
+    const arr = [];
+    for (var dt = new Date(start); dt <= new Date(end); dt.setDate(dt.getDate() + 1)) {
+        const year = dt.getFullYear();
+        const month = String(dt.getMonth() + 1).padStart(2, '0');
+        const day = String(dt.getDate()).padStart(2, '0');
+        arr.push(`${year}-${month}-${day}`);
     }
+    return arr;
+}
 
-    return dates;
-  };
+  
+  
+  
 
 
 
@@ -333,6 +337,7 @@ export default class Scheduler extends Component {
           title: "Available",
           start: currentDateString,
           allDay: true,
+          extendedProps:{ price: this.getCertainDatePrice(currentDateString) },
           backgroundColor: "orange"
 
         });
@@ -342,7 +347,8 @@ export default class Scheduler extends Component {
 
 
     // this.setState({unblockedDates:[...dates]});
-    return unblockedDates;
+    const RemovedDuplicates=new Set(unblockedDates)
+    return [...RemovedDuplicates];
   }
 
 
@@ -407,8 +413,7 @@ export default class Scheduler extends Component {
       });
 
 
-    } else {
-      this.setState({ editedPrice: this.formatAmountWithCommas(price) });
+    } else { 
       /// for The calender price to change
       await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, dates: (date ? [...datesBetween] : "") }).then(response => {
         this.fetchData(id)
@@ -576,16 +581,21 @@ export default class Scheduler extends Component {
 
   handleDateSelect = (info) => {
     const selectedStartDate = info.startStr
-    let selectedEndDate = info.end.toISOString().split('T')[0];
+    let selectedEndDate;
+;
+      // let endDate;
+    
+      if (info.allDay) {
+        selectedEndDate = moment(info.endStr).subtract(1, 'days').format('YYYY-MM-DD'); // No adjustment needed for all-day events
+      } else {
+        selectedEndDate = moment(info.endStr).startOf('day').format('YYYY-MM-DD'); // Set end time to 00:00:00
+      }
 
-    // Convert selectedEndDate to a JavaScript Date object
-    const endDate = new Date(selectedEndDate);
-  
-    // Subtract one day from the end date
-    endDate.setDate(endDate.getDate() - 1);
-  
-    // Format the result back to your desired format (e.g., YYYY-MM-DD)
-    selectedEndDate = endDate.toISOString().split('T')[0];
+      console.log("CustomPrices",this.state.customPriceforCertainDates)
+    
+     
+   
+    
   
 
   // // Check if selected dates are in the same month
@@ -600,9 +610,9 @@ export default class Scheduler extends Component {
       return;
     }
 
-    console.log(info);
+    // console.log(info);
     const unblockedDates = this.getUnblockedDatesEvent();
-    console.log(unblockedDates);
+    // console.log(unblockedDates);
 
     // Generate dates between start and end date
     const generatedDates = this.generateDatesBetween(selectedStartDate, selectedEndDate);
@@ -732,6 +742,15 @@ export default class Scheduler extends Component {
     // Example: You can use a modal library or create your own popup component
     // showModal({ startDate, endDate });
   };
+
+
+  // this get the prices for certain dates and checks if the event Prices matches them
+  getCertainDatePrice(date){
+    const customPriceEntry = this.state.customPriceforCertainDates.find(entry => entry && entry.date === date);
+    const price = customPriceEntry ? customPriceEntry.price : this.state.editedPrice;
+
+    return price;
+  }
 
 
 
@@ -871,11 +890,18 @@ export default class Scheduler extends Component {
                   plugins={[dayGridPlugin, interactionPlugin, multiMonthPlugin]}
                   initialView="dayGridMonth"
                   // multiMonthMaxColumns={1}
+                  // headerToolbar= {{
+                  //   left: 'prev,next today',
+                  //   center: 'title',
+                  //   right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                  // }}
+              
 
                   // editable
                   validRange={validRange}
                   select={this.handleDateSelect}
                   selectable
+                  
                   eventClick={this.handleEventClick}
                   selectConstraint={{ start: new Date().setHours(0, 0, 0, 0) }}
                   dateClick={this.handleDateClick}
@@ -889,6 +915,7 @@ export default class Scheduler extends Component {
 
                       start: date,
                       allDay: true,
+                      extendedProps:{ price: this.getCertainDatePrice(date) },
                       display: 'background',
                       backgroundColor: "rgba(209, 213, 219, 0.7)",
 
@@ -899,6 +926,7 @@ export default class Scheduler extends Component {
                       title: '<div class=" flex justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="md:w-7 w-4" viewBox="0 0 24 24"><title>booked</title><path d="M7 14C8.66 14 10 12.66 10 11C10 9.34 8.66 8 7 8C5.34 8 4 9.34 4 11C4 12.66 5.34 14 7 14M7 10C7.55 10 8 10.45 8 11C8 11.55 7.55 12 7 12C6.45 12 6 11.55 6 11C6 10.45 6.45 10 7 10M19 7H11V15H3V5H1V20H3V17H21V20H23V11C23 8.79 21.21 7 19 7M21 15H13V9H19C20.1 9 21 9.9 21 11Z" /></svg></div>',
                       start: date,
                       allDay: true,
+                      extendedProps:{ price: this.getCertainDatePrice(date) },
                       display: 'background',
                       backgroundColor: "rgba(241 ,245 ,249 , 0.7)",
 
@@ -912,6 +940,7 @@ export default class Scheduler extends Component {
 
                       title: "Blocked",
                       start: date,
+                      extendedProps:{ price: this.getCertainDatePrice(date) },
                       allDay: true,
                       backgroundColor: "rgba(51, 65, 85,1)"
 
@@ -923,6 +952,7 @@ export default class Scheduler extends Component {
                     // ...markedBlockedDates,
                     ...this.getUnblockedDatesEvent(),
                   ]}
+              
                   eventContent={(arg) => {
                     if (!arg || !arg.event || !arg.event.start) {
                       console.error('Invalid event data:', arg);
@@ -934,14 +964,15 @@ export default class Scheduler extends Component {
                     const isBlocked = blockedDates.includes(dateStr) || bookedDates.includes(dateStr);
                   
                     // 3. Determine Custom Price (Efficient Approach):
-                    const customPriceEntry = customPriceforCertainDates.find(entry => entry && entry.date === dateStr);
-                    const price = customPriceEntry ? customPriceEntry.price : editedPrice;
+                    // const customPriceEntry = customPriceforCertainDates.find(entry => entry && entry.date === dateStr);
+                    // const price = customPriceEntry ? customPriceEntry.price : editedPrice;
+                    // console.log("Date1:", arg.event.extendedProps.price);
 
                     return {
                       html: `
                       <div class="w-full flex-col flex justify-center overflow-clip ">
                         <div  >${arg.event.title}</div>
-                        <div class=" text-sm md:text-base ${isBlocked ? " text-center" : ""}  "> ₦${price}</div>
+                        <div class=" text-sm md:text-base ${isBlocked ? " text-center" : ""}  "> ₦${arg.event.extendedProps.price}</div>
                       </div>
                     `,
                     };
