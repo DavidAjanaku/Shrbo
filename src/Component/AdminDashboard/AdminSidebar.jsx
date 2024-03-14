@@ -178,6 +178,11 @@ export default function AdminSidebar() {
             Announcement Page
           </li>
         </Link>
+        <Link to="/CommunicationCenter">
+          <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+          Communication Center
+          </li>
+        </Link>
 
         <Link to="/ReviewList">
           <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">

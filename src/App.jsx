@@ -74,6 +74,7 @@ import PageNotFound from "./PageNotFound";
 import PaymentsTab from "./Component/Settings/PaymentsTab";
 import OtpPage from "./Component/Settings/OtpPage";
 import AdminDamagePage from "./Component/AdminDashboard/AdminDamagePage";
+import CommunicationCenter from "./Component/AdminDashboard/CommunicationCenter";
 function App() {
 
   return (
@@ -188,7 +189,9 @@ function App() {
           <Route path="/SupportAndHelp" element={<SupportAndHelp />} />
           <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
           <Route path="/DamagesAndIncidentals" element={<DamagesIncidentals />} />
+          <Route path="/CommunicationCenter" element={<CommunicationCenter />} />
 
+          
           <Route path="*" element={<PageNotFound/>} />
 
         </Routes>
