@@ -31,6 +31,22 @@ const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, 
   const [selectedListingId, setSelectedListingId] = useState(null);
 
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [wishlistContainer,setWishlistContainer]=useState([]);
+ 
+  
+
+  useEffect(()=>{
+    axios.get("/getUserWishlistContainers").then(response=>{
+      setWishlistContainer(response.data.userWishlist);
+      console.log("wishlist",response.data);
+
+    }).catch(error=>{
+      console.log("wishlist",error)
+    });
+
+  },[isModalOpen]);
+  
+
 
 useEffect(() => {
   if(listings.length!=0){
@@ -231,6 +247,7 @@ useEffect(() => {
                   added={() => setModalOpen(false)}
                   onClose={closeModal}
                   onToggleFavorite={(wishlist) => toggleFavorite(selectedListingId, wishlist)}
+                  wishlistContainer={wishlistContainer}
                 />
               )}
               {Listings}

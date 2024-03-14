@@ -4,24 +4,24 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from '../Axios'
 import { useStateContext } from "../ContextProvider/ContextProvider";
 
-const WishlistModal = ({ added, onClose, closable,listingId }) => {
+const WishlistModal = ({ added, onClose, closable,listingId,wishlistContainer }) => {
   const [selectedWishlist, setSelectedWishlist] = useState("");
   const [newWishlist, setNewWishlist] = useState("");
   const [isAdded, setIsAdded] = useState(false);
-  const [wishlistContainer,setWishlistContainer]=useState([]);
+  // const [wishlistContainer,setWishlistContainer]=useState([]);
   const {user}=useStateContext();
   
 
-  useEffect(()=>{
-    axios.get("/getUserWishlistContainers").then(response=>{
-      setWishlistContainer(response.data.userWishlist);
-      console.log("wishlist",response.data);
+  // useEffect(()=>{
+  //   axios.get("/getUserWishlistContainers").then(response=>{
+  //     setWishlistContainer(response.data.userWishlist);
+  //     console.log("wishlist",response.data);
 
-    }).catch(error=>{
-      console.log("wishlist",error)
-    });
+  //   }).catch(error=>{
+  //     console.log("wishlist",error)
+  //   });
 
-  },[]);
+  // },[]);
   
 
   useEffect(() => {
@@ -104,7 +104,7 @@ const WishlistModal = ({ added, onClose, closable,listingId }) => {
               <select
                 className="w-full p-2 border rounded"
                 value={selectedWishlist}
-                onChange={(e) => setSelectedWishlist(e.target.value)}
+                onChange={(e) => {setSelectedWishlist(e.target.value);setNewWishlist("")}}
               >
                 <option value="">-- Select Wishlist --</option>
                 {/* <option value="wishlist1">Wishlist 1</option>
