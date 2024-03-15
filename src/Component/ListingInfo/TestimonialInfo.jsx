@@ -141,7 +141,7 @@ const TestimonialInfo = ({ reviews }) => {
 
           <div className=" pt-3 pl-2">
             <div className=" md:text-lg  text-base font-bold text-orange-600">
-              <label>{client.user} </label>
+              <label>{client.user_name} </label>
             </div>
             <div className=" text-sm md:text-base">
               <label>

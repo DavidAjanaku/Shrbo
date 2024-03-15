@@ -7,6 +7,8 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
 const CommunicationCenter = () => {
   const [selectedUser, setSelectedUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [users] = useState([
     {
       id: 1,
@@ -77,6 +79,10 @@ const CommunicationCenter = () => {
     setMessage(""); // Clear the message input after sending
   };
 
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div>
       <div className="bg-gray-100 min-h-screen">
@@ -93,8 +99,15 @@ const CommunicationCenter = () => {
             <div className="flex ">
               <div className="w-1/4 border-r pr-4">
                 <h2 className="text-lg font-semibold mb-2">Users</h2>
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded mb-2"
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
                 <ul>
-                  {users.map((user) => (
+                  {filteredUsers.map((user) => (
                     <li
                       key={user.id}
                       className={`cursor-pointer flex justify-between items-center p-2 px-4 ${
@@ -132,7 +145,7 @@ const CommunicationCenter = () => {
                           window.location.href = user.userProfile;
                         }}
                       >
-                         <FontAwesomeIcon icon={faUser} className="mr-2" />
+                        <FontAwesomeIcon icon={faUser} className="mr-2" />
                       </button>
                     </li>
                   ))}
@@ -142,12 +155,21 @@ const CommunicationCenter = () => {
                 <div className="bg-white h-[90vh] p-4 rounded shadow">
                   {selectedUser ? (
                     <>
-                      <div className="h-[77vh] overflow-y-auto example">
-                      {selectedUser && userChats[selectedUser]?.length === 0 && (
-  <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
-    Admin joined the chat
-  </div>
-)}
+                      <div>
+                        <p className="text-lg font-semibold">
+                          {users[selectedUser - 1].name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Ticket #{selectedUser}
+                        </p>
+                      </div>
+                      <div className="h-[70vh] overflow-y-auto example">
+                        {selectedUser &&
+                          userChats[selectedUser]?.length === 0 && (
+                            <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
+                              Admin joined the chat
+                            </div>
+                          )}
 
                         {userChats[selectedUser]?.map((msg, index) => (
                           <div
@@ -229,7 +251,7 @@ const CommunicationCenter = () => {
                       </div>
                     </>
                   ) : (
-                    <p className="text-gray-500">
+                    <p className="text-gray-500 flex items-center h-[80vh] justify-center">
                       Select a user to start chatting.
                     </p>
                   )}
