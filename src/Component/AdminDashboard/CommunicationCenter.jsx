@@ -132,7 +132,7 @@ const CommunicationCenter = () => {
                           window.location.href = user.userProfile;
                         }}
                       >
-                         <FontAwesomeIcon icon={faUser} className="mr-2" />
+                        <FontAwesomeIcon icon={faUser} className="mr-2" />
                       </button>
                     </li>
                   ))}
@@ -143,11 +143,12 @@ const CommunicationCenter = () => {
                   {selectedUser ? (
                     <>
                       <div className="h-[77vh] overflow-y-auto example">
-                      {selectedUser && userChats[selectedUser]?.length === 0 && (
-  <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
-    Admin joined the chat
-  </div>
-)}
+                        {selectedUser &&
+                          userChats[selectedUser]?.length === 0 && (
+                            <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
+                              Admin joined the chat
+                            </div>
+                          )}
 
                         {userChats[selectedUser]?.map((msg, index) => (
                           <div
