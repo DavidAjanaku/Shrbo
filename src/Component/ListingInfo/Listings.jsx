@@ -31,33 +31,33 @@ const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, 
   const [selectedListingId, setSelectedListingId] = useState(null);
 
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [wishlistContainer,setWishlistContainer]=useState([]);
- 
-  
+  const [wishlistContainer, setWishlistContainer] = useState([]);
 
-  useEffect(()=>{
-    axios.get("/getUserWishlistContainers").then(response=>{
+
+
+  useEffect(() => {
+    axios.get("/getUserWishlistContainers").then(response => {
       setWishlistContainer(response.data.userWishlist);
-      console.log("wishlist",response.data);
+      console.log("wishlist", response.data);
 
-    }).catch(error=>{
-      console.log("wishlist",error)
+    }).catch(error => {
+      console.log("wishlist", error)
     });
 
-  },[isModalOpen]);
-  
+  }, [isModalOpen]);
 
 
-useEffect(() => {
-  if(listings.length!=0){
-  const img = new Image();
-  img.src =listings[0].pictures[0].images;
-  console.log("images",listings[0].pictures[0].images)
-  img.onload = () => {
-    setImageLoaded(true);
-  };
-}
-}, [listings]);
+
+  useEffect(() => {
+    if (listings.length != 0) {
+      const img = new Image();
+      img.src = listings[0].pictures[0].images;
+      console.log("images", listings[0].pictures[0].images)
+      img.onload = () => {
+        setImageLoaded(true);
+      };
+    }
+  }, [listings]);
 
 
 
@@ -115,7 +115,7 @@ useEffect(() => {
 
   useEffect(() => {
     if (homes) {
-    
+
       setListings(homes);
     }
 
@@ -170,7 +170,7 @@ useEffect(() => {
       key={listing.id}
       className="max-w-[26rem] md:max-w-[18rem] mx-auto rounded overflow-hidden   m-4 cursor-pointer"
     >
-     {imageLoaded ?  <Carousel>
+      {imageLoaded ? <Carousel>
         {listing.pictures.map((picture, index) => (
           <div key={index}>
             {user.name && (
@@ -204,13 +204,13 @@ useEffect(() => {
           </div>
         ))}
       </Carousel>
-            :
-            <div className=" skeleton-loader flex items-center justify-center rounded-xl h-[250px] w-[80vw] md:w-[230px] ">
+        :
+        <div className=" skeleton-loader flex items-center justify-center rounded-xl h-[250px] w-[80vw] md:w-[230px] ">
 
-               <img src={userPng} alt="Placeholder"  className="filter grayscale h-20 w-20 " />
-            </div>
+          <img src={userPng} alt="Placeholder" className="filter grayscale h-20 w-20 " />
+        </div>
 
-            }
+      }
       <Link to={`/ListingInfoMain/${listing.id}`}>
         <div className=" py-4">
           <div className="font-medium text-base mb-2">{listing.title}</div>
@@ -227,7 +227,7 @@ useEffect(() => {
   ));
 
 
-            console.log("listings",listings)
+  console.log("listings", listings)
 
 
 
@@ -236,7 +236,7 @@ useEffect(() => {
   return (
     <>
 
-      {!loading || showMoreLoading ?
+      {!loading || showMoreLoading?
         <>
 
           {(homes && homes.length != 0) ? <div>
@@ -252,26 +252,24 @@ useEffect(() => {
               )}
               {Listings}
               <br />
-            </div>
-            <div className="flex justify-center mb-10">
+            <div className="flex justify-center mb-10 sm:col-span-2 col-span-1 lg:col-span-3 xl:col-span-4 2xl:col-span-4  ">
               <>
-                {showMoreLoading? (
-                  <div className=' w-full flex justify-center pr-16  '>
+                {showMoreLoading ? (
+                  <div className=' w-full flex justify-center items-center pr-16  '>
 
                     <div className='   '>
-                      <div className="containerM  ">
-                        <div className="dot"></div>
-                        <div className="dot"></div>
-                        <div className="dot"></div>
-                        <div className="dot"></div>
-                        <div className="dot"></div>
+                      <div className="self-start  p-2 rounded-lg w-full ">
+                        <div className="dot-pulse1 w-24 h-24">
+                          <div className="dot-pulse1__dot"></div>
+                        </div>
                       </div>
                     </div>
                   </div>) :
 
-                 <> {!(current_page === last_page) && <button className="py-2 px-4 bg-gray-800 block text-white rounded-full" onClick={showMore}>Show more listings</button>}</>
-}
+                  <> {!(current_page === last_page) && <button className="py-2 px-4 bg-gray-800 block text-white rounded-full" onClick={showMore}>Show more listings</button>}</>
+                }
               </>
+            </div>
             </div>
           </div>
             :
