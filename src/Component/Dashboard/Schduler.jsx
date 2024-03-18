@@ -768,7 +768,7 @@ export default class Scheduler extends Component {
 
   isWeekend(date) {
     const day = new Date(date).getDay();
-    return day === 0 || day === 6; // 0 is Sunday, 5 is Friday, 6 is Saturday
+    return day===5 || day === 6; // 0 is Sunday, 5 is Friday, 6 is Saturday
 }
 
 
