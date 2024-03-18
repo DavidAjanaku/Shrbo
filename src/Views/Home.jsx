@@ -35,10 +35,12 @@ export default function Home() {
   const [homeSubTitle, setHomeSubTitle] = useState("");
   const [listings, setListings] = useState();
   const [category, setCategory] = useState();
-  const [listingType, setListingType] = useState(""); //I'm using this state to know what type of listing i'm getting based on the particular Api i'm making a request from
-  const [per_page, setPerPage] = useState(5); // handles the amount of listing that can show at a time
+  const [listingType, setListingType] = useState("NoFilter"); //I'm using this state to know what type of listing i'm getting based on the particular Api i'm making a request from
+  const [per_page, setPerPage] = useState(40); // handles the amount of listing that can show at a time
   const [current_page,setCurrent_page]=useState();
   const [last_page,setLast_page]=useState();
+  const [receiverId, setReceiverId] = useState(""); // Initial receiver ID is set to 1
+
   // const [pendingReview,setPendingReview]=useState([]);
   const openModal = () => {
     setIsModalOpen(true);
@@ -78,49 +80,50 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // Extract the parameters from the URL
-        const params = new URLSearchParams(window.location.search);
-        const verified = params.get("verified");
-        const remtoken = params.get("remtoken");
-        const ustoken = params.get("ustoken");
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       // Extract the parameters from the URL
+  //       const params = new URLSearchParams(window.location.search);
+  //       const verified = params.get("verified");
+  //       const remtoken = params.get("remtoken");
+  //       const ustoken = params.get("ustoken");
 
-        // Log out the parameters
-        console.log("Verified:", verified);
-        console.log("Remtoken:", remtoken);
-        console.log("Ustoken:", ustoken);
+  //       // Log out the parameters
+  //       console.log("Verified:", verified);
+  //       console.log("Remtoken:", remtoken);
+  //       console.log("Ustoken:", ustoken);
 
-        // Make a request to get the user data with parameters
-        const response = await axios.get(
-          `/verify-tokens/${remtoken}/${ustoken}`
-        );
-        console.log("Response Data:", response.data);
+  //       // Make a request to get the user data with parameters
+  //       const response = await axios.get(
+  //         `/verify-tokens/${remtoken}/${ustoken}`
+  //       );
+  //       console.log("Response Data:", response.data);
+  //       console.log(response.data.id);
 
-        // Set the user data in state
-        setUser(response.data.user);
-        console.log("User Data:", response.data);
+  //       // Set the user data in state
+  //       setUser(response.data.user);
+  //       console.log("User Data:", response.data);
 
-        // Set the host value in state context
-        setHost(response.data.user.host);
-        console.log("Host:", response.data.host);
-        setToken(ustoken);
-        setAdminStatus(response.data.user.adminStatus);
+  //       // Set the host value in state context
+  //       setHost(response.data.user.host);
+  //       console.log("Host:", response.data.host);
+  //       setToken(ustoken);
+  //       setAdminStatus(response.data.user.adminStatus);
 
-        // Log 'yes' to the console
-        console.log("yes");
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        // Set loading to false regardless of success or error
-        setLoading(false);
-      }
-    };
+  //       // Log 'yes' to the console
+  //       console.log("yes");
+  //     } catch (error) {
+  //       console.error("Error fetching user data:", error);
+  //     } finally {
+  //       // Set loading to false regardless of success or error
+  //       setLoading(false);
+  //     }
+  //   };
 
-    // Call the fetchUserData function when the component mounts
-    fetchUserData();
-  }, []);
+  //   // Call the fetchUserData function when the component mounts
+  //   fetchUserData();
+  // }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -130,12 +133,13 @@ export default function Home() {
 
         // Set the user data in state
         setUser(response.data);
-        console.log(response.data.id);
         console.log(response.data.host);
 
         console.log("yes",response.data);
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
+        localStorage.setItem('receiverid', response.data.id);
+
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
@@ -147,7 +151,20 @@ export default function Home() {
     fetchUserData();
   }, []);
 
+  useEffect(() => {
+    const tokens = token;
+    const receiverid = receiverId;
+    
+    localStorage.setItem('tokens', tokens);
+    localStorage.setItem('receiverid', receiverid);
+}, []);
+
+console.log();
+
   // Home Page Data
+  const receiverIds = localStorage.getItem('receiverid');
+
+  console.log(receiverIds);
 
   useEffect(() => {
     const homePageData = async () => {
@@ -652,42 +669,27 @@ export default function Home() {
 
 
   // Logic For the Pagination {START}
-  const showMoreListings = async () => {
-    
-    setShowMoreLoading(true);
-    setPerPage((prevPage) => prevPage + 2);
-    const newPerpage=per_page+2;
+  const showMoreListings = () => {
     console.log("perPage",per_page)
-    
-    switch (listingType) {
-      case "NoFilter":
-      await  fetchListings().finally(() => setShowMoreLoading(false));
-        break;
-      case "FilterbyPropertTypes":
-       await   filterDataByCategories(category).finally(() => setShowMoreLoading(false));
-        break;
-      default:
-        await fetchListings().finally(() => setShowMoreLoading(false));
-    }
+    setPerPage((prevPage) => prevPage + 2);
 
 
   }
 
   useEffect(() => {
+    setShowMoreLoading(true);
     switch (listingType) {
       case "NoFilter":
-        setShowMoreLoading(true);
         fetchListings().finally(() => setShowMoreLoading(false));
         break;
-        case "FilterbyPropertTypes":
-        setShowMoreLoading(true);
+      case "FilterbyPropertTypes":
         filterDataByCategories(category).finally(() => setShowMoreLoading(false));
         break;
       default:
-        console.log("show",showMoreLoading);
-        setShowMoreLoading(false)
-        fetchListings();
-      }
+        fetchListings().finally(() => setShowMoreLoading(false));
+    }
+      console.log("show",showMoreLoading);
+      // setShowMoreLoading(false)
           
   }, [per_page]);
 

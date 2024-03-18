@@ -250,11 +250,17 @@ export default function ListingForm({
   useEffect(() => {
     if (checkInDate && checkOutDate && checkOutDate < checkInDate) {
       setIsBookButtonDisabled(true);
-      
+      setModalMessage(`Please select valid check-in and check-out dates`);
+      setIsModalVisibles(true); // Show the modal
     } else {
       setIsBookButtonDisabled(false);
     }
   }, [checkInDate, checkOutDate]);
+
+  const handleModalCancel = () => {
+    setIsModalVisibles(false); // Hide the modal
+    resetStateValues(); // Reset the state values
+  };
 
   const matchingDiscounts = discount.filter((discount) =>
     predefinedDiscounts.includes(discount)
@@ -586,8 +592,6 @@ export default function ListingForm({
     );
   };
 
-  
-
   const isCheckoutDisabled = () => {
     if (!checkInDate || !checkOutDate) {
       return true;
@@ -608,38 +612,42 @@ export default function ListingForm({
 
   console.log(blockedDates);
 
- // Check if a date is blocked
-const isDateBlocked = (date) => {
-  return blockedDates.some(
-    (blockedDate) =>
-      date >= new Date(blockedDate.startDate) && date <= new Date(blockedDate.endDate)
-  );
-};
+  // Check if a date is blocked
+  const isDateBlocked = (date) => {
+    return blockedDates.some(
+      (blockedDate) =>
+        date >= new Date(blockedDate.startDate) &&
+        date <= new Date(blockedDate.endDate)
+    );
+  };
 
-// Check if the checkout button should be disabled
-const isCheckoutBlocked = () => {
-  if (!checkInDate || !checkOutDate) {
-    return true; // If check-in or check-out date is not selected, disable checkout
-  }
-
-  const selectedStartDate = new Date(checkInDate);
-  const selectedEndDate = new Date(checkOutDate);
-
-  if (selectedStartDate >= selectedEndDate) {
-    return true; // Check-out date must be after check-in date
-  }
-
-  // Check if any date between check-in and check-out is blocked
-  for (let date = new Date(selectedStartDate); date <= selectedEndDate; date.setDate(date.getDate() + 1)) {
-    if (isDateBlocked(date)) {
-      return true; // If any date is blocked, disable checkout
+  // Check if the checkout button should be disabled
+  const isCheckoutBlocked = () => {
+    if (!checkInDate || !checkOutDate) {
+      return true; // If check-in or check-out date is not selected, disable checkout
     }
-  }
-  console.log('Blocked dates:', blockedDates);
 
-  return false; // Enable checkout if no dates are blocked
-};
+    const selectedStartDate = new Date(checkInDate);
+    const selectedEndDate = new Date(checkOutDate);
 
+    if (selectedStartDate >= selectedEndDate) {
+      return true; // Check-out date must be after check-in date
+    }
+
+    // Check if any date between check-in and check-out is blocked
+    for (
+      let date = new Date(selectedStartDate);
+      date <= selectedEndDate;
+      date.setDate(date.getDate() + 1)
+    ) {
+      if (isDateBlocked(date)) {
+        return true; // If any date is blocked, disable checkout
+      }
+    }
+    console.log("Blocked dates:", blockedDates);
+
+    return false; // Enable checkout if no dates are blocked
+  };
 
   return (
     <div className=" block w-full h-full">
@@ -1027,7 +1035,7 @@ const isCheckoutBlocked = () => {
         <StayLengthModal
           message={modalMessage}
           visible={isModalVisibles}
-          onClose={closeModal}
+          onClose={handleModalCancel}
         />{" "}
         {/* Render the modal */}
         {showVerifyModal && (
@@ -1134,7 +1142,6 @@ const isCheckoutBlocked = () => {
     </div>
   );
 }
-
 
 function MyDropdown({ adults, pets, setAdults, setPets, maxValue }) {
   const [adultCount, setAdultCount] = useState(adults);
