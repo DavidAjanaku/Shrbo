@@ -141,17 +141,17 @@ export default function PayoutBankDetails() {
     }, []);
 
 
-    const confirm = async (e, type, cardId) => {
+    const confirm = async (e, type, bankId) => {
         // console.log(e);
 
-        // await axios.delete(`/deleteUserCard/${cardId}/${user.id}`).then(response => {
-        //     console.log(response);
-        //     message.success(`Card ${type} deleted successfully`);
-        //     fetchUserCards();
-        // }).catch(error => {
-        //     console.error("Failed to delete Card", error);
-        //     message.error(`An Error Occured while trying to delte Card ${type}`)
-        // })
+        await axios.delete(`/deleteUserBankInfo/${user.id}`).then(response => {
+            console.log(response);
+            message.success(`Bank info Removed successfully`);
+            fetchUserCards();
+        }).catch(error => {
+            console.error("Failed to Remove Bank info", error);
+            message.error(`An Error Occured while trying to Remove bank info `)
+        })
 
     };
 
@@ -295,7 +295,7 @@ export default function PayoutBankDetails() {
                                             <div className=" mt-4 min-[640px]:mt-0 min-[640px]:flex-shrink-0 min-[640px]:ml-6 ">
                                                 <Popconfirm
                                                     title="Remove Payment Card"
-                                                    description={`Sure you want to delete ${detail.title} Card?`}
+                                                    description={`Sure you want to Remove ${detail.title} ?`}
                                                     onConfirm={(e) => { confirm(e, detail.title, detail.id) }}
                                                     onCancel={cancel}
                                                     okText="Delete"

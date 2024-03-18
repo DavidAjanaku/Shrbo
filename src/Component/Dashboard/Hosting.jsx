@@ -17,12 +17,13 @@ export default function Hosting() {
   const { setUser, setToken, token, setHost, setAdminStatus, user } = useStateContext();
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [tips, setTips] = useState([]);
-  const [upcoming,setUpcoming]=useState([]);
-  const [checking,setChecking]=useState([]);
-  const [pending,setPending]=useState([]);
-  const [arriving,setArriving]=useState([]);
-  const [hosting,setHosting]=useState([]);
+  const [upcoming, setUpcoming] = useState([]);
+  const [checking, setChecking] = useState([]);
+  const [pending, setPending] = useState([]);
+  const [arriving, setArriving] = useState([]);
+  const [hosting, setHosting] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingGeneral, setLoadingGeneral] = useState(true);
   const [tabLoading, setTabLoading] = useState(true);
   const [notifications, setNotifications] = useState([
     {
@@ -86,9 +87,7 @@ export default function Hosting() {
       date: "Nov 12, 2023",
     },
   ]);
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
+
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
@@ -106,189 +105,270 @@ export default function Hosting() {
     setIsBellDropdownOpen(false);
   };
 
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       // Make a request to get the user data
+  //       const response = await axios.get("/user"); // Adjust the endpoint based on your API
+
+  //       // Set the user data in state
+  //       setUser(response.data);
+  //       setHost(response.data.host);
+  //       setAdminStatus(response.data.adminStatus);
+
+  //     } catch (error) {
+  //       console.error("Error fetching user data:", error);
+  //     } finally {
+  //       // Set loading to false regardless of success or error
+
+  //     }
+  //   };
+
+  //   fetchUserData();
+  // }, []);
+
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // Make a request to get the user data
-        const response = await axios.get("/user"); // Adjust the endpoint based on your API
+    // const fetchUserTips = async () => {
+    //   try {
+    //     // Make a request to get the user data
+    //     const tipsResponse = await axios.get("/userTips"); // Adjust the endpoint based on your API
 
-        // Set the user data in state
-        setUser(response.data);
-        setHost(response.data.host);
-        setAdminStatus(response.data.adminStatus);
+    //     setTips(tipsResponse.data);
 
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        // Set loading to false regardless of success or error
+    //     console.log("hello")
 
-      }
+
+
+    //   } catch (error) {
+    //     console.error("Error fetching user data:", error);
+    //   } finally {
+    //     // Set loading to false regardless of success or error
+
+    //   }
+    // };
+
+    const fetchInitialData = async () => {
+      // setTabLoading(true);
+      await fetchUpcomingData();
+      await fetchCheckingOut();
+      await fetchCurrentlyHosting();
+      await fetchArrivingSoon();
+      await fetchPendingReview();
+      // setTabLoading(false);
     };
 
-    fetchUserData();
-  }, []);
 
-  useEffect(() => {
-    const fetchUserTips = async () => {
+    const fetchData = async () => {
       try {
         // Make a request to get the user data
-        const response = await axios.get("/userTips"); // Adjust the endpoint based on your API
+        const UserResponse = await axios.get("/user"); // Adjust the endpoint based on your API
 
-        setTips(response.data);
+        // Set the user data in state
+        setUser(UserResponse.data);
+        setHost(UserResponse.data.host);
+        setAdminStatus(UserResponse.data.adminStatus);
+
+
+        const tipsResponse = await axios.get("/userTips"); // Adjust the endpoint based on your API
+
+        setTips(tipsResponse.data);
+
+        await fetchInitialData();
 
         console.log("hello")
 
-
-
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
         // Set loading to false regardless of success or error
+        setLoadingGeneral(false);
+        setLoading(false);
 
       }
     };
 
-    fetchUserTips();
+
+    fetchData();
+
+    // fetchUserTips();
+    // fetchInitialData();
   }, []);
 
-useEffect(() => {
- 
-  setLoading(true);
+  // useEffect(() => {
 
-  switch (activeTab) {
-    case "upcoming":
-      fetchUpcomingData();
-      break;
-    case "checkingOut":
-      fetchCheckingOut()
-      break;
-    case "currentlyHosting":
-      fetchCurrentlyHosting();
-      break;
-    case "arrivingSoon":
-      fetchArrivingSoon();
-      break;
-    case "pendingReview":
-      fetchPendingReview();
-      break;
-    default:
-      setLoading(false);
-      break;
+  //   setLoading(true);
+
+  //   switch (activeTab) {
+  //     case "upcoming":
+  //       fetchUpcomingData();
+  //       break;
+  //     case "checkingOut":
+  //       fetchCheckingOut()
+  //       break;
+  //     case "currentlyHosting":
+  //       fetchCurrentlyHosting();
+  //       break;
+  //     case "arrivingSoon":
+  //       fetchArrivingSoon();
+  //       break;
+  //     case "pendingReview":
+  //       fetchPendingReview();
+  //       break;
+  //     default:
+  //       setLoading(false);
+  //       break;
+  //   }
+  // }, [activeTab]);
+
+  const handleTabClick = async (tab) => {
+    if (tab === activeTab) {
+      return;
+    }
+    setActiveTab(tab);
+    console.log("CHAT")
+
+    setLoading(true);
+    switch (tab) {
+      case "upcoming":
+        await fetchUpcomingData();
+        break;
+      case "checkingOut":
+        await fetchCheckingOut()
+        break;
+      case "currentlyHosting":
+        await fetchCurrentlyHosting();
+        break;
+      case "arrivingSoon":
+        await fetchArrivingSoon();
+        break;
+      case "pendingReview":
+        await fetchPendingReview();
+        break;
+      default:
+        setLoading(false);
+        break;
+    }
+  };
+
+  // const fetchInitialData = async () => {
+  //   // setTabLoading(true);
+  //   await fetchUpcomingData();
+  //   await fetchCheckingOut();
+  //   await fetchCurrentlyHosting();
+  //   await fetchArrivingSoon();
+  //   await fetchPendingReview();
+  //   // setTabLoading(false);
+  // };
+
+  // useEffect(() => {
+  //   fetchInitialData();
+  // }, []);
+
+  const fetchUpcomingData = async () => {
+    await axios.get("/upcomingReservation").then(response => {
+      const filteredUpcoming = response.data.bookings.map(item => ({
+        id: item.aboutGuest.id,
+        name: item.name,
+        checkInDate: item.check_in_date,
+        checkOutDate: item.check_out_date,
+        // amountPaid: "half payment made",
+        time: item.check_out_time,
+        image: item.profilepic ? item.profilepic : "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+      }));
+      setUpcoming(filteredUpcoming);
+      console.log(response.data);
+    }).catch(err => {
+      console.log("Upcoming", err);
+    })
+      .finally(() =>
+        setLoading(false)
+
+      );
+
   }
-}, [activeTab]);
 
-const fetchInitialData =async () => {
-  setTabLoading(true);
-  await fetchUpcomingData();
-  fetchCheckingOut();
-  fetchCurrentlyHosting();
-  fetchArrivingSoon();
-  fetchPendingReview();
-  setTabLoading(false);
-};
-
-useEffect(() => {
-  fetchInitialData();
-}, []); 
-
-  const fetchUpcomingData= async()=>{
-   await axios.get("/upcomingReservation").then(response=>{
-            const filteredUpcoming=response.data.bookings.map(item=>({
-              id:item.aboutGuest.id,
-                name: item.name,
-                checkInDate: item.check_in_date,
-                checkOutDate: item.check_out_date,
-                // amountPaid: "half payment made",
-                time: item.check_out_time,
-                image: item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-            }));
-          setUpcoming(filteredUpcoming);
-          console.log(response.data);
-      }).catch(err=>{
-        console.log("Upcoming",err);
-      }).finally(()=>setLoading(false));
-
-  }
-
-  const fetchPendingReview=async()=>{
-     try {
+  const fetchPendingReview = async () => {
+    try {
       const response = await axios.get("/getHostPendingReviews");
       const filteredData = response.data.data.map(item => ({
         name: item.username,
         checkInDate: item.check_in,
-        id:item.aboutGuest?.id,
-        reservationId:item.id,
-        image:item.guestProfilePic?item.guestProfilePic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+        id: item.aboutGuest?.id,
+        reservationId: item.id,
+        image: item.guestProfilePic ? item.guestProfilePic : "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
       }));
       setPending(filteredData)
       console.log("pending", filteredData);
     } catch (error) {
       console.log("pending", error);
-    }finally{
+    }
+    finally {
       setLoading(false);
     }
 
 
   }
 
-  const fetchArrivingSoon=async()=>{
+  const fetchArrivingSoon = async () => {
     try {
       const response = await axios.get("/arrivingSoon");
       const filteredData = response.data.bookings.map(item => ({
         name: item.name,
-        id:item.aboutGuest.id,
+        id: item.aboutGuest.id,
         date: item.check_in_date,
-        time:item.check_in_time,
-        image:item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+        time: item.check_in_time,
+        image: item.profilepic ? item.profilepic : "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
       }));
       setArriving(filteredData)
       console.log("Arriving", filteredData);
     } catch (error) {
       console.log("Arriving", error);
-    } finally{
-    setLoading(false);
+    } finally {
+      setLoading(false);
     }
 
 
   }
 
-  const fetchCurrentlyHosting=async()=>{
+  const fetchCurrentlyHosting = async () => {
     try {
       const response = await axios.get("/currentlyHosting");
       const filteredData = response.data.bookings.map(item => ({
         name: item.name,
-        id:item.aboutGuest.id,
-        date: item.check_in_date+"-"+item.check_out_date,
-        image:item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+        id: item.aboutGuest.id,
+        date: item.check_in_date + "-" + item.check_out_date,
+        image: item.profilepic ? item.profilepic : "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
       }));
       setHosting(filteredData)
       console.log("CurrentlyHosting", filteredData);
     } catch (error) {
       console.log("CurrentlyHosting", error);
-    }finally{
+    }
+    finally {
       setLoading(false);
-      }
-  
+    }
+
   }
 
-  const fetchCheckingOut=async()=>{
+  const fetchCheckingOut = async () => {
     try {
       const response = await axios.get("/checkingOut");
       const filteredData = response.data.bookings.map(item => ({
         name: item.name,
-        id:item.aboutGuest.id,
+        id: item.aboutGuest.id,
         date: item.check_out_date,
         time: item.check_in_time,
-        image:item.profilepic?item.profilepic:"https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+        image: item.profilepic ? item.profilepic : "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
       }));
       setChecking(filteredData)
       console.log("CheckingOut", filteredData);
     } catch (error) {
       console.log("CheckingOut", error);
-    }finally{
+    }
+    finally {
       setLoading(false);
     }
-  
+
   }
 
 
@@ -380,7 +460,7 @@ useEffect(() => {
   ];
 
   const arrivingSoonReservations = [
-    
+
     // {
     //   name: "John",
     //   date: "Oct 25",
@@ -685,7 +765,7 @@ useEffect(() => {
   };
 
 
-  const SkeletonLoader = Array.from({ length: 5 }).map((group, index) => (
+  const SkeletonLoaderReservations = Array.from({ length: 5 }).map((group, index) => (
     <div
       key={index}
       className="rounded  m-4 cursor-pointer  "
@@ -699,13 +779,28 @@ useEffect(() => {
 
   ));
 
-  const SkeletonLoaderTabs= Array.from({ length: 5 }).map((group, index) =>(
+  const SkeletonLoaderTabs = Array.from({ length: 5 }).map((group, index) => (
     <div
-    key={index}
-    className={`  py-2 px-4 w-28  h-10 rounded-full   skeleton-loader `}
-  >
-        
-  </div>
+      key={index}
+      className={`  py-2 px-4 ml-3 w-28  h-10 rounded-full   skeleton-loader `}
+    >
+
+    </div>
+
+  ));
+
+
+  const SkeletonLoaderTips = Array.from({ length: 5 }).map((group, index) => (
+    <div
+      key={index}
+      className=" rounded-sm  m-4 cursor-pointer  "
+    >
+
+      <div className=''>
+
+        <div className=' h-64 w-64 rounded-xl object-cover skeleton-loader text-transparent' />
+      </div>
+    </div>
 
   ));
 
@@ -719,14 +814,20 @@ useEffect(() => {
       <div className="flex flex-wrap md:flex-col md:w-[80vw] md:mx-auto md:my-10 p-4 md:p-10">
         <GoBackButton />
         <div className="w-full">
-          <p className="text-gray-400 font-normal text-base my-4 italic">
+        
+        {!loadingGeneral ?
+         <p className="text-gray-400 font-normal text-base my-4 italic">
             Efficiently manage your home rental listings with our comprehensive
             management tool.
           </p>
+          :
+          <div className="skeleton-loader my-7 w-[560px] rounded-[2px] h-7 ml-3" />
+          }
 
-          <div
+
+         {!loadingGeneral? <div
             id="bell-dropdown"
-            className={`relative group  ${isBellDropdownOpen ? "group" : ""}`}
+            className={`relative w-fit   ${isBellDropdownOpen ? "group" : ""}`}
             onClick={toggleBellDropdown}
           >
             <button className="text-white relative">
@@ -754,24 +855,52 @@ useEffect(() => {
               </div>
             )}
           </div>
+          :
+          <div className={`relative w-fit`}>
+            <div className="skeleton-loader my-7 w-10 rounded-xl h-7 ml-3" />
+          </div>
+          }
+
+          {/* /////////////////// */}
+
           <div className="flex flex-wrap my-4 items-center justify-between">
-            <h1 className="text-3xl font-medium my-7">Welcome back, {user.name}</h1>
-            <Link to="/Reservations" className="">All Reservations <svg xmlns="http://www.w3.org/2000/svg" width={"30px"} height={"30px"} viewBox="0 0 24 24"><title>arrow-right-thin</title><path d="M14 16.94V12.94H5.08L5.05 10.93H14V6.94L19 11.94Z" /></svg></Link>
+            {!loadingGeneral?
+              <>
+                <h1 className="text-3xl font-medium my-7">Welcome back, {user.name}</h1>
+                <Link to="/Reservations" className="">All Reservations
+                  <svg xmlns="http://www.w3.org/2000/svg" width={"30px"} height={"30px"} viewBox="0 0 24 24">
+                    <path d="M14 16.94V12.94H5.08L5.05 10.93H14V6.94L19 11.94Z" />
+                  </svg>
+                </Link>
+              </>
+               :
+               <>
+               <div className="skeleton-loader my-7 w-64 rounded-[2px] h-7 ml-3" />
+               <div className="skeleton-loader my-3 w-56 rounded-[2px] h-7 ml-3" />
+               
+               </>}
+
           </div>
 
           <div>
-            <div className="block text-2xl my-4 font-semibold">
-              Recommended for you
-            </div>
-            <div className="flex space-x-5  w-full overflow-scroll example">
+
+
+            {!loadingGeneral ?
+              <div className="block text-2xl my-4 font-semibold">
+                Recommended for you
+              </div>
+              :
+              <div className="skeleton-loader my-3 w-56 rounded-[2px] h-7 ml-3" />}
+
+            {!loadingGeneral ? <div className="flex space-x-5  w-full overflow-scroll example">
               {tips.map(tip => (
 
                 <AlertCard
-                  title={"Verify your identity"||tip.title}
+                  title={"Verify your identity" || tip.title}
                   description={tip.message}
                   link={tip.url}
-                
-                  // houseTitle={"Fully Furnished Apartment at Carrington 32 road"}
+
+                // houseTitle={"Fully Furnished Apartment at Carrington 32 road"}
                 />
 
               ))}
@@ -802,73 +931,77 @@ useEffect(() => {
                 your photo. Let them know who owns the apartment!"
                 link="/UsersShow"
               />
-            </div>
+            </div> : <div className="flex space-x-4  w-full overflow-scroll example">
+              {SkeletonLoaderTips}
+
+            </div>}
+
           </div>
         </div>
         <div className="reservation w-full md:w-[80vw] mt-14 pb-20">
           <div>
-           {!tabLoading? <h1 className="text-2xl font-medium mb-4">Your reservations</h1>
-            :
-            <h1 className="skeleton-loader mb-4 w-52 rounded-[2px] h-7" />}
+            {!loadingGeneral ? <h1 className="text-2xl font-medium mb-4">Your reservations</h1>
+              :
+              <h1 className="skeleton-loader mb-4 w-52 rounded-[2px] h-7 ml-3" />}
           </div>
           <div className="tab-container space-x-4 flex  overflow-x-auto whitespace-nowrap example">
-         {(!tabLoading)? <>
-            <div
-              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "checkingOut"
+            {(!loadingGeneral) ? <>
+              <div
+                className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "checkingOut"
                   ? "active bg-orange-300 text-white"
                   : ""
-                }`}
-              onClick={() => handleTabClick("checkingOut")}
-            >
-              Checking out ({checkingOut.length})
-            </div>
-            <div
-              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "currentlyHosting"
+                  }`}
+                onClick={() => handleTabClick("checkingOut")}
+              >
+                Checking out ({checkingOut.length})
+              </div>
+              <div
+                className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "currentlyHosting"
                   ? "active bg-orange-300 text-white"
                   : ""
-                }`}
-              onClick={() => handleTabClick("currentlyHosting")}
-            >
-              Currently hosting ({currentlyHosting.length})
-            </div>
-            <div
-              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "arrivingSoon"
+                  }`}
+                onClick={() => handleTabClick("currentlyHosting")}
+              >
+                Currently hosting ({currentlyHosting.length})
+              </div>
+              <div
+                className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "arrivingSoon"
                   ? "active bg-orange-300 text-white"
                   : ""
-                }`}
-              onClick={() => handleTabClick("arrivingSoon")}
-            >
-              Arriving soon ({arrivingSoonReservations.length})
-            </div>
-            <div
-              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "upcoming"
+                  }`}
+                onClick={() => handleTabClick("arrivingSoon")}
+              >
+                Arriving soon ({arrivingSoonReservations.length})
+              </div>
+              <div
+                className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "upcoming"
                   ? "active bg-orange-300 text-white"
                   : ""
-                }`}
-              onClick={() => handleTabClick("upcoming")}
-            >
-              Upcoming ({upcomingReservations.length})
-            </div>
-            <div
-              className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "pendingReview"
+                  }`}
+                onClick={() => handleTabClick("upcoming")}
+              >
+                Upcoming ({upcomingReservations.length})
+              </div>
+              <div
+                className={`tab border py-2 px-4 rounded-full cursor-pointer  ${activeTab === "pendingReview"
                   ? "active bg-orange-300 text-white"
                   : ""
-                }`}
-              onClick={() => handleTabClick("pendingReview")}
-            >
-              Pending review ({pendingReviews.length})
-            </div>
+                  }`}
+                onClick={() => handleTabClick("pendingReview")}
+              >
+                Pending review ({pendingReviews.length})
+              </div>
             </>
-            :
-          
-            (SkeletonLoaderTabs)
-          
+              :
+
+              (SkeletonLoaderTabs)
+
             }
           </div>
 
-        {!loading?<div className="tab-content">{renderTabContent()}</div>:<div className=" flex items-center w-full  whitespace-nowrap overflow-x-auto example ">{SkeletonLoader}</div>}
+          {!(loading || loadingGeneral) ? <div className="tab-content">{renderTabContent()}</div> : <div className=" flex items-center w-full  whitespace-nowrap overflow-x-auto example ">{SkeletonLoaderReservations}</div>}
 
-          <div className="my-10 bg-orange-100 p-5">
+         {!loadingGeneral? <div className="my-10 bg-orange-100 p-5">
             <h1 className="mb-5 text-2xl">Share more details</h1>
             <div className="w-64 border p-4 rounded-lg shadow-lg relative bg-white ">
               <div className="mb-4">
@@ -883,13 +1016,17 @@ useEffect(() => {
                   </button>
                 </Link>
               </div>
-              <button className="absolute top-2 right-2 bg-black text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer">
+              {/* <button className="absolute top-2 right-2 bg-black text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer">
                 X
-              </button>
+              </button> */}
             </div>
           </div>
+          :  
+          <div className="skeleton-loader my-10 h-[330px] w-full rounded-[2px]  ml-3" />
+        
+        }
 
-          <div className="my-10 bg-orange-100 p-5">
+          {!loadingGeneral?<div className="my-10 bg-orange-100 p-5">
             <h1 className="mb-5 text-2xl">We are here to help</h1>
 
             <div className="flex  flex-wrap">
@@ -910,6 +1047,14 @@ useEffect(() => {
 
             </div>
           </div>
+          :
+          <div className=" grid grid-cols-2 w-full ml-3 my-10 gap-8   ">
+            <div className="skeleton-loader my-10 h-[90px] w-full col-span-1  rounded-[6px]  " />
+            <div className="skeleton-loader my-10 h-[90px] w-full rounded-[6px] col-span-1  " />
+            <div className="skeleton-loader my-10 h-[90px] w-full col-span-2 rounded-[6px] " />
+          </div>
+          }
+
         </div>
       </div>
 

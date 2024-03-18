@@ -68,11 +68,11 @@ export default function Payments() {
 
     await axios.delete(`/deleteUserCard/${cardId}/${user.id}`).then(response => {
       console.log(response);
-      message.success(`Card ${type} deleted successfully`);
+      message.success(`Card ${type} Removed successfully`);
       fetchUserCards();
     }).catch(error => {
-      console.error("Failed to delete Card", error);
-      message.error(`An Error Occured while trying to delte Card ${type}`)
+      console.error("Failed to Remove Card", error);
+      message.error(`An Error Occured while trying to Remove Card ${type}`)
     })
 
   };
@@ -268,7 +268,7 @@ export default function Payments() {
                     <div className=" mt-4 min-[640px]:mt-0 min-[640px]:flex-shrink-0 min-[640px]:ml-6 ">
                       <Popconfirm
                         title="Remove Payment Card"
-                        description={`Sure you want to delete ${detail.title} Card?`}
+                        description={`Sure you want to remove ${detail.title} Card?`}
                         onConfirm={(e) => { confirm(e, detail.title, detail.id) }}
                         onCancel={cancel}
                         okText="Delete"
