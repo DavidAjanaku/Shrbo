@@ -35,7 +35,7 @@ export default function Home() {
   const [homeSubTitle, setHomeSubTitle] = useState("");
   const [listings, setListings] = useState();
   const [category, setCategory] = useState();
-  const [listingType, setListingType] = useState("NoFilter"); //I'm using this state to know what type of listing i'm getting based on the particular Api i'm making a request from
+  const [listingType, setListingType] = useState(""); //I'm using this state to know what type of listing i'm getting based on the particular Api i'm making a request from
   const [per_page, setPerPage] = useState(5); // handles the amount of listing that can show at a time
   const [current_page,setCurrent_page]=useState();
   const [last_page,setLast_page]=useState();
@@ -653,11 +653,12 @@ export default function Home() {
 
   // Logic For the Pagination {START}
   const showMoreListings = async () => {
-    console.log("perPage",per_page)
-    setPerPage((prevPage) => prevPage + 2);
-
+    
     setShowMoreLoading(true);
-
+    setPerPage((prevPage) => prevPage + 2);
+    const newPerpage=per_page+2;
+    console.log("perPage",per_page)
+    
     switch (listingType) {
       case "NoFilter":
       await  fetchListings().finally(() => setShowMoreLoading(false));
@@ -673,21 +674,22 @@ export default function Home() {
   }
 
   useEffect(() => {
-    setShowMoreLoading(false);
-    // switch (listingType) {
-    //   case "NoFilter":
-    //     fetchListings().finally(() => setShowMoreLoading(false));
-    //     break;
-    //   case "FilterbyPropertTypes":
-    //     filterDataByCategories(category).finally(() => setShowMoreLoading(false));
-    //     break;
-    //   default:
-    //   }
-      fetchListings();
-      // console.log("show",showMoreLoading);
-      // setShowMoreLoading(false)
+    switch (listingType) {
+      case "NoFilter":
+        setShowMoreLoading(true);
+        fetchListings().finally(() => setShowMoreLoading(false));
+        break;
+        case "FilterbyPropertTypes":
+        setShowMoreLoading(true);
+        filterDataByCategories(category).finally(() => setShowMoreLoading(false));
+        break;
+      default:
+        console.log("show",showMoreLoading);
+        setShowMoreLoading(false)
+        fetchListings();
+      }
           
-  }, []);
+  }, [per_page]);
 
 
 

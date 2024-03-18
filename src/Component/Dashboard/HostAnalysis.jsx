@@ -575,7 +575,7 @@ export default function HostAnalysis() {
             {!earningsLoading ?
               <div className="my-20">
                 <h1 className="text-2xl font-bold">{selectedMonth} Details</h1>
-                {(earningsApartmentData.length>1 )? <TopEarningApartments apartments={earningsApartmentData} />: <p className="w-full text-slate-800 text-center my-16"> Your Listings Earnings Will Show Here. </p>}
+                {earningsApartmentData.length? <TopEarningApartments apartments={earningsApartmentData} />: <p className="w-full text-slate-800 text-center my-16"> Your Listings Earnings Will Show Here. </p>}
                
               </div>
               :

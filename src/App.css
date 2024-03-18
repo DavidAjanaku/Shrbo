@@ -382,7 +382,7 @@ The slider*/
     width: 90% !important;
 }
 
-
+  
 .fc-bg-event {
   display: flex;
   justify-content:center;
@@ -390,6 +390,7 @@ The slider*/
   background-color: transparent;
   padding-bottom: 10px;
   cursor:not-allowed ;
+  
 }
 
 
