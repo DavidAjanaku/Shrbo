@@ -250,6 +250,7 @@ export default function ListingForm({
   useEffect(() => {
     if (checkInDate && checkOutDate && checkOutDate < checkInDate) {
       setIsBookButtonDisabled(true);
+      
     } else {
       setIsBookButtonDisabled(false);
     }
@@ -1133,6 +1134,7 @@ const isCheckoutBlocked = () => {
     </div>
   );
 }
+
 
 function MyDropdown({ adults, pets, setAdults, setPets, maxValue }) {
   const [adultCount, setAdultCount] = useState(adults);
