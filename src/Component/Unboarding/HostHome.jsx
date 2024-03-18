@@ -1832,12 +1832,16 @@ export default function HostHome({ match }) {
           </button>
         )}
         {step === 18 && (
-          <button
-            type="button" // Add this line to prevent form submission
+          <Link
+            to="/ApartmentListingApproval"
             className="text-white text-center bg-orange-400 w-full p-4"
           >
-            Go to Host page
-          </button>
+            <button
+              type="button" // Add this line to prevent form submission
+            >
+              Go to Dashboard
+            </button>
+          </Link>
         )}
       </div>
       <Link ref={goLogin} to={"/Login"} />

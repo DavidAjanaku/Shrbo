@@ -196,11 +196,20 @@ export default function GuestsListings() {
       title: "Date Created",
       dataIndex: "created_at",
       key: "dateCreated",
+      render: (date) => {
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        return new Date(date).toLocaleDateString('en-US', options);
+      },
     },
+    
     {
       title: "Last Login",
       dataIndex: "last_login_at",
       key: "lastLogin",
+      render: (date) => {
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        return new Date(date).toLocaleDateString('en-US', options);
+      },
     },
     {
       title: "Actions",

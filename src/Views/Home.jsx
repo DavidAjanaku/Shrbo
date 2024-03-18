@@ -133,12 +133,13 @@ export default function Home() {
 
         // Set the user data in state
         setUser(response.data);
-        setReceiverId(response.data.id);
         console.log(response.data.host);
 
         console.log("yes",response.data);
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
+        localStorage.setItem('receiverid', response.data.id);
+
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
@@ -158,9 +159,12 @@ export default function Home() {
     localStorage.setItem('receiverid', receiverid);
 }, []);
 
-  // Home Page Data
+console.log();
 
-  console.log(receiverId);
+  // Home Page Data
+  const receiverIds = localStorage.getItem('receiverid');
+
+  console.log(receiverIds);
 
   useEffect(() => {
     const homePageData = async () => {

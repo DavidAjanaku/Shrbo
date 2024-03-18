@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="src/assets/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shrbo -Shortlet Bookings</title>
+    <title>Shrbo - Shortlet Bookings</title>
     <link rel="shortcut icon" href="src/assets/logo.png" type="image/x-icon" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
@@ -13,8 +13,12 @@
     <script type="module" src="/src/main.jsx"></script>
     <script type="module" src="https://shortletbooking.com/myjsfile"></script>
 
-    <!-- <script>
-        function initializeEcho(token, receiverId) {
+    <script>
+        const token = localStorage.getItem('tokens');
+        const receiverId = localStorage.getItem('receiverid');
+        console.log('Receiver ID:', receiverId);
+
+        function initializeEcho(token) {
             console.log('Starting Echo initialization...');
 
             if (typeof window.Echo !== 'undefined') {
@@ -22,14 +26,19 @@
 
                 const channelName = `messanger.${receiverId}`;
                 console.log('Channel name:', channelName);
-                console.log('Windows', window.Echo);
 
                 if (token) {
+                    window.Echo.connector.options.auth.host = 'https://shortletbooking.com/';
                     window.Echo.connector.options.auth.headers.Authorization = `Bearer ${token}`;
                     console.log('Authentication token is set:', window.Echo.connector.options.auth.headers.Authorization);
 
-                    // Subscribe to the private channel
+                    const broadcastingAuthUrl = window.Echo.connector.options.authEndpoint;
+                    console.log('Broadcasting Auth URL:', broadcastingAuthUrl);
+                    
                     const privateChannel = window.Echo.private(channelName);
+
+                    console.log('Windows', window.Echo);
+
                     privateChannel.listen('MessageSent', (e) => {
                         console.log('Received message:', e);
                     });
@@ -42,74 +51,20 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const token = localStorage.getItem('tokens');
-            const receiverId = localStorage.getItem('receiverid');
+        document.addEventListener('DOMContentLoaded', function() {
+            const channelName = 'new-public-channel';
 
-            console.log('Token:', token);
-            console.log('Receiver ID:', receiverId);
+            if (typeof window.Echo !== 'undefined') {
+                window.Echo.channel(channelName)
+                    .listen('NewEvent', (event) => {
+                        document.getElementById('message').innerText = 'Received message: ' + event.message;
+                    });
+            } else {
+                console.error('Echo is not defined. Make sure Laravel Echo is properly configured.');
+            }
 
-            initializeEcho(token, 47);
+            initializeEcho(token);
         });
-    </script> -->
-
-    
-
-    <script>
-
-const token = localStorage.getItem('tokens');
-            const receiverId = localStorage.getItem('receiverid');
-
-            console.log('Token:', token);
-            console.log('Receiver ID:', receiverId);
-
-
-      function initializeEcho(token) {
-          const receiverId = 47;
-      
-          console.log('Starting Echo initialization...');
-      
-          if (typeof window.Echo !== 'undefined') {
-              console.log('Echo is defined. Proceeding with initialization.');
-      
-              const channelName = receiverId;
-              console.log('Channel name:', channelName);
-              console.log('Windows', window.Echo);
-      
-              if (token) {
-                  window.Echo.connector.options.auth.headers.Authorization = `Bearer ${token}`;
-                  console.log('Authentication token is set:', window.Echo.connector.options.auth.headers.Authorization);
-      
-                  // Subscribe to the private channel
-                  const privateChannel = window.Echo.private(channelName);
-                  privateChannel.listen('MessageSent', (e) => {
-                      console.log('Received message:', e);
-                  });
-                  console.log('Listening for messages on channel:', channelName);
-              } else {
-                  console.log('Authentication token is not available.');
-              }
-          } else {
-              console.error('Echo is not defined. Make sure Laravel Echo is properly configured.');
-          }
-      }
-
-      document.addEventListener('DOMContentLoaded', function() {
-          const channelName = 'new-public-channel';
-
-          // Check if window.Echo is defined
-          if (typeof window.Echo !== 'undefined') {
-              window.Echo.channel(channelName)
-                  .listen('NewEvent', (event) => {
-                      // document.getElementById('message').innerText = 'Received message: ' + event.message;
-                  });
-          } else {
-              console.error('Echo is not defined. Make sure Laravel Echo is properly configured.');
-          }
-
-          initializeEcho(token);
-      })
-      
-  </script>
+    </script>
 </body>
 </html>
