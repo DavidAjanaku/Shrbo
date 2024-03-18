@@ -271,22 +271,22 @@ export default function ListingForm({
   );
 
   console.log(bookingCount);
+
   const calculateWeekendNights = (checkIn, checkOut) => {
     let weekendNights = 0;
     let currentDate = new Date(checkIn);
-  
+
     while (currentDate < checkOut) {
       const dayOfWeek = currentDate.getDay();
-      if (dayOfWeek === 5 || dayOfWeek === 6) {
-        // 5 is Friday, 6 is Saturday
+      if (dayOfWeek === 6 || dayOfWeek === 0) {
+        // 6 is Saturday, 0 is Sunday
         weekendNights++;
       }
       currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
     }
-  
+
     return weekendNights;
   };
-  
   console.log(checkoutDates);
 
   useEffect(() => {
@@ -423,7 +423,7 @@ export default function ListingForm({
         let currentDate = new Date(startDate);
 
         while (currentDate < endDate) {
-          if (currentDate.getDay() === 6 || currentDate.getDay() === 0) {
+          if (currentDate.getDay() === 5 || currentDate.getDay() === 6) {
             // If the current date is Saturday or Sunday, update the basePrice with the weekend price
             basePrice -= nightlyPrice; // Subtract the normal nightly price
             basePrice += weekendPrice; // Add the weekend price
