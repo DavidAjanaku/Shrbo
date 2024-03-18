@@ -271,22 +271,22 @@ export default function ListingForm({
   );
 
   console.log(bookingCount);
-
   const calculateWeekendNights = (checkIn, checkOut) => {
     let weekendNights = 0;
     let currentDate = new Date(checkIn);
-
+  
     while (currentDate < checkOut) {
       const dayOfWeek = currentDate.getDay();
-      if (dayOfWeek === 6 || dayOfWeek === 0) {
-        // 6 is Saturday, 0 is Sunday
+      if (dayOfWeek === 5 || dayOfWeek === 6) {
+        // 5 is Friday, 6 is Saturday
         weekendNights++;
       }
       currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
     }
-
+  
     return weekendNights;
   };
+  
   console.log(checkoutDates);
 
   useEffect(() => {

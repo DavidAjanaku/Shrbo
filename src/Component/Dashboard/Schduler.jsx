@@ -25,6 +25,7 @@ export default class Scheduler extends Component {
       unblockedDates: [],
       customBlockedDates: [],
       customPriceforCertainDates: [],
+      WeekendPrice:"",
       isBlocked: "",
       selectedHouse: null,
       houseOptions: [],
@@ -186,7 +187,7 @@ export default class Scheduler extends Component {
           booking.check_in,
           booking.check_out
         );
-        const isDateAlreadyBlocked = datesBetween.some(date => this.state.blockedDates.includes(date));
+        // const isDateAlreadyBlocked = datesBetween.some(date => this.state.blockedDates.includes(date));
 
         // // If not, add them to CustomBlockedDates
         // Filter out dates that are already blocked
@@ -216,10 +217,15 @@ export default class Scheduler extends Component {
           // Check if any date between start_date and end_date is already in blockedDates
           const isDateAlreadyBlocked = datesBetween.some(date => this.state.blockedDates.includes(date));
 
+           // Filter out dates that are already blocked
+        const newDatesToAdd = datesBetween.filter(date => !this.state.blockedDates.includes(date));
+
           // If not, add them to CustomBlockedDates
-          if (!isDateAlreadyBlocked) {
-            acc.push(...datesBetween);
-          }
+          // if (!isDateAlreadyBlocked) {
+          //   acc.push(...datesBetween);
+          // }
+
+          return [...acc, ...newDatesToAdd];
         }
 
         return acc;
@@ -333,12 +339,14 @@ export default class Scheduler extends Component {
         !bookedDates.includes(currentDateString) &&
         !customBlockedDates.includes(currentDateString)) {
         unblockedDates.push({
-          title: "Available",
+          title: "",
           start: currentDateString,
           allDay: true,
           display: "background",
+          className: 'available-dates',
           extendedProps: { price: this.getCertainDatePrice(currentDateString) },
-          backgroundColor: "rgba(51, 65, 85,1)"
+          backgroundColor: "transparent",
+          textColor: 'rgb(82,82,82)',
 
         });
         dates.push(currentDateString);
@@ -350,6 +358,7 @@ export default class Scheduler extends Component {
     const RemovedDuplicates = new Set(unblockedDates)
     return [...RemovedDuplicates];
   }
+  
 
 
 
@@ -546,7 +555,9 @@ export default class Scheduler extends Component {
         const price = customPriceEntry.price;
         this.setState({ selectedDatePrice: price });
       } else {
-        this.setState({ selectedDatePrice: this.state.editedPrice });
+        const isWeekend = this.isWeekend(clickedDate);
+        const price=((isWeekend&&this.state.selectedHouse.customWeekendPrice)?this.state.selectedHouse.customWeekendPrice:this.state.editedPrice);
+        this.setState({ selectedDatePrice: price });
       }
 
 
@@ -747,10 +758,18 @@ export default class Scheduler extends Component {
   // this get the prices for certain dates and checks if the event Prices matches them
   getCertainDatePrice(date) {
     const customPriceEntry = this.state.customPriceforCertainDates.find(entry => entry && entry.date === date);
-    const price = customPriceEntry ? customPriceEntry.price : this.state.editedPrice;
+    const isWeekend = this.isWeekend(date);
+    const price = customPriceEntry ? customPriceEntry.price : ((isWeekend&&this.state.selectedHouse.customWeekendPrice)?this.state.selectedHouse.customWeekendPrice:this.state.editedPrice);
+
 
     return price;
   }
+
+
+  isWeekend(date) {
+    const day = new Date(date).getDay();
+    return day === 0 || day === 6; // 0 is Sunday, 5 is Friday, 6 is Saturday
+}
 
 
 
@@ -917,7 +936,7 @@ export default class Scheduler extends Component {
                       allDay: true,
                       extendedProps: { price: this.getCertainDatePrice(date) },
                       display: 'background',
-                      backgroundColor: "rgba(209, 213, 219, 0.7)",
+                      backgroundColor: "rgba(209, 213, 219, 1)",
 
 
 
@@ -938,11 +957,15 @@ export default class Scheduler extends Component {
 
                       // If not, add it
 
-                      title: "Blocked",
+                      title: "",
                       start: date,
+                      className: 'blocked-dates',
                       extendedProps: { price: this.getCertainDatePrice(date) },
                       allDay: true,
-                      backgroundColor: "rgba(51, 65, 85,1)"
+                      display:"background",
+                      textColor: 'rgb(82,82,82)',
+                      backgroundColor: "rgba(209, 213, 219, 1)",
+
 
 
 
@@ -970,9 +993,9 @@ export default class Scheduler extends Component {
 
                     return {
                       html: `
-                      <div class="w-full flex-col flex justify-center overflow-clip ">
+                      <div class="w-full flex-col text-sm flex justify-center overflow-clip ">
                         <div class="text-center  "   >${arg.event.title}</div>
-                        <div class=" text-sm md:text-base  text-center  "> ₦${arg.event.extendedProps.price}</div>
+                        <div class="   text-center  "> ₦${arg.event.extendedProps.price}</div>
                       </div>
                     `,
                     };

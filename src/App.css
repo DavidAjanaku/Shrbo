@@ -382,16 +382,53 @@ The slider*/
     width: 90% !important;
 }
 
-  
+
 .fc-bg-event {
   display: flex;
   justify-content:center;
   align-items:flex-end;
-  background-color: transparent;
+  /* background-color: transparent; */
   padding-bottom: 10px;
   cursor:not-allowed ;
   
 }
+
+
+
+.fc-daygrid-day:has(.fc-daygrid-day-bg .blocked-dates) .fc-daygrid-day-top {
+  text-decoration: line-through;
+  color: #ccc;
+}
+
+
+.available-dates{
+  color: rgb(0, 0, 0);
+  background-color: transparent;
+  background: transparent;
+ 
+  cursor:pointer ;
+
+}
+.blocked-dates{
+  color: rgb(0, 0, 0);
+  background-color: transparent;
+  background: transparent;
+ 
+  cursor:pointer ;
+
+}
+
+.fc-daygrid-day-frame :focus{
+  border-color: #000000;
+  border: 1px solid;
+  border-radius: 30px;
+
+  
+
+}
+
+
+
 
 
 /* .blockedDates{
