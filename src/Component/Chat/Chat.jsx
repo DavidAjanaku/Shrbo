@@ -59,7 +59,7 @@ const Chat = () => {
 
   const sendMessage = async (msgType) => {
     if (!message.trim()) return; // Prevent sending empty messages
-
+  
     try {
       const response = await Axios.post(
         `/chat/${selectedUser}`,
@@ -70,7 +70,7 @@ const Chat = () => {
           },
         }
       );
-
+  
       // Update the userChats state with the new message
       const chat = userChats[selectedUser] || [];
       const newChatItem = {
@@ -81,27 +81,31 @@ const Chat = () => {
       };
       const newChat = [...chat, newChatItem];
       setUserChats({ ...userChats, [selectedUser]: newChat });
-
+  
       setMessage(""); // Clear the message input after sending
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
-
+  
+  
   const TypingIndicator = () => (
     <div className="flex items-center text-gray-500">
       <div className="w-3 h-3 bg-gray-500 rounded-full mr-1"></div>
       <p>User is typing...</p>
     </div>
   );
+  
 
-  // Your existing code
-
-  const handleTyping = (e) => {
-    const message = e.target.value;
-    setMessage(message);
-    setIsTyping(message.trim().length > 0);
-  };
+  
+    // Your existing code
+  
+    const handleTyping = (e) => {
+      const message = e.target.value;
+      setMessage(message);
+      setIsTyping(message.trim().length > 0);
+    };
+  
 
   const filteredUsers = users.filter((user) => {
     const nameMatch = user.name
@@ -222,82 +226,75 @@ const Chat = () => {
                 </div>
               )}
               {selectedUser && (
-                <div className="w-full">
-                  <div className="bg-white p-4 rounded shadow">
-                    {selectedUser ? (
-                      <>
-                        <div className="flex items-center pb-4 gap-3">
-                          <div className="cursor-pointer">
-                            <FaArrowLeft
-                              onClick={() => setSelectedUser(null)}
-                            />
-                          </div>
-                          <p className="text-lg font-semibold">
-                            {
-                              users.find((user) => user.id === selectedUser)
-                                ?.name
-                            }
-                          </p>
-                        </div>
-                        <div className="h-[60vh] overflow-y-auto example">
-                          {userChats[selectedUser]?.map((msg, index) => (
-                            <div
-                              key={index}
-                              className={`flex ${
-                                msg.sender.id === ADMIN_ID
-                                  ? "flex-row-reverse"
-                                  : "flex-row"
-                              }`}
-                            >
-                              <div
-                                className={`mb-2 p-2 rounded ${
-                                  msg.sender.id === ADMIN_ID
-                                    ? "bg-orange-100 w-fit text-blue-900"
-                                    : "bg-gray-100 text-gray-900"
-                                }`}
-                              >
-                                <p>{msg.message}</p>
-                                <p>{msg.text}</p>
-                                <p className="text-xs text-gray-500">
-                                  {msg.time instanceof Date
-                                    ? msg.time.toLocaleDateString(undefined, {
-                                        weekday: "long",
-                                        day: "numeric",
-                                        year: "numeric",
-                                        month: "long",
-                                      })
-                                    : ""}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                          {isTyping && <TypingIndicator />}
-                        </div>
-                        <div className="mt-4 flex gap-2">
-                          <textarea
-                            className="w-full p-2 border rounded"
-                            placeholder="Type your message here..."
-                            value={message}
-                            onChange={handleTyping}
-                          ></textarea>
-                          <button
-                            className="bg-orange-400 text-white px-4 py-2 rounded float-right"
-                            onClick={() => sendMessage("text")}
-                          >
-                            <FontAwesomeIcon
-                              icon={faPaperPlane}
-                              className="mr-2"
-                            />
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <p className="text-gray-500 flex items-center h-[80vh] justify-center">
-                        Select a user to start chatting.
-                      </p>
-                    )}
-                  </div>
-                </div>
+             <div className="w-full">
+             <div className="bg-white p-4 rounded shadow">
+               {selectedUser ? (
+                 <>
+                   <div className="flex items-center pb-4 gap-3">
+                     <div className="cursor-pointer">
+                       <FaArrowLeft onClick={() => setSelectedUser(null)} />
+                     </div>
+                     <p className="text-lg font-semibold">
+                       {users.find((user) => user.id === selectedUser)?.name}
+                     </p>
+                   </div>
+                   <div className="h-[60vh] overflow-y-auto example">
+                     {userChats[selectedUser]?.map((msg, index) => (
+                       <div
+                         key={index}
+                         className={`flex ${
+                           msg.sender.id === ADMIN_ID ? "flex-row-reverse" : "flex-row"
+                         }`}
+                       >
+                         <div
+                           className={`mb-2 p-2 rounded ${
+                             msg.sender.id === ADMIN_ID
+                               ? "bg-orange-100 w-fit text-blue-900"
+                               : "bg-gray-100 text-gray-900"
+                           }`}
+                         >
+                           <p>{msg.message}</p>
+                           <p>{msg.text}</p>
+                           <p className="text-xs text-gray-500">
+                             {msg.time instanceof Date
+                               ? msg.time.toLocaleDateString(undefined, {
+                                   weekday: "long",
+                                   day: "numeric",
+                                   year: "numeric",
+                                   month: "long",
+                                 })
+                               : ""}
+                           </p>
+
+                         </div>
+                       </div>
+                     ))}
+                     {isTyping && <TypingIndicator />}
+                   </div>
+                   <div className="mt-4 flex gap-2">
+                     <textarea
+                       className="w-full p-2 border rounded"
+                       placeholder="Type your message here..."
+                       value={message}
+          onChange={handleTyping}
+                     ></textarea>
+                     <button
+                       className="bg-orange-400 text-white px-4 py-2 rounded float-right"
+                       onClick={() => sendMessage("text")}
+                     >
+                       <FontAwesomeIcon icon={faPaperPlane} className="mr-2" />
+                     </button>
+
+                   </div>
+                 </>
+               ) : (
+                 <p className="text-gray-500 flex items-center h-[80vh] justify-center">
+                   Select a user to start chatting.
+                 </p>
+               )}
+             </div>
+           </div>
+           
               )}
             </div>
           </div>
