@@ -11,6 +11,7 @@ import {
 import Logo from "../../assets/logo.png";
 import axios from '../../Axios';
 import Rating from "../ListingInfo/Ratings";
+import { Avatar } from 'antd';
 
 const Reservations = () => {
   const [allKey, setAllKey] = useState("6");
@@ -296,13 +297,13 @@ const Reservations = () => {
 
   );
 
-  const SkeletonLoaderTabs= Array.from({ length: 4 }).map((group, index) =>(
+  const SkeletonLoaderTabs = Array.from({ length: 4 }).map((group, index) => (
     <div
-    key={index}
-    className={`  py-2 px-4 w-28  h-10 rounded-full   skeleton-loader `}
-  >
-        
-  </div>
+      key={index}
+      className={`  py-2 px-4 w-28  h-10 rounded-full   skeleton-loader `}
+    >
+
+    </div>
 
   ));
 
@@ -332,7 +333,7 @@ const Reservations = () => {
               </svg>
             </button>
           </div>
-        {!loading&&  <Dropdown
+          {!loading && <Dropdown
             // menu={{
             //  items:dropdownItems,
             // }}
@@ -413,21 +414,21 @@ const Reservations = () => {
         </div>
 
         <div className=" max-w-full  h-full   ">
-       {!loading?   <Tabs
+          {!loading ? <Tabs
             defaultActiveKey="1"
             onTabClick={onTabClick}
             activeKey={allKey}
             items={items}
           />
-          :
-          <div className=" mt-5 ">
+            :
+            <div className=" mt-5 ">
 
-            {SkeletonLoaderTabs}
+              {SkeletonLoaderTabs}
 
-            <div className=" mt-3    w-full h-auto    gap-2 md:gap-4 grid grid-cols-1 md:grid-cols-2     ">
-              {skeletonLoader}
+              <div className=" mt-3    w-full h-auto    gap-2 md:gap-4 grid grid-cols-1 md:grid-cols-2     ">
+                {skeletonLoader}
+              </div>
             </div>
-          </div>
           }
 
         </div>
@@ -485,11 +486,14 @@ const Reservations = () => {
 
                   <div className="  ">
                     <div className="rounded-xl  relative ">
-                      <div
+                      {/* <div
                         style={{ backgroundImage: `url(${filteredData[selectedReservation].profilePic})` }}
                         className={` relative   box-border block md:h-[50px] md:w-[50px] h-[45px] w-[45px] 
                                           bg-center rounded-[50%] bg-cover bg-no-repeat   `}
-                      ></div>
+                      ></div> */}
+
+                      <Avatar className={` relative   box-border block md:h-[50px] md:w-[50px] h-[45px] w-[45px] 
+                                          bg-center rounded-[50%] bg-cover bg-no-repeat   `} src={`${filteredData[selectedReservation].profilePic}`} />
 
                       {/* <div className=" border-white border-2  box-border block h-[40px] w-[40px] 
                                           bg-[url('https://a0.muscache.com/im/pictures/user/82130759-fbba-4012-ac60-51d5b0e4801e.jpg?im_w=240')] 
@@ -746,12 +750,15 @@ const CardTable = ({ dataSource, handlePopup }) => {
 
                 <div className="  ">
                   <div className="rounded-xl  relative ">
-                    <div
+                    {/* <div
                       style={{ backgroundImage: `url(${data.profilePic})` }}
                       className={`relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
                         
                             bg-center rounded-[50%] bg-cover bg-no-repeat  ` }
-                    ></div>
+                    ></div> */}
+
+                    <Avatar className={` relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
+                                          bg-center rounded-[50%] bg-cover bg-no-repeat   `} src={`${data.profilePic}`} />
 
                     {/* <div className=" border-white border-2  box-border block h-[40px] w-[40px] 
                             bg-[url('https://a0.muscache.com/im/pictures/user/82130759-fbba-4012-ac60-51d5b0e4801e.jpg?im_w=240')] 
