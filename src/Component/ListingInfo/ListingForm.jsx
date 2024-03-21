@@ -423,7 +423,7 @@ export default function ListingForm({
         let currentDate = new Date(startDate);
 
         while (currentDate < endDate) {
-          if (currentDate.getDay() === 6 || currentDate.getDay() === 0) {
+          if (currentDate.getDay() === 5 || currentDate.getDay() === 6) {
             // If the current date is Saturday or Sunday, update the basePrice with the weekend price
             basePrice -= nightlyPrice; // Subtract the normal nightly price
             basePrice += weekendPrice; // Add the weekend price
