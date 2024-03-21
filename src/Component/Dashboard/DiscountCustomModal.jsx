@@ -2,7 +2,7 @@ import React, { useState,useEffect } from "react";
 import { Slider } from "antd";
 // import "antd/dist/antd.css";
 
-const DiscountCustomModal = ({ visible, onClose, onSubmit, discountType,percentage }) => {
+const DiscountCustomModal = ({ visible, onClose, onSubmit, discountType,percentage,loading }) => {
   const [discountDuration, setDiscountDuration] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState("");
 
@@ -31,7 +31,7 @@ const DiscountCustomModal = ({ visible, onClose, onSubmit, discountType,percenta
     }
 
     
-    onClose();
+    // onClose();
   };
 
   return (
@@ -98,12 +98,21 @@ const DiscountCustomModal = ({ visible, onClose, onSubmit, discountType,percenta
         <div className="my-5 py-5">
           <button
             onClick={handleOK}
-            className="bg-orange-400 w-full text-white p-2 rounded cursor-pointer"
+            disabled={loading}
+            className="bg-orange-400 w-full text-white p-2 rounded cursor-pointer relative"
           >
             Save
+            {loading&& <div className=" z-20 bg-slate-100/50 text-black  flex items-center justify-center left-0 top-0 h-full  absolute w-full">
+                  {/* <div className="self-start    rounded-lg max-w-[200px]"> */}
+                    <div className="dot-pulse1 w-12">
+                      <div className="dot-pulse1__dot"></div>
+                    </div>
+                  {/* </div> */} 
+                </div>}
           </button>
           <button
             onClick={handleCancel}
+            disabled={loading}
             className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
           >
             Cancel

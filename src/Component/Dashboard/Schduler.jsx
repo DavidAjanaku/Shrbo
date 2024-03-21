@@ -3,7 +3,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { Tabs } from "antd";
-
+import { message } from 'antd';
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import { IoIosArrowForward } from "react-icons/io";
 import HostHeader from "../Navigation/HostHeader";
@@ -25,9 +25,10 @@ export default class Scheduler extends Component {
       unblockedDates: [],
       customBlockedDates: [],
       customPriceforCertainDates: [],
-      WeekendPrice:"",
+      WeekendPrice: "",
       isBlocked: "",
       selectedHouse: null,
+      selectedOption: null,
       houseOptions: [],
       selectedDatePrice: "",
       selectedEditDate: null,
@@ -37,6 +38,11 @@ export default class Scheduler extends Component {
       selectedDates: [],
       discountModalVisible: false,
       isApartmentSelected: false,
+
+      isPriceLoading: false,
+      isBlockingLoading: false,
+      isHouseOptionLoading: false,
+      isSelectedHouseLoading: false,
 
       showWeeklyDiscountDetails: false,
       apartmentPrices: {
@@ -138,6 +144,7 @@ export default class Scheduler extends Component {
 
 
   handleHouseSelect = async (houseId) => {
+    this.setState({ isSelectedHouseLoading: true });
 
 
     // const selectedHouse = this.state.houseOptions.find(house => house.id === parseInt(houseId, 10));
@@ -149,7 +156,9 @@ export default class Scheduler extends Component {
       return;
     }
 
-    await this.fetchData(houseId);
+    await this.fetchData(houseId).finally(() => {
+      this.setState({ isSelectedHouseLoading: false });
+    });
 
 
 
@@ -217,8 +226,8 @@ export default class Scheduler extends Component {
           // Check if any date between start_date and end_date is already in blockedDates
           const isDateAlreadyBlocked = datesBetween.some(date => this.state.blockedDates.includes(date));
 
-           // Filter out dates that are already blocked
-        const newDatesToAdd = datesBetween.filter(date => !this.state.blockedDates.includes(date));
+          // Filter out dates that are already blocked
+          const newDatesToAdd = datesBetween.filter(date => !this.state.blockedDates.includes(date));
 
           // If not, add them to CustomBlockedDates
           // if (!isDateAlreadyBlocked) {
@@ -358,20 +367,25 @@ export default class Scheduler extends Component {
     const RemovedDuplicates = new Set(unblockedDates)
     return [...RemovedDuplicates];
   }
-  
+
 
 
 
 
 
   componentDidMount() {
+    this.setState({ isHouseOptionLoading: true });
     axios.get('/schdulerGetHostHomeAndId').then(response => {
       const formattedOptions = response.data.data.map(item => ({
         id: item.id,
         property_name: item.property_name,
       }));
       this.setState({ houseOptions: formattedOptions })
-    }).catch();
+    }).catch().finally(
+      () => {
+        this.setState({ isHouseOptionLoading: false });
+      }
+    );
 
     this.updateBlockedDates();
     // this.getUnblockedDates();
@@ -407,6 +421,8 @@ export default class Scheduler extends Component {
     const singleDate = date[0];
     const isSingleDateInCustomPrices = this.state.customPriceforCertainDates.some(entry => entry.date === singleDate)
 
+    this.setState({ isPriceLoading: true });
+
     if (isSingleDateInCustomPrices) {
 
       axios.put(`/schdulerUpdatePricesForDateRange/${id}`, {
@@ -414,28 +430,47 @@ export default class Scheduler extends Component {
         start_date: startDate,
         end_date: endDate,
       }).then(response => {
-        this.fetchData(id)
+        this.fetchData(id).finally(() => {
+          this.setState({ isPriceLoading: false });
+          message.success("Updated Price")
+        })
 
       }).catch(err => {
+        this.setState({ isPriceLoading: false });
+        message.error("Couldn't Update Price")
         console.log(err)
         this.setState({ editedPrice: this.state.selectedHouse.basePrice }); /// for The calender price to change
+      }).finally(() => {
+        this.hidePricingModal();
+
       });
 
 
     } else {
       /// for The calender price to change
       await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, dates: (date ? [...datesBetween] : "") }).then(response => {
-        this.fetchData(id)
+        this.fetchData(id).finally(() => {
+          this.setState({ isPriceLoading: false });
+          message.success("Updated Price")
+          this.hidePricingModal();
+        })
 
       }).catch(err => {
+        this.setState({ isPriceLoading: false });
+        message.error("Couldn't Update Price")
         console.log(err)
         this.setState({ editedPrice: this.state.selectedHouse.basePrice }); /// for The calender price to change
+        this.hidePricingModal();
+      }).finally(() => {
+        this.hidePricingModal();
+
       });
 
 
 
 
     }
+
 
 
   }
@@ -458,15 +493,23 @@ export default class Scheduler extends Component {
     console.log("end", endDate)
     console.log("datesbetween", ...datesBetween)
 
+    this.setState({ isBlockingLoading: true });
+
     if (blockID === 1) {// if block is clicked
 
       await axios.post(`/schduler/host-homes/${id}/edit-blocked-date`, { dates: [...datesBetween] }).then(response => {
         this.setState((prevState) => ({
           customBlockedDates: [...prevState.customBlockedDates, ...datesBetween],
         }));
-        this.hidePricingModal();
+        this.setState({ isBlockingLoading: false });
+        message.success("Blocked Date(s)");
 
-      }).catch(error => { console.log("could not Block", error) });
+      }).catch(error => {
+        this.setState({ isBlockingLoading: false });
+        message.error("Couldn't Block Date(s)");
+
+        // console.log("could not Block", error) 
+      })
     } else {
       await axios.post(`/schduler/host-homes/${id}/edit-unblock-date`, {
         start_date: startDate,
@@ -475,16 +518,26 @@ export default class Scheduler extends Component {
         this.setState((prevState) => ({
           customBlockedDates: prevState.customBlockedDates.filter(d => !datesBetween.includes(d)),
         }));
-        this.hidePricingModal();
+        this.setState({ isBlockingLoading: false });
+        message.success("Unblocked Date(s)")
+        // this.hidePricingModal();
       }).catch(error => {
-        console.log("could not unblock", error);
-      });
+        this.setState({ isBlockingLoading: false });
+        message.error("Couldn't Unblock Date(s)");
+        // console.log("could not unblock", error);
+      })
     }
 
   }
 
 
   hidePricingModal = () => {
+    if (this.state.isPriceLoading) {
+      return;
+    }
+    if (this.state.isBlockingLoading) {
+      return;
+    }
     this.setState({ pricingModalVisible: false }) // Set the custom modal to be visible
   };
 
@@ -556,7 +609,7 @@ export default class Scheduler extends Component {
         this.setState({ selectedDatePrice: price });
       } else {
         const isWeekend = this.isWeekend(clickedDate);
-        const price=((isWeekend&&this.state.selectedHouse.customWeekendPrice)?this.state.selectedHouse.customWeekendPrice:this.state.editedPrice);
+        const price = ((isWeekend && this.state.selectedHouse.customWeekendPrice) ? this.state.selectedHouse.customWeekendPrice : this.state.editedPrice);
         this.setState({ selectedDatePrice: price });
       }
 
@@ -639,6 +692,11 @@ export default class Scheduler extends Component {
     );
     const anyInCustomPrice = this.areAnyDatesInCustomPrice(generatedDates, this.state.customPriceforCertainDates);
     const commonPrice = this.getCommonPriceForDates(generatedDates, this.state.customPriceforCertainDates);
+
+    const allWeekends = generatedDates.every(date => {
+      const day = new Date(date).getDay();
+      return day === 5 || day === 6;
+    });
     if (category) {
       // All dates belong to the same category, perform your actions here
       console.log(`All dates belong to the ${category} category`);
@@ -669,10 +727,23 @@ export default class Scheduler extends Component {
 
 
       }
+      if (this.isAnyWeekend(generatedDates)&&this.state.selectedHouse.customWeekendPrice) {
+
+       
+
+        if (allWeekends) {
+          console.log("hey Dafe",this.state.selectedHouse.customWeekendPrice)
+          this.setState({ selectedDatePrice: this.state.WeekendPrice });
+        } else {
+          return;
+        }
+
+      }
+
       console.log(this.state.customPriceforCertainDates);
 
       this.setState({ selectedDates: [selectedStartDate, selectedEndDate] });
-      !commonPrice && this.setState({ selectedDatePrice: this.state.editedPrice });
+      (!commonPrice && !allWeekends )&& this.setState({ selectedDatePrice: this.state.editedPrice });
       this.openPopup(selectedStartDate, selectedEndDate);
     } else {
       // Dates belong to different categories or not in customBlockedDates/bookedDates, handle accordingly
@@ -746,7 +817,7 @@ export default class Scheduler extends Component {
 
   openPopup = (startDate, endDate) => {
     // Your logic to open a popup with the selected date or date range
-    console.log('Opening popup with date:', startDate);
+    // console.log('Opening popup with date:', startDate);
 
     this.setState({ pricingModalVisible: true }) // Set the custom modal to be visible
 
@@ -759,7 +830,7 @@ export default class Scheduler extends Component {
   getCertainDatePrice(date) {
     const customPriceEntry = this.state.customPriceforCertainDates.find(entry => entry && entry.date === date);
     const isWeekend = this.isWeekend(date);
-    const price = customPriceEntry ? customPriceEntry.price : ((isWeekend&&this.state.selectedHouse.customWeekendPrice)?this.state.selectedHouse.customWeekendPrice:this.state.editedPrice);
+    const price = customPriceEntry ? customPriceEntry.price : ((isWeekend && this.state.selectedHouse.customWeekendPrice) ? this.state.selectedHouse.customWeekendPrice : this.state.editedPrice);
 
 
     return price;
@@ -768,8 +839,20 @@ export default class Scheduler extends Component {
 
   isWeekend(date) {
     const day = new Date(date).getDay();
-    return day===5 || day === 6; // 0 is Sunday, 5 is Friday, 6 is Saturday
-}
+    return day === 5 || day === 6; // 0 is Sunday, 5 is Friday, 6 is Saturday
+  }
+
+
+
+  isAnyWeekend(dates) {
+    for (const date of dates) {
+      const day = new Date(date).getDay();
+      if (day === 5 || day === 6) {
+        return true; // Found a weekend date
+      }
+    }
+    return false; // No weekend date found
+  }
 
 
 
@@ -794,6 +877,10 @@ export default class Scheduler extends Component {
       customPriceforCertainDates,
       pricingModalVisible,
       discountModalVisible, // Include this state variable
+      isPriceLoading,
+      isBlockingLoading,
+      isHouseOptionLoading,
+      isSelectedHouseLoading,
 
       showWeeklyDiscountDetails,
     } = this.state;
@@ -816,6 +903,7 @@ export default class Scheduler extends Component {
             handleToggleWeeklyDetails={this.handleToggleWeeklyDetails}
             showWeeklyDiscountDetails={showWeeklyDiscountDetails}
             fetch={this.fetchData}
+            isHouseLoading={isSelectedHouseLoading}
           // Pass the function as a prop
           />
         ),
@@ -838,6 +926,7 @@ export default class Scheduler extends Component {
                 availabilityWindow={selectedHouse.availabilityWindow}
                 selectedHouse={selectedHouse}
                 houseId={selectedHouse.id}
+                isHouseLoading={isSelectedHouseLoading}
               />
             ) : (
               <div>Select an apartment/house to view details</div>
@@ -872,27 +961,78 @@ export default class Scheduler extends Component {
     }));
 
     const markedBlockedDates = this.markPassedDatesAsBlocked(blockedDates);
+    const rows = Array.from({ length: 5 }, (_, i) => i + 1);
+    const SkeletonLoader = (
+      <>
+
+        <div className=" w-full justify-between flex" >
+          <div className=" skeleton-loader w-36  h-8 rounded " />
+          <div>
+            <div className=" skeleton-loader w-20 h-9 mr-6 rounded " />
+            <div className=" skeleton-loader w-20 h-9 rounded " />
+          </div>
+        </div>
+        <div className="w-full  h-full ">
+
+          <table className="w-full h-full bg-white border border-gray-100 rounded ">
+            <thead>
+              <tr>
+                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
+                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full  " /> </th>
+                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
+                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
+                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
+                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
+                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(row => (
+                <tr key={row}>
+                  {[...Array(7)].map((_, index) => (
+                    <td key={index} className="p-3 border overflow-scroll h-14 example md:w-28  md:h-20 border-gray-100 relative">
+                      <div className=" skeleton-loader md:w-8 w-6 md:h-4 h-2 rounded  absolute top-0 right-0 " />
+                      <div className=" skeleton-loader md:w-14 w-10 h-2 md:h-4 rounded md:left-6 left-3   absolute bottom-0" />
+
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+        </div>
+      </>
+
+    );
+
+
+
 
     return (
       <div>
         <HostHeader />
         <HostBottomNavigation />
         <div className="flex flex-wrap  box-border w-full">
-          <div className="block flex-grow relative overflow-y-scroll example">
-            <div className="flex flex-col    relative py-8 px-6">
-              <select
-                name="houseSelect"
-                id="houseSelect"
-                onChange={(e) => this.handleHouseSelect(e.target.value)}
-                className="py-5 border pr-4 border-orange-400 mb-8 pl-4"
-              >
-                <option value="">Select an Apartment</option>
-                {houseOptions.map((house, index) => (
-                  <option key={index} value={house.id}>
-                    {house.name}
-                  </option>
-                ))}
-              </select>
+          <div className="block lg:w-[75%] w-full h-full relative overflow-y-scroll example">
+            <div className="flex flex-col    relative py-8 md:px-6 px-3">
+
+              {isHouseOptionLoading ? <div className=" skeleton-loader  md:w-56 rounded h-7 my-2 mx-4 " />
+                :
+                <select
+                  name="houseSelect"
+                  id="houseSelect"
+                  onChange={(e) => this.handleHouseSelect(e.target.value)}
+                  className="py-5 border pr-4 border-orange-400 mb-8 pl-4"
+                >
+                  <option value="">Select an Apartment</option>
+                  {houseOptions.map((house, index) => (
+                    <option key={index} value={house.id}>
+                      {house.name}
+                    </option>
+                  ))}
+                </select>}
+
               {/* {selectedHouse && (
                 <div className="mb-4">
                   <button
@@ -904,104 +1044,116 @@ export default class Scheduler extends Component {
                   </button>
                 </div>
               )} */}
-              {selectedHouse && (
-                <FullCalendar
-                  plugins={[dayGridPlugin, interactionPlugin, multiMonthPlugin]}
-                  initialView="dayGridMonth"
-                  // multiMonthMaxColumns={1}
-                  // headerToolbar= {{
-                  //   left: 'prev,next today',
-                  //   center: 'title',
-                  //   right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                  // }}
 
 
-                  // editable
-                  validRange={validRange}
-                  select={this.handleDateSelect}
-                  selectable
-
-                  eventClick={this.handleEventClick}
-                  selectConstraint={{ start: new Date().setHours(0, 0, 0, 0) }}
-                  dateClick={this.handleDateClick}
-                  events={[
-                    ...blockedDates.map((date) => ({
-                      // Check if the date is already in uniqueEvents
-
-
-                      // If not, add it
+              {!isSelectedHouseLoading ?
+                <>{selectedHouse && (
+                  <FullCalendar
+                    plugins={[dayGridPlugin, interactionPlugin, multiMonthPlugin]}
+                    initialView="dayGridMonth"
+                    // multiMonthMaxColumns={1}
+                    // headerToolbar= {{
+                    //   left: 'prev,next today',
+                    //   center: 'title',
+                    //   right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    // }}
 
 
-                      start: date,
-                      allDay: true,
-                      extendedProps: { price: this.getCertainDatePrice(date) },
-                      display: 'background',
-                      backgroundColor: "rgba(209, 213, 219, 1)",
+                    // editable
+                    validRange={validRange}
+                    select={this.handleDateSelect}
+                    selectable
+
+                    eventClick={this.handleEventClick}
+                    selectConstraint={{ start: new Date().setHours(0, 0, 0, 0) }}
+                    dateClick={this.handleDateClick}
+                    events={[
+                      ...blockedDates.map((date) => ({
+                        // Check if the date is already in uniqueEvents
 
 
-
-                    })),
-                    ...bookedDates.map((date) => ({
-                      title: '<div class=" flex justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="md:w-7 w-4" viewBox="0 0 24 24"><title>booked</title><path d="M7 14C8.66 14 10 12.66 10 11C10 9.34 8.66 8 7 8C5.34 8 4 9.34 4 11C4 12.66 5.34 14 7 14M7 10C7.55 10 8 10.45 8 11C8 11.55 7.55 12 7 12C6.45 12 6 11.55 6 11C6 10.45 6.45 10 7 10M19 7H11V15H3V5H1V20H3V17H21V20H23V11C23 8.79 21.21 7 19 7M21 15H13V9H19C20.1 9 21 9.9 21 11Z" /></svg></div>',
-                      start: date,
-                      allDay: true,
-                      extendedProps: { price: this.getCertainDatePrice(date) },
-                      display: 'background',
-                      backgroundColor: "rgba(241 ,245 ,249 , 0.7)",
-
-                    })),
-
-                    ...customBlockedDates.map((date) => ({
-                      // Check if the date is already in uniqueEvents
+                        // If not, add it
 
 
-                      // If not, add it
-
-                      title: "",
-                      start: date,
-                      className: 'blocked-dates',
-                      extendedProps: { price: this.getCertainDatePrice(date) },
-                      allDay: true,
-                      display:"background",
-                      textColor: 'rgb(82,82,82)',
-                      backgroundColor: "rgba(209, 213, 219, 1)",
+                        start: date,
+                        allDay: true,
+                        extendedProps: { price: this.getCertainDatePrice(date) },
+                        display: 'background',
+                        backgroundColor: "rgba(209, 213, 219, 1)",
 
 
 
+                      })),
+                      ...bookedDates.map((date) => ({
+                        title: '<div class=" flex justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="md:w-7 w-4" viewBox="0 0 24 24"><title>booked</title><path d="M7 14C8.66 14 10 12.66 10 11C10 9.34 8.66 8 7 8C5.34 8 4 9.34 4 11C4 12.66 5.34 14 7 14M7 10C7.55 10 8 10.45 8 11C8 11.55 7.55 12 7 12C6.45 12 6 11.55 6 11C6 10.45 6.45 10 7 10M19 7H11V15H3V5H1V20H3V17H21V20H23V11C23 8.79 21.21 7 19 7M21 15H13V9H19C20.1 9 21 9.9 21 11Z" /></svg></div>',
+                        start: date,
+                        allDay: true,
+                        extendedProps: { price: this.getCertainDatePrice(date) },
+                        display: 'background',
+                        backgroundColor: "rgba(241 ,245 ,249 , 0.7)",
 
-                    })),
+                      })),
+
+                      ...customBlockedDates.map((date) => ({
+                        // Check if the date is already in uniqueEvents
 
 
-                    // ...markedBlockedDates,
-                    ...this.getUnblockedDatesEvent(),
-                  ]}
+                        // If not, add it
 
-                  eventContent={(arg) => {
-                    if (!arg || !arg.event || !arg.event.start) {
-                      console.error('Invalid event data:', arg);
-                      return null; // Or return an empty placeholder to prevent rendering errors
-                    }
+                        title: "",
+                        start: date,
+                        className: 'blocked-dates',
+                        extendedProps: { price: this.getCertainDatePrice(date) },
+                        allDay: true,
+                        display: "background",
+                        textColor: 'rgb(82,82,82)',
+                        backgroundColor: "rgba(209, 213, 219, 1)",
 
-                    // 2. Extract Date String and Check Blocking:
-                    const dateStr = arg.event.start.toISOString().split('T')[0];
-                    const isBlocked = blockedDates.includes(dateStr) || bookedDates.includes(dateStr);
 
-                    // 3. Determine Custom Price (Efficient Approach):
-                    // const customPriceEntry = customPriceforCertainDates.find(entry => entry && entry.date === dateStr);
-                    // const price = customPriceEntry ? customPriceEntry.price : editedPrice;
-                    // console.log("Date1:", arg.event.extendedProps.price);
 
-                    return {
-                      html: `
-                      <div class="w-full flex-col text-sm flex justify-center overflow-clip ">
+
+                      })),
+
+
+                      // ...markedBlockedDates,
+                      ...this.getUnblockedDatesEvent(),
+                    ]}
+
+                    eventContent={(arg) => {
+                      if (!arg || !arg.event || !arg.event.start) {
+                        console.error('Invalid event data:', arg);
+                        return null; // Or return an empty placeholder to prevent rendering errors
+                      }
+
+                      // 2. Extract Date String and Check Blocking:
+                      const dateStr = arg.event.start.toISOString().split('T')[0];
+                      const isBlocked = blockedDates.includes(dateStr) || bookedDates.includes(dateStr);
+
+                      // 3. Determine Custom Price (Efficient Approach):
+                      // const customPriceEntry = customPriceforCertainDates.find(entry => entry && entry.date === dateStr);
+                      // const price = customPriceEntry ? customPriceEntry.price : editedPrice;
+                      // console.log("Date1:", arg.event.extendedProps.price);
+
+                      return {
+                        html: `
+                      <div class="w-full  flex-col text-[10.5px] leading-3 md:text-sm flex justify-center overflow-clip ">
                         <div class="text-center  "   >${arg.event.title}</div>
-                        <div class="   text-center  "> ₦${arg.event.extendedProps.price}</div>
+                        <div class="   text-center   "> ₦${arg.event.extendedProps.price}</div>
                       </div>
                     `,
-                    };
-                  }}
-                />
-              )}
+                      };
+                    }}
+                  />
+                )}
+                </>
+
+                :
+                <>
+                  {SkeletonLoader}
+                </>
+              }
+
+
               {/* {selectedDate && blockingMode && (
                 <div className="mt-4 border">
                   <label className="font-semibold text-lg">
@@ -1028,10 +1180,16 @@ export default class Scheduler extends Component {
             </div>
           </div>
           <div className="bg-slate-100 h-2 p-2 w-full md:hidden"></div>
-          <section className=" md:w-[370px] w-full border-l z-[1] min-[1128px]:block">
-            <div className=" block box-border overflow-auto h-screen relative bg-white">
+          <section className=" lg:w-[25%] w-full border-l z-[1] min-[1128px]:block">
+            <div className=" block box-border  h-screen relative bg-white">
               <div className="block box-border py-8 px-6">
-                <Tabs defaultActiveKey="1" items={items} />
+
+                {isHouseOptionLoading ? <div className=" w-full gap-16  md:gap-8 flex loaderT">
+                  <div className=" skeleton-loader w-32 rounded h-6  " />
+                  <div className=" skeleton-loader w-32 rounded h-6  " />
+                </div>
+                  :
+                  <Tabs defaultActiveKey="1" items={items} />}
               </div>
             </div>
 
@@ -1045,6 +1203,8 @@ export default class Scheduler extends Component {
               date={selectedDates}
               isBlocked={isBlocked}
               onBlockChange={this.handleBlockchange}
+              loading={isPriceLoading}
+              blockLoading={isBlockingLoading}
             />}
           </section>
         </div>

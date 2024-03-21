@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PricingModal from "./PricingModal";
 import DiscountCustomModal from "./DiscountCustomModal";
 import axios from "../../Axios";
-
+import { message } from 'antd';
 
 const Pricing = ({
   selectedHouse,
@@ -17,6 +17,7 @@ const Pricing = ({
   showWeeklyDiscountDetails,
   handleToggleWeeklyDetails,
   fetch,
+  isHouseLoading,
 }) => {
   // Define the apartment data
   const apartments = {
@@ -51,8 +52,6 @@ const Pricing = ({
 
   const [discountModalVisible, setDiscountModalVisible] = useState(false);
   const [pricingModalVisible, setPricingModalVisible] = useState(false);
-  const [discountDuration, setDiscountDuration] = useState(""); // Store the selected discount duration
-  const [discountPercentage, setDiscountPercentage] = useState(""); // Store the discount percentage
   const [customWeeklyDiscount, setCustomWeeklyDiscount] = useState(""); // Store the weekly discount
   const [customMonthlyDiscount, setCustomMonthlyDiscount] = useState("");
   const [type, setType] = useState("");
@@ -61,14 +60,16 @@ const Pricing = ({
   const [weekendPrice, setWeekendPrice] = useState("");
   const [price, setPrice] = useState(""); // price sent to the price modal
   const [percentage, setPercentage] = useState(""); // percentage sent to the discount modal
+  const [loading, setLoading] = useState(false);
   
+
   const selectedApartment = selectedHouse;
 
   const clearInputValue = () => {
     onPriceChange({ target: { value: "" } });
   };
 
-  const showDiscountModal = (type,percent) => {
+  const showDiscountModal = (type, percent) => {
     setDiscountType(type);
     setPercentage(percent);
     setCustomModalVisible(true); // Set the custom modal to be visible
@@ -93,6 +94,9 @@ const Pricing = ({
   };
 
   const hidePricingModal = () => {
+    if (loading) {
+      return;
+    }
     setPricingModalVisible(false); // Set the custom modal to be visible
   };
 
@@ -115,23 +119,33 @@ const Pricing = ({
   };
 
   const hideCustomModal = () => {
+    if (loading) {
+      return;
+    }
     setCustomModalVisible(false);
   };
 
   const saveDiscountSettings = async (discountType, discountPercentage) => {
-    
+
     const id = selectedApartment.id;
-    const data={
+    const data = {
       duration: discountType,
       discount_percentage: discountPercentage,
     }
+    setLoading(true);
+    await axios.post(`/schdulerEditHostHomediscount/${id}`, data).then(response => {
+      fetch(id).finally(() => {
+        message.success("Updated Discount")
+        setLoading(false);
+        hideCustomModal()
 
-    await axios.post(`/schdulerEditHostHomediscount/${id}`,data).then(response=>{
-      fetch(id);
+      });
+    }).catch(err => {
       hideCustomModal()
-    }).catch(err=>{
+      setLoading(false);
+      message.error("Couldn't Update Discount")
 
-    });
+    })
 
 
   };
@@ -151,7 +165,7 @@ const Pricing = ({
 
   const savePrice = async (price, date) => {
 
-
+    setLoading(true);
 
     const id = selectedApartment.id;
 
@@ -160,9 +174,20 @@ const Pricing = ({
       setWeekendPrice(price);
       await axios.put(`/schduler/host-homes/${id}/edit-weekend-price`, { price }).then(
 
+        fetch(id).finally(() => {
+          setLoading(false);
+          message.success("Updated Weekend Price")
+
+        })
+
       ).catch(err => {
+        setLoading(false);
+        message.error("Couldn't Update Weekend Price")
         console.log(err)
         setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+        setLoading(false);
+      }).finally(() => {
+        hidePricingModal();
       });
 
     } else if (type === "Per night") {
@@ -170,12 +195,21 @@ const Pricing = ({
       setEditedPrice(price) /// for The calender price to change
       await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, dates: "" }).then(response => {
 
-        fetch(id);
+        fetch(id).finally(() => {
+          setLoading(false);
+          message.success("Updated Base Price")
+
+        });
 
       }).catch(err => {
+        setLoading(false);
+        message.error("Couldn't Update Base Price")
         console.log(err)
         setBasePrice(selectedApartment.basePrice)
         setEditedPrice(selectedApartment.basePrice)  /// for The calender price to change
+
+      }).finally(() => {
+        hidePricingModal();
       });
 
 
@@ -215,7 +249,82 @@ const Pricing = ({
     return formattedAmount;
   }
 
-  // const calculateMonthlyAverage
+  const calculateMonthlyAverage = (percent, dailyPrize, weekendBonusMultiplier) => {
+
+    console.log("percent", percent);
+    console.log("daily", parseInt(dailyPrize.replace(/,/g, '')));
+    console.log("weekendPrice", weekendBonusMultiplier.replace(/,/g, ''));
+
+    const daysInMonth = 30;
+
+    // Calculate the total prize for the month without considering weekends
+    const totalPrizeWithoutWeekends = parseInt(dailyPrize.replace(/,/g, '')) * daysInMonth;
+
+    // Calculate the total prize for weekends if weekendBonusMultiplier is not empty
+    let totalPrizeWeekends = 0;
+    let totalPrize=0
+    if (weekendBonusMultiplier.trim() !== '') {
+        const weekends = Math.floor(daysInMonth / 7) * 2; // Assuming there are two weekends in a month
+        totalPrizeWeekends = weekends * parseInt(weekendBonusMultiplier.replace(/,/g, ''));
+        const weekdays=daysInMonth-weekends;
+        totalPrize=(weekdays*parseInt(dailyPrize.replace(/,/g, '')) )+totalPrizeWeekends;
+
+    }
+
+    // Calculate the total prize for the month including weekends
+    const totalPrizeWithWeekends = totalPrize!=0?totalPrize :totalPrizeWithoutWeekends;
+
+    // Calculate the monthly average
+    const average = totalPrizeWithWeekends * (parseInt(percent) / 100);
+    const total=totalPrizeWithWeekends-average;
+
+    return formatAmountWithCommas(total);
+}
+
+
+
+const calculateWeeklyAverage = (percent, dailyPrize, weekendBonusMultiplier) => {
+
+  console.log("percent", percent);
+  console.log("daily", parseInt(dailyPrize.replace(/,/g, '')));
+  console.log("weekendPrice", weekendBonusMultiplier.replace(/,/g, ''));
+
+  
+
+  // Calculate the total prize for the month without considering weekends
+  const totalPrizeWithoutWeekends = parseInt(dailyPrize.replace(/,/g, '')) * 7;
+
+  // Calculate the total prize for weekends if weekendBonusMultiplier is not empty
+  let totalPrizeWeekends = 0;
+  let totalPrize=0
+  if (weekendBonusMultiplier.trim() !== '') {
+      const weekends = 2; // Assuming there are two weekends in a month
+      totalPrizeWeekends = weekends * parseInt(weekendBonusMultiplier.replace(/,/g, ''));
+      const weekdays=7-weekends;
+      totalPrize=(weekdays*parseInt(dailyPrize.replace(/,/g, '')) )+totalPrizeWeekends;
+
+  }
+
+  // Calculate the total prize for the month including weekends
+  const totalPrizeWithWeekends = totalPrize!=0?totalPrize :totalPrizeWithoutWeekends;
+
+  // Calculate the monthly average
+  const average = totalPrizeWithWeekends * (parseInt(percent) / 100);
+  const total=totalPrizeWithWeekends-average;
+
+  return formatAmountWithCommas(total);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -226,13 +335,14 @@ const Pricing = ({
 
 
   return (
-    <div className="block box-border  overflow-y-scroll example pb-32">
+    <div className="block box-border  pb-32">
+    {!isHouseLoading?  <>
       {selectedApartment ? (
         <div className="block box-border my-5 min-[1128px]:mb-4">
           <div className="box-border flex justify-between items-baseline mb-6">
             <span>
               <h2 className="m-0 p-0 text-2xl block box-border">
-                <div className="min-[1128px]:text-lg font-semibold capitalize overflow-ellipsis whitespace-nowrap overflow-hidden w-[80%]">
+                <div className="min-[1128px]:text-lg font-semibold capitalize overflow-ellipsis whitespace-nowrap overflow-hidden w-[70vw] md:w-[16vw]">
                   {selectedApartment.name}
                 </div>
               </h2>
@@ -290,10 +400,12 @@ const Pricing = ({
               <div className="space-y-3">
                 <div
                   className="pointer p-4 rounded-2xl border"
-                  onClick={() => { showDiscountModal("Weekly",selectedApartment.weeklyDiscount 
-                  ? extractPercentage(selectedApartment.weeklyDiscount.discount) :
-                   (selectedApartment.customWeeklyDiscount ? 
-                    customWeeklyDiscount : '0')) }}
+                  onClick={() => {
+                    showDiscountModal("Weekly", selectedApartment.weeklyDiscount
+                      ? extractPercentage(selectedApartment.weeklyDiscount.discount) :
+                      (selectedApartment.customWeeklyDiscount ?
+                        customWeeklyDiscount : '0'))
+                  }}
                 >
                   <div>
                     <div className="font-medium mb-2 mr-1 text-sm">Weekly</div>
@@ -308,7 +420,10 @@ const Pricing = ({
                         <div>
                           <div className="text-gray-400">
                             Weekend Average:{" "}
-                            <span className="font-medium">₦900000</span>
+                            <span className="font-medium">₦{selectedApartment&&calculateWeeklyAverage( selectedApartment.weeklyDiscount
+                      ? extractPercentage(selectedApartment.weeklyDiscount.discount) :
+                      (selectedApartment.customWeeklyDiscount ?
+                        customWeeklyDiscount : '0'),basePrice,weekendPrice)}</span>
                           </div>
                         </div>
                       )}
@@ -338,7 +453,9 @@ const Pricing = ({
                         <div>
                           <div className="text-gray-400">
                             Monthly Average:{" "}
-                            <span className="font-medium">₦9000000</span>
+                            <span className="font-medium">₦{selectedApartment&&calculateMonthlyAverage(  selectedApartment.monthlyDiscount ?
+                        extractPercentage(selectedApartment.monthlyDiscount.discount) :
+                        (selectedApartment.customMonthlyDiscount ? customMonthlyDiscount : '0'),basePrice,weekendPrice)}</span>
                           </div>
                         </div>
                       )}
@@ -353,6 +470,7 @@ const Pricing = ({
               onSubmit={saveDiscountSettings}
               discountType={discountType}
               percentage={percentage}
+              loading={loading}
             />
             <PricingModal
               visible={pricingModalVisible}
@@ -361,12 +479,37 @@ const Pricing = ({
               title={type}
               onSave={savePrice}
               price={price}
+              loading={loading}
             />
           </div>
         </div>
       ) : (
         <div>Select an apartment/house to view details</div>
       )}
+      </>
+      :
+      <>
+        <div className=" w-full  flex gap-16 ">
+          <div className=" skeleton-loader w-52 h-4 rounded " />
+          <div className=" skeleton-loader w-11 h-4 rounded " />
+        </div>
+        <div>
+          <div className=" skeleton-loader w-28 rounded h-6 mt-5 "></div>
+
+          <div className=" skeleton-loader w-full rounded-xl h-24 mt-7 "></div>
+          <div className=" skeleton-loader w-full rounded-xl h-24 mt-2 "></div>
+
+
+          <div className=" skeleton-loader w-28 rounded h-6 mt-7 "></div>
+          <div className=" skeleton-loader w-[85%] rounded h-4  "></div>
+
+          <div className=" skeleton-loader w-full rounded-xl h-36 mt-2 "></div>
+          <div className=" skeleton-loader w-full rounded-xl h-36 mt-2 "></div>
+
+        </div>
+
+      </>}
+
     </div>
   );
 };
