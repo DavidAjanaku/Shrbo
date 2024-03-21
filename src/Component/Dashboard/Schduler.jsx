@@ -609,7 +609,8 @@ export default class Scheduler extends Component {
         this.setState({ selectedDatePrice: price });
       } else {
         const isWeekend = this.isWeekend(clickedDate);
-        const price = ((isWeekend && this.state.selectedHouse.customWeekendPrice) ? this.state.selectedHouse.customWeekendPrice : this.state.editedPrice);
+        // const price = ((isWeekend && this.state.selectedHouse.customWeekendPrice) ? this.state.selectedHouse.customWeekendPrice : this.state.editedPrice);
+        const price =  this.state.editedPrice;
         this.setState({ selectedDatePrice: price });
       }
 
@@ -727,23 +728,23 @@ export default class Scheduler extends Component {
 
 
       }
-      if (this.isAnyWeekend(generatedDates)&&this.state.selectedHouse.customWeekendPrice) {
+      // if (this.isAnyWeekend(generatedDates)&&this.state.selectedHouse.customWeekendPrice) {
 
        
 
-        if (allWeekends) {
-          console.log("hey Dafe",this.state.selectedHouse.customWeekendPrice)
-          this.setState({ selectedDatePrice: this.state.WeekendPrice });
-        } else {
-          return;
-        }
+      //   if (allWeekends) {
+      //     // console.log("hey Dafe",this.state.selectedHouse.customWeekendPrice)
+      //     this.setState({ selectedDatePrice: this.state.selectedHouse.customWeekendPrice });
+      //   } else  {
+      //     return;
+      //   }
 
-      }
+      // }
 
       console.log(this.state.customPriceforCertainDates);
 
       this.setState({ selectedDates: [selectedStartDate, selectedEndDate] });
-      (!commonPrice && !allWeekends )&& this.setState({ selectedDatePrice: this.state.editedPrice });
+      !commonPrice && this.setState({ selectedDatePrice: this.state.editedPrice });
       this.openPopup(selectedStartDate, selectedEndDate);
     } else {
       // Dates belong to different categories or not in customBlockedDates/bookedDates, handle accordingly
@@ -829,8 +830,9 @@ export default class Scheduler extends Component {
   // this get the prices for certain dates and checks if the event Prices matches them
   getCertainDatePrice(date) {
     const customPriceEntry = this.state.customPriceforCertainDates.find(entry => entry && entry.date === date);
-    const isWeekend = this.isWeekend(date);
-    const price = customPriceEntry ? customPriceEntry.price : ((isWeekend && this.state.selectedHouse.customWeekendPrice) ? this.state.selectedHouse.customWeekendPrice : this.state.editedPrice);
+    // const isWeekend = this.isWeekend(date);
+    // const price = customPriceEntry ? customPriceEntry.price : ((isWeekend && this.state.selectedHouse.customWeekendPrice) ? this.state.selectedHouse.customWeekendPrice : this.state.editedPrice);
+    const price = customPriceEntry ? customPriceEntry.price :this.state.editedPrice;
 
 
     return price;
@@ -977,13 +979,13 @@ export default class Scheduler extends Component {
           <table className="w-full h-full bg-white border border-gray-100 rounded ">
             <thead>
               <tr>
-                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
-                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full  " /> </th>
-                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
-                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
-                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
-                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
-                <th className="p-3 text-left"> <div className=" skeleton-loader w-7 mt-4 h-3 md:w-full " /> </th>
+                <th className="p-2 text-center"> <div className=" skeleton-loader w-7 mt-0 h-3 md:w-[50%] " /> </th>
+                <th className="p-2 text-center"> <div className=" skeleton-loader w-7 mt-0 h-3 md:w-[50%]  " /> </th>
+                <th className="p-2 text-center"> <div className=" skeleton-loader w-7 mt-0 h-3 md:w-[50%] " /> </th>
+                <th className="p-2 text-center"> <div className=" skeleton-loader w-7 mt-0 h-3 md:w-[50%] " /> </th>
+                <th className="p-2 text-center"> <div className=" skeleton-loader w-7 mt-0 h-3 md:w-[50%] " /> </th>
+                <th className="p-2 text-center"> <div className=" skeleton-loader w-7 mt-0 h-3 md:w-[50%] " /> </th>
+                <th className="p-2 text-center"> <div className=" skeleton-loader w-7 mt-0 h-3 md:w-[50%] " /> </th>
               </tr>
             </thead>
             <tbody>

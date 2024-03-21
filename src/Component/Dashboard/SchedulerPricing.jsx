@@ -171,12 +171,13 @@ const Pricing = ({
 
 
     if (type === "Custom Weekend Price") {
-      setWeekendPrice(price);
+      // setWeekendPrice(price);
       await axios.put(`/schduler/host-homes/${id}/edit-weekend-price`, { price }).then(
 
         fetch(id).finally(() => {
           setLoading(false);
           message.success("Updated Weekend Price")
+          hidePricingModal();
 
         })
 
@@ -184,20 +185,21 @@ const Pricing = ({
         setLoading(false);
         message.error("Couldn't Update Weekend Price")
         console.log(err)
-        setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
         setLoading(false);
-      }).finally(() => {
         hidePricingModal();
+      }).finally(() => {
       });
 
     } else if (type === "Per night") {
-      setBasePrice(price);
-      setEditedPrice(price) /// for The calender price to change
+      // setBasePrice(price);
+      // setEditedPrice(price) /// for The calender price to change
       await axios.post(`/schduler/host-homes/${id}/edit-price`, { price, dates: "" }).then(response => {
 
         fetch(id).finally(() => {
           setLoading(false);
           message.success("Updated Base Price")
+          hidePricingModal();
 
         });
 
@@ -205,11 +207,11 @@ const Pricing = ({
         setLoading(false);
         message.error("Couldn't Update Base Price")
         console.log(err)
-        setBasePrice(selectedApartment.basePrice)
-        setEditedPrice(selectedApartment.basePrice)  /// for The calender price to change
+        // setBasePrice(selectedApartment.basePrice)
+        // setEditedPrice(selectedApartment.basePrice)  /// for The calender price to change
+        hidePricingModal();
 
       }).finally(() => {
-        hidePricingModal();
       });
 
 

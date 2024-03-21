@@ -81,7 +81,7 @@ const PricingModal = ({ visible, onClose, showBlocker, title, onSave, date, pric
       const priceWithoutComma = price.replace(/,/g, ''); // Remove commas from the price
       setInputValue(priceWithoutComma);
     }
-  }, [price, onClose]);
+  }, [price]);
 
   const saveChangedPrice = (e) => {
     e.preventDefault();
