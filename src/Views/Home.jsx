@@ -35,10 +35,10 @@ export default function Home() {
   const [homeSubTitle, setHomeSubTitle] = useState("");
   const [listings, setListings] = useState();
   const [category, setCategory] = useState();
-  const [listingType, setListingType] = useState("NoFilter"); //I'm using this state to know what type of listing i'm getting based on the particular Api i'm making a request from
+  const [listingType, setListingType] = useState(""); //I'm using this state to know what type of listing i'm getting based on the particular Api i'm making a request from
   const [per_page, setPerPage] = useState(40); // handles the amount of listing that can show at a time
-  const [current_page,setCurrent_page]=useState();
-  const [last_page,setLast_page]=useState();
+  const [current_page, setCurrent_page] = useState();
+  const [last_page, setLast_page] = useState();
   const [receiverId, setReceiverId] = useState(""); // Initial receiver ID is set to 1
 
   // const [pendingReview,setPendingReview]=useState([]);
@@ -135,7 +135,7 @@ export default function Home() {
         setUser(response.data);
         console.log(response.data.host);
 
-        console.log("yes",response.data);
+        console.log("yes", response.data);
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
         localStorage.setItem('receiverid', response.data.id);
@@ -154,12 +154,12 @@ export default function Home() {
   useEffect(() => {
     const tokens = token;
     const receiverid = receiverId;
-    
+
     localStorage.setItem('tokens', tokens);
     localStorage.setItem('receiverid', receiverid);
-}, []);
+  }, []);
 
-console.log();
+  console.log();
 
   // Home Page Data
   const receiverIds = localStorage.getItem('receiverid');
@@ -427,10 +427,10 @@ console.log();
 
   const fetchListings = async () => {
     setListingLoading(true);
-  await  axios
+    await axios
       .get(token ? `/hosthomesForAuthUser?per_page=${per_page}` : `/hosthomesForUnAuthUser?per_page=${per_page}`)
       .then((response) => {
-        console.log("homeList",response.data.data);
+        console.log("homeList", response.data.data);
         const formattedHostHomes = response.data.data.map((item) => ({
           id: item.id,
           pictures: item.hosthomephotos,
@@ -442,13 +442,13 @@ console.log();
           link: "/ListingInfoMain",
           isFavorite: item.addedToWishlist,
         }));
-        
+
         setListingType("NoFilter");
         setCurrent_page(response.data.meta.current_page);
         setLast_page(response.data.meta.last_page);
         setListings(formattedHostHomes);
-        console.log("HMMM",response);
-   
+        console.log("HMMM", response);
+
       })
       .catch((err) => {
         console.log("Listing", err);
@@ -558,7 +558,7 @@ console.log();
         link: "/ListingInfoMain",
         isFavorite: item.addedToWishlist,
       }));
-    
+
       setListingType("FilterbyPropertTypes");
       setCurrent_page(response.data.meta.current_page);
       setLast_page(response.data.meta.last_page);
@@ -609,7 +609,7 @@ console.log();
         hosthomeid: item.hosthomeid,
       }));
       setHouseDetails(formattedHostHomes);
-      console.log("pendingReviews",response.data.data)
+      console.log("pendingReviews", response.data.data)
 
     }).catch(error => {
 
@@ -670,8 +670,8 @@ console.log();
 
   // Logic For the Pagination {START}
   const showMoreListings = () => {
-    console.log("perPage",per_page)
-    setPerPage((prevPage) => prevPage + 2);
+    console.log("perPage", per_page)
+    setPerPage((prevPage) => prevPage + 10);
 
 
   }
@@ -683,14 +683,16 @@ console.log();
         fetchListings().finally(() => setShowMoreLoading(false));
         break;
       case "FilterbyPropertTypes":
+        
         filterDataByCategories(category).finally(() => setShowMoreLoading(false));
         break;
       default:
-        fetchListings().finally(() => setShowMoreLoading(false));
+        setShowMoreLoading(false);
+        fetchListings();
     }
-      console.log("show",showMoreLoading);
-      // setShowMoreLoading(false)
-          
+    console.log("show", showMoreLoading);
+    // setShowMoreLoading(false)
+
   }, [per_page]);
 
 
@@ -800,7 +802,7 @@ console.log();
               </div>
               <section className="mx-auto justify-center w-[90%] md:w-[%]">
 
-                <Listings user={user} homes={listings} loading={listingLoading} showMoreLoading={showMoreLoading} last_page={last_page} current_page={current_page} showMore={()=>(showMoreListings())} />
+                <Listings user={user} homes={listings} loading={listingLoading} showMoreLoading={showMoreLoading} last_page={last_page} current_page={current_page} showMore={() => (showMoreListings())} />
                 <div className="pb-48 w-[90%] mx-auto ">
                   <h1 className="text-center text-4xl mb-10">
                     Learn About the Major Cities

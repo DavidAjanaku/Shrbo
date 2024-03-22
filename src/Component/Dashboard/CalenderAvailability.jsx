@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import ArrowDown from "../../assets/line-angle-down-icon.svg";
 import axios from "../../Axios";
+import { message, notification } from 'antd';
 
-const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime, advanceNotice, houseId}) => {
+const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime, advanceNotice, houseId,isHouseLoading }) => {
   const [advanceNoticeModalVisible, setAdvanceNoticeModalVisible] = useState(false);
   const [preparationTimeModalVisible, setPreparationTimeModalVisible] = useState(false);
 
@@ -12,19 +13,21 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
 
   const [selectedAdvanceNotice, setSelectedAdvanceNotice] = useState("");
   const [inputedAdvanceNotice, setInputedAdvanceNotice] = useState("");
-  
+
   const [selectedPreparationTime, setSelectedPreparationTime] = useState("");
   const [inputedPreparationTime, setInputedPreparationTime] = useState("");
 
   const [selectedAvailabilityWindow, setSelectedAvailabilityWindow] = useState("");
-  const [inputedAvailabilityWindow,setInputedAvailabilityWindow]=useState("");
+  const [inputedAvailabilityWindow, setInputedAvailabilityWindow] = useState("");
 
   const [selectedMinNights, setSelectedMinNights] = useState("");
-  const [inputedMinNights,setInputedMinNights]=useState("");
-  
+  const [inputedMinNights, setInputedMinNights] = useState("");
+
   const [selectedMaxNights, setSelectedMaxNights] = useState("");
-  const [inputedMaxNights,setInputedMaxNights]=useState("");
-  const [errorMessage,setErrorMessage]=useState("");
+  const [inputedMaxNights, setInputedMaxNights] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setSelectedAvailabilityWindow(availabilityWindow ?? "");
@@ -33,7 +36,7 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
     setSelectedPreparationTime(prepTime ?? "");
     setSelectedAdvanceNotice(advanceNotice ?? "");
   }, [maxNight, availabilityWindow, prepTime, advanceNotice, minNight]);
-  
+
 
   const advanceNoticeOptions = [
     "Same day",
@@ -72,136 +75,175 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
   };
 
   const handleMinNightsInput = (value) => {
-    
-    
+
+
     if (/^\d*$/.test(value) && value.length <= 4) {
-        setInputedMinNights(value);
-     
+      setInputedMinNights(value);
+
     }
   };
 
   const handleMaxNightsInput = (value) => {
     if (/^\d*$/.test(value) && value.length <= 4) {
-      setInputedMaxNights(value); 
-  }
+      setInputedMaxNights(value);
+    }
   };
   ///////////////////
 
   const handleAdvanceNoticeSubmit = async () => {
-    const id=houseId;
-    setAdvanceNoticeModalVisible(false);
+    const id = houseId;
 
     console.log(inputedAdvanceNotice)
+    setLoading(true);
 
-    await axios.put(`schdulerEditHostHomeAdvanceNotice/${id}`, { notice:inputedAdvanceNotice }).then(response=>{
+    await axios.put(`schdulerEditHostHomeAdvanceNotice/${id}`, { notice: inputedAdvanceNotice }).then(response => {
       setSelectedAdvanceNotice(inputedAdvanceNotice);
-      
-      console.log(response);
+
+      message.success("Updated Advance Notice")
+
+      setLoading(false);
+      // console.log(response);
 
     }).catch(err => {
-        console.log(err)
-        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
-      });
+      message.error("Couldn't Update Advance Notice")
+      setLoading(false);
+      console.log(err)
+      // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+    }).finally(() => {
+      setAdvanceNoticeModalVisible(false);
+
+    });
   };//d
 
   const handlePreparationTimeSubmit = async () => {
-    setPreparationTimeModalVisible(false);
-
+    setLoading(true)
     const id = houseId;
-    await axios.put(`/schdulerEditHostHomePreparationTime/${id}`, { preparation_time:inputedPreparationTime }).then(response=>{
+    await axios.put(`/schdulerEditHostHomePreparationTime/${id}`, { preparation_time: inputedPreparationTime }).then(response => {
       setSelectedPreparationTime(inputedPreparationTime);
-      console.log(response);
-
+      message.success("Updated Preparation Time ")
+      // console.log(response);
+      setLoading(false)
+      
     }).catch(err => {
-        console.log(err)
-        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
-      });
+      message.error("Couldn't Update Preparation Time ")
+      setLoading(false)
+      console.log(err)
+      // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+    }).finally(() => {
+      setPreparationTimeModalVisible(false);
+      
+      
+    });
 
 
   };//d
 
   const handleAvailabilityWindowSubmit = async () => {
-   
-    setAvailabilityWindowModalVisible(false);
-
-    const id = houseId;
-    await axios.put(`/schdulerEditHostHomeAvailabilityWindow/${id}`, { availability_window:inputedAvailabilityWindow }).then(response=>{
-      setSelectedAvailabilityWindow(inputedAvailabilityWindow);
-      console.log(response);
-
-    }).catch(err => {
-        console.log(err)
-        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
-      });
-
     
+    setLoading(true);
+    const id = houseId;
+    await axios.put(`/schdulerEditHostHomeAvailabilityWindow/${id}`, { availability_window: inputedAvailabilityWindow }).then(response => {
+      setSelectedAvailabilityWindow(inputedAvailabilityWindow);
+      message.success("Updated Availability Window ")
+      // console.log(response);
+      setLoading(false);
+      
+    }).catch(err => {
+      message.error(" Couldn't Update Availability Window ")
+      setLoading(false);
+      console.log(err)
+      // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+    }).finally(() => {
+      setAvailabilityWindowModalVisible(false);
+      
+      
+
+    });
+
+
 
   };//d
 
   const handleMinNightsSubmit = async () => {
 
-    if(inputedMinNights.length===0){
+    if (inputedMinNights.length === 0) {
       setErrorMessage("Min Nights can't be empty")
       return;
     }
-    
-    if(inputedMinNights > selectedMaxNights){
+
+    if (inputedMinNights > selectedMaxNights) {
       setErrorMessage("Min Nights can't be higher than Max Nights")
       return;
     }
 
-    if(inputedMinNights < 1){
+    if (inputedMinNights < 1) {
       setErrorMessage("lowest Min Nights allowed is 1")
       return;
     }
 
     setErrorMessage("");
     setInputedMaxNights("")
+
     
-    setMinNightsModalVisible(false);
+    setLoading(true);
     
     const id = houseId;
-    await axios.put(`/schdulerEditHostHomeMinNights/${id}`, { night:inputedMinNights }).then(response=>{
+    await axios.put(`/schdulerEditHostHomeMinNights/${id}`, { night: inputedMinNights }).then(response => {
       setSelectedMinNights(inputedMinNights);
-      console.log(response);
-
+      message.success("Updated Min Nights ")
+      setLoading(false);
+      // console.log(response);
+      
     }).catch(err => {
-        console.log(err)
-        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
-      });
+      setLoading(false);
+      message.error("Couldn't Update Min Nights ")
+      console.log(err)
+      // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+    }).finally(()=>{
+      setMinNightsModalVisible(false);
+      
+    });
   };//d
 
   const handleMaxNightsSubmit = async () => {
     const id = houseId;
     console.log(inputedMaxNights)
-    
 
-    if(inputedMaxNights.length===0){
+
+    if (inputedMaxNights.length === 0) {
       setErrorMessage("Max Nights can't be empty")
       return;
     }
-    
-    if(inputedMaxNights < selectedMinNights){
+
+    if (inputedMaxNights < selectedMinNights) {
       setErrorMessage("Max Nights can't be lower than Min Nights")
       return;
     }
 
     setErrorMessage("");
     setInputedMaxNights("")
-    setMaxNightsModalVisible(false);
+    setLoading(true);
     
-    await axios.put(`/schdulerEditHostHomeMaxNights/${id}`, { night:inputedMaxNights }).then(response=>{
+    await axios.put(`/schdulerEditHostHomeMaxNights/${id}`, { night: inputedMaxNights }).then(response => {
       setSelectedMaxNights(inputedMaxNights)
+      message.success("Updated Max Nights ")
+      setLoading(false);
+      // console.log(response);
       
-      console.log(response);
-
     }).catch(err => {
-        console.log(err)
-        // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
-      });
+      setLoading(false);
+      message.error("Couldn't Update Max Nights ")
+      console.log(err)
+      // setWeekendPrice(selectedApartment.customWeekendPrice != null ? selectedApartment.customWeekendPrice : selectedApartment.basePrice)
+    }).finally(()=>{
+      setMaxNightsModalVisible(false);
+      
+    });
   };//d
 
   return (
+    <>
+    {!isHouseLoading?
     <div>
       <div>
 
@@ -334,14 +376,23 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
             </div>
             <div className="mt-4 space-y-3">
               <button
-                className="bg-orange-400 w-full hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-orange-400 w-full hover:bg-orange-400 text-white relative font-bold py-2 px-4 rounded mr-2"
                 onClick={handleAdvanceNoticeSubmit}
+                disabled={loading}
               >
                 Save
+                {loading && <div className=" z-20 bg-slate-100/50 text-black  flex items-center justify-center left-0 top-0 h-full  absolute w-full">
+                  {/* <div className="self-start    rounded-lg max-w-[200px]"> */}
+                  <div className="dot-pulse1 w-12">
+                    <div className="dot-pulse1__dot"></div>
+                  </div>
+                  {/* </div> */}
+                </div>}
               </button>
               <button
                 className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
                 onClick={() => setAdvanceNoticeModalVisible(false)}
+                disabled={loading}
               >
                 Cancel
               </button>
@@ -372,14 +423,23 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
             </div>
             <div className="mt-4 space-y-3">
               <button
-                className="bg-orange-400 w-full hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-orange-400 w-full hover:bg-orange-400 relative text-white font-bold py-2 px-4 rounded mr-2"
                 onClick={handlePreparationTimeSubmit}
+                disabled={loading}
               >
                 Save
+                {loading && <div className=" z-20 bg-slate-100/50 text-black  flex items-center justify-center left-0 top-0 h-full  absolute w-full">
+                  {/* <div className="self-start    rounded-lg max-w-[200px]"> */}
+                  <div className="dot-pulse1 w-12">
+                    <div className="dot-pulse1__dot"></div>
+                  </div>
+                  {/* </div> */}
+                </div>}
               </button>
               <button
-              className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
+                className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
                 onClick={() => setPreparationTimeModalVisible(false)}
+                disabled={loading}
               >
                 Cancel
               </button>
@@ -410,14 +470,23 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
             </div>
             <div className="mt-4 space-y-3">
               <button
-                className="bg-orange-400 w-full hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-orange-400 w-full relative hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
                 onClick={handleAvailabilityWindowSubmit}
-              >
+                disabled={loading}
+                >
                 Save
+                {loading && <div className=" z-20 bg-slate-100/50 text-black  flex items-center justify-center left-0 top-0 h-full  absolute w-full">
+                  {/* <div className="self-start    rounded-lg max-w-[200px]"> */}
+                  <div className="dot-pulse1 w-12">
+                    <div className="dot-pulse1__dot"></div>
+                  </div>
+                  {/* </div> */}
+                </div>}
               </button>
               <button
-            className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
+                className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
                 onClick={() => setAvailabilityWindowModalVisible(false)}
+                disabled={loading}
               >
                 Cancel
               </button>
@@ -436,18 +505,28 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
                 onChange={(e) => handleMinNightsInput(e.target.value)}
                 className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
               />
-              <label className=" text-red-600">{errorMessage}</label>  
+              <label className=" text-red-600">{errorMessage}</label>
             </div>
             <div className="my-5 space-y-2">
               <button
-                className="bg-orange-400 w-full hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-orange-400 w-full relative hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
                 onClick={handleMinNightsSubmit}
-              >
+                disabled={loading}
+                >
                 Save
+
+                {loading && <div className=" z-20 bg-slate-100/50 text-black  flex items-center justify-center left-0 top-0 h-full  absolute w-full">
+                  {/* <div className="self-start    rounded-lg max-w-[200px]"> */}
+                  <div className="dot-pulse1 w-12">
+                    <div className="dot-pulse1__dot"></div>
+                  </div>
+                  {/* </div> */}
+                </div>}
               </button>
               <button
                 className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
-                onClick={() =>{ setMinNightsModalVisible(false); setInputedMinNights("");setErrorMessage(""); }}
+                onClick={() => { setMinNightsModalVisible(false); setInputedMinNights(""); setErrorMessage(""); }}
+                disabled={loading}
               >
                 Cancel
               </button>
@@ -461,7 +540,7 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
             <h2 className="text-5xl font-semibold mb-4 text-gray-700">Maximum Nights</h2>
             <div>
               <input
-              
+
                 value={inputedMaxNights}
                 onChange={(e) => handleMaxNightsInput(e.target.value)}
                 className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-orange-400"
@@ -470,14 +549,24 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
             </div>
             <div className="my-5 space-y-2">
               <button
-                className="bg-orange-400 w-full hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-orange-400 w-full relative hover:bg-orange-400 text-white font-bold py-2 px-4 rounded mr-2"
                 onClick={handleMaxNightsSubmit}
-              >
+                disabled={loading}
+                >
                 Save
+
+                {loading && <div className=" z-20 bg-slate-100/50 text-black  flex items-center justify-center left-0 top-0 h-full  absolute w-full">
+                  {/* <div className="self-start    rounded-lg max-w-[200px]"> */}
+                  <div className="dot-pulse1 w-12">
+                    <div className="dot-pulse1__dot"></div>
+                  </div>
+                  {/* </div> */}
+                </div>}
               </button>
               <button
                 className="bg-white border-orange-400 border-[1px] w-full text-orange-400 p-2 rounded cursor-pointer my-2"
-                onClick={() => {setMaxNightsModalVisible(false); setInputedMaxNights(""); setErrorMessage(""); }}
+                onClick={() => { setMaxNightsModalVisible(false); setInputedMaxNights(""); setErrorMessage(""); }}
+                disabled={loading}
               >
                 Cancel
               </button>
@@ -486,6 +575,32 @@ const CalendarAvailability = ({ minNight, maxNight, availabilityWindow, prepTime
         </div>
       )}
     </div>
+    :
+    <>
+        
+        <div>
+          <div className=" skeleton-loader w-28 rounded h-6 mt-5 "></div>
+
+          <div className=" skeleton-loader w-full  h-16 mt-7 "></div>
+          <div className=" skeleton-loader w-full  h-16 mt-2 "></div>
+
+
+          <div className=" skeleton-loader w-28 rounded h-6 mt-7 "></div>
+         
+
+          <div className=" skeleton-loader w-full  h-16 mt-2 "></div>
+          <div className=" skeleton-loader w-full  h-16 mt-2 "></div>
+          <div className=" skeleton-loader w-full  h-16 mt-2 "></div>
+
+        </div>
+
+      </>}
+
+    </>
+   
+
+    
+    
   );
 }
 

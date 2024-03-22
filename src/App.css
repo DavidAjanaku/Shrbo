@@ -397,7 +397,7 @@ The slider*/
 
 .fc-daygrid-day:has(.fc-daygrid-day-bg .blocked-dates) .fc-daygrid-day-top {
   text-decoration: line-through;
-  color: #ccc;
+  color: #848383;
 }
 
 

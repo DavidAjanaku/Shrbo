@@ -144,10 +144,10 @@ export default function PayoutBankDetails() {
     const confirm = async (e, type, bankId) => {
         // console.log(e);
 
-        await axios.delete(`/deleteUserBankInfo/${user.id}`).then(response => {
+        await axios.delete(`/deleteUserBankInfo/${user.id}/${bankId}`).then(response => {
             console.log(response);
             message.success(`Bank info Removed successfully`);
-            fetchUserCards();
+            fetchUserData();
         }).catch(error => {
             console.error("Failed to Remove Bank info", error);
             message.error(`An Error Occured while trying to Remove bank info `)
