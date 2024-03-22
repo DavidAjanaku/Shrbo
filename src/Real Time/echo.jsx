@@ -9,7 +9,7 @@ const pusherScheme = import.meta.env.VITE_PUSHER_SCHEME ?? 'https';
 
 const echo = new Echo({
     broadcaster: 'pusher',
-    key: pusherKey,
+    key: "app-key",
     cluster: pusherCluster,
     wsHost: pusherHost,
     wsPort: pusherPort,
