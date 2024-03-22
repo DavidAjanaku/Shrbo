@@ -11,7 +11,6 @@ import HostHeader from "../Navigation/HostHeader";
 import Axois from "../../Axios";
 import { Pagination, Spin } from "antd"; // Import Pagination component from Ant Design
 import { LoadingOutlined } from "@ant-design/icons";
-import ListingsModal from "./ListingsModal";
 import { Skeleton } from 'antd';
 
 const { Search } = Input;
@@ -54,51 +53,8 @@ export default function Listings() {
     setSearchQuery(value);
   };
 
-  const handleCheckboxChanges = (listingId) => {
-    setSelectedHouseId(listingId); // Set the selectedHouseId
-    setCoHostModalVisible(true); // Open the co-host modal
-  };
-  
-  const handleViewCoHosts = (cohosts) => {
-    setSelectedListingCoHosts(cohosts);
-    setCoHostsModalVisible(true);
-    
-};
-  
-   const handleAddCoHost = async () => {
-    console.log("Selected House ID:", selectedHouseId); // Log the selected house ID
-    try {
-        if (!coHostEmail) {
-            // Show an error message if the email is empty
-            notification.error({
-                message: "Error adding co-host",
-                description: "Please enter a co-host email address.",
-            });
-            return;
-        }
 
-        // Send a request to add the co-host with email as a URL parameter
-        await Axois.get(`/addCoHost/${selectedHouseId}?email=${coHostEmail}`);
-
-        // Close the modal
-        setCoHostModalVisible(false);
-
-        // Show success notification
-        notification.success({
-            message: "Co-host added successfully",
-            description: "An email has been sent to the co-host.",
-            placement: "topRight",
-        });
-    } catch (error) {
-        console.error("Error adding co-host:", error);
-        // Handle errors as needed (e.g., display an error message to the user)
-        notification.error({
-            message: "Error adding co-host",
-            description:
-                "There was an error adding the co-host. Please try again.",
-        });
-    }
-};
+ 
   
   const fetchListings = async () => {
     try {
@@ -198,96 +154,12 @@ export default function Listings() {
       key: "address",
     },
 
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_, listing) => {
-        // Check if the host type is "I'm hosting as a business"
-        if (listing.host_type === "I'm hosting as a business") {
-          return (
-            <Button type="primary">
-            <Link onClick={() => handleCheckboxChanges(listing.id)}>
-              Add a Co-host
-            </Link>
-          </Button>
-          
-          );
-        } else {
-          return null; // Render nothing if the host type is different
-        }
-      },
-    },
-    {
-      title: "Co-host Email",
-      dataIndex: "cohosts",
-      key: "cohosts",
-      render: (cohosts, listing) => {
-        // Check if the host type is "I'm hosting as a business" and if co-hosts are present
-        if (
-          listing.host_type === "I'm hosting as a business" &&
-          cohosts !== null
-        ) {
-          return (
-            <div>
-            <Button
-              type="link"
-              onClick={() => {
-                setSelectedHouseId(listing.id); // Set the selectedHouseId
-                setCoHostsModalVisible(true); // Update the state here
-                setSelectedListingCoHosts(cohosts); // Set the selected cohosts for the modal
-              }}
-            >
-              View Co-hosts
-            </Button>
-            <ListingsModal
-              isOpen={coHostsModalVisible}
-              onRequestClose={() => setCoHostsModalVisible(false)}
-              coHosts={selectedListingCoHosts}
-              handleRemoveCoHost={handleRemoveCoHost}
-                userEmail={email} // Pass the email state to the component
-
-            />
-          </div>
-          
-          );
-        } else {
-          return null; // Render nothing if the condition is not met
-        }
-      },
-    }
+ 
     
     
   ];
 
 
-  const handleRemoveCoHost = async (cohostId) => {
-    console.log("Selected House ID:", selectedHouseId); // Log the selected house ID
-    console.log("Removing co-host with cohostId:", cohostId, "from host home with selectedHouseId:", selectedHouseId);
-
-    try {
-      // Send a request to remove the co-host
-      await Axois.delete(`/removeCoHost/${cohostId}/${selectedHouseId}`);
-  
-      // Fetch updated listings
-      await fetchListings();
-      setSelectedListingCoHosts(prevCoHosts => prevCoHosts.filter(cohost => cohost.id !== cohostId));
-
-      // Show success notification
-      notification.success({
-        message: "Co-host removed successfully",
-        description: "The co-host has been removed from the listing.",
-        placement: "topRight",
-      });
-    } catch (error) {
-      console.error("Error removing co-host:", error);
-      // Handle errors as needed (e.g., display an error message to the user)
-      notification.error({
-        message: "Error removing co-host",
-        description:
-          "There was an error removing the co-host. Please try again.",
-      });
-    }
-  };
 
 
   
@@ -420,7 +292,6 @@ export default function Listings() {
   )}
 </h1>
 
-            <p className="text-gray-500 text-sm">If you selected Hosting as a Business,please click on the apartment to add a co-host.</p>
           </div>
           <div>
             <Link to="/HostHomes">
@@ -610,28 +481,7 @@ export default function Listings() {
           </div>
         </Modal>
       </div>
-      <Modal
-  isOpen={coHostModalVisible}
-  onRequestClose={() => setCoHostModalVisible(false)}
-  contentLabel="Add Co-host Modal"
-  style={{
-    content: {
-      width: "300px",
-      height: "200px", // Set the width of the modal
-      margin: "auto", // Center the modal horizontally
-      boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
-    },
-  }}
->
-  <h2>Add Co-host</h2>
-  <Input
-    placeholder="Enter co-host email"
-    value={coHostEmail}
-    onChange={(e) => setCoHostEmail(e.target.value)}
-  />
-
-  <Button className="mt-5" onClick={handleAddCoHost}>Add Co-host</Button>
-</Modal>
+     
 
 
       <BottomNavigation />

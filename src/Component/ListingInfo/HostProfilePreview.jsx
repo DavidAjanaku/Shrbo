@@ -79,6 +79,8 @@ const HostProfilePreview = ({
         setLoading(false);
       });
   }, [hostId]);
+  const formattedUserReviews = userRating.toFixed(1); // Rounds to 1 decimal place
+
 
   return (
     <div className="w-full mb-6 ">
@@ -119,7 +121,7 @@ const HostProfilePreview = ({
               <div className=" flex flex-col gap-[2px]  items-center  justify-center text-3xl">
                 <span className=" flex gap-[2px] items-center box-border font-bold text-xl">
                   <div className=" flex flex-row items-center gap-[2px]">
-                    {userRating}
+                    {formattedUserReviews}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
