@@ -135,12 +135,36 @@ const Chat = () => {
     }
   };
 
-  const TypingIndicator = () => (
-    <div className="flex items-center text-gray-500">
-      <div className="w-3 h-3 bg-gray-500 rounded-full mr-1"></div>
-      <p>User is typing...</p>
-    </div>
-  );
+  const checkTyping = async () => {
+    try {
+      const response = await Axios.get(`/typing/${selectedUser}/${ADMIN_ID}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      setIsTyping(response.data.typing);
+      console.log(response);
+    } catch (error) {
+      console.error('Error checking typing status:', error);
+    }
+  };
+  
+  
+  // Use useEffect to call checkTyping when the selectedUser changes
+  useEffect(() => {
+    if (selectedUser) {
+      checkTyping();
+    }
+  }, [selectedUser]);
+
+
+ const TypingIndicator = () => (
+  <div className="flex items-center text-gray-500">
+    <div className="w-3 h-3 bg-gray-500 rounded-full mr-1"></div>
+    <p>User is typing...</p>
+  </div>
+);
 
   // Your existing code
 
@@ -148,6 +172,9 @@ const Chat = () => {
     const message = e.target.value;
     setMessage(message);
     setIsTyping(message.trim().length > 0);
+    if (selectedUser) {
+      checkTyping();
+    }
   };
 
   const filteredUsers = users.filter((user) => {
@@ -208,7 +235,8 @@ const Chat = () => {
   useEffect(() => {
     // Scroll to the bottom of the chat container when new messages are received or the selected user changes
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [newMessages, selectedUser]);
 
@@ -220,8 +248,63 @@ const Chat = () => {
           <div className="w-full  p-4 h-[85vh] overflow-auto example">
             <h1 className="text-xl font-semibold mb-4">Message</h1>
             <div className="flex ">
-              {!selectedUser && (
-                <div className=" w-full md:w-1/4 border-r pr-4">
+          
+                <div className="hidden md:block  w-full md:w-1/3 border-r pr-4">
+                  <h2 className="text-lg font-semibold mb-2">Users</h2>
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded mb-2"
+                    placeholder="Search users..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <ul>
+                    {recentMessages.map((message, index) => (
+                      <li
+                        key={index}
+                        className={`cursor-pointer flex justify-between items-center p-2 px-4 ${
+                          selectedUser === message.user_id ? "bg-gray-200" : ""
+                        }`}
+                        onClick={() => fetchUserChats(message.user_id)}
+                      >
+                        <div className="flex items-center">
+                          <img
+                            src={message.profilePic}
+                            alt={message.name}
+                            className="w-8 h-8 rounded-full mr-2"
+                          />
+                          <div>
+                            <p className="font-semibold">{message.name}</p>
+                            <p className="text-sm text-gray-500">Role: Guest</p>
+                            <p
+                              className={`text-sm ${
+                                selectedUser === message.user_id
+                                  ? "text-gray-500"
+                                  : "text-orange-500"
+                              }`}
+                            >
+                              {message.message.message}{" "}
+                              {/* Assuming this is the message text */}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          className="bg-orange-300 text-white h-fit  text-sm px-2 py-1 ml-2 rounded"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent the li click event from firing
+                            // Assuming this is the correct property for the user profile link
+                            window.location.href = message.userProfile;
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faUser} className="mr-2" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+             
+               {!selectedUser && (
+                <div className="block md:hidden  w-full md:w-1/4 border-r pr-4">
                   <h2 className="text-lg font-semibold mb-2">Users</h2>
                   <input
                     type="text"
@@ -275,93 +358,106 @@ const Chat = () => {
                   </ul>
                 </div>
               )}
-              {selectedUser && (
-                <div className="w-full">
-                  <div className="bg-white p-4 rounded shadow">
-                    {selectedUser ? (
-                      <>
-                        <div className="flex items-center pb-4 gap-3">
-                          <div className="cursor-pointer">
-                            <FaArrowLeft
-                              onClick={() => setSelectedUser(null)}
-                            />
-                          </div>
-                          {/* <p className="text-lg font-semibold">
+              {selectedUser &&
+                (console.log(),
+                (
+                  <div className="w-full">
+                    <div className="bg-white p-4 rounded shadow">
+                      {selectedUser ? (
+                        <>
+                          <div className="flex items-center pb-4 gap-3">
+                            <div className="cursor-pointer">
+                              <FaArrowLeft
+                                onClick={() => setSelectedUser(null)}
+                              />
+                            </div>
+                            {/* <p className="text-lg font-semibold">
                        {users.find((user) => user.id === selectedUser)?.name}
                      </p> */}
-                        </div>
-                        <div ref={chatContainerRef} className="h-[60vh] overflow-y-auto example">
-                          {userChats[selectedUser]?.map((msg, index) => (
-                            <div
-                              key={index}
-                              className={`flex ${
-                                msg.sender.id === ADMIN_ID
-                                  ? "flex-row-reverse"
-                                  : "flex-row"
-                              }`}
-                            >
+                          </div>
+                          <div
+                            ref={chatContainerRef}
+                            className="h-[60vh] overflow-y-auto example"
+                          >
+                            {userChats[selectedUser]?.map((msg, index) => (
                               <div
-                                className={`mb-2 p-2 rounded ${
+                                key={index}
+                                className={`flex ${
                                   msg.sender.id === ADMIN_ID
-                                    ? "bg-orange-100 w-fit text-blue-900"
-                                    : "bg-gray-100 text-gray-900"
+                                    ? "flex-row-reverse"
+                                    : "flex-row"
                                 }`}
                               >
-                                <p>{msg.message}</p>
-                                <p>{msg.text}</p>
+                                <div
+                                  className={`mb-2 p-2 rounded ${
+                                    msg.sender.id === ADMIN_ID
+                                      ? "bg-orange-100 w-fit text-blue-900"
+                                      : "bg-gray-100 text-gray-900"
+                                  }`}
+                                >
+                                  <p>{msg.message}</p>
+                                  <p>{msg.text}</p>
 
-                                <p className="text-xs text-gray-500">
-                                  {msg.time instanceof Date
-                                    ? msg.time.toLocaleDateString(undefined, {
-                                        weekday: "long",
-                                        day: "numeric",
-                                        year: "numeric",
-                                        month: "long",
-                                      })
-                                    : ""}
-                                </p>
+
+                                  <p className="text-xs text-gray-500">
+                                    {msg.time instanceof Date
+                                      ? msg.time.toLocaleDateString(undefined, {
+                                          weekday: "long",
+                                          day: "numeric",
+                                          year: "numeric",
+                                          month: "long",
+                                        })
+                                      : ""}
+                                  </p>
+
+                                </div>
                               </div>
-                            </div>
-                          ))}
-                          {[
-                            ...new Set(newMessages.map((msg) => msg.message)),
-                          ].map((msg, index) => (
-                            <p
-                              key={index}
-                              className=" bg-gray-100 w-fit text-gray-900 mb-2 p-2 rounded"
-                            >
-                              {msg}
-                            </p>
-                          ))}
+                            ))}
+                            {[
+                              ...new Set(
+                                newMessages
+                                  .filter(
+                                    (msg) => msg.sender_id === selectedUser
+                                  )
+                                  .map((msg) => msg.message)
+                              ),
+                            ].map((msg, index) => (
+                              <p
+                                key={index}
+                                className=" bg-gray-100 w-fit text-gray-900 mb-2 p-2 rounded"
+                              >
+                                {msg}
+                              </p>
+                            ))}
+                                  {isTyping && <TypingIndicator />}
 
-                          {isTyping && <TypingIndicator />}
-                        </div>
-                        <div className="mt-4 flex gap-2">
-                          <textarea
-                            className="w-full p-2 border rounded"
-                            placeholder="Type your message here..."
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                          ></textarea>
-                          <button
-                            className="bg-orange-400 text-white px-4 py-2 rounded float-right"
-                            onClick={() => sendMessage("text")}
-                          >
-                            <FontAwesomeIcon
-                              icon={faPaperPlane}
-                              className="mr-2"
-                            />
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <p className="text-gray-500 flex items-center h-[80vh] justify-center">
-                        Select a user to start chatting.
-                      </p>
-                    )}
+                          </div>
+                          <div className="mt-4 flex gap-2">
+                            <textarea
+                              className="w-full p-2 border rounded"
+                              placeholder="Type your message here..."
+                              value={message}
+                              onChange={handleTyping}
+                              ></textarea>
+                            <button
+                              className="bg-orange-400 text-white px-4 py-2 rounded float-right"
+                              onClick={() => sendMessage("text")}
+                            >
+                              <FontAwesomeIcon
+                                icon={faPaperPlane}
+                                className="mr-2"
+                              />
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="text-gray-500 flex items-center h-[80vh] justify-center">
+                          Select a user to start chatting.
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                ))}
             </div>
           </div>
         </div>
