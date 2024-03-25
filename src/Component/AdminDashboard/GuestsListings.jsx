@@ -117,6 +117,7 @@ export default function GuestsListings() {
         const sortedGuests = response.data.data.sort((a, b) => {
           return new Date(b.created_at) - new Date(a.created_at);
         });
+        console.log(response.data);
   
         // Update the 'banned' label for each guest
         const updatedGuests = sortedGuests.map((guest) => {

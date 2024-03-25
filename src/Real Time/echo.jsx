@@ -11,7 +11,7 @@ const echo = new Echo({
     broadcaster: 'pusher',
     key: "app-key",
     cluster: pusherCluster,
-    wsHost: pusherHost,
+    wsHost: 'shortletbooking.com',
     wsPort: pusherPort,
     wssPort: pusherPort,
     forceTLS: pusherScheme === 'https',
