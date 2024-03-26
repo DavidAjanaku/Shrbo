@@ -130,14 +130,15 @@ const Chat = () => {
       );
       const selectedUserMessage = {
         user_id: selectedUser,
-        name: users.find((user) => user.id === selectedUser)?.name,
-        profilePic: users.find((user) => user.id === selectedUser)?.image,
-        message: newChatItem,
+        name: selectedUserName,
+        profilePic: selectedUserProfilePic,
+        message:{message:newChatItem.text},
       };
       const newRecentMessages = [selectedUserMessage, ...updatedRecentMessages];
   
       // Create a new array reference to force re-render
       setRecentMessages([...newRecentMessages]);
+      console.log("check",selectedUserProfilePic)
   
       setMessage(""); // Clear the message input after sending
       setSelectedUser(selectedUser); // Set the selectedUser state to the receiverId
