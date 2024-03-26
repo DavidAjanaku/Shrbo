@@ -44,25 +44,8 @@ const Chat = () => {
         console.log("Received message:", data);
         console.log("User ID:",data.user_id);
 
-        setRecentMessages((prevMessages) => {
-          const updatedMessages = [...prevMessages];
-          const existingIndex = updatedMessages.findIndex(
-            (message) => message.user_id === data.receiver.id
-          );
-      
-          if (existingIndex !== -1) {
-            updatedMessages.splice(existingIndex, 1);
-          }
-      
-          updatedMessages.unshift({
-            user_id: data.receiver.id,
-            name: data.receiver.name,
-            profilePic: data.receiver.profilePic,
-            message: data.messagesWithAUser[data.messagesWithAUser.length - 1],
-          });
-      
-          return updatedMessages;
-        });
+        setRecentMessages(() => data.recentMessages);
+
         
         setUserChats((prevChats) => {
           const newChats = { ...prevChats };
