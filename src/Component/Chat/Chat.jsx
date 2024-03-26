@@ -49,20 +49,26 @@ const Chat = () => {
           const existingIndex = updatedMessages.findIndex(
             (message) => message.user_id === data.receiver.id
           );
-      
+        
           if (existingIndex !== -1) {
             updatedMessages.splice(existingIndex, 1);
           }
-      
-          updatedMessages.unshift({
+
+          console.log("Main",[{
             user_id: data.receiver.id,
             name: data.receiver.name,
             profilePic: data.receiver.profilePic,
             message: data.messagesWithAUser[data.messagesWithAUser.length - 1],
-          });
-      
-          return updatedMessages;
+          }, ...updatedMessages]);
+        
+          return [{
+            user_id: data.receiver.id,
+            name: data.receiver.name,
+            profilePic: data.receiver.profilePic,
+            message: data.messagesWithAUser[data.messagesWithAUser.length - 1],
+          }, ...updatedMessages];          
         });
+
         
         setUserChats((prevChats) => {
           const newChats = { ...prevChats };
@@ -132,13 +138,13 @@ const Chat = () => {
         user_id: selectedUser,
         name: selectedUserName,
         profilePic: selectedUserProfilePic,
-        message:{message:newChatItem.text},
+        message: {message:newChatItem.text},
       };
       const newRecentMessages = [selectedUserMessage, ...updatedRecentMessages];
   
       // Create a new array reference to force re-render
       setRecentMessages([...newRecentMessages]);
-      console.log("check",selectedUserProfilePic)
+      console.log("check",newChatItem.text)
   
       setMessage(""); // Clear the message input after sending
       setSelectedUser(selectedUser); // Set the selectedUser state to the receiverId
