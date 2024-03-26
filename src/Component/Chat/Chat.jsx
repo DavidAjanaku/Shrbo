@@ -19,9 +19,7 @@ const Chat = () => {
   const chatContainerRef = useRef(null);
   const [selectedUserName, setSelectedUserName] = useState(null); // State to store the selected user's name
   const [selectedUserProfilePic, setSelectedUserProfilePic] = useState(null);
-  const [users] = useState([
-   
-  ]);
+  const [users] = useState([]);
 
   const [selectedUserObj, setSelectedUserObj] = useState(null);
 
@@ -42,11 +40,10 @@ const Chat = () => {
 
       privateChannel.listen("MessageSent", (data) => {
         console.log("Received message:", data);
-        console.log("User ID:",data.user_id);
+        console.log("User ID:", data.user_id);
 
         setRecentMessages(() => data.recentMessages);
 
-        
         setUserChats((prevChats) => {
           const newChats = { ...prevChats };
           if (!newChats[receiverId]) {
@@ -81,7 +78,7 @@ const Chat = () => {
 
   const sendMessage = async (msgType) => {
     if (!message.trim()) return; // Prevent sending empty messages
-  
+
     try {
       const response = await Axios.post(
         `/chat/${selectedUser}`,
@@ -96,17 +93,17 @@ const Chat = () => {
       const chat = userChats[selectedUser] || [];
       const now = new Date();
       const formattedTime = format(now, "EEEE, d MMMM yyyy 'at' HH:mm");
-  
+
       const newChatItem = {
         text: message.trim(),
         sender: { id: ADMIN_ID },
         type: msgType,
         time: new Date(),
       };
-  
+
       const newChat = [...chat, newChatItem];
       setUserChats({ ...userChats, [selectedUser]: newChat });
-  
+
       // Update recentMessages to show the user you texted to at the top
       const updatedRecentMessages = recentMessages.filter(
         (msg) => msg.user_id !== selectedUser
@@ -115,24 +112,20 @@ const Chat = () => {
         user_id: selectedUser,
         name: selectedUserName,
         profilePic: selectedUserProfilePic,
-        message:{message:newChatItem.text},
+        message: { message: newChatItem.text },
       };
       const newRecentMessages = [selectedUserMessage, ...updatedRecentMessages];
-  
+
       // Create a new array reference to force re-render
       setRecentMessages([...newRecentMessages]);
-      console.log("check",selectedUserProfilePic)
-  
+      console.log("check", selectedUserProfilePic);
+
       setMessage(""); // Clear the message input after sending
       setSelectedUser(selectedUser); // Set the selectedUser state to the receiverId
-  
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
-  
-  
-  
 
   const checkTyping = async () => {
     try {
@@ -178,10 +171,12 @@ const Chat = () => {
     const nameMatch = user.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-      const messageMatch = recentMessages.some((message) =>
-      message.name && message.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const messageMatch = recentMessages.some(
+      (message) =>
+        message.name &&
+        message.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    
+
     return nameMatch || messageMatch;
   });
 
@@ -227,8 +222,8 @@ const Chat = () => {
       console.log(response.data.messagesWithAUser);
       console.log(response.data.receiver.name);
       setSelectedUserName(response.data.receiver.name); // Store the name of the selected user in state
-      setSelectedUserProfilePic(response.data.receiver.profilePic); // Store the profile picture of the selected user in state
-
+      setSelectedUserProfilePic(response.data.receiver.profilePicture); // Store the profile picture of the selected user in state
+      console.log(response);
       setSelectedUserObj({
         message: response.data.messagesWithAUser[0].message,
         name: response.data.receiver.name,
@@ -248,11 +243,11 @@ const Chat = () => {
     }
   }, [newMessages, selectedUser]);
 
-
   const renderMessages = (userChats, newMessages, selectedUser, users) => {
     const userChat = userChats[selectedUser] || [];
-    const noMessagesReceived = userChat.length === 0 && newMessages.length === 0;
-  
+    const noMessagesReceived =
+      userChat.length === 0 && newMessages.length === 0;
+
     if (noMessagesReceived && message.trim()) {
       const formattedTime = format(new Date(), "EEEE, d MMMM yyyy 'at' HH:mm");
       return (
@@ -264,19 +259,23 @@ const Chat = () => {
         </div>
       );
     }
-  
+
     // const selectedUserProfilePic = selectedUserObj?.image;
-    
+
     console.log("Selected User Name:", selectedUserName);
     console.log(selectedUserObj.name);
+    console.log(selectedUserProfilePic);
     // console.log("Selected User Profile Pic:", selectedUserProfilePic);
-    
+
     return (
       <>
         {selectedUserObj && (
           <div className="flex items-center justify-center mb-4">
             <img
-              src={selectedUserObj.profilePic}
+              src={
+                message.profilePic ||
+                "https://shbro.onrender.com/assets/logo-94e89628.png"
+              }
               alt={selectedUserObj.name}
               className="w-10 h-10 rounded-full mr-2"
             />
@@ -287,7 +286,7 @@ const Chat = () => {
           .map((msg, index) => {
             const messageDate = new Date(msg.created_at);
             const isSentMessage = msg.sender.id === ADMIN_ID;
-  
+
             let timestamp = messageDate.toLocaleString(undefined, {
               weekday: "long",
               day: "numeric",
@@ -296,7 +295,7 @@ const Chat = () => {
               hour: "2-digit",
               minute: "2-digit",
             });
-  
+
             return (
               <div
                 key={index}
@@ -306,26 +305,27 @@ const Chat = () => {
               >
                 <div
                   className={`mb-2 p-2 rounded ${
-                    isSentMessage ? "bg-orange-100 w-fit text-blue-900" : "bg-gray-100 text-gray-900"
+                    isSentMessage
+                      ? "bg-orange-100 w-fit text-blue-900"
+                      : "bg-gray-100 text-gray-900"
                   }`}
                 >
                   <p>{msg.message}</p>
-                 
 
                   <p className="text-xs text-gray-500">{timestamp}</p>
                   <p>{msg.text}</p>
-                     <p className="text-xs text-gray-500">
-                  {msg.time instanceof Date
-                    ? msg.time.toLocaleString(undefined, {
-                        weekday: "long",
-                        day: "numeric",
-                        year: "numeric",
-                        month: "long",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : ""}
-                </p>
+                  <p className="text-xs text-gray-500">
+                    {msg.time instanceof Date
+                      ? msg.time.toLocaleString(undefined, {
+                          weekday: "long",
+                          day: "numeric",
+                          year: "numeric",
+                          month: "long",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : ""}
+                  </p>
                 </div>
               </div>
             );
@@ -364,41 +364,42 @@ const Chat = () => {
       </>
     );
   };
-  
-
 
   const RecentMessages = ({ recentMessages, selectedUser, fetchUserChats }) => {
     return (
-      <ul>
+      <ul className="overflow-auto example">
         {recentMessages.map((message, index) => (
           <li
             key={index}
-            className={`cursor-pointer flex justify-between items-center p-2 px-4 ${
+            className={`cursor-pointer flex justify-between py-4 items-center p-2 px-4 ${
               selectedUser === message.user_id ? "bg-gray-200" : ""
             }`}
             onClick={() => fetchUserChats(message.user_id)}
           >
             <div className="flex items-center">
               <img
-                src={message.profilePic}
+                src={
+                  message.profilePic ||
+                  "https://shbro.onrender.com/assets/logo-94e89628.png"
+                }
                 alt={message.name}
-                className="w-8 h-8 rounded-full mr-2"
+                className="w-12 h-12 rounded-full mr-4"
               />
               <div>
                 <p className="font-semibold">{message.name}</p>
-                <p className="text-sm text-gray-500">Role: Guest</p>
                 <p
-                  className={`text-sm ${
-                    selectedUser === message.user_id
-                      ? "text-gray-500"
-                      : "text-orange-500"
-                  }`}
+                  className={`text-sm 
+                  
+                      text-gray-500
+                  
+                `}
                 >
-                  {message.message.message} {/* Assuming this is the message text */}
+                  {message.message.message}{" "}
+                  {/* Assuming this is the message text */}
                 </p>
               </div>
             </div>
-            <button
+            {/* <button
               className="bg-orange-300 text-white h-fit  text-sm px-2 py-1 ml-2 rounded"
               onClick={(e) => {
                 e.stopPropagation(); // Prevent the li click event from firing
@@ -407,17 +408,18 @@ const Chat = () => {
               }}
             >
               <FontAwesomeIcon icon={faUser} className="mr-2" />
-            </button>
+            </button> */}
           </li>
         ))}
       </ul>
     );
   };
-  
-  
-  
+
   useEffect(() => {
-    console.log("Recent Messages Updated:", recentMessages.map(message => message.user_id));
+    console.log(
+      "Recent Messages Updated:",
+      recentMessages.map((message) => message.user_id)
+    );
   }, [recentMessages]);
   return (
     <div>
@@ -436,11 +438,11 @@ const Chat = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                 <RecentMessages
-              recentMessages={recentMessages}
-              selectedUser={selectedUser}
-              fetchUserChats={fetchUserChats}
-            />
+                <RecentMessages
+                  recentMessages={recentMessages}
+                  selectedUser={selectedUser}
+                  fetchUserChats={fetchUserChats}
+                />
               </div>
 
               {!selectedUser && (
@@ -464,7 +466,10 @@ const Chat = () => {
                       >
                         <div className="flex items-center">
                           <img
-                            src={message.profilePic}
+                            src={
+                              message.profilePic ||
+                              "https://shbro.onrender.com/assets/logo-94e89628.png"
+                            }
                             alt={message.name}
                             className="w-8 h-8 rounded-full mr-2"
                           />
@@ -511,16 +516,18 @@ const Chat = () => {
                                 onClick={() => setSelectedUser(null)}
                               />
                             </div>
-                              <p className="font-semibold">{selectedUserName}</p>
-
+                            <p className="font-semibold">{selectedUserName}</p>
                           </div>
                           <div
                             ref={chatContainerRef}
                             className="h-[60vh] overflow-y-auto example"
                           >
-                                {renderMessages(userChats, newMessages, selectedUser, users)}
-
-                          
+                            {renderMessages(
+                              userChats,
+                              newMessages,
+                              selectedUser,
+                              users
+                            )}
 
                             {isTyping && <TypingIndicator />}
                           </div>
