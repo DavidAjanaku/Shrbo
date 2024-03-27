@@ -10,6 +10,7 @@ import InfoCard from "../InfoCard";
 import AlertCard from "../AlertCard";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 import axios from "../../Axios";
+import { message } from 'antd';
 
 export default function Hosting() {
   const [activeTab, setActiveTab] = useState("checkingOut");
@@ -24,69 +25,174 @@ export default function Hosting() {
   const [hosting, setHosting] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingGeneral, setLoadingGeneral] = useState(true);
+  
+  const [isNotificationDeleted, setNotificationDeleted] = useState(false);
   const [tabLoading, setTabLoading] = useState(true);
   const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message:
-        "New booking request for Property XYZ. Check details and confirm the reservation.",
-      date: "Oct 15, 2023",
-    },
-    {
-      id: 2,
-      message:
-        "Guests for Property ABC will be arriving soon. Ensure everything is ready for their check-in on [date].",
-      date: "Oct 18, 2023",
-    },
-    {
-      id: 3,
-      message:
-        "Don't forget to encourage guests from Property DEF to leave a review. It boosts your property's profile!",
-      date: "Oct 20, 2023",
-    },
-    {
-      id: 4,
-      message:
-        "Maintenance required at Property GHI. Schedule a visit to address issues reported by guests.",
-      date: "Oct 22, 2023",
-    },
-    {
-      id: 5,
-      message:
-        "Payment received for booking at Property JKL. Check your account for transaction details.",
-      date: "Oct 25, 2023",
-    },
-    {
-      id: 6,
-      message:
-        "Guests have checked out from Property MNO. Confirm the condition of the property and report any issues.",
-      date: "Oct 28, 2023",
-    },
-    {
-      id: 7,
-      message:
-        "Provide emergency contact information to guests staying at Property PQR. Ensure their safety and comfort.",
-      date: "Nov 1, 2023",
-    },
-    {
-      id: 8,
-      message:
-        "Create a special offer for Property STU to attract more bookings. Limited-time discounts available!",
-      date: "Nov 5, 2023",
-    },
-    {
-      id: 9,
-      message:
-        "Weather advisory for guests at Property VWX. Inform them about any potential weather-related impacts.",
-      date: "Nov 8, 2023",
-    },
-    {
-      id: 10,
-      message:
-        "Share information about upcoming local events near Property YZ. Enhance your guests' experience.",
-      date: "Nov 12, 2023",
-    },
+    // {
+    //   id: 1,
+    //   message:
+    //     "New booking request for Property XYZ. Check details and confirm the reservation.",
+    //   date: "Oct 15, 2023",
+    // },
+    // {
+    //   id: 2,
+    //   message:
+    //     "Guests for Property ABC will be arriving soon. Ensure everything is ready for their check-in on [date].",
+    //   date: "Oct 18, 2023",
+    // },
+    // {
+    //   id: 3,
+    //   message:
+    //     "Don't forget to encourage guests from Property DEF to leave a review. It boosts your property's profile!",
+    //   date: "Oct 20, 2023",
+    // },
+    // {
+    //   id: 4,
+    //   message:
+    //     "Maintenance required at Property GHI. Schedule a visit to address issues reported by guests.",
+    //   date: "Oct 22, 2023",
+    // },
+    // {
+    //   id: 5,
+    //   message:
+    //     "Payment received for booking at Property JKL. Check your account for transaction details.",
+    //   date: "Oct 25, 2023",
+    // },
+    // {
+    //   id: 6,
+    //   message:
+    //     "Guests have checked out from Property MNO. Confirm the condition of the property and report any issues.",
+    //   date: "Oct 28, 2023",
+    // },
+    // {
+    //   id: 7,
+    //   message:
+    //     "Provide emergency contact information to guests staying at Property PQR. Ensure their safety and comfort.",
+    //   date: "Nov 1, 2023",
+    // },
+    // {
+    //   id: 8,
+    //   message:
+    //     "Create a special offer for Property STU to attract more bookings. Limited-time discounts available!",
+    //   date: "Nov 5, 2023",
+    // },
+    // {
+    //   id: 9,
+    //   message:
+    //     "Weather advisory for guests at Property VWX. Inform them about any potential weather-related impacts.",
+    //   date: "Nov 8, 2023",
+    // },
+    // {
+    //   id: 10,
+    //   message:
+    //     "Share information about upcoming local events near Property YZ. Enhance your guests' experience.",
+    //   date: "Nov 12, 2023",
+    // },
   ]);
+
+/// ************ Notification Logic*****************************
+
+const receiverId = parseInt(localStorage.getItem("receiverid"), 10);
+
+const deleteNotification = async (notificationId) => {
+  try {
+    const response = await axios.delete(`/notification/${notificationId}`);
+    console.log("Deleted Notification", response.data)
+
+    message.success("notification deleted successfully")
+    setNotificationDeleted(!isNotificationDeleted);
+
+  } catch (error) {
+    message.error("could not delete notification")
+
+  }
+
+}
+
+
+  useEffect(() => {
+
+    axios.get("/notification").then(response => {
+      setNotifications([...response.data.data]);
+      console.log("notification", [...response.data.data]);
+    }).catch(error => {
+      // console.log("Error",error);
+    });
+
+  }, [isNotificationDeleted]);
+
+
+  const DateTimeConverter = (date) => {
+    // Create a new Date object from the provided date string
+    const originalDate = new Date(date);
+
+    // Define months array
+    const months = [
+      "Jan", "Feb", "Mar", "Apr",
+      "May", "Jun", "Jul", "Aug",
+      "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    // Extract day, month, year, hours, and minutes from the date object
+    const day = originalDate.getDate();
+    const monthIndex = originalDate.getMonth();
+    const year = originalDate.getFullYear();
+    let hours = originalDate.getHours();
+    const minutes = originalDate.getMinutes();
+
+    // Determine AM or PM
+    const amOrPm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert hours to 12-hour format
+    hours = hours % 12 || 12;
+
+    // Format the date string
+    const formattedDate = `${months[monthIndex]} ${day}, ${year} ${hours}:${minutes} ${amOrPm}`;
+
+    // Render the formatted date
+    return formattedDate;
+  };
+
+  const initializeEcho = (token, receiverId) => {
+    if (typeof window.Echo !== "undefined") {
+      const channelName = `App.Models.User.${receiverId}`;
+
+      window.Echo.connector.options.auth.headers.Authorization = `Bearer ${token}`;
+      console.log(
+        "Authentication token is set:",
+        window.Echo.connector.options.auth.headers.Authorization
+      );
+
+      const privateChannel = window.Echo.private(channelName);
+
+      privateChannel.listen("NewNotificationEvent", (data) => {
+        // console.log("Received Notification:", data);
+        // console.log("User ID:", data.user_id);
+
+        setNotifications([...notifications, data.notification]);
+
+      });
+
+      console.log("Listening for messages on channel:", channelName);
+    } else {
+      console.error(
+        "Echo is not defined. Make sure Laravel Echo is properly configured."
+      );
+    }
+  };
+
+
+  useEffect(() => {
+    initializeEcho(token, receiverId);
+  }, []);
+
+
+
+
+
+////  End
+
 
 
   const toggleProfileDropdown = () => {
@@ -821,7 +927,7 @@ export default function Hosting() {
             management tool.
           </p>
           :
-          <div className="skeleton-loader my-7 w-[560px] rounded-[2px] h-7 ml-3" />
+          <div className="skeleton-loader my-7 w-[200px] md:w-[560px] rounded-[2px] h-7 ml-3" />
           }
 
 
@@ -843,12 +949,13 @@ export default function Hosting() {
                 {/* Render your notifications here */}
                 {notifications.map((notification, index) => (
                   <div
-                    key={index}
+                    key={notification.id}
+                    onClick={()=>{deleteNotification(notification.id)}} 
                     className="text-gray-800 p-2 cursor-pointer my-4 rounded-md hover:bg-orange-300 hover:text-white"
                   >
                     <div>{notification.message}</div>
                     <div className="text-gray-500 text-xs">
-                      {notification.date}
+                      {DateTimeConverter(notification.time)}
                     </div>
                   </div>
                 ))}
