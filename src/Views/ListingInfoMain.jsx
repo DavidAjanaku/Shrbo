@@ -19,6 +19,7 @@ const ListingInfoMain = () => {
   const { id } = useParams();
   const [listingDetails, setListingDetails] = useState(null);
   const [refreshed, setRefreshed] = useState(false);
+  const [bookingRequestStatus, setBookingRequestStatus] = useState(null);
 
   console.log(id);
   const {
@@ -52,21 +53,36 @@ const ListingInfoMain = () => {
 
   useEffect(() => {
     const fetchListingDetails = async () => {
+      let response;
       try {
-        const response = await Axios.get(`showGuestHome/${id}`);
-        setListingDetails(response.data.data);
-        setApartment(id); // Set the ID parameter to the apartment state
-        setUser(response.data.data.user.id);
-        setHostId(response.data.data.user.id);
-        setTitle(response.data.data.title);
-        setCancellationPolicy(response.data.data.cancelPolicy);
-        setAddress(response.data.data.address);
-        setPhoto(response.data.data.hosthomephotos);
-        setDiscounts(response.data.data.discounts);
-        console.log(response.data.data);
+        response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
       } catch (error) {
-        console.error("Error fetching listing details:", error);
+        console.error(
+          "Error fetching listing details for authenticated user:",
+          error
+        );
+        try {
+          response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
+        } catch (error) {
+          console.error(
+            "Error fetching listing details for unauthenticated user:",
+            error
+          );
+          return; // Exit the function if both API calls fail
+        }
       }
+
+      setListingDetails(response.data.data);
+      setApartment(id);
+      setUser(response.data.data.user.id);
+      setHostId(response.data.data.user.id);
+      setTitle(response.data.data.title);
+      setCancellationPolicy(response.data.data.cancelPolicy);
+      setAddress(response.data.data.address);
+      setPhoto(response.data.data.hosthomephotos);
+      setDiscounts(response.data.data.discounts);
+      setBookingRequestStatus(response.data.data.bookingRequestStatus);
+      console.log(response.data.data);
     };
 
     fetchListingDetails();
@@ -133,9 +149,14 @@ const ListingInfoMain = () => {
                 preparation_time={listingDetails?.preparation_time}
                 availability_window={listingDetails?.availability_window}
                 advance_notice={listingDetails?.advance_notice}
-                hosthomecustomdiscounts={listingDetails?.hosthomecustomdiscounts}
-                reservedPricesForCertainDay={listingDetails?.reservedPricesForCertainDay}
+                hosthomecustomdiscounts={
+                  listingDetails?.hosthomecustomdiscounts
+                }
+                reservedPricesForCertainDay={
+                  listingDetails?.reservedPricesForCertainDay
+                }
                 weekend={listingDetails?.weekend}
+                bookingRequestStatus={listingDetails?.bookingRequestStatus}
               />
             </div>
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
@@ -176,9 +197,11 @@ const ListingInfoMain = () => {
               availability_window={listingDetails?.availability_window}
               advance_notice={listingDetails?.advance_notice}
               hosthomecustomdiscounts={listingDetails?.hosthomecustomdiscounts}
-              reservedPricesForCertainDay={listingDetails?.reservedPricesForCertainDay}
+              reservedPricesForCertainDay={
+                listingDetails?.reservedPricesForCertainDay
+              }
               weekend={listingDetails?.weekend}
-
+              bookingRequestStatus={listingDetails?.bookingRequestStatus}
             />
           </div>
         </div>

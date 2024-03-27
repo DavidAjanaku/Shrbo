@@ -28,8 +28,8 @@ export default function ListingForm({
   reservedPricesForCertainDay,
   weekend,
   preparation_time,
-  hosthomeId
-
+  hosthomeId,
+  bookingRequestStatus,
 }) {
   function showModal(e) {
     e.preventDefault();
@@ -48,6 +48,7 @@ export default function ListingForm({
   const [isDisabled, setIsDisabled] = useState(false);
   const [numberOfNights, setNumberOfNights] = useState(null);
   const [modalMessage, setModalMessage] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const messageRef = useRef(null);
   // const [checkInDate, setCheckInDate] = useState(null);
@@ -93,7 +94,6 @@ export default function ListingForm({
   //   fetchUsers();
   // }, []);
 
- 
   // console.log(verified);
   const {
     checkInDate,
@@ -127,18 +127,28 @@ export default function ListingForm({
     setMessageModalVisible(true);
   };
 
+  console.log(bookingRequestStatus);
 
-
-  
-  
   useEffect(() => {
     if (reservations && reservations.length > 0) {
       const experiencedGuest = reservations.some(
         (reservation) => reservation.reservation === "An experienced guest"
       );
-      setShowMessageHostButton(!experiencedGuest);
+      const pendingApproval = reservations.some(
+        (reservation) =>
+          reservation.reservation === "Approve or decline requests"
+      );
+      setShowMessageHostButton(!experiencedGuest && !pendingApproval);
     }
-  }, [reservations]);
+
+    if (bookingRequestStatus === "approved") {
+      setShowMessageHostButton(true);
+    } else if (reservation === "Use Instant Book") {
+      setShowMessageHostButton(true);
+    } else {
+      setShowMessageHostButton(false);
+    }
+  }, [reservations, bookingRequestStatus, reservation]);
 
   const { id } = useParams(); // Get the ID parameter from the route
   console.log(max_nights);
@@ -147,11 +157,36 @@ export default function ListingForm({
       try {
         resetStateValues(); // Reset state values before fetching listing details
 
-        const response = await Axios.get(`showGuestHome/${id}`);
+        let response;
+
+        try {
+          response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
+          setIsAuthenticated(true);
+        } catch (error) {
+          console.error(
+            "Error fetching listing details for authenticated user:",
+            error
+          );
+          try {
+            response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
+            setIsAuthenticated(false);
+          } catch (error) {
+            console.error(
+              "Error fetching listing details for unauthenticated user:",
+              error
+            );
+            return; // Exit the function if both API calls fail
+          }
+        }
+
+        console.log(response);
+
         setListingDetails(response.data.data);
         // console.log(response.data.data);
         setPrice(response.data.data.price); // Adjust this line based on your API response structure
         setHousePrice(price);
+        console.log(price);
+        console.log(response);
         const checkoutTimeDate = response.data.data.checkout;
         setSecurityDeposit(parseInt(response.data.data.securityDeposit));
         setGuestFee(response.data.data.guest_fee);
@@ -644,14 +679,26 @@ export default function ListingForm({
   };
   useEffect(() => {
     const fetchListingDetails = async () => {
+      let response;
       try {
-        const response = await Axios.get(`showGuestHome/${id}`);
- 
-        setHostId(response.data.data.user.id);
-       
+        response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
       } catch (error) {
-        console.error("Error fetching listing details:", error);
+        console.error(
+          "Error fetching listing details for authenticated user:",
+          error
+        );
+        try {
+          response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
+        } catch (error) {
+          console.error(
+            "Error fetching listing details for unauthenticated user:",
+            error
+          );
+          return; // Exit the function if both API calls fail
+        }
       }
+
+      setHostId(response.data.data.user.id);
     };
 
     fetchListingDetails();
@@ -659,17 +706,23 @@ export default function ListingForm({
 
   const sendMessage = async () => {
     try {
-      console.log('HostId:', hostId);
-      console.log('HostHomeId:', id);
-  
+      if (!isAuthenticated) {
+        // Redirect to login page if not authenticated
+        navigate("/login");
+        return;
+      }
+
+      console.log("HostId:", hostId);
+      console.log("HostHomeId:", id);
+
       await Axios.post(`/makeRequestToBook/${hostId}/${id}`);
       setMessageSent(true);
       message.success("Inquiry sent successfully");
       setMessageModalVisible(false);
-  
+
       form.resetFields();
     } catch (error) {
-      message.error('Failed to send message');
+      message.error("Failed to send message");
       console.error(error);
     }
   };
@@ -984,10 +1037,15 @@ export default function ListingForm({
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]]"
                         onClick={(event) => {
                           event.preventDefault();
-                          if (verified == null) {
-                            setShowVerifyModal(true);
+                          if (isAuthenticated) {
+                            if (verified == null) {
+                              setShowVerifyModal(true);
+                            } else {
+                              navigate("/RequestBook");
+                            }
                           } else {
-                            navigate("/RequestBook");
+                            // Redirect to login page if not authenticated
+                            navigate("/login");
                           }
                         }}
                         disabled={
@@ -1022,10 +1080,15 @@ export default function ListingForm({
       ,0_4px_18px_0_rgba(59,113,202,0.1)]"
                     onClick={(event) => {
                       event.preventDefault();
-                      if (verified == null) {
-                        setShowVerifyModal(true);
+                      if (isAuthenticated) {
+                        if (verified == null) {
+                          setShowVerifyModal(true);
+                        } else {
+                          navigate("/RequestBook");
+                        }
                       } else {
-                        navigate("/RequestBook");
+                        // Redirect to login page if not authenticated
+                        navigate("/login");
                       }
                     }}
                     disabled={
@@ -1051,8 +1114,7 @@ export default function ListingForm({
                             dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]"
-                            onClick={sendMessage}
-
+                onClick={sendMessage}
               >
                 Message Host
               </button>
@@ -1159,7 +1221,6 @@ export default function ListingForm({
                   className="bg-orange-400 hover:bg-orange-600"
                   htmlType="submit"
                   onClick={sendMessage}
-
                 >
                   Send
                 </Button>

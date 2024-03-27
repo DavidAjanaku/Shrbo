@@ -240,15 +240,18 @@ const Chat = () => {
       setSelectedUserName(response.data.receiver.name); // Store the name of the selected user in state
       setSelectedUserProfilePic(response.data.receiver.profilePicture); // Store the profile picture of the selected user in state
       console.log(response);
-      response.data.messagesWithAUser[0].booking_request.forEach((booking, index) => {
-        console.log(`Booking Request ${index + 1}:`);
-        console.log("host_home_id:", booking.host_home_id);
-        console.log("host_id:", booking.host_id);
-        console.log("requestId:", booking.id);
-      });
-  
+      response.data.messagesWithAUser[0].booking_request.forEach(
+        (booking, index) => {
+          console.log(`Booking Request ${index + 1}:`);
+          console.log("host_home_id:", booking.host_home_id);
+          console.log("host_id:", booking.host_id);
+          console.log("requestId:", booking.id);
+        }
+      );
+
       // Assuming you want to select the first booking request for further processing
-      const selectedBookingRequest = response.data.messagesWithAUser[0].booking_request[0];
+      const selectedBookingRequest =
+        response.data.messagesWithAUser[0].booking_request[0];
       if (selectedBookingRequest) {
         setSelectedUserObj({
           hostHomeId: selectedBookingRequest.host_home_id,
@@ -264,7 +267,6 @@ const Chat = () => {
     }
   };
 
-
   useEffect(() => {
     // Scroll to the bottom of the chat container when new messages are received or the selected user changes
     if (chatContainerRef.current) {
@@ -273,10 +275,13 @@ const Chat = () => {
     }
   }, [newMessages, selectedUser]);
 
+
+
   const renderMessages = (userChats, newMessages, selectedUser, users) => {
     const userChat = userChats[selectedUser] || [];
     const noMessagesReceived =
       userChat.length === 0 && newMessages.length === 0;
+    let messageCount = 1;
 
     if (noMessagesReceived && message.trim()) {
       const formattedTime = format(new Date(), "EEEE, d MMMM yyyy 'at' HH:mm");
@@ -290,9 +295,13 @@ const Chat = () => {
       );
     }
 
-  
-
-    const handleBookingAction = async (requestId, hostHomeId, hostId, guestId, action) => {
+    const handleBookingAction = async (
+      requestId,
+      hostHomeId,
+      hostId,
+      guestId,
+      action
+    ) => {
       console.log(requestId, hostHomeId, hostId, guestId, action);
       try {
         const response = await Axios.post(
@@ -312,9 +321,11 @@ const Chat = () => {
         hostHomeId: selectedUserObj.hostHomeId,
         hostId: hostId,
         guestId: selectedUser,
-        action: "accept"
+        action: "accept",
       });
+
     
+
       handleBookingAction(
         selectedUserObj.requestId,
         selectedUserObj.hostHomeId,
@@ -323,8 +334,7 @@ const Chat = () => {
         "accept"
       );
     };
-    
-  
+
     const handleDecline = () => {
       handleBookingAction(
         selectedUserObj.requestId,
@@ -334,14 +344,29 @@ const Chat = () => {
         "decline"
       );
     };
-    
 
     // const selectedUserProfilePic = selectedUserObj?.image;
 
-    console.log("Selected User Name:", selectedUserName);
-    console.log(selectedUserObj.name);
-    console.log(selectedUserProfilePic);
-    // console.log("Selected User Profile Pic:", selectedUserProfilePic);
+    const filteredNewMessages = newMessages.filter(
+      (msg) => !userChat.some((existingMsg) => existingMsg.id === msg.id)
+    );
+  
+    const sortedMessages = [...userChat, ...filteredNewMessages].sort((a, b) => {
+      const dateA = a.created_at ? new Date(a.created_at) : new Date(a.time);
+      const dateB = b.created_at ? new Date(b.created_at) : new Date(b.time);
+  
+      return dateA - dateB;
+    });
+  
+    const uniqueMessages = [];
+    sortedMessages.forEach((msg) => {
+      const existingMsg = uniqueMessages.find((m) => m.id === msg.id);
+      if (!existingMsg) {
+        uniqueMessages.push(msg);
+      }
+    });
+    
+
 
     return (
       <>
@@ -349,7 +374,7 @@ const Chat = () => {
           <div className="flex items-center justify-center mb-4">
             <img
               src={
-                message.profilePic ||
+                selectedUserObj.profilePic ||
                 "https://shbro.onrender.com/assets/logo-94e89628.png"
               }
               alt={selectedUserObj.name}
@@ -357,114 +382,97 @@ const Chat = () => {
             />
           </div>
         )}
-        {userChat
-          .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-          .map((msg, index) => {
-            const messageDate = new Date(msg.created_at);
-            const isSentMessage = msg.sender.id === ADMIN_ID;
+         {sortedMessages.map((msg, index) => {
+          const messageDate = new Date(msg.created_at);
+          const isSentMessage = msg.sender?.id === ADMIN_ID;
 
-            let timestamp = messageDate.toLocaleString(undefined, {
+          let timestamp = messageDate.toLocaleString(undefined, {
               weekday: "long",
               day: "numeric",
               year: "numeric",
               month: "long",
               hour: "2-digit",
               minute: "2-digit",
-            });
+          });
 
-            return (
-              <div
-                key={index}
-                className={`flex ${
-                  isSentMessage ? "flex-row-reverse" : "flex-row"
-                }`}
-              >
-                <div
-                  className={`mb-2 p-2 rounded ${
-                    isSentMessage
-                      ? "bg-orange-100 w-fit text-blue-900"
-                      : "bg-gray-100 text-gray-900"
-                  }`}
-                >
-                  <p>{msg.message}</p>
-
-                  <p className="text-xs text-gray-500">{timestamp}</p>
-                  <p>{msg.text}</p>
-                  <p className="text-xs text-gray-500">
-                    {msg.time instanceof Date
-                      ? msg.time.toLocaleString(undefined, {
-                          weekday: "long",
-                          day: "numeric",
-                          year: "numeric",
-                          month: "long",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : ""}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-
-          
-        {[
-          ...new Set(
-            newMessages
-              .filter((msg) => msg.sender_id === selectedUser)
-              .map((msg) => ({
-                message: msg.message,
-                time: new Date(msg.created_at),
-              }))
-              .map((msg) => JSON.stringify(msg)) // Convert objects to strings for Set comparison
-          ),
-        ].map((msgString, index) => {
-          const msg = JSON.parse(msgString); // Parse the message back to an object
           return (
             <div
               key={index}
-              className="bg-gray-100 w-fit text-gray-900 mb-2 p-2 rounded"
+              className={`flex ${
+                isSentMessage ? "flex-row-reverse" : "flex-row"
+              }`}
             >
-              <p>{msg.message}</p>
-              <p className="text-xs text-gray-500">
-                {new Date(msg.time).toLocaleString("en-US", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </p>
+              <div
+                className={`mb-2 p-2 rounded ${
+                  isSentMessage
+                    ? "bg-orange-100 w-fit text-blue-900"
+                    : "bg-gray-100 text-gray-900"
+                }`}
+              >
+                <p>{msg.message}</p>
+                {messageDate instanceof Date && !isNaN(messageDate.getTime()) && (
+                  <p className="text-xs text-gray-500">{timestamp}</p>
+                )}
+                <p>{msg.text}</p>
+                <p className="text-xs text-gray-500">
+                  {msg.time instanceof Date
+                    ? msg.time.toLocaleString(undefined, {
+                        weekday: "long",
+                        day: "numeric",
+                        year: "numeric",
+                        month: "long",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : ""}
+                </p>
+              </div>
             </div>
           );
         })}
-{userChat.some(msg => msg.message.includes("has requested to book your apartment please approve or decline")) && (
-  <div className="flex justify-center mt-4">
-    <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
-      {selectedUserObj && (
-        <div className="flex items-center justify-center mb-4">
-          <img
-            src={selectedUserObj.profilePic || "https://shbro.onrender.com/assets/logo-94e89628.png"}
-            alt={selectedUserObj.name}
-            className="w-10 h-10 rounded-full mr-2"
-          />
-          <p className="text-lg">{selectedUserObj.name} has requested to book your apartment. Approve or decline?</p>
-        </div>
-      )}
-      <div className="mt-4 flex flex-wrap gap-2 justify-center">
-      <button className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600" onClick={handleApprove}>Approve</button>
-        <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600" onClick={handleDecline}>Decline</button>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">View Guest Profile</button>
-      </div>
-    </div>
-  </div>
-)}
-
-
-
-
-
+        {userChat.some((msg) =>
+          msg.message.includes(
+            "has requested to book your apartment please approve or decline"
+          )
+        ) && (
+          <div className="flex justify-center mt-4">
+            <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
+              {selectedUserObj && (
+                <div className="flex items-center justify-center mb-4">
+                  <img
+                    src={
+                      selectedUserObj.profilePic ||
+                      "https://shbro.onrender.com/assets/logo-94e89628.png"
+                    }
+                    alt={selectedUserObj.name}
+                    className="w-10 h-10 rounded-full mr-2"
+                  />
+                  <p className="text-lg">
+                    {selectedUserObj.name} has requested to book your apartment.
+                    Approve or decline?
+                  </p>
+                </div>
+              )}
+              <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                <button
+                  className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
+                  onClick={handleApprove}
+                >
+                  Approve
+                </button>
+                <button
+                  className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                  onClick={handleDecline}
+                >
+                  Decline
+                </button>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
+                  View Guest Profile
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </>
     );
   };
@@ -483,7 +491,7 @@ const Chat = () => {
             <div className="flex items-center">
               <img
                 src={
-                  message.profilePic ||
+                  selectedUserObj.profilePic ||
                   "https://shbro.onrender.com/assets/logo-94e89628.png"
                 }
                 alt={message.name}
@@ -491,7 +499,9 @@ const Chat = () => {
               />
               <div>
                 <p className="font-semibold">{message.name}</p>
-                <p  className={`text-sm text-gray-500 overflow-hidden overflow-ellipsis h-10`}>
+                <p
+                  className={`text-sm text-gray-500 overflow-hidden overflow-ellipsis h-10`}
+                >
                   {message.message.message}{" "}
                   {/* Assuming this is the message text */}
                 </p>
@@ -628,8 +638,6 @@ const Chat = () => {
                             )}
 
                             {isTyping && <TypingIndicator />}
-
-
                           </div>
 
                           <div className="mt-4 flex gap-2">
