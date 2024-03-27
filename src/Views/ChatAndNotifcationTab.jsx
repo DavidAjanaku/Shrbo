@@ -1,79 +1,100 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Chat from "../Component/Chat/Chat";
 import Notification from "../Component/Notification";
 import Header from "../Component/Navigation/Header";
+import { useStateContext } from "../ContextProvider/ContextProvider";
+import axios from "../Axios";
+import { message } from 'antd';
 
 export default function ChatAndNotifcationTab() {
   const [selectedTab, setSelectedTab] = useState("chats"); // "chats" or "notifications"
+  const { setUser, setToken, token, setHost, setAdminStatus, user } = useStateContext();
 
   const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message:
-        "New booking request for Property XYZ. Check details and confirm the reservation.",
-      date: "Oct 15, 2023",
-    },
-    {
-      id: 2,
-      message:
-        "Guests for Property ABC will be arriving soon. Ensure everything is ready for their check-in on [date].",
-      date: "Oct 18, 2023",
-    },
-    {
-      id: 3,
-      message:
-        "Don't forget to encourage guests from Property DEF to leave a review. It boosts your property's profile!",
-      date: "Oct 20, 2023",
-    },
-    {
-      id: 4,
-      message:
-        "Maintenance required at Property GHI. Schedule a visit to address issues reported by guests.",
-      date: "Oct 22, 2023",
-    },
-    {
-      id: 5,
-      message:
-        "Payment received for booking at Property JKL. Check your account for transaction details.",
-      date: "Oct 25, 2023",
-    },
-    {
-      id: 6,
-      message:
-        "Guests have checked out from Property MNO. Confirm the condition of the property and report any issues.",
-      date: "Oct 28, 2023",
-    },
-    {
-      id: 7,
-      message:
-        "Provide emergency contact information to guests staying at Property PQR. Ensure their safety and comfort.",
-      date: "Nov 1, 2023",
-    },
-    {
-      id: 8,
-      message:
-        "Create a special offer for Property STU to attract more bookings. Limited-time discounts available!",
-      date: "Nov 5, 2023",
-    },
-    {
-      id: 9,
-      message:
-        "Weather advisory for guests at Property VWX. Inform them about any potential weather-related impacts.",
-      date: "Nov 8, 2023",
-    },
-    {
-      id: 10,
-      message:
-        "Share information about upcoming local events near Property YZ. Enhance your guests' experience.",
-      date: "Nov 12, 2023",
-    },
+    // {
+    //   id: 1,
+    //   message:
+    //     "New booking request for Property XYZ. Check details and confirm the reservation.",
+    //   date: "Oct 15, 2023",
+    // },
+    // {
+    //   id: 2,
+    //   message:
+    //     "Guests for Property ABC will be arriving soon. Ensure everything is ready for their check-in on [date].",
+    //   date: "Oct 18, 2023",
+    // },
+    // {
+    //   id: 3,
+    //   message:
+    //     "Don't forget to encourage guests from Property DEF to leave a review. It boosts your property's profile!",
+    //   date: "Oct 20, 2023",
+    // },
+    // {
+    //   id: 4,
+    //   message:
+    //     "Maintenance required at Property GHI. Schedule a visit to address issues reported by guests.",
+    //   date: "Oct 22, 2023",
+    // },
+    // {
+    //   id: 5,
+    //   message:
+    //     "Payment received for booking at Property JKL. Check your account for transaction details.",
+    //   date: "Oct 25, 2023",
+    // },
+    // {
+    //   id: 6,
+    //   message:
+    //     "Guests have checked out from Property MNO. Confirm the condition of the property and report any issues.",
+    //   date: "Oct 28, 2023",
+    // },
+    // {
+    //   id: 7,
+    //   message:
+    //     "Provide emergency contact information to guests staying at Property PQR. Ensure their safety and comfort.",
+    //   date: "Nov 1, 2023",
+    // },
+    // {
+    //   id: 8,
+    //   message:
+    //     "Create a special offer for Property STU to attract more bookings. Limited-time discounts available!",
+    //   date: "Nov 5, 2023",
+    // },
+    // {
+    //   id: 9,
+    //   message:
+    //     "Weather advisory for guests at Property VWX. Inform them about any potential weather-related impacts.",
+    //   date: "Nov 8, 2023",
+    // },
+    // {
+    //   id: 10,
+    //   message:
+    //     "Share information about upcoming local events near Property YZ. Enhance your guests' experience.",
+    //   date: "Nov 12, 2023",
+    // },
   ]);
 
-  const closeNotification = (id) => {
+  const closeNotification = async (id) => {
     const updatedNotifications = notifications.filter(
       (notification) => notification.id !== id
     );
+    const initialNotification=notifications;
+
+    
     setNotifications(updatedNotifications);
+    try {
+      const response = await axios.delete(`/notification/${id}`);
+      console.log("Deleted Notification", response.data)
+      
+      // message.success("notification deleted successfully")
+      
+    } catch (error) {
+      message.error("could not delete notification")
+      setNotifications(initialNotification);
+  
+    }
+
+
+
   };
 
   const toggleGreen = () => {
@@ -82,6 +103,59 @@ export default function ChatAndNotifcationTab() {
       // You can add your logic for toggling here
     }
   };
+
+
+  
+const receiverId = parseInt(localStorage.getItem("receiverid"), 10);
+
+
+useEffect(() => {
+
+  axios.get("/notification").then(response => {
+    setNotifications([...response.data.data]);
+    console.log("notification", [...response.data.data]);
+  }).catch(error => {
+    // console.log("Error",error);
+  });
+
+}, []);
+
+
+
+
+const initializeEcho = (token, receiverId) => {
+  if (typeof window.Echo !== "undefined") {
+    const channelName = `App.Models.User.${receiverId}`;
+
+    window.Echo.connector.options.auth.headers.Authorization = `Bearer ${token}`;
+    console.log(
+      "Authentication token is set:",
+      window.Echo.connector.options.auth.headers.Authorization
+    );
+
+    const privateChannel = window.Echo.private(channelName);
+
+    privateChannel.listen("NewNotificationEvent", (data) => {
+      // console.log("Received Notification:", data);
+      // console.log("User ID:", data.user_id);
+
+      setNotifications([...notifications, data.notification]);
+
+    });
+
+    console.log("Listening for messages on channel:", channelName);
+  } else {
+    console.error(
+      "Echo is not defined. Make sure Laravel Echo is properly configured."
+    );
+  }
+};
+
+
+useEffect(() => {
+  initializeEcho(token, receiverId);
+}, []);
+
 
   return (
 <div>
