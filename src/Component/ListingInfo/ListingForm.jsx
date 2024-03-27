@@ -28,6 +28,8 @@ export default function ListingForm({
   reservedPricesForCertainDay,
   weekend,
   preparation_time,
+  hosthomeId
+
 }) {
   function showModal(e) {
     e.preventDefault();
@@ -71,22 +73,27 @@ export default function ListingForm({
   const [guestFee, setGuestFee] = useState(0);
   const [bookingCount, setBookingCount] = useState(0);
   const [checkoutDates, setCheckoutDate] = useState(null); // Initialize with null or another default value
+  const [hostId, setHostId] = useState(null); // State for hostId
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await Axios.get("/user");
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const response = await Axios.get("/user");
+  //       setHostId(response.data.user.id);
+  //       console.log(response.data.user.id);
 
-        // console.log(response.data.verified);
-        setVerified(response.data.verified); // Set the verified status
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        // Handle error, show error message, etc.
-      }
-    };
+  //       // console.log(response.data.verified);
+  //       setVerified(response.data.verified); // Set the verified status
+  //     } catch (error) {
+  //       console.error("Error fetching users:", error);
+  //       // Handle error, show error message, etc.
+  //     }
+  //   };
 
-    fetchUsers();
-  }, []);
+  //   fetchUsers();
+  // }, []);
+
+ 
   // console.log(verified);
   const {
     checkInDate,
@@ -119,24 +126,11 @@ export default function ListingForm({
   const showMessageModal = () => {
     setMessageModalVisible(true);
   };
-  const sendMessage = () => {
-    // Get the message from the form field using Ant Design's Form
-    const message = form.getFieldValue("message");
 
-    // Log the message to the console
-    // console.log("Message:", message);
 
-    // Perform the logic to send the message here
 
-    // Assuming the message has been sent successfully
-    setMessageSent(true);
-
-    // Display a success notification
-    message.success("Inquiry sent successfully");
-
-    // Close the message modal
-    setMessageModalVisible(false);
-  };
+  
+  
   useEffect(() => {
     if (reservations && reservations.length > 0) {
       const experiencedGuest = reservations.some(
@@ -648,6 +642,37 @@ export default function ListingForm({
 
     return false; // Enable checkout if no dates are blocked
   };
+  useEffect(() => {
+    const fetchListingDetails = async () => {
+      try {
+        const response = await Axios.get(`showGuestHome/${id}`);
+ 
+        setHostId(response.data.data.user.id);
+       
+      } catch (error) {
+        console.error("Error fetching listing details:", error);
+      }
+    };
+
+    fetchListingDetails();
+  }, [id]);
+
+  const sendMessage = async () => {
+    try {
+      console.log('HostId:', hostId);
+      console.log('HostHomeId:', id);
+  
+      await Axios.post(`/makeRequestToBook/${hostId}/${id}`);
+      setMessageSent(true);
+      message.success("Inquiry sent successfully");
+      setMessageModalVisible(false);
+  
+      form.resetFields();
+    } catch (error) {
+      message.error('Failed to send message');
+      console.error(error);
+    }
+  };
 
   return (
     <div className=" block w-full h-full">
@@ -1018,7 +1043,7 @@ export default function ListingForm({
               )}
               <button
                 type="button"
-                onClick={showMessageModal}
+                // onClick={showMessageModal}
                 className="block w-full h-11 mt-3 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
                             text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
                             focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
@@ -1026,6 +1051,8 @@ export default function ListingForm({
                             dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]"
+                            onClick={sendMessage}
+
               >
                 Message Host
               </button>
@@ -1131,6 +1158,8 @@ export default function ListingForm({
                   type="primary"
                   className="bg-orange-400 hover:bg-orange-600"
                   htmlType="submit"
+                  onClick={sendMessage}
+
                 >
                   Send
                 </Button>

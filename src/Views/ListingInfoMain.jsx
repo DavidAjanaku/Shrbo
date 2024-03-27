@@ -122,7 +122,8 @@ const ListingInfoMain = () => {
             />{" "}
             <div className="  md:hidden relative mr-0 ">
               <ListingForm
-                id={id}
+                hosthomeId={id}
+                hostId={hostId}
                 price={listingDetails?.price}
                 reservations={listingDetails?.reservations}
                 reservation={listingDetails?.reservation}
