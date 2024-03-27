@@ -8,13 +8,27 @@ const CancellationPolicyTab = () => {
 
   useEffect(() => {
     const fetchCancellationPolicy = async () => {
+      let response;
       try {
-        const response = await Axios.get(`showGuestHome/${id}`);
+        response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
+        console.log(response.data.data);
         setCancellationPolicy(response.data.data.cancelPolicy);
+
       } catch (error) {
-        console.error("Error fetching cancellation policy:", error);
-        // Handle error, show error message, etc.
-      }
+        console.error(
+          "Error fetching listing details for authenticated user:",
+          error
+        );
+        try {
+          response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
+          setCancellationPolicy(response.data.data.cancelPolicy);
+
+        } catch (error) {
+          console.error(
+            "Error fetching listing details for unauthenticated user:",
+            error
+          );
+  }}
     };
 
     fetchCancellationPolicy();
