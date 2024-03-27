@@ -9,7 +9,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import Axios from "../../Axios";
 import echo from "../../Real Time/echo";
 import { format } from "date-fns";
-
+import shbrologo from "../../assets/shbro logo.png"
 const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -375,7 +375,7 @@ const Chat = () => {
             <img
               src={
                 selectedUserObj.profilePic ||
-                "https://shbro.onrender.com/assets/logo-94e89628.png"
+                shbrologo
               }
               alt={selectedUserObj.name}
               className="w-10 h-10 rounded-full mr-2"
@@ -442,7 +442,7 @@ const Chat = () => {
                   <img
                     src={
                       selectedUserObj.profilePic ||
-                      "https://shbro.onrender.com/assets/logo-94e89628.png"
+                      shbrologo
                     }
                     alt={selectedUserObj.name}
                     className="w-10 h-10 rounded-full mr-2"
@@ -491,8 +491,8 @@ const Chat = () => {
             <div className="flex items-center">
               <img
                 src={
-                  selectedUserObj.profilePic ||
-                  "https://shbro.onrender.com/assets/logo-94e89628.png"
+                  message.profilePic ||
+                  shbrologo
                 }
                 alt={message.name}
                 className="w-12 h-12 rounded-full mr-4"
@@ -576,7 +576,7 @@ const Chat = () => {
                           <img
                             src={
                               message.profilePic ||
-                              "https://shbro.onrender.com/assets/logo-94e89628.png"
+                              shbrologo
                             }
                             alt={message.name}
                             className="w-8 h-8 rounded-full mr-2"
