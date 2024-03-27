@@ -10,6 +10,7 @@ import Axios from "../../Axios";
 import echo from "../../Real Time/echo";
 import { format } from "date-fns";
 import shbrologo from "../../assets/shbro logo.png"
+import { Link } from "react-router-dom";
 const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -466,9 +467,11 @@ const Chat = () => {
                 >
                   Decline
                 </button>
+                <Link to={`/userdetails/${selectedUser}`}>
                 <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
                   View Guest Profile
                 </button>
+                </Link>
               </div>
             </div>
           </div>
