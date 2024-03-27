@@ -9,7 +9,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import Axios from "../../Axios";
 import echo from "../../Real Time/echo";
 import { format } from "date-fns";
-
+import shbrologo from "../../assets/shbro logo.png"
 const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,6 +20,7 @@ const Chat = () => {
   const [selectedUserName, setSelectedUserName] = useState(null); // State to store the selected user's name
   const [selectedUserProfilePic, setSelectedUserProfilePic] = useState(null);
   const [users] = useState([]);
+  const [hostId, setHostId] = useState(null);
 
   const [selectedUserObj, setSelectedUserObj] = useState(null);
 
@@ -205,6 +206,21 @@ const Chat = () => {
 
     fetchMessages();
   }, [receiverId]);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await Axios.get("/user");
+        setHostId(response.data.id);
+
+        console.log(response.data.id);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        // Handle error, show error message, etc.
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const fetchUserChats = async (receiverId) => {
     try {
@@ -224,12 +240,28 @@ const Chat = () => {
       setSelectedUserName(response.data.receiver.name); // Store the name of the selected user in state
       setSelectedUserProfilePic(response.data.receiver.profilePicture); // Store the profile picture of the selected user in state
       console.log(response);
-      setSelectedUserObj({
-        message: response.data.messagesWithAUser[0].message,
-        name: response.data.receiver.name,
-        profilePic: response.data.receiver.profilePic,
-        user_id: response.data.messagesWithAUser[0].sender_id,
-      });
+      response.data.messagesWithAUser[0].booking_request.forEach(
+        (booking, index) => {
+          console.log(`Booking Request ${index + 1}:`);
+          console.log("host_home_id:", booking.host_home_id);
+          console.log("host_id:", booking.host_id);
+          console.log("requestId:", booking.id);
+        }
+      );
+
+      // Assuming you want to select the first booking request for further processing
+      const selectedBookingRequest =
+        response.data.messagesWithAUser[0].booking_request[0];
+      if (selectedBookingRequest) {
+        setSelectedUserObj({
+          hostHomeId: selectedBookingRequest.host_home_id,
+          requestId: selectedBookingRequest.id,
+          message: selectedBookingRequest.message,
+          name: response.data.receiver.name,
+          profilePic: response.data.receiver.profilePic,
+          user_id: selectedBookingRequest.sender_id,
+        });
+      }
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
@@ -243,10 +275,13 @@ const Chat = () => {
     }
   }, [newMessages, selectedUser]);
 
+
+
   const renderMessages = (userChats, newMessages, selectedUser, users) => {
     const userChat = userChats[selectedUser] || [];
     const noMessagesReceived =
       userChat.length === 0 && newMessages.length === 0;
+    let messageCount = 1;
 
     if (noMessagesReceived && message.trim()) {
       const formattedTime = format(new Date(), "EEEE, d MMMM yyyy 'at' HH:mm");
@@ -260,12 +295,78 @@ const Chat = () => {
       );
     }
 
+    const handleBookingAction = async (
+      requestId,
+      hostHomeId,
+      hostId,
+      guestId,
+      action
+    ) => {
+      console.log(requestId, hostHomeId, hostId, guestId, action);
+      try {
+        const response = await Axios.post(
+          `/handleBookingRequest/${requestId}/${hostHomeId}/${hostId}/${guestId}/${action}`
+        );
+        console.log("Booking request handled successfully:", response.data);
+        // Optionally, you can update your UI or state based on the response
+      } catch (error) {
+        console.error("Error handling booking request:", error);
+        // Handle error scenarios, e.g., display an error message to the user
+      }
+    };
+
+    const handleApprove = () => {
+      console.log("Approve parameters:", {
+        requestId: selectedUserObj.requestId,
+        hostHomeId: selectedUserObj.hostHomeId,
+        hostId: hostId,
+        guestId: selectedUser,
+        action: "accept",
+      });
+
+    
+
+      handleBookingAction(
+        selectedUserObj.requestId,
+        selectedUserObj.hostHomeId,
+        hostId,
+        selectedUser,
+        "accept"
+      );
+    };
+
+    const handleDecline = () => {
+      handleBookingAction(
+        selectedUserObj.requestId,
+        selectedUserObj.hostHomeId,
+        hostId,
+        selectedUserObj.guestId,
+        "decline"
+      );
+    };
+
     // const selectedUserProfilePic = selectedUserObj?.image;
 
-    console.log("Selected User Name:", selectedUserName);
-    console.log(selectedUserObj.name);
-    console.log(selectedUserProfilePic);
-    // console.log("Selected User Profile Pic:", selectedUserProfilePic);
+    const filteredNewMessages = newMessages.filter(
+      (msg) => !userChat.some((existingMsg) => existingMsg.id === msg.id)
+    );
+  
+    const sortedMessages = [...userChat, ...filteredNewMessages].sort((a, b) => {
+      const dateA = a.created_at ? new Date(a.created_at) : new Date(a.time);
+      const dateB = b.created_at ? new Date(b.created_at) : new Date(b.time);
+  
+      return dateA - dateB;
+    });
+  
+    const uniqueMessages = [];
+    sortedMessages.forEach((msg) => {
+      const existingMsg = uniqueMessages.find((m) => m.id === msg.id);
+      if (!existingMsg) {
+        uniqueMessages.push(msg);
+      }
+    });
+    
+
 
     return (
       <>
@@ -273,94 +374,105 @@ const Chat = () => {
           <div className="flex items-center justify-center mb-4">
             <img
               src={
-                message.profilePic ||
-                "https://shbro.onrender.com/assets/logo-94e89628.png"
+                selectedUserObj.profilePic ||
+                shbrologo
               }
               alt={selectedUserObj.name}
               className="w-10 h-10 rounded-full mr-2"
             />
           </div>
         )}
-        {userChat
-          .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-          .map((msg, index) => {
-            const messageDate = new Date(msg.created_at);
-            const isSentMessage = msg.sender.id === ADMIN_ID;
+         {sortedMessages.map((msg, index) => {
+          const messageDate = new Date(msg.created_at);
+          const isSentMessage = msg.sender?.id === ADMIN_ID;
 
-            let timestamp = messageDate.toLocaleString(undefined, {
+          let timestamp = messageDate.toLocaleString(undefined, {
               weekday: "long",
               day: "numeric",
               year: "numeric",
               month: "long",
               hour: "2-digit",
               minute: "2-digit",
-            });
+          });
 
-            return (
-              <div
-                key={index}
-                className={`flex ${
-                  isSentMessage ? "flex-row-reverse" : "flex-row"
-                }`}
-              >
-                <div
-                  className={`mb-2 p-2 rounded ${
-                    isSentMessage
-                      ? "bg-orange-100 w-fit text-blue-900"
-                      : "bg-gray-100 text-gray-900"
-                  }`}
-                >
-                  <p>{msg.message}</p>
-
-                  <p className="text-xs text-gray-500">{timestamp}</p>
-                  <p>{msg.text}</p>
-                  <p className="text-xs text-gray-500">
-                    {msg.time instanceof Date
-                      ? msg.time.toLocaleString(undefined, {
-                          weekday: "long",
-                          day: "numeric",
-                          year: "numeric",
-                          month: "long",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : ""}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        {[
-          ...new Set(
-            newMessages
-              .filter((msg) => msg.sender_id === selectedUser)
-              .map((msg) => ({
-                message: msg.message,
-                time: new Date(msg.created_at),
-              }))
-              .map((msg) => JSON.stringify(msg)) // Convert objects to strings for Set comparison
-          ),
-        ].map((msgString, index) => {
-          const msg = JSON.parse(msgString); // Parse the message back to an object
           return (
             <div
               key={index}
-              className="bg-gray-100 w-fit text-gray-900 mb-2 p-2 rounded"
+              className={`flex ${
+                isSentMessage ? "flex-row-reverse" : "flex-row"
+              }`}
             >
-              <p>{msg.message}</p>
-              <p className="text-xs text-gray-500">
-                {new Date(msg.time).toLocaleString("en-US", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </p>
+              <div
+                className={`mb-2 p-2 rounded ${
+                  isSentMessage
+                    ? "bg-orange-100 w-fit text-blue-900"
+                    : "bg-gray-100 text-gray-900"
+                }`}
+              >
+                <p>{msg.message}</p>
+                {messageDate instanceof Date && !isNaN(messageDate.getTime()) && (
+                  <p className="text-xs text-gray-500">{timestamp}</p>
+                )}
+                <p>{msg.text}</p>
+                <p className="text-xs text-gray-500">
+                  {msg.time instanceof Date
+                    ? msg.time.toLocaleString(undefined, {
+                        weekday: "long",
+                        day: "numeric",
+                        year: "numeric",
+                        month: "long",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : ""}
+                </p>
+              </div>
             </div>
           );
         })}
+        {userChat.some((msg) =>
+          msg.message.includes(
+            "has requested to book your apartment please approve or decline"
+          )
+        ) && (
+          <div className="flex justify-center mt-4">
+            <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
+              {selectedUserObj && (
+                <div className="flex items-center justify-center mb-4">
+                  <img
+                    src={
+                      selectedUserObj.profilePic ||
+                      shbrologo
+                    }
+                    alt={selectedUserObj.name}
+                    className="w-10 h-10 rounded-full mr-2"
+                  />
+                  <p className="text-lg">
+                    {selectedUserObj.name} has requested to book your apartment.
+                    Approve or decline?
+                  </p>
+                </div>
+              )}
+              <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                <button
+                  className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
+                  onClick={handleApprove}
+                >
+                  Approve
+                </button>
+                <button
+                  className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                  onClick={handleDecline}
+                >
+                  Decline
+                </button>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
+                  View Guest Profile
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </>
     );
   };
@@ -380,7 +492,7 @@ const Chat = () => {
               <img
                 src={
                   message.profilePic ||
-                  "https://shbro.onrender.com/assets/logo-94e89628.png"
+                  shbrologo
                 }
                 alt={message.name}
                 className="w-12 h-12 rounded-full mr-4"
@@ -388,11 +500,7 @@ const Chat = () => {
               <div>
                 <p className="font-semibold">{message.name}</p>
                 <p
-                  className={`text-sm 
-                  
-                      text-gray-500
-                  
-                `}
+                  className={`text-sm text-gray-500 overflow-hidden overflow-ellipsis h-10`}
                 >
                   {message.message.message}{" "}
                   {/* Assuming this is the message text */}
@@ -468,7 +576,7 @@ const Chat = () => {
                           <img
                             src={
                               message.profilePic ||
-                              "https://shbro.onrender.com/assets/logo-94e89628.png"
+                              shbrologo
                             }
                             alt={message.name}
                             className="w-8 h-8 rounded-full mr-2"
