@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import adv from "../../assets/user.png";
 import PaginationExample from "../PaginationExample";
 import { Pagination } from "antd";
+import logoImage from "../../assets/shbro logo.png"
 const TestimonialInfo = ({ reviews }) => {
   const [current, setCurrent] = useState(3);
   const onChange = (page) => {
@@ -106,7 +107,7 @@ const TestimonialInfo = ({ reviews }) => {
       <div className=" relative rounded-xl md:rounded-none border md:border-0 p-5 md:p-7 md:shadow-none shadow-md flex flex-col   justify-between h-[258px] md:h-[300px]   ">
         <div className=" overflow-hidden text-ellipsis box-border block">
           <p className=" text-lg text-ellipsis overflow-clip md:text-xl font-semibold pb-3 ">
-            {client.title}
+            {/* {client.title} */}
           </p>
 
           <div className="  overflow-hidden text-ellipsis box-border block text-sm   md:text-lg ">
@@ -136,7 +137,7 @@ const TestimonialInfo = ({ reviews }) => {
 
         <div className="flex justify-items-start flex-row items-center box-border  mt-5  w4/5">
           <div className=" h-[40px] w-[40px] md:w-[58px] md:h-[58px]  overflow-hidden rounded-full bg-orange-600 m-1">
-            <img src={client.user_profilePic} />
+            <img src={client.user_profilePic || logoImage} />
           </div>
 
           <div className=" pt-3 pl-2">

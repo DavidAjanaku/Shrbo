@@ -49,6 +49,7 @@ export default function ListingForm({
   const [numberOfNights, setNumberOfNights] = useState(null);
   const [modalMessage, setModalMessage] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [buttonText, setButtonText] = useState("Message Host");
 
   const messageRef = useRef(null);
   // const [checkInDate, setCheckInDate] = useState(null);
@@ -138,8 +139,15 @@ export default function ListingForm({
         (reservation) =>
           reservation.reservation === "Approve or decline requests"
       );
+      if (reservation === "Approve or decline requests") {
+        setButtonText("Request Book");
+      } else {
+        setButtonText("Message Host");
+      }
+      
       setShowMessageHostButton(!experiencedGuest && !pendingApproval);
     }
+    
 
     if (bookingRequestStatus === "approved") {
       setShowMessageHostButton(true);
@@ -1114,9 +1122,17 @@ export default function ListingForm({
                             dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]"
-                onClick={sendMessage}
+                            onClick={() => {
+                              if (reservation !== "Approve or decline requests") {
+                                setMessageModalVisible(true);
+                              } else {
+                                sendMessage();
+                              }
+                            }}
+                            
               >
-                Message Host
+                  {buttonText}
+
               </button>
             </div>
           </form>
