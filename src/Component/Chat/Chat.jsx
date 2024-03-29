@@ -9,7 +9,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import Axios from "../../Axios";
 import echo from "../../Real Time/echo";
 import { format } from "date-fns";
-import shbrologo from "../../assets/shbro logo.png"
+import shbrologo from "../../assets/shbro logo.png";
 import { Link } from "react-router-dom";
 const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -22,8 +22,10 @@ const Chat = () => {
   const [selectedUserProfilePic, setSelectedUserProfilePic] = useState(null);
   const [users] = useState([]);
   const [hostId, setHostId] = useState(null);
+  const [loadingMessages, setLoadingMessages] = useState(false);
 
   const [selectedUserObj, setSelectedUserObj] = useState(null);
+  const [loadingUsersCard, setLoadingUsersCard] = useState(true);
 
   const token = localStorage.getItem("tokens");
 
@@ -199,6 +201,8 @@ const Chat = () => {
         });
         setUserChats({ ...userChats, [receiverId]: response.data.messages });
         setRecentMessages(response.data.recentMessages);
+        setLoadingUsersCard(false); // Set loading state to false after fetching users
+
         // console.log(response.data);
       } catch (error) {
         console.error("Error fetching messages:", error);
@@ -207,6 +211,7 @@ const Chat = () => {
 
     fetchMessages();
   }, [receiverId]);
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -225,6 +230,8 @@ const Chat = () => {
 
   const fetchUserChats = async (receiverId) => {
     try {
+      setLoadingMessages(true); // Set loading state to true
+
       const response = await Axios.get(`/chat/${receiverId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -264,7 +271,11 @@ const Chat = () => {
         });
       }
     } catch (error) {
+      setLoadingMessages(false); // Set loading state to false if there's an error
+
       console.error("Error fetching messages:", error);
+    } finally {
+      setLoadingMessages(false); // Set loading state to false when messages are loaded
     }
   };
 
@@ -275,8 +286,6 @@ const Chat = () => {
         chatContainerRef.current.scrollHeight;
     }
   }, [newMessages, selectedUser]);
-
-
 
   const renderMessages = (userChats, newMessages, selectedUser, users) => {
     const userChat = userChats[selectedUser] || [];
@@ -325,8 +334,6 @@ const Chat = () => {
         action: "accept",
       });
 
-    
-
       handleBookingAction(
         selectedUserObj.requestId,
         selectedUserObj.hostHomeId,
@@ -351,14 +358,16 @@ const Chat = () => {
     const filteredNewMessages = newMessages.filter(
       (msg) => !userChat.some((existingMsg) => existingMsg.id === msg.id)
     );
-  
-    const sortedMessages = [...userChat, ...filteredNewMessages].sort((a, b) => {
-      const dateA = a.created_at ? new Date(a.created_at) : new Date(a.time);
-      const dateB = b.created_at ? new Date(b.created_at) : new Date(b.time);
-  
-      return dateA - dateB;
-    });
-  
+
+    const sortedMessages = [...userChat, ...filteredNewMessages].sort(
+      (a, b) => {
+        const dateA = a.created_at ? new Date(a.created_at) : new Date(a.time);
+        const dateB = b.created_at ? new Date(b.created_at) : new Date(b.time);
+
+        return dateA - dateB;
+      }
+    );
+
     const uniqueMessages = [];
     sortedMessages.forEach((msg) => {
       const existingMsg = uniqueMessages.find((m) => m.id === msg.id);
@@ -366,34 +375,29 @@ const Chat = () => {
         uniqueMessages.push(msg);
       }
     });
-    
-
 
     return (
       <>
         {selectedUserObj && (
           <div className="flex items-center justify-center mb-4">
             <img
-              src={
-                selectedUserObj.profilePic ||
-                shbrologo
-              }
+              src={selectedUserObj.profilePic || shbrologo}
               alt={selectedUserObj.name}
               className="w-10 h-10 rounded-full mr-2"
             />
           </div>
         )}
-         {sortedMessages.map((msg, index) => {
+        {sortedMessages.map((msg, index) => {
           const messageDate = new Date(msg.created_at);
           const isSentMessage = msg.sender?.id === ADMIN_ID;
 
           let timestamp = messageDate.toLocaleString(undefined, {
-              weekday: "long",
-              day: "numeric",
-              year: "numeric",
-              month: "long",
-              hour: "2-digit",
-              minute: "2-digit",
+            weekday: "long",
+            day: "numeric",
+            year: "numeric",
+            month: "long",
+            hour: "2-digit",
+            minute: "2-digit",
           });
 
           return (
@@ -411,9 +415,10 @@ const Chat = () => {
                 }`}
               >
                 <p>{msg.message}</p>
-                {messageDate instanceof Date && !isNaN(messageDate.getTime()) && (
-                  <p className="text-xs text-gray-500">{timestamp}</p>
-                )}
+                {messageDate instanceof Date &&
+                  !isNaN(messageDate.getTime()) && (
+                    <p className="text-xs text-gray-500">{timestamp}</p>
+                  )}
                 <p>{msg.text}</p>
                 <p className="text-xs text-gray-500">
                   {msg.time instanceof Date
@@ -441,10 +446,7 @@ const Chat = () => {
               {selectedUserObj && (
                 <div className="flex items-center justify-center mb-4">
                   <img
-                    src={
-                      selectedUserObj.profilePic ||
-                      shbrologo
-                    }
+                    src={selectedUserObj.profilePic || shbrologo}
                     alt={selectedUserObj.name}
                     className="w-10 h-10 rounded-full mr-2"
                   />
@@ -468,9 +470,9 @@ const Chat = () => {
                   Decline
                 </button>
                 <Link to={`/userdetails/${selectedUser}`}>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
-                  View Guest Profile
-                </button>
+                  <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
+                    View Guest Profile
+                  </button>
                 </Link>
               </div>
             </div>
@@ -479,6 +481,16 @@ const Chat = () => {
       </>
     );
   };
+
+  const SkeletonLoader = () => (
+    <div className="animate-pulse flex items-center">
+      <div className="w-32 h-5 bg-gray-200  mr-4"></div>
+      <div className="flex-1 space-y-4 py-1">
+        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 rounded"></div>
+      </div>
+    </div>
+  );
 
   const RecentMessages = ({ recentMessages, selectedUser, fetchUserChats }) => {
     return (
@@ -493,10 +505,7 @@ const Chat = () => {
           >
             <div className="flex items-center">
               <img
-                src={
-                  message.profilePic ||
-                  shbrologo
-                }
+                src={message.profilePic || shbrologo}
                 alt={message.name}
                 className="w-12 h-12 rounded-full mr-4"
               />
@@ -549,11 +558,17 @@ const Chat = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <RecentMessages
-                  recentMessages={recentMessages}
-                  selectedUser={selectedUser}
-                  fetchUserChats={fetchUserChats}
-                />
+                {loadingUsersCard ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-gray-500">Loading users...</p>
+                  </div>
+                ) : (
+                  <RecentMessages
+                    recentMessages={recentMessages}
+                    selectedUser={selectedUser}
+                    fetchUserChats={fetchUserChats}
+                  />
+                )}
               </div>
 
               {!selectedUser && (
@@ -566,52 +581,17 @@ const Chat = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
-                  <ul>
-                    {recentMessages.map((message, index) => (
-                      <li
-                        key={index}
-                        className={`cursor-pointer flex justify-between items-center p-2 px-4 ${
-                          selectedUser === message.user_id ? "bg-gray-200" : ""
-                        }`}
-                        onClick={() => fetchUserChats(message.user_id)}
-                      >
-                        <div className="flex items-center">
-                          <img
-                            src={
-                              message.profilePic ||
-                              shbrologo
-                            }
-                            alt={message.name}
-                            className="w-8 h-8 rounded-full mr-2"
-                          />
-                          <div>
-                            <p className="font-semibold">{message.name}</p>
-                            <p className="text-sm text-gray-500">Role: Guest</p>
-                            <p
-                              className={`text-sm ${
-                                selectedUser === message.user_id
-                                  ? "text-gray-500"
-                                  : "text-orange-500"
-                              }`}
-                            >
-                              {message.message.message}{" "}
-                              {/* Assuming this is the message text */}
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          className="bg-orange-300 text-white h-fit  text-sm px-2 py-1 ml-2 rounded"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent the li click event from firing
-                            // Assuming this is the correct property for the user profile link
-                            window.location.href = message.userProfile;
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faUser} className="mr-2" />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                  {loadingUsersCard ? (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-gray-500">Loading users...</p>
+                    </div>
+                  ) : (
+                    <RecentMessages
+                      recentMessages={recentMessages}
+                      selectedUser={selectedUser}
+                      fetchUserChats={fetchUserChats}
+                    />
+                  )}
                 </div>
               )}
               {selectedUser &&
@@ -627,17 +607,34 @@ const Chat = () => {
                                 onClick={() => setSelectedUser(null)}
                               />
                             </div>
-                            <p className="font-semibold">{selectedUserName}</p>
+                            {loadingMessages ? (
+                              <SkeletonLoader />
+                            ) : (
+                              <Link to={`/userdetails/${selectedUser}`}>
+                                <p className="font-semibold">
+                                  {selectedUserName}
+                                </p>
+                              </Link>
+                            )}
                           </div>
                           <div
                             ref={chatContainerRef}
                             className="h-[60vh] overflow-y-auto example"
                           >
-                            {renderMessages(
-                              userChats,
-                              newMessages,
-                              selectedUser,
-                              users
+                            {loadingMessages ? (
+                              <div className="flex justify-center h-full items-center">
+                                <p>Loading messages...</p>
+                              </div>
+                            ) : (
+                              <>
+                                {renderMessages(
+                                  userChats,
+                                  newMessages,
+                                  selectedUser,
+                                  users
+                                )}
+                                {isTyping && <TypingIndicator />}
+                              </>
                             )}
 
                             {isTyping && <TypingIndicator />}

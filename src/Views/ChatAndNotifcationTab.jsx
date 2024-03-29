@@ -5,6 +5,7 @@ import Header from "../Component/Navigation/Header";
 import { useStateContext } from "../ContextProvider/ContextProvider";
 import axios from "../Axios";
 import { message } from 'antd';
+import GoBackButton from "../Component/GoBackButton";
 
 export default function ChatAndNotifcationTab() {
   const [selectedTab, setSelectedTab] = useState("chats"); // "chats" or "notifications"
@@ -165,6 +166,9 @@ useEffect(() => {
         
         <div className="col-span-3 fixed top-0 left-0 right-0 bg-white rounded-md p-4 shadow md:hidden">
           <div className="flex space-x-2">
+            <button>
+              <GoBackButton/>
+            </button>
             <button
               className={`${
                 selectedTab === "chats" ? "bg-orange-400 text-white" : "bg-orange-200"

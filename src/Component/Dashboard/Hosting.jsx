@@ -14,6 +14,7 @@ import { message, notification, Popconfirm } from 'antd';
 import Popup from "../../hoc/Popup";
 import { LoadingOutlined } from '@ant-design/icons';
 import { styles } from "../ChatBot/Style";
+import logoImage from "../../assets/shbro logo.png"
 
 export default function Hosting() {
   const [activeTab, setActiveTab] = useState("checkingOut");
@@ -667,7 +668,7 @@ export default function Hosting() {
                       <div className="guest-image">
                         <Link to={`/UserDetails/${host.id}`}>
                           <img
-                            src={host.image}
+                            src={host.image || logoImage}
                             className="w-10 h-10 object-cover rounded-full"
                             alt=""
                           />
@@ -713,7 +714,7 @@ export default function Hosting() {
                       <div className="guest-image">
                         <Link to={`/UserDetails/${host.id}`}>
                           <img
-                            src={host.image}
+                            src={host.image || logoImage}
                             className="w-10 h-10 object-cover rounded-full"
                             alt=""
                           />
@@ -763,7 +764,7 @@ export default function Hosting() {
                       <div className="guest-image">
                         <Link to={`/UserDetails/${reservation.id}`}>
                           <img
-                            src={reservation.image}
+                            src={reservation.image || logoImage}
                             className="w-10 h-10 object-cover rounded-full"
                             alt=""
                           />
@@ -814,7 +815,7 @@ export default function Hosting() {
                       <div className="guest-image">
                         <Link to={`/UserDetails/${reservation.id}`}>
                           <img
-                            src={reservation.image}
+                            src={reservation.image || logoImage}
                             className="w-10 h-10 object-cover rounded-full"
                             alt=""
                           />
@@ -860,7 +861,7 @@ export default function Hosting() {
                       <div className="guest-image">
                         <Link to={`/UserDetails/${review.id}`}>
                           <img
-                            src={review.image}
+                            src={review.image || logoImage}
                             className="w-10 h-10 object-cover rounded-full"
                             alt=""
                           />
@@ -1080,7 +1081,7 @@ export default function Hosting() {
             {cohostList.map((person) => (
               <li key={person.id} className="flex justify-between gap-x-6 py-5">
                 <div className="flex min-w-0 gap-x-4">
-                  <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.profilePicture} alt="" />
+                  <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.profilePicture || logoImage} alt="" />
                   <div className="min-w-0 flex-auto">
                     <p className="text-sm font-semibold leading-6 text-gray-900">{person.name}</p>
                     <p className="mt-1 truncate text-xs leading-5 text-gray-500">{person.email}</p>

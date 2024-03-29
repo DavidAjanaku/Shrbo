@@ -9,6 +9,7 @@ import Header from "./Navigation/Header";
 import BottomNavigation from "./Navigation/BottomNavigation";
 import UserDetailsSkeleton from "../SkeletonLoader/UserDetailsSkeleton";
 import {  StarFilled } from "@ant-design/icons";
+import logoImage from "../assets/shbro logo.png"
 
 const UserDetails = () => {
   const [showReviews, setShowReviews] = useState(false);
@@ -66,7 +67,7 @@ const UserDetails = () => {
         <div className="flex flex-wrap  items-center space-x-3 relative">
           <div>
             <img
-              src={userData.profilePicture}
+              src={userData.profilePicture || logoImage}
               className="w-40 rounded-full h-40 object-cover"
               alt=""
             />
