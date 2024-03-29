@@ -9,13 +9,27 @@ const HouseRulesTab = () => {
 
   useEffect(() => {
     const fetchListingDetails = async () => {
+      let response;
       try {
-        const response = await Axios.get(`showGuestHome/${id}`);
+        response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
+        console.log(response.data.data);
         setListingDetails(response.data.data);
+
       } catch (error) {
-        console.error("Error fetching listing details:", error);
-        // Handle error, show error message, etc.
-      }
+        console.error(
+          "Error fetching listing details for authenticated user:",
+          error
+        );
+        try {
+          response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
+          setListingDetails(response.data.data);
+
+        } catch (error) {
+          console.error(
+            "Error fetching listing details for unauthenticated user:",
+            error
+          );
+  }}
     };
 
     fetchListingDetails();

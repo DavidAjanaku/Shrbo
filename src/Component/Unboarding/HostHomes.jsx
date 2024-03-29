@@ -101,7 +101,7 @@ export default function HostHomes({ match }) {
   const [selectedHouseDescriptions, setSelectedHouseDescriptions] = useState(
     []
   );
-
+  const [showTimeoutMessage, setShowTimeoutMessage] = useState(false);
   const { token } = useStateContext();
 
   const goLogin = useRef(null);
@@ -121,6 +121,23 @@ export default function HostHomes({ match }) {
   });
 
   const [apartment, setApartment] = useState(null);
+
+
+  useEffect(() => {
+    let timeout;
+    if (isSubmitting) {
+      timeout = setTimeout(() => {
+        setShowTimeoutMessage(true);
+      }, 10000); // 10 seconds
+    } else {
+      clearTimeout(timeout);
+      setShowTimeoutMessage(false);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [isSubmitting]);
 
   const { id } = useParams();
   // Rest of your code
@@ -1646,59 +1663,61 @@ export default function HostHomes({ match }) {
                 </p>
               </div>
               <div className="grid grid-cols-1 gap-8 max-w-md mx-auto mt-8">
-                <div className="bg-white border p-4 rounded-lg shadow-md">
-                  <h1 className="text-2xl font-semibold mb-4">Upload Video</h1>
-                  <label
-                    htmlFor="videoInput"
-                    className="grid place-items-center bg-orange-300 text-white rounded-md p-4 cursor-pointer transition duration-300 hover:bg-orange-600"
-                  >
-                    <div className="mb-4">
-                      <FaVideo className="text-4xl mx-auto" />
-                    </div>
-                    Click to Upload Video
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={handleVideoUpload}
-                      className="hidden"
-                      id="videoInput"
-                    />
-                  </label>
-                </div>
-                <div className="bg-white border p-4 rounded-lg shadow-md mb-24">
-                  <div>
-                    <p className="text-slate-500 mt-4">
-                      Maximum file size: 20MB
-                    </p>
-                    <p className="text-slate-500">Maximum duration: 1 minute</p>
-                  </div>
-                  <div>
-                    {selectedVideo && (
-                      <div className="mt-4">
-                        <p className="text-lg font-semibold mb-2">
-                          Selected Video: {selectedVideo.name}
-                        </p>
-                        <p className="text-slate-500">
-                          Size:{" "}
-                          {(selectedVideo.size / (1024 * 1024)).toFixed(2)} MB
-                        </p>
-                        <video controls className="mt-2">
-                          <source
-                            src={URL.createObjectURL(selectedVideo)}
-                            type="video/mp4"
-                          />
-                        </video>
-                        <button
-                          onClick={handleRemoveVideo}
-                          className="bg-red-500 text-white py-2 px-4 mt-4 rounded-full hover:bg-red-600 transition duration-300"
-                        >
-                          Remove Video
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+  {selectedVideo === null && (
+    <div className="bg-white border p-4 rounded-lg shadow-md">
+      <h1 className="text-2xl font-semibold mb-4">Upload Video</h1>
+      <label
+        htmlFor="videoInput"
+        className="grid place-items-center bg-orange-300 text-white rounded-md p-4 cursor-pointer transition duration-300 hover:bg-orange-600"
+      >
+        <div className="mb-4">
+          <FaVideo className="text-4xl mx-auto" />
+        </div>
+        Click to Upload Video
+        <input
+          type="file"
+          accept="video/*"
+          onChange={handleVideoUpload}
+          className="hidden"
+          id="videoInput"
+        />
+      </label>
+    </div>
+  )}
+  {selectedVideo === null && (
+    <div className="bg-white border p-4 rounded-lg shadow-md mb-24">
+      <div>
+        <p className="text-slate-500 mt-4">Maximum file size: 20MB</p>
+        <p className="text-slate-500">Maximum duration: 1 minute</p>
+      </div>
+    </div>
+  )}
+  {selectedVideo && (
+    <div className="bg-white border p-4 rounded-lg shadow-md mb-24">
+      <div>
+        <p className="text-lg font-semibold mb-2">
+          Selected Video: {selectedVideo.name}
+        </p>
+        <p className="text-slate-500">
+          Size: {(selectedVideo.size / (1024 * 1024)).toFixed(2)} MB
+        </p>
+        <video controls className="mt-2">
+          <source
+            src={URL.createObjectURL(selectedVideo)}
+            type="video/mp4"
+          />
+        </video>
+        <button
+          onClick={handleRemoveVideo}
+          className="bg-red-500 text-white py-2 px-4 mt-4 rounded-full hover:bg-red-600 transition duration-300"
+        >
+          Remove Video
+        </button>
+      </div>
+    </div>
+  )}
+</div>
+
             </div>
           </div>
         );
@@ -2173,10 +2192,16 @@ export default function HostHomes({ match }) {
         return (
           <div className=" mx-auto  flex justify-center p-4">
             {isSubmitting && (
-              <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-white  bg-opacity-90 z-50">
-               <Spin indicator={<LoadingOutlined style={{ fontSize: 54, color: 'orange' }} spin />} />
-              </div>
-            )}
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-white  bg-opacity-90 z-50">
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 54, color: 'orange' }} spin />} />
+        </div>
+      )}
+
+      {showTimeoutMessage && (
+        <div className="fixed bottom-0 left-0 w-full p-4 bg-red-500 text-white text-center">
+          Please be patient while the form is submitting.
+        </div>
+      )}
 
             <div className="  overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
