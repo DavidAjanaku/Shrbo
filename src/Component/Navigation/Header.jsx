@@ -11,7 +11,7 @@ export default function Header() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { user, token, adminStatus, host, setAdminStatus, setHost, setUser } = useStateContext();
+  const { user, token, adminStatus,coHost, host, setAdminStatus, setHost, setUser } = useStateContext();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const receiverId = parseInt(localStorage.getItem("receiverid"), 10);
   const [isNotificationLoading, setNotificationLoading] = useState(false);
@@ -202,6 +202,7 @@ export default function Header() {
         localStorage.removeItem("Shbro");
         localStorage.removeItem("A_Status");
         localStorage.removeItem("H_Status");
+        localStorage.removeItem("CH_Status");
         setIsLoggedIn(false);
         window.location.replace('/');
       });
@@ -305,10 +306,10 @@ export default function Header() {
           {token && <Link to="/ChatAndNotifcationTab" className="text-white hover:text-gray-300 ml-4">
             Inbox
           </Link>}
-          {(host == 1 && token) && <Link to="/Hosting" className={` hover:text-gray-300 ml-4 ${(host != 0 && token) ? "block text-white" : "hidden"}`}>
-            Switch to Host
+          {((host == 1 || coHost==1) && token) && <Link to="/Hosting" className={` hover:text-gray-300 ml-4 ${((host != 0||coHost==1) && token) ? "block text-white" : "hidden"}`}>
+            Switch to {coHost==1?"CoHost":"Host"}
           </Link>}
-          {(host == 0 || !host) && <Link to="/HostHomes" className="text-white hover:text-gray-300 ml-4"  >Shrbo your place</Link>}
+          {!(host === 1 || coHost === 1) && <Link to="/HostHomes" className="text-white hover:text-gray-300 ml-4"  >Shrbo your place</Link>}
           {(adminStatus == "admin") && <Link to="/AdminAnalytical" className="text-white hover:text-gray-300 ml-4">
             Dashboard
           </Link>}
@@ -344,14 +345,14 @@ export default function Header() {
                 >
                   Create a new Listings
                 </Link>
-                {(host == 1) && <Link
+                {(host == 1||coHost==1) && <Link
                   to="/Hosting"
                   className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
                 >
                   Manage Listings
                 </Link>
                 }
-                {(host == 1) && <Link
+                {(host == 1||coHost==1) && <Link
                   to="/Listings"
                   className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
                 >
@@ -375,7 +376,7 @@ export default function Header() {
           >
             <button className="text-white relative">
               <img src={bellIcon} className="w-5 h-5" alt="" />
-              {notifications.length > 0 && (
+              {notifications.length > 0 && notifications[0].id && (
                 <span className="bg-red-500 text-white  absolute h-[2px] w-[2px] p-[5px] top-0 right-0 rounded-full">
                   {/* {notifications.length} */}
                 </span>
@@ -383,22 +384,29 @@ export default function Header() {
             </button>
             {isBellDropdownOpen && notifications.length > 0 && (
               <div className="absolute bg-white z-[999999] h-96 overflow-scroll example w-96 right-0 mt-1 p-2  border rounded-lg shadow-lg">
-              {!isNotificationLoading?
+                {!isNotificationLoading ?
                   <>
-                {notifications.map((notification, index) => (
-                  <div key={notification.id} onClick={()=>{deleteNotification(notification.id)}}  className="text-gray-800 my-4 p-2 rounded-md cursor-pointer hover:bg-orange-400 hover:text-white">
-                    {notification.message}
-                   <div className="text-gray-500 text-xs">
-                   {DateTimeConverter(notification.time)}
-                   </div>
-                  </div>
-                ))}</>
-                :
-                <div className="self-start   p-2 rounded-lg w-full h-full flex items-center justify-center ">
-                  <div className="dot-pulse1">
-                    <div className="dot-pulse1__dot"></div>
-                  </div>
-                </div>}
+                    {(notifications[0].id) ?
+                      <>
+                        {notifications.map((notification, index) => (
+                          <div key={notification.id} onClick={() => { deleteNotification(notification.id) }} className="text-gray-800 my-4 p-2 rounded-md cursor-pointer hover:bg-orange-400 hover:text-white">
+                            {notification.message}
+                            <div className="text-gray-500 text-xs">
+                              {DateTimeConverter(notification.time)}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                      :
+                      <div className=" text-black w-full h-full flex items-center justify-center  ">No Notifications</div>
+                    }
+                  </>
+                  :
+                  <div className="self-start   p-2 rounded-lg w-full h-full flex items-center justify-center ">
+                    <div className="dot-pulse1">
+                      <div className="dot-pulse1__dot"></div>
+                    </div>
+                  </div>}
 
               </div>
             )}

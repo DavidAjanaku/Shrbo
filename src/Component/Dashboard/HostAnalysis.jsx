@@ -24,7 +24,7 @@ export default function HostAnalysis() {
   const [activeTab, setActiveTab] = useState("1");
   const [showListingsModal, setShowListingsModal] = useState(false);
   const [selectedApartment, setSelectedApartment] = useState(null);
-  const { user, setUser, setHost, setAdminStatus } = useStateContext();
+  const { user, setUser, setHost, setAdminStatus,coHost } = useStateContext();
   const currentDate = new Date();
   const defaultSelectedMonth = `${currentDate.toLocaleString("default", { month: "long" })} ${currentDate.getFullYear()}`;
   const [selectedMonth, setSelectedMonth] = useState(defaultSelectedMonth); // Add selectedMonth state
@@ -476,7 +476,8 @@ export default function HostAnalysis() {
               </div>
             }
           </items>
-          <items tab="Earnings" key="2">
+
+         {coHost !=1 &&<items tab="Earnings" key="2">
             <div>
               <h2 className="text-3xl">Earnings</h2>
               <div className="md:w-3/5">
@@ -581,7 +582,7 @@ export default function HostAnalysis() {
               :
               <div className="skeleton-loader h-28  w-full"></div>
             }
-          </items>
+          </items>}
 
           <items tab="Views" key="3">
             <div>

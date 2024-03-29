@@ -19,7 +19,7 @@ import { Skeleton } from 'antd';
 export default function Settings() {
   const [isHostModalOpen, setHostModalOpen] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  const {user,setUser,setHost,setAdminStatus , host, adminStatus}=useStateContext();
+  const {user,setUser,setHost,setAdminStatus , host, adminStatus,coHost,setCoHost}=useStateContext();
   const [userName,setUserName]=useState();
   const [userEmail,setUserEmail]=useState();
   const [loading, setLoading] = useState(true);
@@ -59,6 +59,7 @@ export default function Settings() {
         setUser(response.data);
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
+        setCoHost(response.data.co_host)
       
 
       } catch (error) {
@@ -84,7 +85,7 @@ export default function Settings() {
 
       <div className="pb-32">
         {isHostModalOpen && (
-          <HostModal isOpen={true} onClose={() => setHostModalOpen(false)} userData={user} hostStatus={host} adminStatus={adminStatus} />
+          <HostModal isOpen={true} onClose={() => setHostModalOpen(false)} userData={user} hostStatus={host} coHostStatus={coHost} adminStatus={adminStatus} />
         )}
 
         <div className="max-w-2xl md:mx-auto mx-9">

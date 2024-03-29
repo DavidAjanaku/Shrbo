@@ -8,7 +8,7 @@ import HostingCard from "../HostingCard";
 import SupportCard from "../SupportCard";
 import axios from "../../Axios"
 
-export default function HostModal({ isOpen, onClose, userData, hostStatus, adminStatus }) {
+export default function HostModal({ isOpen, onClose, userData, hostStatus, adminStatus,coHostStatus }) {
   const [profilePicture, setProfilePicture] = useState(defaultProfile);
 
 
@@ -21,6 +21,7 @@ export default function HostModal({ isOpen, onClose, userData, hostStatus, admin
         localStorage.removeItem("Shbro");
         localStorage.removeItem("A_Status");
         localStorage.removeItem("H_Status");
+        localStorage.removeItem("CH_Status");
         // setIsLoggedIn(false);
         window.location.replace('/');
       });
@@ -72,7 +73,7 @@ export default function HostModal({ isOpen, onClose, userData, hostStatus, admin
               </section>
               <section>
                 <ul>
-                  {(hostStatus === 1) && <MenuCard
+                  {(hostStatus === 1||coHostStatus===1) && <MenuCard
                     linkTo="/HostHomes"
                     icon={<BsHouseDoor />}
                     title="Create a new listing"
@@ -84,7 +85,7 @@ export default function HostModal({ isOpen, onClose, userData, hostStatus, admin
                     title="Dashboard"
                   />}
 
-                  {(hostStatus === 1) && <MenuCard
+                  {(hostStatus === 1||coHostStatus===1)  && <MenuCard
                     linkTo="/Listings"
                     icon={<BsHouseDoor />}
                     title="Listings"
@@ -108,7 +109,7 @@ export default function HostModal({ isOpen, onClose, userData, hostStatus, admin
                     title="Payments"
                   />
 
-                  {(hostStatus === 1) && <MenuCard
+                  {(hostStatus === 1||coHostStatus===1)  && <MenuCard
                     linkTo="/Reservations"
                     icon={<BsHouseDoor />}
                     title="Reservations"
@@ -125,9 +126,9 @@ export default function HostModal({ isOpen, onClose, userData, hostStatus, admin
               <section>
                 <h1 className="text-2xl my-10">Hosting</h1>
                 <ul>
-                  {(hostStatus === 1) && <HostingCard linkTo="/hosting" title="Manage your listing" />
+                  {(hostStatus === 1||coHostStatus===1)  && <HostingCard linkTo="/hosting" title="Manage your listing" />
                   }
-                  {!(hostStatus === 1) && <SupportCard linkTo="/hosthomes" title="Shrbo Your Space" />}
+                  {!(hostStatus === 1)||!(coHostStatus===1) && <SupportCard linkTo="/hosthomes" title="Shrbo Your Space" />}
 
                 </ul>
               </section>
