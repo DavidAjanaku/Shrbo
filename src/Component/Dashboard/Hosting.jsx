@@ -1086,7 +1086,7 @@ export default function Hosting() {
                     <p className="mt-1 truncate text-xs leading-5 text-gray-500">{person.email}</p>
                   </div>
                 </div>
-                <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+                <div className=" shrink-0 sm:flex sm:flex-col sm:items-end">
                   <p className="text-sm leading-6 text-gray-900">Co-Host</p>
                   <div className="mt-1 flex items-center gap-x-1.5">
                     {/* <div className="flex-none rounded-full bg-emerald-500/20 p-1">
@@ -1252,7 +1252,7 @@ export default function Hosting() {
 
         {host===1&&  <div className=" flex gap-8  md:justify-end w-full ">
             <button onClick={() => { setCohostModalOpen(true) }} className=" bg-orange-400 text-white p-1 rounded  ">+ Add co-host</button>
-            <button onClick={openViewCohostModal} className="  ">view co-host(1)</button>
+            <button onClick={openViewCohostModal} className=" bg-orange-400 text-white px-2 py-1 rounded   ">view co-host</button>
 
           </div>}
           <Popup isModalVisible={isCohostModalOpen} handleCancel={handleCohostModal} title={"Adding a Cohost"} centered={true}  >
