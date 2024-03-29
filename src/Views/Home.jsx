@@ -25,7 +25,7 @@ export default function Home() {
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(true);
-  const { setUser, setToken, token, setHost, setAdminStatus, user } =
+  const { setUser, setToken, token, setHost, setAdminStatus, user ,setCoHost} =
     useStateContext();
   const [loading, setLoading] = useState(true);
   const [showMoreLoading, setShowMoreLoading] = useState(true);
@@ -80,50 +80,52 @@ export default function Home() {
     };
   }, []);
 
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     try {
-  //       // Extract the parameters from the URL
-  //       const params = new URLSearchParams(window.location.search);
-  //       const verified = params.get("verified");
-  //       const remtoken = params.get("remtoken");
-  //       const ustoken = params.get("ustoken");
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Extract the parameters from the URL
+        const params = new URLSearchParams(window.location.search);
+        const verified = params.get("verified");
+        const remtoken = params.get("remtoken");
+        const ustoken = params.get("ustoken");
 
-  //       // Log out the parameters
-  //       console.log("Verified:", verified);
-  //       console.log("Remtoken:", remtoken);
-  //       console.log("Ustoken:", ustoken);
+        // Log out the parameters
+        console.log("Verified:", verified);
+        console.log("Remtoken:", remtoken);
+        console.log("Ustoken:", ustoken);
 
-  //       // Make a request to get the user data with parameters
-  //       const response = await axios.get(
-  //         `/verify-tokens/${remtoken}/${ustoken}`
-  //       );
-  //       console.log("Response Data:", response.data);
-  //       console.log(response.data.id);
+        // Make a request to get the user data with parameters
+        const response = await axios.get(
+          `/verify-tokens/${remtoken}/${ustoken}`
+        );
+        console.log("Response Data:", response.data);
+        console.log(response.data.id);
 
-  //       // Set the user data in state
-  //       setUser(response.data.user);
-  //       console.log("User Data:", response.data);
+        // Set the user data in state
+        setUser(response.data.user);
+        console.log("User Data:", response.data);
 
-  //       // Set the host value in state context
-  //       setHost(response.data.user.host);
-  //       console.log("Host:", response.data.host);
-  //       setToken(ustoken);
-  //       setAdminStatus(response.data.user.adminStatus);
+        // Set the host value in state context
+        setHost(response.data.user.host);
+        setCoHost(response.data.user.co_host)
+        console.log("Host:", response.data.host);
+        console.log("CoHost:", response.data.user.co_host);
+        setToken(ustoken);
+        setAdminStatus(response.data.user.adminStatus);
 
-  //       // Log 'yes' to the console
-  //       console.log("yes");
-  //     } catch (error) {
-  //       console.error("Error fetching user data:", error);
-  //     } finally {
-  //       // Set loading to false regardless of success or error
-  //       setLoading(false);
-  //     }
-  //   };
+        // Log 'yes' to the console
+        console.log("yes");
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        // Set loading to false regardless of success or error
+        setLoading(false);
+      }
+    };
 
-  //   // Call the fetchUserData function when the component mounts
-  //   fetchUserData();
-  // }, []);
+    // Call the fetchUserData function when the component mounts
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -138,6 +140,8 @@ export default function Home() {
         console.log("yes", response.data);
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
+        setCoHost(response.data.co_host)
+        console.log("CoHost:", response.data.co_host);
         localStorage.setItem('receiverid', response.data.id);
 
       } catch (error) {

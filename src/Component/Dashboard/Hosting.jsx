@@ -10,12 +10,15 @@ import InfoCard from "../InfoCard";
 import AlertCard from "../AlertCard";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 import axios from "../../Axios";
-import { message } from 'antd';
+import { message, notification, Popconfirm } from 'antd';
+import Popup from "../../hoc/Popup";
+import { LoadingOutlined } from '@ant-design/icons';
+import { styles } from "../ChatBot/Style";
 
 export default function Hosting() {
   const [activeTab, setActiveTab] = useState("checkingOut");
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const { setUser, setToken, token, setHost, setAdminStatus, user } = useStateContext();
+  const { setUser, setToken, token, setHost, setAdminStatus, user,host } = useStateContext();
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [tips, setTips] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
@@ -25,7 +28,14 @@ export default function Hosting() {
   const [hosting, setHosting] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingGeneral, setLoadingGeneral] = useState(true);
-  
+  const [isCohostModalOpen, setCohostModalOpen] = useState(false);
+  const [isCohostListModalOpen, setCohostListModalOpen] = useState(false);
+  const [isAddingCohostLoading, setAddingCohostLoading] = useState(false);
+  const [isCohostLoading, setCohostLoading] = useState(false);
+  const [coHostEmail, setCoHostEmail] = useState("");
+  const [errorCohost, setErrorCohost] = useState("");
+  const [cohostList, setCohostList] = useState([]);
+
   const [isNotificationDeleted, setNotificationDeleted] = useState(false);
   const [tabLoading, setTabLoading] = useState(true);
   const [notifications, setNotifications] = useState([
@@ -91,24 +101,24 @@ export default function Hosting() {
     // },
   ]);
 
-/// ************ Notification Logic*****************************
+  /// ************ Notification Logic*****************************
 
-const receiverId = parseInt(localStorage.getItem("receiverid"), 10);
+  const receiverId = parseInt(localStorage.getItem("receiverid"), 10);
 
-const deleteNotification = async (notificationId) => {
-  try {
-    const response = await axios.delete(`/notification/${notificationId}`);
-    console.log("Deleted Notification", response.data)
+  const deleteNotification = async (notificationId) => {
+    try {
+      const response = await axios.delete(`/notification/${notificationId}`);
+      console.log("Deleted Notification", response.data)
 
-    message.success("notification deleted successfully")
-    setNotificationDeleted(!isNotificationDeleted);
+      message.success("notification deleted successfully")
+      setNotificationDeleted(!isNotificationDeleted);
 
-  } catch (error) {
-    message.error("could not delete notification")
+    } catch (error) {
+      message.error("could not delete notification")
+
+    }
 
   }
-
-}
 
 
   useEffect(() => {
@@ -191,7 +201,7 @@ const deleteNotification = async (notificationId) => {
 
 
 
-////  End
+  ////  End
 
 
 
@@ -280,6 +290,8 @@ const deleteNotification = async (notificationId) => {
         setTips(tipsResponse.data);
 
         await fetchInitialData();
+
+
 
         console.log("hello")
 
@@ -910,35 +922,278 @@ const deleteNotification = async (notificationId) => {
 
   ));
 
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type, error) => {
+    api[type]({
+      message: type === "error" ? 'Error' : "Succesfull",
+      description: error,
+      placement: 'topRight',
+      className: 'bg-green'
+    });
+  };
+
+  const addCohost = async () => {
+    // console.log(error)
+
+    if (coHostEmail.trim() === "") {
+      setErrorCohost("Email field can not be empty")
+      return;
+    }
+    setErrorCohost("")
+
+
+
+    setAddingCohostLoading(true);
+    try {
+      const response = await axios.get(`/addCoHost?email=${coHostEmail}`)
+      setCohostModalOpen(false)
+      openNotificationWithIcon("success");
+
+    } catch (error) {
+      console.log(error.response.data.error);
+      setErrorCohost(error.response.data.error)
+
+    } finally {
+      setAddingCohostLoading(false);
+    }
+
+  }
+
+  const handleCohostModal = () => {
+    if (isAddingCohostLoading) {
+      return
+    }
+    setCohostModalOpen(false);
+    setErrorCohost("")
+    setCoHostEmail("")
+  }
+
+
+  const AddCohostModal = (
+    <>
+      {isAddingCohostLoading ?
+        <div className="space-y-12 h-52">
+          <div
+            className="transition-3 "
+            style={{
+              ...styles.loadingDiv,
+              ...{
+                zIndex: isAddingCohostLoading ? '10' : '-1',
+                display: isAddingCohostLoading ? "block" : "none",
+                opacity: isAddingCohostLoading ? '0.33' : '0',
+              }
+            }}
+
+          />
+          <LoadingOutlined
+            className="transition-3"
+            style={{
+              ...styles.loadingIcon,
+              ...{
+                zIndex: isAddingCohostLoading ? '10' : '-1',
+                display: isAddingCohostLoading ? "block" : "none",
+                opacity: isAddingCohostLoading ? '1' : '0',
+                fontSize: '42px',
+                top: 'calc(50% - 41px)',
+                left: 'calc(50% - 41px)',
+
+
+              }
+
+
+            }}
+          />
+        </div>
+        :
+        <form>
+          <div className="space-y-12">
+            <div className="border-b border-gray-900/10 pb-12">
+              <p className="mt-1 text-sm leading-6 text-gray-600">A cohost is an individual who assists the primary host in managing the listings.
+                They take on various responsibilities to support the host and ensure the smooth operation of the host's listings on shrbo . </p>
+
+              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
+                <div className="sm:col-span-4">
+                  <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                    Email address(cohost)
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={coHostEmail}
+                      onChange={(e) => setCoHostEmail(e.target.value)}
+                      autoComplete="email"
+                      className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <h3 className=" text-red-500 " >{errorCohost}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex items-center justify-end gap-x-6">
+            <button type="button" className="text-sm font-semibold leading-6 text-gray-900" onClick={handleCohostModal} >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={addCohost}
+              disabled={isAddingCohostLoading}
+              className="rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      }
+    </>
+  )
+
+  //Confirm deleting the Card 
+  const confirm = async (e, type, id) => {
+    // console.log(e);
+
+    await axios.delete(`/removeCoHost/${id}`).then(response => {
+      console.log(response);
+      message.success(` ${type} Removed as Co-host`);
+      // fetchUserCards();
+      openViewCohostModal();
+    }).catch(error => {
+      console.error("Failed to Remove Card", error);
+      message.error(`An Error Occured while trying to Remove ${type} as Co-host`)
+    })
+
+  };
+  const cancel = (e) => {
+    console.log();
+  };
+
+  const CohostModal = (
+    <div className=" h-full overflow-y-scroll example ">
+      {!isCohostLoading?
+      <ul role="list" className="divide-y divide-gray-100">
+        {cohostList.length > 0 ?
+          <>
+            {cohostList.map((person) => (
+              <li key={person.id} className="flex justify-between gap-x-6 py-5">
+                <div className="flex min-w-0 gap-x-4">
+                  <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.profilePicture} alt="" />
+                  <div className="min-w-0 flex-auto">
+                    <p className="text-sm font-semibold leading-6 text-gray-900">{person.name}</p>
+                    <p className="mt-1 truncate text-xs leading-5 text-gray-500">{person.email}</p>
+                  </div>
+                </div>
+                <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+                  <p className="text-sm leading-6 text-gray-900">Co-Host</p>
+                  <div className="mt-1 flex items-center gap-x-1.5">
+                    {/* <div className="flex-none rounded-full bg-emerald-500/20 p-1">
+                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                </div> */}
+                    <Popconfirm
+                      title="Remove Co-host"
+                      description={`Sure you want to remove ${person.name} as a Co-host ?`}
+                      onConfirm={(e) => { confirm(e, person.name, person.id) }}
+                      onCancel={cancel}
+                      okText="Delete"
+                      cancelText="Cancel"
+                    >
+                      <button className="text-xs border rounded-md p-[4px] font-semibold hover:bg-slate-50 transition-colors   leading-5 text-gray-500">Remove</button>
+
+                    </Popconfirm>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </>
+          :
+          <div className=" m-8 ">
+            You have not added a co-host yet.
+          </div>
+
+        }
+      </ul>
+      :
+      <div className="self-start my-28   p-2 rounded-lg w-full h-full flex items-center justify-center ">
+      <div className="dot-pulse1">
+        <div className="dot-pulse1__dot"></div>
+      </div>
+    </div>
+      }
+    </div>
+  )
+
+  const openViewCohostModal = async () => {
+
+    !isCohostListModalOpen && setCohostLoading(true)
+
+    setCohostListModalOpen(true);
+
+
+    try {
+      const response = await axios.get('/hostcohosts');
+
+      setCohostList([...response.data.cohosts])
+    } catch (error) {
+
+    } finally {
+      setCohostLoading(false)
+
+    }
+
+
+
+  }
+
+  const removeCohost = async (id) => {
+    try {
+      const response = await axios.delete(`/removeCoHost/${id}`);
+    } catch (error) {
+
+    }
+
+  }
+
+
+
+
+
+
+
+
+
 
 
 
 
   return (
     <div className="pb-20">
+      {contextHolder}
       <HostHeader />
       <div className="flex flex-wrap md:flex-col md:w-[80vw] md:mx-auto md:my-10 p-4 md:p-10">
         <GoBackButton />
         <div className="w-full">
-        
-        {!loadingGeneral ?
-         <p className="text-gray-400 font-normal text-base my-4 italic">
-            Efficiently manage your home rental listings with our comprehensive
-            management tool.
-          </p>
-          :
-          <div className="skeleton-loader my-7 w-[200px] md:w-[560px] rounded-[2px] h-7 ml-3" />
+
+          {!loadingGeneral ?
+            <p className="text-gray-400 font-normal text-base my-4 italic">
+              Efficiently manage your home rental listings with our comprehensive
+              management tool.
+            </p>
+            :
+            <div className="skeleton-loader my-7 w-[200px] md:w-[560px] rounded-[2px] h-7 ml-3" />
           }
 
 
-         {!loadingGeneral? <div
+          {!loadingGeneral ? <div
             id="bell-dropdown"
             className={`relative w-fit   ${isBellDropdownOpen ? "group" : ""}`}
             onClick={toggleBellDropdown}
           >
             <button className="text-white relative">
               <img src={Notificationbell} className="w-5 h-5" alt="" />
-              {notifications.length > 0 && (
+              {notifications.length > 0 && notifications[0].id && (
                 <span className="bg-red-500 text-white  absolute h-[2px] w-[2px] p-[5px] top-0 right-0 rounded-full">
                   {/* {notifications.length} */}
                 </span>
@@ -947,31 +1202,35 @@ const deleteNotification = async (notificationId) => {
             {isBellDropdownOpen && notifications.length > 0 && (
               <div className="absolute bg-white z-[60] h-96 overflow-scroll example left-0 mt-1 p-2 w-64 border rounded-lg shadow-lg">
                 {/* Render your notifications here */}
-                {notifications.map((notification, index) => (
-                  <div
-                    key={notification.id}
-                    onClick={()=>{deleteNotification(notification.id)}} 
-                    className="text-gray-800 p-2 cursor-pointer my-4 rounded-md hover:bg-orange-300 hover:text-white"
-                  >
-                    <div>{notification.message}</div>
-                    <div className="text-gray-500 text-xs">
-                      {DateTimeConverter(notification.time)}
-                    </div>
-                  </div>
-                ))}
+                <>
+                  {(notifications[0].id) ?
+                    <>
+                      {notifications.map((notification, index) => (
+                        <div key={notification.id} onClick={() => { deleteNotification(notification.id) }} className="text-gray-800 my-4 p-2 rounded-md cursor-pointer hover:bg-orange-400 hover:text-white">
+                          {notification.message}
+                          <div className="text-gray-500 text-xs">
+                            {DateTimeConverter(notification.time)}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                    :
+                    <div className=" text-black w-full h-full flex items-center justify-center  ">No Notifications</div>
+                  }
+                </>
               </div>
             )}
           </div>
-          :
-          <div className={`relative w-fit`}>
-            <div className="skeleton-loader my-7 w-10 rounded-xl h-7 ml-3" />
-          </div>
+            :
+            <div className={`relative w-fit`}>
+              <div className="skeleton-loader my-7 w-10 rounded-xl h-7 ml-3" />
+            </div>
           }
 
           {/* /////////////////// */}
 
-          <div className="flex flex-wrap my-4 items-center justify-between">
-            {!loadingGeneral?
+          <div className="flex flex-wrap mt-4 items-center justify-between">
+            {!loadingGeneral ?
               <>
                 <h1 className="text-3xl font-medium my-7">Welcome back, {user.name}</h1>
                 <Link to="/Reservations" className="">All Reservations
@@ -979,15 +1238,29 @@ const deleteNotification = async (notificationId) => {
                     <path d="M14 16.94V12.94H5.08L5.05 10.93H14V6.94L19 11.94Z" />
                   </svg>
                 </Link>
+
               </>
-               :
-               <>
-               <div className="skeleton-loader my-7 w-64 rounded-[2px] h-7 ml-3" />
-               <div className="skeleton-loader my-3 w-56 rounded-[2px] h-7 ml-3" />
-               
-               </>}
+              :
+              <>
+                <div className="skeleton-loader my-7 w-64 rounded-[2px] h-7 ml-3" />
+                <div className="skeleton-loader my-3 w-56 rounded-[2px] h-7 ml-3" />
+
+              </>}
+
 
           </div>
+
+        {host===1&&  <div className=" flex gap-8  md:justify-end w-full ">
+            <button onClick={() => { setCohostModalOpen(true) }} className=" bg-orange-400 text-white p-1 rounded  ">+ Add co-host</button>
+            <button onClick={openViewCohostModal} className="  ">view co-host(1)</button>
+
+          </div>}
+          <Popup isModalVisible={isCohostModalOpen} handleCancel={handleCohostModal} title={"Adding a Cohost"} centered={true}  >
+            {AddCohostModal}
+          </Popup>
+          <Popup isModalVisible={isCohostListModalOpen} handleCancel={() => { setCohostListModalOpen(false) }} title={"Your Cohosts"} centered={true}  >
+            {CohostModal}
+          </Popup>
 
           <div>
 
@@ -1108,7 +1381,7 @@ const deleteNotification = async (notificationId) => {
 
           {!(loading || loadingGeneral) ? <div className="tab-content">{renderTabContent()}</div> : <div className=" flex items-center w-full  whitespace-nowrap overflow-x-auto example ">{SkeletonLoaderReservations}</div>}
 
-         {!loadingGeneral? <div className="my-10 bg-orange-100 p-5">
+          {!loadingGeneral ? <div className="my-10 bg-orange-100 p-5">
             <h1 className="mb-5 text-2xl">Share more details</h1>
             <div className="w-64 border p-4 rounded-lg shadow-lg relative bg-white ">
               <div className="mb-4">
@@ -1128,12 +1401,12 @@ const deleteNotification = async (notificationId) => {
               </button> */}
             </div>
           </div>
-          :  
-          <div className="skeleton-loader my-10 h-[330px] w-full rounded-[2px]  ml-3" />
-        
-        }
+            :
+            <div className="skeleton-loader my-10 h-[330px] w-full rounded-[2px]  ml-3" />
 
-          {!loadingGeneral?<div className="my-10 bg-orange-100 p-5">
+          }
+
+          {!loadingGeneral ? <div className="my-10 bg-orange-100 p-5">
             <h1 className="mb-5 text-2xl">We are here to help</h1>
 
             <div className="flex  flex-wrap">
@@ -1145,7 +1418,7 @@ const deleteNotification = async (notificationId) => {
                 title="Contact specialized support"
                 description="As a new Host, you get one-tap access to a specially trained support team."
               />
-              <Link to="/DamageReportForm">
+              <Link to="/ReportDamage">
                 <SuperHostGuidanceCard
                   title="Report Property Damage"
                   description="If a guest has caused any damage to your apartment, please reach out to our specialized support team immediately. Use the 'Contact Support' option to report the incident and provide details about the damage. Our team is here to assist you in resolving the issue and ensuring a smooth resolution process."
@@ -1154,12 +1427,12 @@ const deleteNotification = async (notificationId) => {
 
             </div>
           </div>
-          :
-          <div className=" grid grid-cols-2 w-full ml-3 my-10 gap-8   ">
-            <div className="skeleton-loader my-10 h-[90px] w-full col-span-1  rounded-[6px]  " />
-            <div className="skeleton-loader my-10 h-[90px] w-full rounded-[6px] col-span-1  " />
-            <div className="skeleton-loader my-10 h-[90px] w-full col-span-2 rounded-[6px] " />
-          </div>
+            :
+            <div className=" grid grid-cols-2 w-full ml-3 my-10 gap-8   ">
+              <div className="skeleton-loader my-10 h-[90px] w-full col-span-1  rounded-[6px]  " />
+              <div className="skeleton-loader my-10 h-[90px] w-full rounded-[6px] col-span-1  " />
+              <div className="skeleton-loader my-10 h-[90px] w-full col-span-2 rounded-[6px] " />
+            </div>
           }
 
         </div>

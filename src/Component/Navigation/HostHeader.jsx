@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import HostModal from "../Dashboard/HostModal";
 import Logo from "../../assets/logo.png"
+import { useStateContext } from "../../ContextProvider/ContextProvider";
 
 export default function HostHeader() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const {coHost}=useStateContext();
 
   const toggleModal = () => {
     console.log("Menu clicked"); // Add this line to check if the click event is triggered
@@ -62,9 +64,9 @@ export default function HostHeader() {
           <Link to="/Scheduler" className="text-white hover:text-gray-300 ml-4">
             Calender
             </Link>
-            <Link to="/HostPayment" className="text-white hover:text-gray-300 ml-4">
+           {coHost!=1&& <Link to="/HostPayment" className="text-white hover:text-gray-300 ml-4">
             Payment
-            </Link>
+            </Link>}
         </nav>
         <div>
         <div

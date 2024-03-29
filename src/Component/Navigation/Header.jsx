@@ -11,8 +11,7 @@ export default function Header() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { user, token, adminStatus, host, setAdminStatus, setHost, setUser } =
-    useStateContext();
+  const { user, token, adminStatus,coHost, host, setAdminStatus, setHost, setUser } = useStateContext();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const receiverId = parseInt(localStorage.getItem("receiverid"), 10);
   const [isNotificationLoading, setNotificationLoading] = useState(false);
@@ -196,6 +195,7 @@ export default function Header() {
         localStorage.removeItem("Shbro");
         localStorage.removeItem("A_Status");
         localStorage.removeItem("H_Status");
+        localStorage.removeItem("CH_Status");
         setIsLoggedIn(false);
         window.location.replace("/");
       });
@@ -288,168 +288,120 @@ export default function Header() {
           <Link to="/" className="text-white hover:text-gray-300 ml-4">
             Home
           </Link>
-          {token && (
-            <Link
-              to="/wishlist"
-              className="text-white hover:text-gray-300 ml-4"
-            >
-              Wishlist
-            </Link>
-          )}
-          {token && (
-            <Link to="/trip" className="text-white hover:text-gray-300 ml-4">
-              Trips
-            </Link>
-          )}
-          {token && (
-            <Link
-              to="/ChatAndNotifcationTab"
-              className="text-white hover:text-gray-300 ml-4"
-            >
-              Inbox
-            </Link>
-          )}
-          {host == 1 && token && (
-            <Link
-              to="/Hosting"
-              className={` hover:text-gray-300 ml-4 ${
-                host != 0 && token ? "block text-white" : "hidden"
-              }`}
-            >
-              Switch to Host
-            </Link>
-          )}
-          {(host == 0 || !host) && (
-            <Link
-              to="/HostHomes"
-              className="text-white hover:text-gray-300 ml-4"
-            >
-              Shrbo your place
-            </Link>
-          )}
-          {adminStatus == "admin" && (
-            <Link
-              to="/AdminAnalytical"
-              className="text-white hover:text-gray-300 ml-4"
-            >
-              Dashboard
-            </Link>
-          )}
-          {!token && (
-            <Link to="/Login" className="text-white hover:text-gray-300 ml-4">
-              Login
-            </Link>
-          )}
+          {token && <Link to="/wishlist" className="text-white hover:text-gray-300 ml-4">
+            Wishlist
+          </Link>}
+          {token && <Link to="/trip" className="text-white hover:text-gray-300 ml-4">
+            Trips
+          </Link>}
+          {token && <Link to="/ChatAndNotifcationTab" className="text-white hover:text-gray-300 ml-4">
+            Inbox
+          </Link>}
+          {((host == 1 || coHost==1) && token) && <Link to="/Hosting" className={` hover:text-gray-300 ml-4 ${((host != 0||coHost==1) && token) ? "block text-white" : "hidden"}`}>
+            Switch to {coHost==1?"CoHost":"Host"}
+          </Link>}
+          {!(host === 1 || coHost === 1) && <Link to="/HostHomes" className="text-white hover:text-gray-300 ml-4"  >Shrbo your place</Link>}
+          {(adminStatus == "admin") && <Link to="/AdminAnalytical" className="text-white hover:text-gray-300 ml-4">
+            Dashboard
+          </Link>}
+          {!token && <Link to="/Login" className="text-white hover:text-gray-300 ml-4"   >Login</Link>}
 
-          {token && (
-            <div
-              id="profile-dropdown"
-              className={`relative ${isProfileDropdownOpen ? "group" : ""}`}
-              onClick={toggleProfileDropdown}
-              tabIndex={0}
-            >
-              <Link to="" className="text-white hover:text-gray-300 ml-4">
-                Profile
-              </Link>
-              {isProfileDropdownOpen && (
-                <div className="absolute bg-white z-[60] right-0 mt-1 p-2 w-64 border rounded-lg shadow-lg">
-                  {/* Dropdown content goes here */}
-                  <Link
-                    to="/Profile"
-                    className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
-                  >
-                    Edit Profile
-                  </Link>
-                  <Link
-                    to="/Settings"
-                    className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
-                  >
-                    Settings
-                  </Link>
-                  <Link
-                    to="/HostHomes"
-                    className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
-                  >
-                    Create a new Listings
-                  </Link>
-                  {host == 1 && (
-                    <Link
-                      to="/Hosting"
-                      className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
-                    >
-                      Manage Listings
-                    </Link>
-                  )}
-                  {host == 1 && (
-                    <Link
-                      to="/Listings"
-                      className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
-                    >
-                      Listings
-                    </Link>
-                  )}
-                  <button
-                    // to="/logout"
-                    className="block text-gray-800 hover:text-red-500 p-2 cursor-pointer"
-                    onClick={logOut}
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+          {token && <div
+            id="profile-dropdown"
+            className={`relative ${isProfileDropdownOpen ? "group" : ""}`}
+            onClick={toggleProfileDropdown}
+            tabIndex={0}
+          >
+            <Link to="" className="text-white hover:text-gray-300 ml-4">
+              Profile
+            </Link>
+            {isProfileDropdownOpen && (
+              <div className="absolute bg-white z-[60] right-0 mt-1 p-2 w-64 border rounded-lg shadow-lg">
+                {/* Dropdown content goes here */}
+                <Link
+                  to="/Profile"
+                  className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
+                >
+                  Edit Profile
+                </Link>
+                <Link
+                  to="/Settings"
+                  className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
+                >
+                  Settings
+                </Link>
+                <Link
+                  to="/HostHomes"
+                  className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
+                >
+                  Create a new Listings
+                </Link>
+                {(host == 1||coHost==1) && <Link
+                  to="/Hosting"
+                  className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
+                >
+                  Manage Listings
+                </Link>
+                }
+                {(host == 1||coHost==1) && <Link
+                  to="/Listings"
+                  className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
+                >
+                  Listings
+                </Link>}
+                <button
+                  // to="/logout"
+                  className="block text-gray-800 hover:text-red-500 p-2 cursor-pointer"
+                  onClick={logOut}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>}
           {/* Bell Icon and Notification Dropdown */}
-          {token && (
-            <div
-              id="bell-dropdown"
-              className={`relative group ml-4 ${
-                isBellDropdownOpen ? "group" : ""
-              }`}
-              onClick={toggleBellDropdown}
-            >
-              <button className="text-white relative">
-                <img src={bellIcon} className="w-5 h-5" alt="" />
-                {notifications.length > 0 && (
-                  <span className="bg-red-500 text-white  absolute h-[2px] w-[2px] p-[5px] top-0 right-0 rounded-full">
-                    {/* {notifications.length} */}
-                  </span>
-                )}
-              </button>
-              {isBellDropdownOpen && (
-                <div className="absolute bg-white z-[999999] h-96 overflow-scroll example w-96 right-0 mt-1 p-2  border rounded-lg shadow-lg">
-                  {!isNotificationLoading ? (
-                    notifications.length > 0 ? (
-                      notifications.map((notification, index) => (
-                        <div
-                          key={notification.id}
-                          onClick={() => {
-                            deleteNotification(notification.id);
-                          }}
-                          className="text-gray-800 my-4 p-2 rounded-md cursor-pointer hover:bg-orange-400 hover:text-white"
-                        >
-                          {notification.message}
-                          <div className="text-gray-500 text-xs">
-                            {DateTimeConverter(notification.time)}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-gray-800 my-4 p-2 rounded-md cursor-pointer">
-                        No notifications
-                      </div>
-                    )
-                  ) : (
-                    <div className="self-start   p-2 rounded-lg w-full h-full flex items-center justify-center ">
-                      <div className="dot-pulse1">
-                        <div className="dot-pulse1__dot"></div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+          {token && <div
+            id="bell-dropdown"
+            className={`relative group ml-4 ${isBellDropdownOpen ? "group" : ""}`}
+            onClick={toggleBellDropdown}
+          >
+            <button className="text-white relative">
+              <img src={bellIcon} className="w-5 h-5" alt="" />
+              {notifications.length > 0 && notifications[0].id && (
+                <span className="bg-red-500 text-white  absolute h-[2px] w-[2px] p-[5px] top-0 right-0 rounded-full">
+                  {/* {notifications.length} */}
+                </span>
               )}
-            </div>
-          )}
+            </button>
+            {isBellDropdownOpen && notifications.length > 0 && (
+              <div className="absolute bg-white z-[999999] h-96 overflow-scroll example w-96 right-0 mt-1 p-2  border rounded-lg shadow-lg">
+                {!isNotificationLoading ?
+                  <>
+                    {(notifications[0].id) ?
+                      <>
+                        {notifications.map((notification, index) => (
+                          <div key={notification.id} onClick={() => { deleteNotification(notification.id) }} className="text-gray-800 my-4 p-2 rounded-md cursor-pointer hover:bg-orange-400 hover:text-white">
+                            {notification.message}
+                            <div className="text-gray-500 text-xs">
+                              {DateTimeConverter(notification.time)}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                      :
+                      <div className=" text-black w-full h-full flex items-center justify-center  ">No Notifications</div>
+                    }
+                  </>
+                  :
+                  <div className="self-start   p-2 rounded-lg w-full h-full flex items-center justify-center ">
+                    <div className="dot-pulse1">
+                      <div className="dot-pulse1__dot"></div>
+                    </div>
+                  </div>}
+
+              </div>
+            )}
+          </div>}
         </nav>
       </div>
     </header>
