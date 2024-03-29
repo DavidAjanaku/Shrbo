@@ -128,7 +128,7 @@ export default function HostModal({ isOpen, onClose, userData, hostStatus, admin
                 <ul>
                   {(hostStatus === 1||coHostStatus===1)  && <HostingCard linkTo="/hosting" title="Manage your listing" />
                   }
-                  {!(hostStatus === 1)||!(coHostStatus===1) && <SupportCard linkTo="/hosthomes" title="Shrbo Your Space" />}
+                  {!(hostStatus === 1||coHostStatus===1) && <SupportCard linkTo="/hosthomes" title="Shrbo Your Space" />}
 
                 </ul>
               </section>
