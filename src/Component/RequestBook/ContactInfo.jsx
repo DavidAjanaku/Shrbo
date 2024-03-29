@@ -15,6 +15,7 @@ export default function Example() {
   const [showPayNowModal, setShowPayNowModal] = useState(false); // State for Pay Now modal
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const [existingCards, setExistingCards] = useState([]);
 
   const navigate = useNavigate();
 
@@ -39,24 +40,42 @@ export default function Example() {
    
     securityDepsoit,
   } = useDateContext();
-
+ 
+  const storedUserId = localStorage.getItem("receiverid");
+  console.log(storedUserId);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await Axios.get("user");
-        setUser(response.data.id);
-        console.log(response.data.id);
+        const response = await Axios.get(`/getUserCards/${storedUserId}`);
+        // setUser(response.data);
+        console.log(response.data.data);
+        // setExistingCards(response.data.data); // Assuming response.data.data is an array of existing cards
+        const transformedData = response.data.data.map(item => ({
+          name: item.cardtype, // Assuming cardtype is the name
+          cardNumber: item.card_number.replace(/(\d{4})(?=\d)/g, "$1 "), // Format card number with spaces
+          expiryDate: item.expiry_data.replace(/(\d{2})(\d{2})/, "$1/$2"), // Format as MM/YY
+          cvv: item.CVV,
+        }));
+        console.log(transformedData);
+        transformedData.forEach((item) => {
+          const formattedCardNumber = item.cardNumber.replace(/(\d{4})(?=\d)/g, "$1 ");
+          console.log(formattedCardNumber);
+        });
+        
+
+                setExistingCards(transformedData); // Assuming response.data.data is an array of existing cards
+
+
       } catch (error) {
         console.error("Error fetching user:", error);
-        setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [storedUserId]);
 
-  console.log(user);
+  console.log(storedUserId);
   console.log(apartment);
 
   const [showModal, setShowModal] = useState(false);
@@ -65,38 +84,7 @@ export default function Example() {
     expiryDate: "",
     cvv: "",
   });
-  const [existingCards, setExistingCards] = useState([
-    {
-      name: "John Doe",
-      cardNumber: "1234 5678 9012 3456",
-      expiryDate: "12/24",
-      cvv: "123",
-    },
-    {
-      name: "Jane Smith",
-      cardNumber: "9876 5432 1098 7654",
-      expiryDate: "06/23",
-      cvv: "456",
-    },
-    {
-      name: "Alice Johnson",
-      cardNumber: "4084 0840 8408 4081",
-      expiryDate: "02/25",
-      cvv: "408",
-    },
-    {
-      name: "Bob Brown",
-      cardNumber: "9876 5432 1098 7654",
-      expiryDate: "06/23",
-      cvv: "456",
-    },
-    {
-      name: "Eve Wilson",
-      cardNumber: "9876 5432 1098 7653",
-      expiryDate: "06/23",
-      cvv: "456",
-    },
-  ]);
+ 
 
   const openExistingCardModal = () => {
     setShowExistingCardModal(true);
@@ -200,7 +188,7 @@ export default function Example() {
 
     try {
       const response = await Axios.post(
-        `/payment/initiate-multiple/${apartment}/${user}`,
+        `/payment/initiate-multiple/${apartment}/${storedUserId}`,
         payload
       );
       console.log("Payment initiated:", response.data.payment_link.url);
@@ -409,13 +397,14 @@ export default function Example() {
                             <div className="text-sm "> {card.name}</div>
                             <div className="text-sm "></div>
                             <div className="text-sm ">
-                              {card.cardNumber.substr(0, 4)}
+                            {card.cardNumber && (
+  <>
+    {card.cardNumber.substr(0, 4)} {" "}
+    {"*".repeat(card.cardNumber.length - 8)}{" "}
+    {card.cardNumber.substr(-4)}
+  </>
+)}
 
-                              {"*".repeat(card.cardNumber.length - 8)}
-                              {card.cardNumber.substr(
-                                card.cardNumber.length - 4,
-                                4
-                              )}
                             </div>
                           </div>
                           <div className="flex justify-between mt-2 py-2">
