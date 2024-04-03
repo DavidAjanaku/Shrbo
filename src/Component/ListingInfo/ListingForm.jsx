@@ -730,7 +730,7 @@ export default function ListingForm({
 
       form.resetFields();
     } catch (error) {
-      message.error("Failed to send message");
+      message.error("Failed to send message " + error.response.data.error);
       console.error(error);
     }
   };

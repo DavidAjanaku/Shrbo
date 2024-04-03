@@ -10,7 +10,10 @@ import Axios from "../../Axios";
 import echo from "../../Real Time/echo";
 import { format } from "date-fns";
 import shbrologo from "../../assets/shbro logo.png";
+
 import { Link } from "react-router-dom";
+import { message as messages2 }  from 'antd';
+
 const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -128,6 +131,8 @@ const Chat = () => {
       setSelectedUser(selectedUser); // Set the selectedUser state to the receiverId
     } catch (error) {
       console.error("Error sending message:", error);
+      messages2.error( error.response.data.message);
+
     }
   };
 
