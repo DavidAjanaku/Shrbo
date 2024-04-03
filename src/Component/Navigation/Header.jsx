@@ -174,7 +174,7 @@ export default function Header() {
         // console.log("Received Notification:", data);
         // console.log("User ID:", data.user_id);
 
-        setNotifications([...notifications, data.notification]);
+        setNotifications([ data.notification,...notifications]);
       });
 
       console.log("Listening for messages on channel:", channelName);

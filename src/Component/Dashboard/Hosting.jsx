@@ -181,7 +181,7 @@ export default function Hosting() {
         // console.log("Received Notification:", data);
         // console.log("User ID:", data.user_id);
 
-        setNotifications([...notifications, data.notification]);
+        setNotifications([data.notification,...notifications]);
 
       });
 
@@ -1251,7 +1251,7 @@ export default function Hosting() {
 
           </div>
 
-        {host===1&&  <div className=" flex gap-8  md:justify-end w-full ">
+        {host==1&&  <div className=" flex gap-8  md:justify-end w-full ">
             <button onClick={() => { setCohostModalOpen(true) }} className=" bg-orange-400 text-white p-1 rounded  ">+ Add co-host</button>
             <button onClick={openViewCohostModal} className=" bg-orange-400 text-white px-2 py-1 rounded   ">view co-host</button>
 
