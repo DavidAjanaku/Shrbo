@@ -183,6 +183,7 @@ const LogIn = () => {
                     name="email"
                     type="email"
                     autoComplete="email"
+                    value={email}
                     placeholder="Enter your email"
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -205,6 +206,7 @@ const LogIn = () => {
                     type="password"
                     autoComplete="current-password"
                     placeholder="Enter your password"
+                    value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     className="block w-full rounded-md border px-2 py-2 text-gray-900 shadow-sm  focus:border-orange-300 focus:border-2  placeholder:text-gray-400  sm:text-sm sm:leading-6"
