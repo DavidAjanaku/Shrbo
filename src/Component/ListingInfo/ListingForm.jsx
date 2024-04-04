@@ -223,13 +223,13 @@ export default function ListingForm({
         setBookedDates(bookedDates);
 
         // Extract blocked dates and convert them to Date objects
-        const blockedDates = response.data.data.hosthomeblockeddates.map(
-          (dates) => {
-            const startDate = new Date(dates[0].start_date);
-            const endDate = new Date(dates[0].end_date);
-            return { startDate, endDate };
-          }
+        const blockedDates = response.data.data.hosthomeblockeddates.flatMap(dates =>
+          dates.map(({ date, start_date, end_date }) => ({
+            startDate: start_date ? new Date(start_date) : new Date(date),
+            endDate: end_date ? new Date(end_date) : new Date(date)
+          }))
         );
+        
 
         // Set the blocked dates to exclude them in the DatePicker
         setBlockedDates(blockedDates);
