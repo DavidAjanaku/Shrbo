@@ -8,8 +8,8 @@ import Axios from "../Axios";
 import Header from "./Navigation/Header";
 import BottomNavigation from "./Navigation/BottomNavigation";
 import UserDetailsSkeleton from "../SkeletonLoader/UserDetailsSkeleton";
-import {  StarFilled } from "@ant-design/icons";
-import logoImage from "../assets/shbro logo.png"
+import { StarFilled } from "@ant-design/icons";
+import logoImage from "../assets/shbro logo.png";
 
 const UserDetails = () => {
   const [showReviews, setShowReviews] = useState(false);
@@ -44,17 +44,19 @@ const UserDetails = () => {
     const filledStars = rating;
     const emptyStars = totalStars - filledStars;
     const stars = [];
-  
+
     // Add filled stars
     for (let i = 0; i < filledStars; i++) {
-      stars.push(<StarFilled key={i} style={{ color: 'gold' }} />);
+      stars.push(<StarFilled key={i} style={{ color: "gold" }} />);
     }
-  
+
     // Add empty stars
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<StarFilled key={filledStars + i} style={{ color: 'gray' }} />);
+      stars.push(
+        <StarFilled key={filledStars + i} style={{ color: "gray" }} />
+      );
     }
-  
+
     return stars;
   };
 
@@ -76,9 +78,10 @@ const UserDetails = () => {
             <h2 className="text-2xl font-semibold">
               {userData.name}'s Details
             </h2>
-            <p className="text-gray-600 blur-sm">Email: {userData.email}</p>
             <p className="text-gray-600">Reviews: {userData.reviews}</p>
-            <p className="text-gray-600">Rating: {getStarRating(userData.rating)}</p>
+            <p className="text-gray-600">
+              Rating: {getStarRating(userData.rating)}
+            </p>
             {/* <p className="text-gray-600">
               Houses Listed: {userData.totalHomes}
             </p>
@@ -86,6 +89,26 @@ const UserDetails = () => {
               Years Hosting: {userData.yearsOfHosting}
             </p> */}
           </div>
+        </div>
+        <div className="mt-4">
+          <h3 className="text-xl font-semibold">About {userData.name}</h3>
+          <p className="text-gray-700 mb-2">
+            <strong>My work:</strong> 24/7 available to be the best host I can
+            be
+          </p>
+          <p className="text-gray-700 mb-2">
+            <strong>Speaks:</strong> English and Indonesian
+          </p>
+          <p className="text-gray-700 mb-2">
+            <strong>Lives in:</strong> Bali, Indonesia
+          </p>
+          <p className="text-gray-700 mb-2">
+            <strong>Occupation:</strong> Balinese woodworker, artist, and
+            gardener
+          </p>
+          <p className="text-gray-700">
+            Together with my wife, I am managing the Treehouses.
+          </p>
         </div>
 
         <button
@@ -101,161 +124,194 @@ const UserDetails = () => {
               Reviews by {userData.name}
             </h3>
             <ul className="list-disc list-inside flex space-x-6 whitespace-nowrap overflow-scroll w-full example">
-              {userData.actualReviews.map((review, index) => {
-                const date = new Date(review.created_at);
-                const formattedDate = `${date.toLocaleDateString("en-US", {
-                  weekday: "long",
-                })}, ${date.toLocaleDateString("en-US", {
-                  month: "long",
-                })} ${date.getDate()}, ${date.getFullYear()}`;
+              {userData.actualReviews.length === 0 ? (
+                <p className="text-gray-600 mt-4">No reviews available</p>
+              ) : (
+                <ul className="list-disc list-inside flex space-x-6 whitespace-nowrap overflow-scroll w-full example">
+                  {userData.actualReviews.map((review, index) => {
+                    const date = new Date(review.created_at);
+                    const formattedDate = `${date.toLocaleDateString("en-US", {
+                      weekday: "long",
+                    })}, ${date.toLocaleDateString("en-US", {
+                      month: "long",
+                    })} ${date.getDate()}, ${date.getFullYear()}`;
 
-                return (
-                  <div
-                    key={index}
-                    className="mt-4 bg-white w-72 rounded-lg  overflow-hidden"
-                  >
-                    <img
-                      src={review.houseImage}
-                      alt=""
-                      className="w-full h-32 object-cover"
-                    />
-                    <div className="p-4">
-                      <h3 className="text-xl font-semibold whitespace-nowrap overflow-hidden overflow-ellipsis">
-                        {review.title}
-                      </h3>
-                      <p className="text-gray-600 mb-2">
-                        Rating: {review.ratings}
-                      </p>
-                      <p className="text-gray-600 mb-2">
-                        Comment: {review.comment}
-                      </p>
-                      <p className="text-gray-600">Date: {formattedDate}</p>
-                    </div>
-                  </div>
-                );
-              })}
+                    return (
+                      <div
+                        key={index}
+                        className="mt-4 bg-white w-72 rounded-lg  overflow-hidden"
+                      >
+                        <img
+                          src={review.houseImage}
+                          alt=""
+                          className="w-full h-32 object-cover"
+                        />
+                        <div className="p-4">
+                          <h3 className="text-xl font-semibold whitespace-nowrap overflow-hidden overflow-ellipsis">
+                            {review.title}
+                          </h3>
+                          <p className="text-gray-600 mb-2">
+                            Rating: {review.ratings}
+                          </p>
+                          <p className="text-gray-600 mb-2">
+                            Comment: {review.comment}
+                          </p>
+                          <p className="text-gray-600">Date: {formattedDate}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </ul>
+              )}
             </ul>
           </div>
         )}
 
         {userData.Status === "Host" && (
           <>
-            <h3 className="text-xl font-semibold mt-4">
-              Houses {userData.name} has hosted
-            </h3>
-            <div
-              className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
-                showAllHouses ? "w-full" : "w-fit"
-              }`}
-            >
-              {userData.hosthomeDetails.map((apartment, index) => (
-                <Link
-                  to={`/ListingInfoMain/${apartment.hosthome_id}`}
-                  key={index}
+            {userData.hosthomeDetails.length > 0 ? (
+              <>
+                <h3 className="text-xl font-semibold mt-4">
+                  Houses {userData.name} has hosted
+                </h3>
+                <div
+                  className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
+                    showAllHouses ? "w-full" : "w-fit"
+                  }`}
                 >
-                  <div className="mt-2 p-4 bg-white ">
-                    <img
-                      src={apartment.photo_image}
-                      className="h-32 w-full object-cover rounded-t-lg"
-                      alt={apartment.hosthome_title}
-                    />
-                    <p className="text-center text-gray-800 mt-2 font-semibold">
-                      {apartment.hosthome_title}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                  {userData.hosthomeDetails.map((apartment, index) => (
+                    <Link
+                      to={`/ListingInfoMain/${apartment.hosthome_id}`}
+                      key={index}
+                    >
+                      <div className="mt-2 p-4 bg-white ">
+                        <img
+                          src={apartment.photo_image}
+                          className="h-32 w-full object-cover rounded-t-lg"
+                          alt={apartment.hosthome_title}
+                        />
+                        <p className="text-center text-gray-800 mt-2 font-semibold">
+                          {apartment.hosthome_title}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p>No houses hosted by {userData.name}</p>
+            )}
           </>
         )}
 
-        {userData.Status === "Guest" && (
-          <>
-            <h3 className="text-xl font-semibold mt-4">
-              Houses {userData.name} has stayed in
-            </h3>
-            <div
-              className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
-                showAllHouses ? "w-full" : "w-fit"
-              }`}
+{userData.Status === "Guest" && (
+  <>
+    {userData.bookedhosthomeDetails.length > 0 ? (
+      <>
+        <h3 className="text-xl font-semibold mt-4">
+          Houses {userData.name} has stayed in
+        </h3>
+        <div
+          className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
+            showAllHouses ? "w-full" : "w-fit"
+          }`}
+        >
+          {userData.bookedhosthomeDetails.map((apartment, index) => (
+            <Link
+              to={`/ListingInfoMain/${apartment.hosthome_id}`}
+              key={index}
             >
-              {userData.bookedhosthomeDetails.map((apartment, index) => (
-                <Link
-                  to={`/ListingInfoMain/${apartment.hosthome_id}`}
-                  key={index}
-                >
-                  <div className="mt-2 p-4 bg-white ">
-                    <img
-                      src={apartment.photo_image}
-                      className="h-32 w-full object-cover rounded-t-lg"
-                      alt={apartment.hosthome_title}
-                    />
-                    <p className="text-center text-gray-800 mt-2 font-semibold">
-                      {apartment.hosthome_title}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </>
-        )}
+              <div className="mt-2 p-4 bg-white ">
+                <img
+                  src={apartment.photo_image}
+                  className="h-32 w-full object-cover rounded-t-lg"
+                  alt={apartment.hosthome_title}
+                />
+                <p className="text-center text-gray-800 mt-2 font-semibold">
+                  {apartment.hosthome_title}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </>
+    ) : (
+      <p>No houses stayed in by {userData.name}</p>
+    )}
+  </>
+)}
 
-        {userData.Status === "Host And Guest" && (
-          <>
-            <h3 className="text-xl font-semibold mt-4">
-              Houses {userData.name} has hosted
-            </h3>
-            <div
-              className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
-                showAllHouses ? "w-full" : "w-fit"
-              }`}
+
+{userData.Status === "Host And Guest" && (
+  <>
+    {userData.hosthomeDetails.length > 0 ? (
+      <>
+        <h3 className="text-xl font-semibold mt-4">
+          Houses {userData.name} has hosted
+        </h3>
+        <div
+          className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
+            showAllHouses ? "w-full" : "w-fit"
+          }`}
+        >
+          {userData.hosthomeDetails.map((apartment, index) => (
+            <Link
+              to={`/ListingInfoMain/${apartment.hosthome_id}`}
+              key={index}
             >
-              {userData.hosthomeDetails.map((apartment, index) => (
-                <Link
-                  to={`/ListingInfoMain/${apartment.hosthome_id}`}
-                  key={index}
-                >
-                  <div className="mt-2 p-4 bg-white ">
-                    <img
-                      src={apartment.photo_image}
-                      className="h-32 w-full object-cover rounded-t-lg"
-                      alt={apartment.hosthome_title}
-                    />
-                    <p className="text-center text-gray-800 mt-2 font-semibold">
-                      {apartment.hosthome_title}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-            <h3 className="text-xl font-semibold mt-4">
-              Houses {userData.name} has stayed in
-            </h3>
-            <div
-              className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
-                showAllHouses ? "w-full" : "w-fit"
-              }`}
+              <div className="mt-2 p-4 bg-white ">
+                <img
+                  src={apartment.photo_image}
+                  className="h-32 w-full object-cover rounded-t-lg"
+                  alt={apartment.hosthome_title}
+                />
+                <p className="text-center text-gray-800 mt-2 font-semibold">
+                  {apartment.hosthome_title}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </>
+    ) : (
+      <p>No houses hosted by {userData.name}</p>
+    )}
+
+    {userData.bookedhosthomeDetails.length > 0 ? (
+      <>
+        <h3 className="text-xl font-semibold mt-4">
+          Houses {userData.name} has stayed in
+        </h3>
+        <div
+          className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
+            showAllHouses ? "w-full" : "w-fit"
+          }`}
+        >
+          {userData.bookedhosthomeDetails.map((apartment, index) => (
+            <Link
+              to={`/ListingInfoMain/${apartment.hosthome_id}`}
+              key={index}
             >
-              {userData.bookedhosthomeDetails.map((apartment, index) => (
-                <Link
-                  to={`/ListingInfoMain/${apartment.hosthome_id}`}
-                  key={index}
-                >
-                  <div className="mt-2 p-4 bg-white ">
-                    <img
-                      src={apartment.photo_image}
-                      className="h-32 w-full object-cover rounded-t-lg"
-                      alt={apartment.hosthome_title}
-                    />
-                    <p className="text-center text-gray-800 mt-2 font-semibold">
-                      {apartment.hosthome_title}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </>
-        )}
+              <div className="mt-2 p-4 bg-white ">
+                <img
+                  src={apartment.photo_image}
+                  className="h-32 w-full object-cover rounded-t-lg"
+                  alt={apartment.hosthome_title}
+                />
+                <p className="text-center text-gray-800 mt-2 font-semibold">
+                  {apartment.hosthome_title}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </>
+    ) : (
+      <p>No houses stayed in by {userData.name}</p>
+    )}
+  </>
+)}
+
 
         {userData.totalPages > 1 && !showAllHouses && (
           <button
