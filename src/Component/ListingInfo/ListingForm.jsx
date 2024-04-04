@@ -1270,11 +1270,11 @@ function MyDropdown({ adults, pets, setAdults, setPets, maxValue }) {
   const [petCount, setPetCount] = useState(pets);
   const [visible, setVisible] = useState(false);
 
-  const handleDecrease = (setter, value) => {
-    if (value > 0) {
-      setter(value - 1);
-    }
-  };
+ const handleDecrease = (setter, value) => {
+  if (value > 1) {
+    setter(value - 1);
+  }
+};
   const handleIncrease = (setter, value) => {
     if (value < maxValue) {
       // Check against the maxValue
