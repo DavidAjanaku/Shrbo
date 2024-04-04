@@ -734,6 +734,18 @@ export default function ListingForm({
       console.error(error);
     }
   };
+  const isBlockedDatesBetweenCheckInOut = () => {
+    if (!checkInDate || !checkOutDate) {
+      return false;
+    }
+  
+    const isBlocked = blockedDates.some(({ startDate, endDate }) => {
+      return startDate >= checkInDate && endDate <= checkOutDate;
+    });
+  
+    return isBlocked;
+  };
+  
 
   return (
     <div className=" block w-full h-full">
@@ -1062,7 +1074,9 @@ export default function ListingForm({
                           !checkOutDate ||
                           isDisabled ||
                           isCheckoutDisabled() ||
-                          isCheckoutBlocked()
+                          isCheckoutBlocked() || 
+                          isBlockedDatesBetweenCheckInOut()
+
                         }
                       >
                         Book
@@ -1105,7 +1119,9 @@ export default function ListingForm({
                       !checkOutDate ||
                       isDisabled ||
                       isCheckoutDisabled() ||
-                      isCheckoutBlocked()
+                      isCheckoutBlocked() ||
+                      isBlockedDatesBetweenCheckInOut()
+
                     }
                   >
                     Book
