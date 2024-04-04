@@ -264,8 +264,8 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
                 <div
                   key={index}
                   style={{
-                    height: "",
-                    width: "50%",
+                    height: "80%",
+                    width: "30%",
                     margin: "auto",
                     background:
                       index === selectedImageIndex ? "transparent" : "black", // Set the background color to transparent for the selected image

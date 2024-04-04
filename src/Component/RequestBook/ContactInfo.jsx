@@ -133,7 +133,9 @@ export default function Example() {
     closeAddNewCardModal();
   };
 
-  const handleBookNow = () => {
+  const handleBookNow = (event) => {
+    event.preventDefault(); // Prevent the default behavior of the event
+
     if (existingCards.length === 0) {
       setShowAddNewCardModal(true);
     } else {
@@ -192,10 +194,10 @@ export default function Example() {
         payload
       );
       console.log("Payment initiated:", response.data.payment_link.url);
-      window.open(response.data.payment_link.url, "_blank");
 
-      // window.open(response.url, '_blank');
-      console.log("Payment initiated:", response.url);
+      // Navigate to the payment link within the current window
+      window.location.href = response.data.payment_link.url;
+
       setLoading(false);
 
       // Show success message to the user
@@ -211,6 +213,7 @@ export default function Example() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className=" bg-white  lg:py-4 ">
