@@ -448,9 +448,11 @@ const Chat = () => {
         })}
         {userChat.some(
           (msg) =>
+            msg.message &&
             msg.message.includes(
               "has requested to book your apartment please approve or decline"
-            ) && msg.sender.id !== ADMIN_ID // Check if the sender is not the admin
+            ) &&
+            msg.sender.id !== ADMIN_ID // Check if the sender is not the admin
         ) && (
           <div className="flex justify-center mt-4">
             {selectedUserObj.approved === null && showApprovalSection && (

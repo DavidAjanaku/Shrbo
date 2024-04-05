@@ -26,7 +26,7 @@ const UserDetails = () => {
         const response = await Axios.get(`/hostReview/${id}`);
         setUserData(response.data.data);
         console.log(response.data.data);
-      } catch (error) {
+      } catch (error) { 
         console.error("Error fetching user details:", error);
         // Handle error, show error message, etc.
       }
@@ -91,25 +91,40 @@ const UserDetails = () => {
           </div>
         </div>
         <div className="mt-4">
-          <h3 className="text-xl font-semibold">About {userData.name}</h3>
-          <p className="text-gray-700 mb-2">
-            <strong>My work:</strong> 24/7 available to be the best host I can
-            be
-          </p>
-          <p className="text-gray-700 mb-2">
-            <strong>Speaks:</strong> English and Indonesian
-          </p>
-          <p className="text-gray-700 mb-2">
-            <strong>Lives in:</strong> Bali, Indonesia
-          </p>
-          <p className="text-gray-700 mb-2">
-            <strong>Occupation:</strong> Balinese woodworker, artist, and
-            gardener
-          </p>
-          <p className="text-gray-700">
-            Together with my wife, I am managing the Treehouses.
-          </p>
-        </div>
+  <h3 className="text-xl font-semibold">About {userData.name}</h3>
+  {userData.aboutUser.length > 0 ? (
+    <>
+      <p className="text-gray-700 mb-2">
+        <strong>My work:</strong> {userData.aboutUser[0].work}
+      </p>
+      <p className="text-gray-700 mb-2">
+        <strong>Speaks:</strong> {userData.aboutUser[0].speaks}
+      </p>
+      <p className="text-gray-700 mb-2">
+        <strong>Lives in:</strong> {userData.aboutUser[0].lives_in}
+      </p>
+      <p className="text-gray-700 mb-2">
+        <strong>Occupation:</strong> {userData.aboutUser[0].occupation}
+      </p>
+      <p className="text-gray-700">
+        {userData.aboutUser[0].work.includes("24/7") ? (
+          <span>
+            {userData.aboutUser[0].work}{" "}
+            <strong>{userData.aboutUser[0].occupation.toLowerCase()}</strong>.
+          </span>
+        ) : (
+          <span>{userData.aboutUser[0].work}</span>
+        )}
+      </p>
+    </>
+  ) : (
+    <div className="my-10 px-5">
+      <p className="text-gray-700">No description</p>
+    </div>
+  )}
+</div>
+
+
 
         <button
           onClick={() => setShowReviews(!showReviews)}
