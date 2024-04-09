@@ -37,10 +37,10 @@ export default function Example() {
     title,
     address,
     apartment,
-   
+
     securityDepsoit,
   } = useDateContext();
- 
+
   const storedUserId = localStorage.getItem("receiverid");
   console.log(storedUserId);
 
@@ -51,7 +51,7 @@ export default function Example() {
         // setUser(response.data);
         console.log(response.data.data);
         // setExistingCards(response.data.data); // Assuming response.data.data is an array of existing cards
-        const transformedData = response.data.data.map(item => ({
+        const transformedData = response.data.data.map((item) => ({
           name: item.cardtype, // Assuming cardtype is the name
           cardNumber: item.card_number.replace(/(\d{4})(?=\d)/g, "$1 "), // Format card number with spaces
           expiryDate: item.expiry_data.replace(/(\d{2})(\d{2})/, "$1/$2"), // Format as MM/YY
@@ -59,14 +59,14 @@ export default function Example() {
         }));
         console.log(transformedData);
         transformedData.forEach((item) => {
-          const formattedCardNumber = item.cardNumber.replace(/(\d{4})(?=\d)/g, "$1 ");
+          const formattedCardNumber = item.cardNumber.replace(
+            /(\d{4})(?=\d)/g,
+            "$1 "
+          );
           console.log(formattedCardNumber);
         });
-        
 
-                setExistingCards(transformedData); // Assuming response.data.data is an array of existing cards
-
-
+        setExistingCards(transformedData); // Assuming response.data.data is an array of existing cards
       } catch (error) {
         console.error("Error fetching user:", error);
       }
@@ -84,7 +84,6 @@ export default function Example() {
     expiryDate: "",
     cvv: "",
   });
- 
 
   const openExistingCardModal = () => {
     setShowExistingCardModal(true);
@@ -213,7 +212,6 @@ export default function Example() {
       setLoading(false);
     }
   };
-
 
   return (
     <div className=" bg-white  lg:py-4 ">
@@ -400,14 +398,13 @@ export default function Example() {
                             <div className="text-sm "> {card.name}</div>
                             <div className="text-sm "></div>
                             <div className="text-sm ">
-                            {card.cardNumber && (
-  <>
-    {card.cardNumber.substr(0, 4)} {" "}
-    {"*".repeat(card.cardNumber.length - 8)}{" "}
-    {card.cardNumber.substr(-4)}
-  </>
-)}
-
+                              {card.cardNumber && (
+                                <>
+                                  {card.cardNumber.substr(0, 4)}{" "}
+                                  {"*".repeat(card.cardNumber.length - 8)}{" "}
+                                  {card.cardNumber.substr(-4)}
+                                </>
+                              )}
                             </div>
                           </div>
                           <div className="flex justify-between mt-2 py-2">
@@ -428,7 +425,6 @@ export default function Example() {
                 ))}
               </div>
               {/* <div className="bg-white h-10 hidden md:block fixed bottom-[14.5rem] w-[35%] z-10 px-6 py-3 flex justify-between"></div> */}
-
             </div>
             {/* Modal footer */}
             {/* <div className="bg-gray-200 h-10 px-6 py-3 flex justify-between"></div> */}

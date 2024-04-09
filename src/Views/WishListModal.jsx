@@ -54,6 +54,9 @@ const WishlistModal = ({ added, onClose, closable,listingId,wishlistContainer })
     onClose();
   };
 
+  const userId = localStorage.getItem('receiverid'); // Assuming 'userId' is stored in local storage
+console.log(userId);
+
   const handleAddToWishlist = async() => {
 
       if(newWishlist===""&&selectedWishlist===""){
@@ -69,7 +72,7 @@ const WishlistModal = ({ added, onClose, closable,listingId,wishlistContainer })
     console.log(data)
     added()
     
-    await axios.post(`/createWishlist/${user.id}`,data).then(response=>{
+    await axios.post(`/createWishlist/${user.id || userId}`,data).then(response=>{
       toggleFav("success");
       
     }).catch(error=>{
