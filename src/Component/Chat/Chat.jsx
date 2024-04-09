@@ -513,7 +513,7 @@ const Chat = () => {
         {recentMessages.map((message, index) => (
           <li
             key={index}
-            className={`cursor-pointer flex justify-between py-4 items-center p-2 px-4 ${
+            className={`cursor-pointer flex justify-between hover:bg-gray-200 my-2 py-4 items-center p-2 px-4 ${
               selectedUser === message.user_id ? "bg-gray-200" : ""
             }`}
             onClick={() => fetchUserChats(message.user_id)}
@@ -558,6 +558,7 @@ const Chat = () => {
   }, [recentMessages]);
   return (
     <div>
+      
       <div className="bg-gray-100 ">
         {/* <AdminHeader /> */}
         <div className="flex w-full">
