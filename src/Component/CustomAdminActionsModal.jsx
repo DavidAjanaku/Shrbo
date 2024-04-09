@@ -1,27 +1,24 @@
 import React, { useState } from "react";
 import Axios from "../Axios"
 const permissionsData = [
-  { label: "Can view transactions", value: "ViewTransactions" },
-  { label: "Can view refunds", value: "ViewRefunds" },
-  { label: "Can log refunds", value: "LogRefunds" },
-  { label: "Can view customers", value: "ViewCustomers" },
-  { label: "Can create customers", value: "CreateCustomers" },
-  { label: "Can edit customers", value: "EditCustomers" },
-  {
-    label: "Can blacklist/whitelist customers",
-    value: "BlacklistWhitelistCustomers",
-  },
-  { label: "Can view balances", value: "ViewBalances" },
-  { label: "Can fund balance", value: "FundBalance" },
-  { label: "Can view settlements", value: "ViewSettlements" },
-  { label: "Can view balance history", value: "ViewBalanceHistory" },
-  { label: "Can view transfers", value: "ViewTransfers" },
-  { label: "Can create transfers", value: "CreateTransfers" },
-  {
-    label: "Can approve/disapprove transfers",
-    value: "ApproveDisapproveTransfers",
-  },
+  { label: "Dashboard", value: "Dashboard" },
+  { label: "Edit Homepage", value: "EditHomepage" },
+  { label: "Manage Users", value: "ManageUsers" },
+  { label: "Property", value: "Property" },
+  { label: "Finance", value: "Finance" },
+  { label: "Booking Status", value: "BookingStatus" },
+  { label: "User Verification Page", value: "UserVerificationPage" },
+  { label: "Canceled Reservation Table", value: "CanceledReservationTable" },
+  { label: "Admin Roles", value: "AdminRoles" },
+  { label: "Apartment Reporting", value: "ApartmentReporting" },
+  { label: "Report Damages", value: "ReportDamages" },
+  { label: "Announcement Page", value: "AnnouncementPage" },
+  { label: "Communication Center", value: "CommunicationCenter" },
+  { label: "Review List", value: "ReviewList" },
+  { label: "User Verification Dashboard", value: "UserVerificationDashboard" },
+  { label: "Service Charge", value: "ServiceCharge" },
 ];
+
 
 
 const CustomAdminActionsModal = ({
