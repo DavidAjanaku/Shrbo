@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "../../../Axios";
 import bellIcon from "../../../assets/svg/bell-icon.svg";
 import HamburgerMenuComponent from "./HamburgerMenu";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminHeader() {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -22,6 +24,8 @@ export default function AdminHeader() {
     fetchNotifications();
   }, []);
 
+  const navigate = useNavigate();
+
   const toggleNotification = () => {
     setIsNotificationOpen(!isNotificationOpen);
   };
@@ -32,6 +36,21 @@ export default function AdminHeader() {
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const logOut = async () => {
+    try {
+      await axios.get("/logout").then((response) => {
+        localStorage.removeItem("Shbro");
+        localStorage.removeItem("A_Status");
+        localStorage.removeItem("H_Status");
+        localStorage.removeItem("CH_Status");
+        setIsLoggedIn(false);
+        navigate("/login"); // Redirect to homepage
+      });
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
   };
 
   return (
@@ -76,9 +95,9 @@ export default function AdminHeader() {
               {isProfileOpen && (
                 <div className="absolute bg-white text-black p-4 shadow-xl right-10">
                   <ul className="w-56">
-                    <li className="">Profile</li>
+                    <li className="py-2">Profile</li>
 
-                    <li className="">Logout</li>
+                    <li onClick={logOut} className=" cursor-pointer py-2">Logout</li>
                   </ul>
                 </div>
               )}
