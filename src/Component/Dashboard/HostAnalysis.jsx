@@ -477,7 +477,7 @@ export default function HostAnalysis() {
             }
           </items>
 
-         {coHost !=1 &&<items tab="Earnings" key="2">
+         <items tab="Earnings" key="2">
             <div>
               <h2 className="text-3xl">Earnings</h2>
               <div className="md:w-3/5">
@@ -582,7 +582,7 @@ export default function HostAnalysis() {
               :
               <div className="skeleton-loader h-28  w-full"></div>
             }
-          </items>}
+          </items>
 
           <items tab="Views" key="3">
             <div>
