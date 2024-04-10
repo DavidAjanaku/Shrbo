@@ -313,18 +313,18 @@ const Wallet = () => {
             account_name: data.fullName,
         }
 
-        await axios.post(`/createUserBankinfo/${user.id}`, details).then((response) => {
+        // await axios.post(`/createUserBankinfo/${user.id}`, details).then((response) => {
 
-            console.log(response);
-            message.success(`Account Details added successfully`);
-            fetchUserData();
-        }).catch(error => {
-            console.error("Failed to add Account detalis", error);
-            message.error(`An Error Occured while trying to add Account detais ${type}`)
-        }).finally(() => {
-            setAcLoading(false)
-            setIsChangeAccountNumber(false);
-        });
+        //     console.log(response);
+        //     message.success(`Account Details added successfully`);
+        //     fetchUserData();
+        // }).catch(error => {
+        //     console.error("Failed to add Account detalis", error);
+        //     message.error(`An Error Occured while trying to add Account detais ${type}`)
+        // }).finally(() => {
+        //     setAcLoading(false)
+        //     setIsChangeAccountNumber(false);
+        // });
 
 
     }
