@@ -91,7 +91,7 @@ const Wallet = () => {
     const [isViewBalance, setViewBalance] = useState(true);
     const [acLoading, setAcLoading] = useState(false);
     const [supportedBanks, setSupportedBanks] = useState([]);
-    
+
 
     const { user, setUser, setHost, setAdminStatus } = useStateContext();
     // const [loading, setLoading] = useState(false);
@@ -405,7 +405,7 @@ const Wallet = () => {
                                             <label className=" text-[11px] leading-4 font-medium ">Request</label>
                                         </div>
                                         <Popup isModalVisible={isWithdrawModalOpen} title={"Withdraw To"} handleCancel={() => { setWithdrawModalOpen(false) }} >
-                                            <WithdrawForm close={(bool) => { setWithdrawModalOpen(false)  }} loading={acLoading} Submit={(val) => { handleAccountNumber(val) }} banks={supportedBanks} />
+                                            <WithdrawForm close={(bool) => { setWithdrawModalOpen(false) }} loading={acLoading} Submit={(val) => { handleAccountNumber(val) }} banks={supportedBanks} />
 
                                         </Popup>
 
@@ -454,7 +454,7 @@ const Wallet = () => {
                             <div className=" h-auto ">
                                 <div className="  flex justify-between ">
                                     <p className=" font-medium text-lg ">Linked Cards</p>
-                                    <Link to={"/ManageCard"} className=" text-orange-500 text-sm font-medium" >View All</Link>
+                                    {paymentDetails.length > 0 && <Link to={"/ManageCard"} className=" text-orange-500 text-sm font-medium" >View All</Link>}
                                 </div>
 
                                 <ul role="list" className=" h-full overflow-y-scroll example mt-4">
@@ -467,11 +467,14 @@ const Wallet = () => {
                                                 {/* <h4 className=" absolute w-[1px] h-[1px] p-0 -m-[1px] overflow-hidden whitespace-nowrap ">{detail.card_type}</h4> */}
 
                                                 <div className=" items-center flex  cursor-pointer " >
-                                                    <div className=" border border-dotted border-black/80 flex justify-center items-center  rounded  h-8 w-12  p-1 " >
+                                                    <Link to={"/ManageCard"} >
 
-                                                        <FaPlusCircle className=" w-4 h-4" />
+                                                        <div className=" border border-dotted border-black/80 flex justify-center items-center  rounded  h-8 w-12  p-1 " >
 
-                                                    </div>
+                                                            <FaPlusCircle className=" w-4 h-4" />
+
+                                                        </div>
+                                                    </Link>
                                                     <div className="block mt-3 min-[640px]:mt-0 min-[640px]:ml-4 ">
                                                         <div className=" text-xs font-medium  text-orange-400 ">Add new card</div>
                                                     </div>
