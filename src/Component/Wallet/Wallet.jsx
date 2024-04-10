@@ -303,9 +303,9 @@ const Wallet = () => {
 
             <div className=" max-w-5xl mx-auto  ">
 
-                <div className=" md:my-14     md:flex  gap-4">
+                <div className=" md:my-14 py-6    md:flex  gap-4">
 
-                    <div className="h-[90vh] mx-4 md:w-[60%] col-span-[1.5] md:mx-0  md:h-full p-4 bg-white  rounded-2xl mt-2 ">
+                    <div className="h-[90vh] overflow-y-scroll example mx-4 md:w-[60%] col-span-[1.5] md:mx-0  md:h-full p-4 bg-white shadow-sm  rounded-2xl mt-2 ">
                         <div className=" flex flex-wrap mt-3 md:mt-0 w-full h-44 rounded-2xl shadow-md bg-gradient-to-r from-orange-300/70 via-orange-500/50 to-orange-700/25 px-8 py-6 ">
                             <div className=" h-full w-full text-slate-700 ">
                                 <div className=" text-sm text-slate-700 font-medium mb-5 flex items-center gap-3">
@@ -365,7 +365,7 @@ const Wallet = () => {
 
                     </div>
 
-                    <div className="md:grid grid-rows-2 md:w-[40%] gap-4 mt-2 hidden ">
+                    <div className="md:grid grid-rows-2 md:w-[40%] shadow-sm gap-4 mt-2 hidden ">
 {/*                         
                         <div className="   p-6 h-auto  bg-white rounded-2xl">
 
