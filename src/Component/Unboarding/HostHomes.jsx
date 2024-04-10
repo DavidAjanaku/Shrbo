@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import { message } from "antd";
+
 import {
   FaHome,
   FaHotel,
@@ -81,14 +83,14 @@ export default function HostHomes({ match }) {
   const [selectedInstantBookType, setSelectedInstantBookType] = useState(null);
   const [selectedHouseType, setSelectedHouseType] = useState(null);
   const [selectedHostType, setSelectedHostType] = useState(null);
-  const [selectedCautionTypes, setSelectedCautionTypes] = useState([]);
+  const [selectedCautionTypes, setSelectedCautionTypes] = useState(["none"]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isStepValid, setIsStepValid] = useState(true);
   const [isAmenitySelected, setIsAmenitySelected] = useState(false);
   const [uploadedImageCount, setUploadedImageCount] = useState(0);
 
   const [visiblities, setVisiblities] = useState([]);
-  const [selectedDiscounts, setSelectedDiscounts] = useState([]);
+  const [selectedDiscounts, setSelectedDiscounts] = useState(["none"]);
   const [selectedRules, setSelectedRules] = useState([]);
   const [selectedCautionType, setSelectedCautionType] = useState([]);
   const [isGuestsSelected, setIsGuestsSelected] = useState(false);
@@ -235,11 +237,11 @@ export default function HostHomes({ match }) {
         reservations: visiblities,
         reservation: selectedInstantBookType,
         price: Number(housePrice),
-        discounts: selectedDiscounts,
-        rules: selectedRules,
-        additionalRules: additionalRules,
+        discounts: selectedDiscounts || " ",
+        rules: selectedRules || " ",
+        additionalRules: additionalRules || " no additional rules",
         host_type: selectedHostType,
-        notice: selectedCautionTypes,
+        notice: selectedCautionTypes || ["none"],
         checkin: selectedTime,
         check_out_time: selectedCheckOutTime,
 
@@ -256,6 +258,8 @@ export default function HostHomes({ match }) {
       console.log("Form submitted successfully", formDetails);
     } catch (error) {
       console.error("Error submitting form:", error);
+      message.error("Error submitting form: " + error.response.data.message);
+
       if (error.response && error.response.status === 401) {
         // Redirect to the hosting page or any other appropriate page for unauthenticated users
         navigate("/hosting");
@@ -416,15 +420,15 @@ export default function HostHomes({ match }) {
 
       case 15:
         // Check if at least one discount is selected
-        if (selectedDiscounts.length === 0) {
-          isValid = false;
-          Modal.error({
-            title: "Validation Error",
-            content:
-            "Please select a discount before proceeding to the next step",
-          });
-          break;
-        }
+        // if (selectedDiscounts.length === 0) {
+        //   isValid = false;
+        //   Modal.error({
+        //     title: "Validation Error",
+        //     content:
+        //     "Please select a discount before proceeding to the next step",
+        //   });
+        //   break;
+        // }
         break;
 
       case 16:
@@ -438,15 +442,7 @@ export default function HostHomes({ match }) {
           break;
         }
 
-        // Check if the additional rules textarea is not empty
-        if (!additionalRules.trim()) {
-          isValid = false;
-          Modal.error({
-            title: "Validation Error",
-            content: "Please provide additional rules.",
-          });
-          break;
-        }
+        
         break;
 
       case 17:

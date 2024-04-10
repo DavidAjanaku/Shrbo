@@ -223,13 +223,13 @@ export default function ListingForm({
         setBookedDates(bookedDates);
 
         // Extract blocked dates and convert them to Date objects
-        const blockedDates = response.data.data.hosthomeblockeddates.map(
-          (dates) => {
-            const startDate = new Date(dates[0].start_date);
-            const endDate = new Date(dates[0].end_date);
-            return { startDate, endDate };
-          }
+        const blockedDates = response.data.data.hosthomeblockeddates.flatMap(dates =>
+          dates.map(({ date, start_date, end_date }) => ({
+            startDate: start_date ? new Date(start_date) : new Date(date),
+            endDate: end_date ? new Date(end_date) : new Date(date)
+          }))
         );
+        
 
         // Set the blocked dates to exclude them in the DatePicker
         setBlockedDates(blockedDates);
@@ -734,6 +734,18 @@ export default function ListingForm({
       console.error(error);
     }
   };
+  const isBlockedDatesBetweenCheckInOut = () => {
+    if (!checkInDate || !checkOutDate) {
+      return false;
+    }
+  
+    const isBlocked = blockedDates.some(({ startDate, endDate }) => {
+      return startDate >= checkInDate && endDate <= checkOutDate;
+    });
+  
+    return isBlocked;
+  };
+  
 
   return (
     <div className=" block w-full h-full">
@@ -1062,7 +1074,9 @@ export default function ListingForm({
                           !checkOutDate ||
                           isDisabled ||
                           isCheckoutDisabled() ||
-                          isCheckoutBlocked()
+                          isCheckoutBlocked() || 
+                          isBlockedDatesBetweenCheckInOut()
+
                         }
                       >
                         Book
@@ -1105,7 +1119,9 @@ export default function ListingForm({
                       !checkOutDate ||
                       isDisabled ||
                       isCheckoutDisabled() ||
-                      isCheckoutBlocked()
+                      isCheckoutBlocked() ||
+                      isBlockedDatesBetweenCheckInOut()
+
                     }
                   >
                     Book
@@ -1254,11 +1270,11 @@ function MyDropdown({ adults, pets, setAdults, setPets, maxValue }) {
   const [petCount, setPetCount] = useState(pets);
   const [visible, setVisible] = useState(false);
 
-  const handleDecrease = (setter, value) => {
-    if (value > 0) {
-      setter(value - 1);
-    }
-  };
+ const handleDecrease = (setter, value) => {
+  if (value > 1) {
+    setter(value - 1);
+  }
+};
   const handleIncrease = (setter, value) => {
     if (value < maxValue) {
       // Check against the maxValue

@@ -351,13 +351,13 @@ function MyDropdown({ adults, pets }) {
   const [visible, setVisible] = useState(false);
 
   const handleDecrease = (setter, value) => {
-    if (value > 0) {
-      setter(parseInt(value, 10) - 1);
-    }
+    // if (value > 0) {
+    //   setter(parseInt(value, 10) - 1);
+    // }
   };
 
   const handleIncrease = (setter, value) => {
-    setter(parseInt(value, 10) + 1);
+    // setter(parseInt(value, 10) + 1);
   };
 
   const handleSubmit = () => {
@@ -366,62 +366,9 @@ function MyDropdown({ adults, pets }) {
   };
 
   const items = [
-    <div
-      key={1}
-      className="flex md:p-8 p-4 gap-2  lg:w-[520px] flex-col space-y-4"
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex-col">
-          <span className="text-lg">Adults:</span> <br />
-          <p className="text-gray-400">Ages 13 or above</p>
-        </div>
-        <div className="space-x-2">
-          <Button
-            shape="circle"
-            onClick={() => handleDecrease(setAdultCount, adultCount)}
-          >
-            -
-          </Button>
-          <span>{adultCount}</span>
-          <Button
-            shape="circle"
-            onClick={() => handleIncrease(setAdultCount, adultCount)}
-          >
-            +
-          </Button>
-        </div>
+      <div>
+
       </div>
-      <div className="flex items-center justify-between">
-        
-      
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex-col">
-          <span className="text-lg">Pets:</span>
-          <p>
-            <Link className="text-gray-400 underline">
-              Bringing a service animal?
-            </Link>
-          </p>
-        </div>
-        <div className="space-x-2">
-          <Button
-            shape="circle"
-            onClick={() => handleDecrease(setPetCount, petCount)}
-          >
-            -
-          </Button>
-          <span>{petCount}</span>
-          <Button
-            shape="circle"
-            onClick={() => handleIncrease(setPetCount, petCount)}
-          >
-            +
-          </Button>
-        </div>
-      </div>
-     
-    </div>,
   ];
 
   return (
@@ -431,7 +378,7 @@ function MyDropdown({ adults, pets }) {
       open={visible}
       dropdownRender={(menu) => (
         <div className=" bg-white">
-          <Space className="p-2 flex-col w-full shadow-md">
+          {/* <Space className="p-2 flex-col w-full shadow-md">
             {items}
             <Button
               className="bg-orange-700"
@@ -441,7 +388,7 @@ function MyDropdown({ adults, pets }) {
               {" "}
               Done
             </Button>
-          </Space>
+          </Space> */}
         </div>
       )}
     >

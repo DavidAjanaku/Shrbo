@@ -121,6 +121,7 @@ const ListingInfoMain = () => {
           hosthomevideo={listingDetails.hosthomevideo}
           title={listingDetails.title}
           address={listingDetails.address}
+          id={listingDetails.id}
         />
 
         <div className="w-full flex">

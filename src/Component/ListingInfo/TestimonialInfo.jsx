@@ -44,7 +44,7 @@ const TestimonialInfo = ({ reviews }) => {
         </div>
         <div className=" w-[50%] md:w-1/2 flex flex-row items-center md:ml-3">
           <div className=" relative h-1 w-full mr-2 rounded-sm bg-slate-300 ">
-            <span className=" absolute top-0 rounded-sm left-0 w-[50%] bg-orange-400 h-full "></span>
+            <span className=" absolute top-0 rounded-sm left-0 w-[50%] bg--400 h-full "></span>
           </div>
           <span className=" text-black font-semibold text-sm ml-[6px]  ">
             {cat.rating}
@@ -136,7 +136,7 @@ const TestimonialInfo = ({ reviews }) => {
         </span>
 
         <div className="flex justify-items-start flex-row items-center box-border  mt-5  w4/5">
-          <div className=" h-[40px] w-[40px] md:w-[58px] md:h-[58px]  overflow-hidden rounded-full bg-orange-600 m-1">
+          <div className=" h-[40px] w-[40px] md:w-[58px] md:h-[58px]  overflow-hidden rounded-full bg-gray-200 m-1">
             <img src={client.user_profilePic || logoImage} />
           </div>
 

@@ -10,9 +10,10 @@ import Axios from "../../Axios";
 import echo from "../../Real Time/echo";
 import { format } from "date-fns";
 import shbrologo from "../../assets/shbro logo.png";
+import { message as antdMessage } from "antd";
 
 import { Link } from "react-router-dom";
-import { message as messages2 }  from 'antd';
+import { message as messages2 } from "antd";
 
 const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -26,6 +27,7 @@ const Chat = () => {
   const [users] = useState([]);
   const [hostId, setHostId] = useState(null);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [showApprovalSection, setShowApprovalSection] = useState(true);
 
   const [selectedUserObj, setSelectedUserObj] = useState(null);
   const [loadingUsersCard, setLoadingUsersCard] = useState(true);
@@ -131,8 +133,7 @@ const Chat = () => {
       setSelectedUser(selectedUser); // Set the selectedUser state to the receiverId
     } catch (error) {
       console.error("Error sending message:", error);
-      messages2.error( error.response.data.message);
-
+      messages2.error(error.response.data.message);
     }
   };
 
@@ -273,6 +274,7 @@ const Chat = () => {
           name: response.data.receiver.name,
           profilePic: response.data.receiver.profilePic,
           user_id: selectedBookingRequest.sender_id,
+          approved: selectedBookingRequest.approved, // Add approved property
         });
       }
     } catch (error) {
@@ -346,6 +348,8 @@ const Chat = () => {
         selectedUser,
         "accept"
       );
+      antdMessage.success("Booking request approved successfully!");
+      setShowApprovalSection(false);
     };
 
     const handleDecline = () => {
@@ -356,6 +360,7 @@ const Chat = () => {
         selectedUserObj.guestId,
         "decline"
       );
+      antdMessage.success("Booking request declined successfully!");
     };
 
     // const selectedUserProfilePic = selectedUserObj?.image;
@@ -441,46 +446,51 @@ const Chat = () => {
             </div>
           );
         })}
-        {userChat.some((msg) =>
-          msg.message.includes(
-            "has requested to book your apartment please approve or decline"
-          )
+        {userChat.some(
+          (msg) =>
+            msg.message &&
+            msg.message.includes(
+              "has requested to book your apartment please approve or decline"
+            ) &&
+            msg.sender.id !== ADMIN_ID // Check if the sender is not the admin
         ) && (
           <div className="flex justify-center mt-4">
-            <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
-              {selectedUserObj && (
-                <div className="flex items-center justify-center mb-4">
-                  <img
-                    src={selectedUserObj.profilePic || shbrologo}
-                    alt={selectedUserObj.name}
-                    className="w-10 h-10 rounded-full mr-2"
-                  />
-                  <p className="text-lg">
-                    {selectedUserObj.name} has requested to book your apartment.
-                    Approve or decline?
-                  </p>
-                </div>
-              )}
-              <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                <button
-                  className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
-                  onClick={handleApprove}
-                >
-                  Approve
-                </button>
-                <button
-                  className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-                  onClick={handleDecline}
-                >
-                  Decline
-                </button>
-                <Link to={`/userdetails/${selectedUser}`}>
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
-                    View Guest Profile
+            {selectedUserObj.approved === null && showApprovalSection && (
+              <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
+                {selectedUserObj && (
+                  <div className="flex items-center justify-center mb-4">
+                    <img
+                      src={selectedUserObj.profilePic || shbrologo}
+                      alt={selectedUserObj.name}
+                      className="w-10 h-10 rounded-full mr-2"
+                    />
+                    <p className="text-lg">
+                      {selectedUserObj.name} has requested to book your
+                      apartment. Approve or decline?
+                    </p>
+                  </div>
+                )}
+                <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                  <button
+                    className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
+                    onClick={handleApprove}
+                  >
+                    Approve
                   </button>
-                </Link>
+                  <button
+                    className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                    onClick={handleDecline}
+                  >
+                    Decline
+                  </button>
+                  <Link to={`/userdetails/${selectedUser}`}>
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
+                      View Guest Profile
+                    </button>
+                  </Link>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </>
@@ -503,7 +513,7 @@ const Chat = () => {
         {recentMessages.map((message, index) => (
           <li
             key={index}
-            className={`cursor-pointer flex justify-between py-4 items-center p-2 px-4 ${
+            className={`cursor-pointer flex justify-between hover:bg-gray-200 my-2 py-4 items-center p-2 px-4 ${
               selectedUser === message.user_id ? "bg-gray-200" : ""
             }`}
             onClick={() => fetchUserChats(message.user_id)}
@@ -548,6 +558,7 @@ const Chat = () => {
   }, [recentMessages]);
   return (
     <div>
+      
       <div className="bg-gray-100 ">
         {/* <AdminHeader /> */}
         <div className="flex w-full">

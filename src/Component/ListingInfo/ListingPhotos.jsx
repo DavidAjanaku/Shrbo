@@ -2,6 +2,7 @@ import React, { useEffect, useState,useRef } from "react";
 import room from "../../assets/room.jpeg";
 import apartment from "../../assets/apartment2.jpeg";
 import apartment1 from "../../assets/apartment1.jpeg";
+import { toast, ToastContainer } from "react-toastify";
 
 import kitchen from "../../assets/room2.jpeg";
 import video from "../../assets/videos/luxuryInteriror.mp4";
@@ -10,22 +11,43 @@ import Modal from "react-modal"; // Import the react-modal library
 import { Carousel } from "react-responsive-carousel"; // Import Carousel from react-responsive-carousel
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import Carousel styles
 import close from "../../assets/svg/close-line-icon 2.svg";
+import { useParams } from "react-router-dom";
+import WishlistModal from "../../Views/WishListModal";
+import Axios from "../../Axios";
 
-const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
+
+const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address, id}) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [width, setWidth] = useState();
   const videoRef = useRef(null);
+  const [wishlistContainer, setWishlistContainer] = useState([]);
 
- 
+  
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
+  const [isWishlistModalVisible, setIsWishlistModalVisible] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
- 
+    const { listingId } = useParams();
+console.log(listingId);
     const togglePlay = () => {
       setIsPlaying(!isPlaying);
      
   
     };
+
+
+    useEffect(() => {
+      Axios.get("/getUserWishlistContainers").then(response => {
+        setWishlistContainer(response.data.userWishlist);
+        console.log("wishlist", response.data);
+  
+      }).catch(error => {
+        console.log("wishlist", error)
+      });
+  
+    }, [isModalOpen]);
 
   const handleWindowSizeChange = () => {
     setWidth(window.innerWidth);
@@ -34,6 +56,15 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
 
   const imageUrlss = imageUrls.map(photo => photo.images);
   // console.log(imageUrlss);
+ 
+  
+  const handleSave = (container) => {
+    setIsImageModalVisible(false); // Close the image modal
+    setIsWishlistModalVisible(true); // Open the wishlist modal
+  
+  
+  };
+  
 
 
   useEffect(() => {
@@ -72,6 +103,20 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
 
   return (
     <div className="w-full flex flex-wrap flex-col-reverse md:flex-row h-full">
+       <div
+  isOpen={isWishlistModalVisible}
+  ariaHideApp={false}
+  onRequestClose={() => setIsWishlistModalVisible(false)}
+>
+  {isWishlistModalVisible && (
+    <WishlistModal
+      listingId={id}
+      added={() => setIsWishlistModalVisible(false)}
+      onClose={() => setIsWishlistModalVisible(false)}
+      wishlistContainer={wishlistContainer}
+    />
+  )}
+</div>
       <section className="w-full mt-5">
         <div className="text-3xl font-semibold inline break-words">
           <p>{title}</p>
@@ -100,7 +145,7 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
               </div>
             </button>
 
-            <button>
+            <button onClick={() => handleSave(wishlistContainer)}>
               <div className="flex underline">
                 <span className="mr-2">
                   <svg
@@ -264,8 +309,8 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
                 <div
                   key={index}
                   style={{
-                    height: "",
-                    width: "50%",
+                    height: "80%",
+                    width: "30%",
                     margin: "auto",
                     background:
                       index === selectedImageIndex ? "transparent" : "black", // Set the background color to transparent for the selected image
@@ -301,6 +346,9 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address}) => {
           )}
         </div>
       </Modal>
+      <ToastContainer />
+
+     
     </div>
   );
 };
