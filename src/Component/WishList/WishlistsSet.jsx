@@ -89,7 +89,7 @@ const WishlistsSet = () => {
           price: `₦${item.hosthomes.price} per night`,
           date: item.hosthomes.created_on,
           title: item.hosthomes.title,
-          rating: item.hosthomes.rating ? item.hosthomes.rating : 4,
+          rating: item.hosthomes.ratings,
           link: `/ListingInfoMain/${item.hosthomes.id}`,
           isFavorite: item.hosthomes.addedToWishlist,
         }));

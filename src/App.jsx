@@ -75,6 +75,7 @@ import PaymentsTab from "./Component/Settings/PaymentsTab";
 import OtpPage from "./Component/Settings/OtpPage";
 import AdminDamagePage from "./Component/AdminDashboard/AdminDamagePage";
 import CommunicationCenter from "./Component/AdminDashboard/CommunicationCenter";
+import Wallet from "./Component/Wallet/Wallet";
 function App() {
 
   return (
@@ -90,10 +91,11 @@ function App() {
       
           <Route element={<Protected />} >
 
+              <Route path="/payments" element={<Wallet />} />
               <Route path="/Settings" element={<Settings />} />
               <Route path="/Profile" element={<Profile />} />
               <Route path="/UsersShow" element={<UsersShow />} />
-              <Route path="/Payments" element={<PaymentsTab />} />
+              <Route path="/ManageCard" element={<PaymentsTab />} />
               <Route path="/Security" element={<Security />} />
               <Route path="/AddGovvernmentId" element={<AddGovvernmentId />} />
               <Route

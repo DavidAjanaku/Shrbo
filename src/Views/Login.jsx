@@ -70,14 +70,14 @@ const LogIn = () => {
       );
 
       if (response.data) {
-        setLoading(false);
         setError("");
-
+        
         setUser(response.data.user);
         setToken(response.data.token);
-        openNotificationWithIcon("success");
         console.log(response.data);
+        openNotificationWithIcon("success");
         window.location.href = '/';
+        setLoading(false);
 
 
       }
