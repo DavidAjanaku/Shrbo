@@ -13,8 +13,9 @@ import Footer from "../Navigation/Footer";
 import { FaPlusCircle } from "react-icons/fa";
 import axios from "../../Axios";
 import url from "../../assets/apartment1.jpeg"
-import { LuArrowDownLeft,LuArrowUpRight  } from "react-icons/lu";
-
+import { LuArrowDownLeft, LuArrowUpRight } from "react-icons/lu";
+import Popup from "../../hoc/Popup";
+import WithdrawForm from "./WithdrawForm";
 
 
 
@@ -61,7 +62,8 @@ const Wallet = () => {
 
 
     ]);
-    const [loading,setLoading]=useState(false);
+    const [loading, setLoading] = useState(false);
+    const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
 
     const [paymentDetails, setPaymentDetails] = useState([
         // {
@@ -84,9 +86,12 @@ const Wallet = () => {
         //     card_type: "Verve",
         //     created_at: "2",
         // },
-    
+
     ]);
     const [isViewBalance, setViewBalance] = useState(true);
+    const [acLoading, setAcLoading] = useState(false);
+    const [supportedBanks, setSupportedBanks] = useState([]);
+    
 
     const { user, setUser, setHost, setAdminStatus } = useStateContext();
     // const [loading, setLoading] = useState(false);
@@ -177,9 +182,9 @@ const Wallet = () => {
             <div className="flex min-w-0 gap-x-4 items-center">
                 {/* <img className=" h-12 w-12   md:h-10 md:w-10  flex-none rounded-full bg-gray-50" src={transaction.imageUrl} alt="" /> */}
 
-               
-                {transaction.status == "Incoming" ?  <LuArrowDownLeft /> :  <LuArrowUpRight  />}
-               
+
+                {transaction.status == "Incoming" ? <LuArrowDownLeft /> : <LuArrowUpRight />}
+
                 <div className="min-w-0 flex-auto">
                     <p className="text-sm font-semibold leading-6 text-gray-900">{transaction.status}</p>
                     <p className="mt-1 truncate text-xs leading-5 text-gray-500">{transaction.status == "Incoming" ? "From" : "To"}: {transaction.from}</p>
@@ -188,7 +193,7 @@ const Wallet = () => {
             <div className=" shrink-0 sm:flex sm:flex-col sm:items-end">
                 <p className={` text-base font-normal leading-6 ${transaction.status == "Incoming" ? "text-green-500" : "text-gray-900 "} `}>{transaction.status == "Incoming" ? "+" : "-"} {transaction.amount}</p>
                 <p className="mt-1 text-xs leading-5 text-gray-500">
-                ₦{transaction.amount}
+                    ₦{transaction.amount}
                 </p>
 
             </div>
@@ -235,59 +240,128 @@ const Wallet = () => {
     useEffect(() => {
 
         if (user.id) {
-          fetchUserCards();
+            fetchUserCards();
         }
-      }, [user.id]);
+    }, [user.id]);
 
 
-      // Fetch user cards
-      const fetchUserCards = async () => {
+    // Fetch user cards
+    const fetchUserCards = async () => {
         setLoading(true);
         try {
-          const response = await axios.get(`/getUserCards/${user.id}`);
-          console.log('cards', response.data);
-    
-          const newDetails = response.data.data.map((card) => {
-            const formattedCreatedAt = new Date(card.created_at).toLocaleString();
-            return {
-              title: `${card.cardtype} ****${card.card_number.slice(-4)}`,
-              value: `Expiration: ${card.expiry_data.slice(0, 2)}/${card.expiry_data.slice(2)}`,
-              link: "",
-              id: card.id,
-              card_type: card.cardtype,
-              created_at: formattedCreatedAt,
-              selected: card.Selected,
-            };
-          });
-          setPaymentDetails(newDetails);
-    
-    
-    
+            const response = await axios.get(`/getUserCards/${user.id}`);
+            console.log('cards', response.data);
+
+            const newDetails = response.data.data.map((card) => {
+                const formattedCreatedAt = new Date(card.created_at).toLocaleString();
+                return {
+                    title: `${card.cardtype} ****${card.card_number.slice(-4)}`,
+                    value: `Expiration: ${card.expiry_data.slice(0, 2)}/${card.expiry_data.slice(2)}`,
+                    link: "",
+                    id: card.id,
+                    card_type: card.cardtype,
+                    created_at: formattedCreatedAt,
+                    selected: card.Selected,
+                };
+            });
+            setPaymentDetails(newDetails);
+
+
+
         } catch (error) {
-          console.error('Error fetching user cards:', error);
+            console.error('Error fetching user cards:', error);
         } finally {
-          setLoading(false)
+            setLoading(false)
         }
-      };
+    };
 
 
-      const cardSkeletonLoader = Array.from({ length: 3 }).map((group, index) =>
-      <div
-        key={index}
-        className=" relative  h-fit row-span-1  flex items-center gap-4   w-full  md:mt-2 "
-      >
+    const cardSkeletonLoader = Array.from({ length: 3 }).map((group, index) =>
         <div
-          className="  h-6 skeleton-loader rounded cursor-pointer p-4  flex hover:bg-slate-100/10  w-12  "
-        />
-        <div
-          className="  h-1 skeleton-loader cursor-pointer p-2  flex hover:bg-slate-100/10 w-32  "
-        />
-          
-         
-        
-      </div>
-  
+            key={index}
+            className=" relative  h-fit row-span-1  flex items-center gap-4   w-full  md:mt-2 "
+        >
+            <div
+                className="  h-6 skeleton-loader rounded cursor-pointer p-4  flex hover:bg-slate-100/10  w-12  "
+            />
+            <div
+                className="  h-1 skeleton-loader cursor-pointer p-2  flex hover:bg-slate-100/10 w-32  "
+            />
+
+
+
+        </div>
+
     );
+
+
+
+
+    message.config({
+        duration: 5,
+    });
+
+
+
+
+
+    const handleAccountNumber = async (data) => {
+
+        const details = {
+            account_number: data.accountNumber,
+            bank_name: data.bankName,
+            account_name: data.fullName,
+        }
+
+        await axios.post(`/createUserBankinfo/${user.id}`, details).then((response) => {
+
+            console.log(response);
+            message.success(`Account Details added successfully`);
+            fetchUserData();
+        }).catch(error => {
+            console.error("Failed to add Account detalis", error);
+            message.error(`An Error Occured while trying to add Account detais ${type}`)
+        }).finally(() => {
+            setAcLoading(false)
+            setIsChangeAccountNumber(false);
+        });
+
+
+    }
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                // Make a request to get the user data
+                const response = await axios.get(`/listBanks`);
+                const formattedBanks = response.data.map((bank) => ({
+                    value: bank,
+                    label: bank,
+
+                }));
+                setSupportedBanks(formattedBanks);
+
+            } catch (error) {
+                console.error('Error fetching supported banks:', error);
+            } finally {
+                // Set loading to false regardless of success or error
+                // setLoading(false);
+
+            }
+        };
+
+
+        fetchUserData();
+
+    }, []);
+
+
+
+
+
+
+
+
 
 
 
@@ -327,9 +401,13 @@ const Wallet = () => {
                                         </div> */}
 
                                         <div className=" h-full flex items-center flex-col gap-1 ">
-                                            <button className=" rounded-full h-10 bg-slate-100 p-3"><TiArrowForwardOutline /></button>
+                                            <button onClick={() => { setWithdrawModalOpen(true) }} className=" rounded-full h-10 bg-slate-100 p-3"><TiArrowForwardOutline /></button>
                                             <label className=" text-[11px] leading-4 font-medium ">Request</label>
                                         </div>
+                                        <Popup isModalVisible={isWithdrawModalOpen} title={"Withdraw To"} handleCancel={() => { setWithdrawModalOpen(false) }} >
+                                            <WithdrawForm close={(bool) => { setWithdrawModalOpen(false)  }} loading={acLoading} Submit={(val) => { handleAccountNumber(val) }} banks={supportedBanks} />
+
+                                        </Popup>
 
                                     </div>
                                 </div>
@@ -366,7 +444,7 @@ const Wallet = () => {
                     </div>
 
                     <div className="md:grid grid-rows-2 md:w-[40%] shadow-sm gap-4 mt-2 hidden ">
-{/*                         
+                        {/*                         
                         <div className="   p-6 h-auto  bg-white rounded-2xl">
 
                         </div> */}
@@ -381,32 +459,32 @@ const Wallet = () => {
 
                                 <ul role="list" className=" h-full overflow-y-scroll example mt-4">
 
-                                   {!loading?
-                                   <>
-                                   {Cards}
+                                    {!loading ?
+                                        <>
+                                            {Cards}
 
-                                   <li className=" mt-2">
-                                        {/* <h4 className=" absolute w-[1px] h-[1px] p-0 -m-[1px] overflow-hidden whitespace-nowrap ">{detail.card_type}</h4> */}
+                                            <li className=" mt-2">
+                                                {/* <h4 className=" absolute w-[1px] h-[1px] p-0 -m-[1px] overflow-hidden whitespace-nowrap ">{detail.card_type}</h4> */}
 
-                                        <div className=" items-center flex  cursor-pointer " >
-                                            <div className=" border border-dotted border-black/80 flex justify-center items-center  rounded  h-8 w-12  p-1 " >
+                                                <div className=" items-center flex  cursor-pointer " >
+                                                    <div className=" border border-dotted border-black/80 flex justify-center items-center  rounded  h-8 w-12  p-1 " >
 
-                                                <FaPlusCircle className=" w-4 h-4" />
+                                                        <FaPlusCircle className=" w-4 h-4" />
 
-                                            </div>
-                                            <div className="block mt-3 min-[640px]:mt-0 min-[640px]:ml-4 ">
-                                                <div className=" text-xs font-medium  text-orange-400 ">Add new card</div>
-                                            </div>
+                                                    </div>
+                                                    <div className="block mt-3 min-[640px]:mt-0 min-[640px]:ml-4 ">
+                                                        <div className=" text-xs font-medium  text-orange-400 ">Add new card</div>
+                                                    </div>
 
-                                        </div>
-                                    </li>
-                                   </>
-                                    :
-                                    <>
-                                    {cardSkeletonLoader}
-                                    </>
+                                                </div>
+                                            </li>
+                                        </>
+                                        :
+                                        <>
+                                            {cardSkeletonLoader}
+                                        </>
                                     }
-                                  
+
                                 </ul>
                             </div>
 
