@@ -6,7 +6,6 @@ import HostProfilePreview from "../Component/ListingInfo/HostProfilePreview";
 import Amenities from "../Component/ListingInfo/Amenities";
 import AboutProperty from "../Component/ListingInfo/AboutProperty";
 import ListingMap from "../Component/ListingInfo/ListingMap";
-import ListingReviews from "../Component/ListingInfo/ListingReviews";
 import Testimonial from "../Component/ListingInfo/Testimonial";
 import ListingForm from "../Component/ListingInfo/ListingForm";
 import HouseRules from "../Component/ListingInfo/HouseRules";
