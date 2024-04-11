@@ -14,7 +14,7 @@ import { useDateContext } from "../../ContextProvider/BookingInfo";
 import PriceSkeleton from "../../SkeletonLoader/PriceSkeleton";
 import MessageModal from "../StayLengthModal";
 import { addMonths } from "date-fns";
-
+import { useStateContext } from "../../ContextProvider/ContextProvider";
 import StayLengthModal from "../StayLengthModal";
 export default function ListingForm({
   reservations,
@@ -76,6 +76,7 @@ export default function ListingForm({
   const [bookingCount, setBookingCount] = useState(0);
   const [checkoutDates, setCheckoutDate] = useState(null); // Initialize with null or another default value
   const [hostId, setHostId] = useState(null); // State for hostId
+  const { token } = useStateContext();
 
   // useEffect(() => {
   //   const fetchUsers = async () => {
@@ -164,12 +165,25 @@ export default function ListingForm({
     const fetchListingDetails = async () => {
       try {
         resetStateValues(); // Reset state values before fetching listing details
-
+  
         let response;
-
+        let headers = {};
+  
+        // Check if token exists
+  
+        if (token) {
+          headers = {
+            Authorization: `Bearer ${token}`,
+          };
+        }
+  
         try {
-          response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
+          response = await Axios.get(`showGuestHomeForAuthUser/${id}`, { headers });
+          
           setIsAuthenticated(true);
+          console.log(response);
+          setPrice(response.data.data.price); // Adjust this line based on your API response structure
+
         } catch (error) {
           console.error(
             "Error fetching listing details for authenticated user:",
@@ -178,6 +192,8 @@ export default function ListingForm({
           try {
             response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
             setIsAuthenticated(false);
+            setPrice(response.data.data.price); // Adjust this line based on your API response structure
+
           } catch (error) {
             console.error(
               "Error fetching listing details for unauthenticated user:",
@@ -186,9 +202,9 @@ export default function ListingForm({
             return; // Exit the function if both API calls fail
           }
         }
-
+  
         console.log(response);
-
+  
         setListingDetails(response.data.data);
         // console.log(response.data.data);
         setPrice(response.data.data.price); // Adjust this line based on your API response structure
@@ -203,25 +219,25 @@ export default function ListingForm({
         let discountValue = null;
         setBookingCount(response.data.data.bookingCount);
         const discountValues = discounts.map((discount) => discount.discount); // Get an array of all discount values
-
+  
         console.log("Discount values:", discountValues);
         setDiscount(discountValues);
-
+  
         // Extract booked dates and convert them to Date objects
         const bookedDates = response.data.data.bookedDates.map((date) => {
           const checkInDate = new Date(date.check_in);
           const checkOutDate = new Date(date.check_out);
           setCheckoutDate(checkOutDate);
           console.log(checkOutDate);
-
+  
           return { checkInDate, checkOutDate };
         });
-
+  
         // console.log(bookedDates);
-
+  
         // Set the booked dates to exclude them in the DatePicker
         setBookedDates(bookedDates);
-
+  
         // Extract blocked dates and convert them to Date objects
         const blockedDates = response.data.data.hosthomeblockeddates.flatMap(dates =>
           dates.map(({ date, start_date, end_date }) => ({
@@ -230,7 +246,7 @@ export default function ListingForm({
           }))
         );
         
-
+  
         // Set the blocked dates to exclude them in the DatePicker
         setBlockedDates(blockedDates);
       } catch (error) {
@@ -238,9 +254,10 @@ export default function ListingForm({
         // Handle error, show error message, etc.
       }
     };
-
+  
     fetchListingDetails();
   }, [id]);
+  
 
   console.log();
 
@@ -685,32 +702,31 @@ export default function ListingForm({
 
     return false; // Enable checkout if no dates are blocked
   };
+
+  console.log(token);
   useEffect(() => {
     const fetchListingDetails = async () => {
       let response;
       try {
-        response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
+        if (token) {
+          response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
+        } else {
+          response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
+        }
+        setHostId(response.data.data.user.id);
       } catch (error) {
         console.error(
-          "Error fetching listing details for authenticated user:",
+          `Error fetching listing details${token ? " for authenticated" : " for unauthenticated"} user:`,
           error
         );
-        try {
-          response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
-        } catch (error) {
-          console.error(
-            "Error fetching listing details for unauthenticated user:",
-            error
-          );
-          return; // Exit the function if both API calls fail
-        }
       }
-
-      setHostId(response.data.data.user.id);
     };
-
-    fetchListingDetails();
-  }, [id]);
+  
+    if (token) {
+      fetchListingDetails();
+    }
+  }, [id, token]);
+  
 
   const sendMessage = async () => {
     try {

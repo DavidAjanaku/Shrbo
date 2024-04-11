@@ -23,8 +23,10 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address, id}) =>
   const [width, setWidth] = useState();
   const videoRef = useRef(null);
   const [wishlistContainer, setWishlistContainer] = useState([]);
+  const [saveLabel, setSaveLabel] = useState("Save");
 
-  
+  const [loading, setLoading] = useState(true);
+
   const [isModalOpen, setModalOpen] = useState(false);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [isWishlistModalVisible, setIsWishlistModalVisible] = useState(false);
@@ -57,15 +59,51 @@ console.log(listingId);
   const imageUrlss = imageUrls.map(photo => photo.images);
   // console.log(imageUrlss);
  
-  
+  console.log(id);
+ 
+
+  useEffect(() => {
+    // Fetch the user's wishlist containers and items
+    Axios.get("/getUserWishlistContainersAndItems")
+      .then(response => {
+        const wishlistContainers = response.data.userWishlist;
+        // Check if the item exists in any of the wishlist containers
+        const exists = wishlistContainers.some(container =>
+          container.items.some(item => item.hosthomes.id === id)
+        );
+        // Change the label based on whether the item exists
+        setSaveLabel(exists ? "Saved" : "Save");
+      })
+      .catch(error => {
+        console.log("Error fetching wishlist containers and items:", error);
+      })
+      .finally(() => {
+        setLoading(false); // Set loading to false when the fetch operation completes
+      });
+  }, [wishlistContainer]);
+
+
   const handleSave = (container) => {
-    setIsImageModalVisible(false); // Close the image modal
-    setIsWishlistModalVisible(true); // Open the wishlist modal
-  
-  
+    if (saveLabel === "Saved") {
+      Axios.delete(`/removeFromWishlist/${id}`)
+        .then(response => {
+          setWishlistContainer(response.data.userWishlist);
+          setSaveLabel("Save");
+          toast.success("Removed from wishlist");
+        })
+        .catch(error => {
+          console.log("Error removing item from wishlist:", error);
+          toast.error("Failed to remove from wishlist");
+        });
+    } else {
+      setIsImageModalVisible(false);
+      setIsWishlistModalVisible(true);
+    }
   };
   
-
+  
+  
+  
 
   useEffect(() => {
     handleWindowSizeChange();
@@ -105,14 +143,16 @@ console.log(listingId);
     <div className="w-full flex flex-wrap flex-col-reverse md:flex-row h-full">
        <div
   isOpen={isWishlistModalVisible}
-  ariaHideApp={false}
+
   onRequestClose={() => setIsWishlistModalVisible(false)}
 >
   {isWishlistModalVisible && (
     <WishlistModal
       listingId={id}
-      added={() => setIsWishlistModalVisible(false)}
-      onClose={() => setIsWishlistModalVisible(false)}
+      added={() => {
+        setIsWishlistModalVisible(false);
+        setSaveLabel("Saved");
+      }}      onClose={() => setIsWishlistModalVisible(false)}
       wishlistContainer={wishlistContainer}
     />
   )}
@@ -157,8 +197,9 @@ console.log(listingId);
                     <path d="M12.1,18.55L12,18.65L11.89,18.55C7.14,14.24 4,11.39 4,8.5C4,6.5 5.5,5 7.5,5C9.04,5 10.54,6 11.07,7.36H12.93C13.46,6 14.96,5 16.5,5C18.5,5 20,6.5 20,8.5C20,11.39 16.86,14.24 12.1,18.55M16.5,3C14.76,3 13.09,3.81 12,5.08C10.91,3.81 9.24,3 7.5,3C4.42,3 2,5.41 2,8.5C2,12.27 5.4,15.36 10.55,20.03L12,21.35L13.45,20.03C18.6,15.36 22,12.27 22,8.5C22,5.41 19.58,3 16.5,3Z" />
                   </svg>
                 </span>
-                <label className="text-sm font-medium">Save</label>
-              </div>
+                <label className="text-sm font-medium">
+  {loading ? "Loading..." : saveLabel}
+</label>              </div>
             </button>
           </div>
         </div>

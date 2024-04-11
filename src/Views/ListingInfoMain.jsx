@@ -15,11 +15,14 @@ import Header from "../Component/Navigation/Header";
 import Axios from "../Axios";
 import { Spin } from "antd";
 import { useDateContext } from "../ContextProvider/BookingInfo";
+import { useStateContext } from "../ContextProvider/ContextProvider";
 const ListingInfoMain = () => {
   const { id } = useParams();
+  
   const [listingDetails, setListingDetails] = useState(null);
   const [refreshed, setRefreshed] = useState(false);
   const [bookingRequestStatus, setBookingRequestStatus] = useState(null);
+  const { token } = useStateContext();
 
   console.log(id);
   const {
@@ -53,16 +56,41 @@ const ListingInfoMain = () => {
 
   useEffect(() => {
     const fetchListingDetails = async () => {
-      let response;
       try {
-        response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
+        let response;
+        // Include the token in the request headers
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        response = await Axios.get(`showGuestHomeForAuthUser/${id}`, config);
+        setListingDetails(response.data.data);
+        setApartment(id);
+        setUser(response.data.data.user.id);
+        setHostId(response.data.data.user.id);
+        setTitle(response.data.data.title);
+        setAddress(response.data.data.address);
+        setPhoto(response.data.data.hosthomephotos);
+        setDiscounts(response.data.data.discounts);
+        setBookingRequestStatus(response.data.data.bookingRequestStatus);
+        console.log(response.data.data);
       } catch (error) {
         console.error(
           "Error fetching listing details for authenticated user:",
           error
         );
         try {
+          // If the first request fails, try without authentication
           response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
+          setListingDetails(response.data.data);
+          setApartment(id);
+          setTitle(response.data.data.title);
+          setAddress(response.data.data.address);
+          setPhoto(response.data.data.hosthomephotos);
+          setDiscounts(response.data.data.discounts);
+          setBookingRequestStatus(response.data.data.bookingRequestStatus);
+          console.log(response.data.data);
         } catch (error) {
           console.error(
             "Error fetching listing details for unauthenticated user:",
@@ -71,22 +99,10 @@ const ListingInfoMain = () => {
           return; // Exit the function if both API calls fail
         }
       }
-
-      setListingDetails(response.data.data);
-      setApartment(id);
-      setUser(response.data.data.user.id);
-      setHostId(response.data.data.user.id);
-      setTitle(response.data.data.title);
-      setCancellationPolicy(response.data.data.cancelPolicy);
-      setAddress(response.data.data.address);
-      setPhoto(response.data.data.hosthomephotos);
-      setDiscounts(response.data.data.discounts);
-      setBookingRequestStatus(response.data.data.bookingRequestStatus);
-      console.log(response.data.data);
     };
-
+  
     fetchListingDetails();
-  }, [id]);
+  }, [id, token]); // Include token in dependency array
 
   const recordHostHomeView = async (hostHomeId, hostId) => {
     try {
