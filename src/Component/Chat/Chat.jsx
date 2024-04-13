@@ -367,6 +367,7 @@ const Chat = () => {
         "decline"
       );
       antdMessage.success("Booking request declined successfully!");
+      setShowModal(false); // Close the modal
     };
 
     // const selectedUserProfilePic = selectedUserObj?.image;
