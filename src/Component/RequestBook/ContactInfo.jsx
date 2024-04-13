@@ -18,6 +18,9 @@ export default function Example() {
   const [user, setUser] = useState(null);
   const [existingCards, setExistingCards] = useState([]);
   const [showLoader, setShowLoader] = useState(false);
+  const [bookNowDisabled, setBookNowDisabled] = useState(false);
+  const [message, setMessage] = useState("");
+  const [checkingExistingCards, setCheckingExistingCards] = useState(false);
 
   const navigate = useNavigate();
 
@@ -49,28 +52,20 @@ export default function Example() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        setCheckingExistingCards(true); // Set loading state
         const response = await Axios.get(`/getUserCards/${storedUserId}`);
-        // setUser(response.data);
-        console.log(response.data.data);
-        // setExistingCards(response.data.data); // Assuming response.data.data is an array of existing cards
         const transformedData = response.data.data.map((item) => ({
-          name: item.cardtype, // Assuming cardtype is the name
-          cardNumber: item.card_number.replace(/(\d{4})(?=\d)/g, "$1 "), // Format card number with spaces
-          expiryDate: item.expiry_data.replace(/(\d{2})(\d{2})/, "$1/$2"), // Format as MM/YY
+          name: item.cardtype,
+          cardNumber: item.card_number.replace(/(\d{4})(?=\d)/g, "$1 "),
+          expiryDate: item.expiry_data.replace(/(\d{2})(\d{2})/, "$1/$2"),
           cvv: item.CVV,
         }));
-        console.log(transformedData);
-        transformedData.forEach((item) => {
-          const formattedCardNumber = item.cardNumber.replace(
-            /(\d{4})(?=\d)/g,
-            "$1 "
-          );
-          console.log(formattedCardNumber);
-        });
-
-        setExistingCards(transformedData); // Assuming response.data.data is an array of existing cards
+        setExistingCards(transformedData);
+        console.log(transformedData); // Log the transformed data
       } catch (error) {
         console.error("Error fetching user:", error);
+      } finally {
+        setCheckingExistingCards(false); // Reset loading state
       }
     };
 
@@ -149,11 +144,18 @@ export default function Example() {
 
   const handleBookNow = (event) => {
     event.preventDefault(); // Prevent the default behavior of the event
-
+    if (!checkInDate || !checkOutDate) {
+      // If checkInDate or checkOutDate is empty, disable the button and show a message
+      setBookNowDisabled(true);
+      setMessage("Please select both check-in and check-out dates.");
+      return; // Exit the function early
+    }
     if (existingCards.length === 0) {
       setShowAddNewCardModal(true);
+      setBookNowDisabled(false); // Enable the button when there are no existing cards
     } else {
       setShowExistingCardModal(true);
+      setBookNowDisabled(false); // Enable the button when there are existing cards
     }
   };
 
@@ -234,7 +236,6 @@ export default function Example() {
       setLoading(false);
       setShowLoader(false);
 
-
       // Show success message to the user
       // Handle success: redirect user to payment link or show success message
       console.log("Payment initiated successfully");
@@ -249,9 +250,12 @@ export default function Example() {
       // Show error message to the user
       setLoading(false);
       setShowLoader(false);
-
     }
   };
+
+  {
+    bookNowDisabled && <p className="text-red-500 text-sm">{message}</p>;
+  }
 
   const isValidDate = (value) => {
     // Check if the value matches the MM/YY format (e.g., 12/24)
@@ -391,10 +395,11 @@ export default function Example() {
       <div className="mt-10">
         <button
           type="button"
-          onClick={handleBookNow} // Call handleBookNow when the button is clicked
+          disabled={bookNowDisabled || checkingExistingCards} // Disable button when checking existing cards
+          onClick={handleBookNow}
           className="block w-full rounded-md  px-3.5 bg-orange-500 py-2.5 text-center text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
         >
-          Book now
+          {checkingExistingCards ? "Checking..." : "Book now"}
         </button>
       </div>
       {showExistingCardModal && (
@@ -629,15 +634,18 @@ export default function Example() {
         </div>
       )}
 
-{showLoader && (
-      <div className="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-black bg-opacity-25">
-        <Spin
-          indicator={
-            <LoadingOutlined style={{ fontSize: 40, color: "#FB923C" }} spin />
-          }
-        />
-      </div>
-    )}
+      {showLoader && (
+        <div className="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-black bg-opacity-25">
+          <Spin
+            indicator={
+              <LoadingOutlined
+                style={{ fontSize: 40, color: "#FB923C" }}
+                spin
+              />
+            }
+          />
+        </div>
+      )}
     </div>
   );
 }
