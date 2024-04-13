@@ -31,6 +31,7 @@ const Chat = () => {
 
   const [selectedUserObj, setSelectedUserObj] = useState(null);
   const [loadingUsersCard, setLoadingUsersCard] = useState(true);
+  const [sending, setSending] = useState(false);
 
   const token = localStorage.getItem("tokens");
 
@@ -89,6 +90,8 @@ const Chat = () => {
     if (!message.trim()) return; // Prevent sending empty messages
 
     try {
+      setSending(true); // Set sending state to true
+
       const response = await Axios.post(
         `/chat/${selectedUser}`,
         { message: message.trim(), senderId: ADMIN_ID }, // Include senderId in the message object
@@ -131,9 +134,13 @@ const Chat = () => {
 
       setMessage(""); // Clear the message input after sending
       setSelectedUser(selectedUser); // Set the selectedUser state to the receiverId
+      setSending(false); // Reset sending state to false
+
     } catch (error) {
       console.error("Error sending message:", error);
       messages2.error(error.response.data.message);
+      setSending(false); // Reset sending state to false in case of error
+
     }
   };
 
@@ -287,12 +294,11 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    // Scroll to the bottom of the chat container when new messages are received or the selected user changes
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [newMessages, selectedUser]);
+  }, [userChats, newMessages]);
+  
 
   const renderMessages = (userChats, newMessages, selectedUser, users) => {
     const userChat = userChats[selectedUser] || [];
@@ -666,6 +672,8 @@ const Chat = () => {
                             <button
                               className="bg-orange-400 text-white px-4 py-2 rounded float-right"
                               onClick={() => sendMessage("text")}
+                              disabled={sending}
+
                             >
                               <FontAwesomeIcon
                                 icon={faPaperPlane}
