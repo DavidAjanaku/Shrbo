@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import room from "../../assets/room.jpeg";
 import apartment from "../../assets/apartment2.jpeg";
 import apartment1 from "../../assets/apartment1.jpeg";
@@ -15,8 +15,13 @@ import { useParams } from "react-router-dom";
 import WishlistModal from "../../Views/WishListModal";
 import Axios from "../../Axios";
 
-
-const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address, id}) => {
+const ListingPhotos = ({
+  hosthomephotos,
+  hosthomevideo,
+  title,
+  address,
+  id,
+}) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -30,68 +35,50 @@ const ListingPhotos = ({ hosthomephotos, hosthomevideo , title, address, id}) =>
   const [isModalOpen, setModalOpen] = useState(false);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [isWishlistModalVisible, setIsWishlistModalVisible] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const { listingId } = useParams();
-console.log(listingId);
-    const togglePlay = () => {
-      setIsPlaying(!isPlaying);
-     
-  
-    };
+  const [isPlaying, setIsPlaying] = useState(false);
+  const { listingId } = useParams();
+  console.log(listingId);
+  const togglePlay = () => {
+    setIsPlaying(!isPlaying);
+  };
 
-
-    useEffect(() => {
-      Axios.get("/getUserWishlistContainers").then(response => {
+  useEffect(() => {
+    Axios.get("/getUserWishlistContainers")
+      .then((response) => {
         setWishlistContainer(response.data.userWishlist);
         console.log("wishlist", response.data);
-  
-      }).catch(error => {
-        console.log("wishlist", error)
+      })
+      .catch((error) => {
+        console.log("wishlist", error);
       });
-  
-    }, [isModalOpen]);
+  }, [isModalOpen]);
 
   const handleWindowSizeChange = () => {
     setWidth(window.innerWidth);
   };
   const imageUrls = hosthomephotos || []; // Use hosthomephotos prop or provide a default empty array
 
-  const imageUrlss = imageUrls.map(photo => photo.images);
+  const imageUrlss = imageUrls.map((photo) => photo.images);
   // console.log(imageUrlss);
- 
+
   console.log(id);
- 
-
-  useEffect(() => {
-    // Fetch the user's wishlist containers and items
-    Axios.get("/getUserWishlistContainersAndItems")
-      .then(response => {
-        const wishlistContainers = response.data.userWishlist;
-        // Check if the item exists in any of the wishlist containers
-        const exists = wishlistContainers.some(container =>
-          container.items.some(item => item.hosthomes.id === id)
-        );
-        // Change the label based on whether the item exists
-        setSaveLabel(exists ? "Saved" : "Save");
-      })
-      .catch(error => {
-        console.log("Error fetching wishlist containers and items:", error);
-      })
-      .finally(() => {
-        setLoading(false); // Set loading to false when the fetch operation completes
-      });
-  }, [wishlistContainer]);
-
 
   const handleSave = (container) => {
     if (saveLabel === "Saved") {
       Axios.delete(`/removeFromWishlist/${id}`)
-        .then(response => {
+        .then((response) => {
           setWishlistContainer(response.data.userWishlist);
           setSaveLabel("Save");
           toast.success("Removed from wishlist");
+          Axios.get("/getUserWishlistContainers")
+            .then((response) => {
+              setWishlistContainer(response.data.userWishlist);
+            })
+            .catch((error) => {
+              console.log("Error fetching wishlist containers:", error);
+            });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("Error removing item from wishlist:", error);
           toast.error("Failed to remove from wishlist");
         });
@@ -100,10 +87,26 @@ console.log(listingId);
       setIsWishlistModalVisible(true);
     }
   };
-  
-  
-  
-  
+
+  useEffect(() => {
+    // Fetch the user's wishlist containers and items
+    Axios.get("/getUserWishlistContainersAndItems")
+      .then((response) => {
+        const wishlistContainers = response.data.userWishlist;
+        // Check if the item exists in any of the wishlist containers
+        const exists = wishlistContainers.some((container) =>
+          container.items.some((item) => item.hosthomes.id === id)
+        );
+        // Change the label based on whether the item exists
+        setSaveLabel(exists ? "Saved" : "Save");
+      })
+      .catch((error) => {
+        console.log("Error fetching wishlist containers and items:", error);
+      })
+      .finally(() => {
+        setLoading(false); // Set loading to false when the fetch operation completes
+      });
+  }, [wishlistContainer]);
 
   useEffect(() => {
     handleWindowSizeChange();
@@ -141,22 +144,22 @@ console.log(listingId);
 
   return (
     <div className="w-full flex flex-wrap flex-col-reverse md:flex-row h-full">
-       <div
-  isOpen={isWishlistModalVisible}
-
-  onRequestClose={() => setIsWishlistModalVisible(false)}
->
-  {isWishlistModalVisible && (
-    <WishlistModal
-      listingId={id}
-      added={() => {
-        setIsWishlistModalVisible(false);
-        setSaveLabel("Saved");
-      }}      onClose={() => setIsWishlistModalVisible(false)}
-      wishlistContainer={wishlistContainer}
-    />
-  )}
-</div>
+      <div
+        isOpen={isWishlistModalVisible}
+        onRequestClose={() => setIsWishlistModalVisible(false)}
+      >
+        {isWishlistModalVisible && (
+          <WishlistModal
+            listingId={id}
+            added={() => {
+              setIsWishlistModalVisible(false);
+              setSaveLabel("Saved");
+            }}
+            onClose={() => setIsWishlistModalVisible(false)}
+            wishlistContainer={wishlistContainer}
+          />
+        )}
+      </div>
       <section className="w-full mt-5">
         <div className="text-3xl font-semibold inline break-words">
           <p>{title}</p>
@@ -164,8 +167,7 @@ console.log(listingId);
 
         <div className="flex mt-1">
           <div className="w-[70%]">
-          <label className="text-base break-words">{address}</label>
-
+            <label className="text-base break-words">{address}</label>
           </div>
 
           <div className="w-[30%] hidden md:flex items justify-end gap-5">
@@ -185,7 +187,10 @@ console.log(listingId);
               </div>
             </button>
 
-            <button onClick={() => handleSave(wishlistContainer)}>
+            <button
+              disabled={loading}
+              onClick={() => handleSave(wishlistContainer)}
+            >
               <div className="flex underline">
                 <span className="mr-2">
                   <svg
@@ -198,8 +203,9 @@ console.log(listingId);
                   </svg>
                 </span>
                 <label className="text-sm font-medium">
-  {loading ? "Loading..." : saveLabel}
-</label>              </div>
+                  {loading ? "Loading..." : saveLabel}
+                </label>
+              </div>
             </button>
           </div>
         </div>
@@ -209,47 +215,45 @@ console.log(listingId);
         <div className="w-1/2 h-full rounded-l-xl md:mr-2 overflow-hidden">
           <div className="h-full   w-full cursor-pointer">
             <div className="relative">
-          <img
-            src={imageUrlss[0]}
-            alt="Video Thumbnail"
-            onClick={togglePlay}
-            className="cursor-pointer w-full h-[500px]"
-            />
-        {isPlaying ? (
-          <div className="absolute top-0 bottom-8 inset-0 flex items-center h-full w-full justify-center">
-             <video
-            src={videoUrl}
-            controls
-            ref={videoRef}
-            autoPlay={isPlaying}
-            className="w-full h-[500px]  object-cover"
-          ></video>
-           
-          </div>
-          
-        ) : (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div
-            className="bg-black bg-opacity-50 text-white p-4 rounded-full cursor-pointer"
-            onClick={togglePlay}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="48"
-              height="48"
-              fill="currentColor"
-              className="bi bi-play"
-              viewBox="0 0 16 16"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10.667 8.196a.25.25 0 0 1 0 .608l-4 2.5a.25.25 0 0 1-.417-.192V5.896a.25.25 0 0 1 .417-.192l4 2.5z"
+              <img
+                src={imageUrlss[0]}
+                alt="Video Thumbnail"
+                onClick={togglePlay}
+                className="cursor-pointer w-full h-[500px]"
               />
-            </svg>
-          </div>
-        </div>
-      )}
-    </div>
+              {isPlaying ? (
+                <div className="absolute top-0 bottom-8 inset-0 flex items-center h-full w-full justify-center">
+                  <video
+                    src={videoUrl}
+                    controls
+                    ref={videoRef}
+                    autoPlay={isPlaying}
+                    className="w-full h-[500px]  object-cover"
+                  ></video>
+                </div>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div
+                    className="bg-black bg-opacity-50 text-white p-4 rounded-full cursor-pointer"
+                    onClick={togglePlay}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="48"
+                      height="48"
+                      fill="currentColor"
+                      className="bi bi-play"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10.667 8.196a.25.25 0 0 1 0 .608l-4 2.5a.25.25 0 0 1-.417-.192V5.896a.25.25 0 0 1 .417-.192l4 2.5z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -377,7 +381,6 @@ console.log(listingId);
                         width: "700%",
                         margin: "100px auto",
                         objectFit: "contain",
-
                       }}
                     />
                   )}
@@ -388,8 +391,6 @@ console.log(listingId);
         </div>
       </Modal>
       <ToastContainer />
-
-     
     </div>
   );
 };

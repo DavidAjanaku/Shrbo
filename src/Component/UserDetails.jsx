@@ -157,7 +157,7 @@ const UserDetails = () => {
                         className="mt-4 bg-white w-72 rounded-lg  overflow-hidden"
                       >
                         <img
-                          src={review.houseImage}
+                          src={review.photo_url}
                           alt=""
                           className="w-full h-32 object-cover"
                         />

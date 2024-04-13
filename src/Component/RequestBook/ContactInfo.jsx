@@ -6,6 +6,7 @@ import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import { message } from "antd";
 
 import Axios from "../../Axios";
 export default function Example() {
@@ -16,6 +17,7 @@ export default function Example() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [existingCards, setExistingCards] = useState([]);
+  const [showLoader, setShowLoader] = useState(false);
 
   const navigate = useNavigate();
 
@@ -121,15 +123,28 @@ export default function Example() {
     openAddNewCardModal();
   };
 
-  const handleCardDetailsChange = (event) => {
-    const { name, value } = event.target;
-    setNewCardDetails({ ...newCardDetails, [name]: value });
+  const handleCardDetailsChange = (e) => {
+    const { name, value } = e.target;
+    setNewCardDetails((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const addNewCard = () => {
-    setExistingCards([...existingCards, newCardDetails]);
-    setNewCardDetails({ cardNumber: "", expiryDate: "", cvv: "" });
-    closeAddNewCardModal();
+  const handleCvvChange = (e) => {
+    const { value } = e.target;
+    setNewCardDetails((prev) => ({
+      ...prev,
+      cvv: value,
+    }));
+  };
+
+  const addNewCard = (e) => {
+    e.preventDefault();
+    // Process the new card details here
+    console.log(newCardDetails);
+    // Close the modal
+    setShowAddNewCardModal(false);
   };
 
   const handleBookNow = (event) => {
@@ -147,7 +162,11 @@ export default function Example() {
     setShowPayNowModal(true); // Set showPayNowModal to true when a card is selected
   };
 
-  const handleBooking = async () => {
+  const handleBooking = async (event) => {
+    event.preventDefault(); // Prevent the default behavior of form submission
+
+    setShowLoader(true);
+
     const formatDate = (date) => {
       // Ensure date is not null or undefined
       if (!date) return "";
@@ -171,17 +190,32 @@ export default function Example() {
       infants: "1",
       check_in: formatDate(checkInDate),
       check_out: formatDate(checkOutDate),
-      option: 2,
     };
 
-    if (existingCard) {
+    if (
+      !existingCard &&
+      newCardDetails.cardNumber &&
+      newCardDetails.expiryDate &&
+      newCardDetails.cvv
+    ) {
+      // If new card details are provided, use them in the payload
+      payload.card_number = newCardDetails.cardNumber.replace(
+        /(\d{4})/g,
+        "$1 "
+      ); // Format with spaces
+      payload.expiry_data = newCardDetails.expiryDate.split("/").join("");
+      payload.CVV = newCardDetails.cvv;
+      payload.option = 1; // Set option to 1 for new card
+    } else if (existingCard) {
       // If an existing card is selected, include its details in the payload
       payload.card_number = existingCard.cardNumber;
       payload.expiry_data = existingCard.expiryDate.split("/").join("");
       payload.CVV = existingCard.cvv;
+      payload.option = 2; // Set option to 2 for existing card
     } else {
-      // If a new card is to be added, handle it accordingly
-      // Implement the logic to handle new card addition or any other action
+      // Handle case where no card details are provided
+      console.error("No card details provided");
+      return; // Exit the function early
     }
 
     console.log("Form data:", payload);
@@ -198,6 +232,8 @@ export default function Example() {
       window.location.href = response.data.payment_link.url;
 
       setLoading(false);
+      setShowLoader(false);
+
 
       // Show success message to the user
       // Handle success: redirect user to payment link or show success message
@@ -206,11 +242,31 @@ export default function Example() {
       // navigate("/trip");
     } catch (error) {
       console.error("Error initiating payment:", error.response.data);
+      message.error(error.response.data.message);
+
       // Handle error: show error message to user
       console.log("Error initiating payment:", error.response.data);
       // Show error message to the user
       setLoading(false);
+      setShowLoader(false);
+
     }
+  };
+
+  const isValidDate = (value) => {
+    // Check if the value matches the MM/YY format (e.g., 12/24)
+    return /^\d{2}\/\d{2}$/.test(value);
+  };
+  const handleDateChange = (e) => {
+    let { name, value } = e.target;
+    // Add slash after entering the first two numbers
+    if (value.length === 2 && !value.includes("/")) {
+      value += "/";
+    }
+    setNewCardDetails((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
@@ -491,19 +547,76 @@ export default function Example() {
                 <h3 className="text-lg font-medium leading-6 text-gray-900">
                   Add New Card
                 </h3>
-                {/* Form fields for new card */}
               </div>
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                {/* Render form fields for new card */}
+                {/* Card Number */}
+                <label
+                  htmlFor="cardNumber"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Card Number
+                </label>
+                <input
+                  type="text"
+                  name="cardNumber"
+                  id="cardNumber"
+                  value={newCardDetails.cardNumber}
+                  onChange={handleCardDetailsChange}
+                  className="mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                  required
+                  maxLength="16"
+                  pattern="\d{16}"
+                  autoComplete="off" // Disable automatic card filling
+                />
+                {/* CVV */}
+                <label
+                  htmlFor="cvv"
+                  className="block mt-4 text-sm font-medium text-gray-700"
+                >
+                  CVV
+                </label>
+                <input
+                  type="text"
+                  name="cvv"
+                  value={newCardDetails.cvv}
+                  onChange={handleCvvChange}
+                  id="cvv"
+                  className="mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                  required
+                  maxLength="3"
+                  pattern="\d{3}"
+                  autoComplete="off" // Disable automatic card filling
+                />
+                {/* Date */}
+                <label
+                  htmlFor="date"
+                  className="block mt-4 text-sm font-medium text-gray-700"
+                >
+                  Date
+                </label>
+                <input
+                  type="text"
+                  name="expiryDate"
+                  id="expiryDate"
+                  className="mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                  required
+                  maxLength="5"
+                  pattern="\d{2}\/\d{2}"
+                  value={newCardDetails.expiryDate}
+                  onChange={handleDateChange}
+                  autoComplete="off" // Disable automatic card filling
+                />
               </div>
               {/* Modal footer */}
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
-                  type="submit"
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-500 text-base font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  type="button"
+                  onClick={handleBooking} // Call handleBooking when the button is clicked
+                  className="mr-2 inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-orange-500 text-base font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                 >
-                  Add Card
+                  Pay Now
                 </button>
+
                 <button
                   onClick={closeAddNewCardModal}
                   className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-300 text-base font-medium text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:ml-3 sm:w-auto sm:text-sm"
@@ -515,6 +628,16 @@ export default function Example() {
           </div>
         </div>
       )}
+
+{showLoader && (
+      <div className="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-black bg-opacity-25">
+        <Spin
+          indicator={
+            <LoadingOutlined style={{ fontSize: 40, color: "#FB923C" }} spin />
+          }
+        />
+      </div>
+    )}
     </div>
   );
 }
