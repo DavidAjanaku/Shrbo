@@ -31,7 +31,7 @@ const Chat = () => {
   const [receiverIds, setReceiverIds] = useState(null);
   const [loggedinuserid, setLoggedinuserid] = useState(null);
 
-  const [selectedUserObj, setSelectedUserObj] = useState(null);
+  const [selectedUserObj, setSelectedUserObj] = useState({});
   const [loadingUsersCard, setLoadingUsersCard] = useState(true);
   const [sending, setSending] = useState(false);
   const audioRef = useRef(null);
@@ -39,7 +39,7 @@ const Chat = () => {
   const token = localStorage.getItem("tokens");
 
   console.log(token);
-   
+
   const initializeEcho = (token, receiverId) => {
     if (typeof window.Echo !== "undefined") {
       const channelName = `messanger.${receiverId}`;
@@ -296,20 +296,20 @@ const Chat = () => {
       console.log("Latest Booking Request:", latestBookingRequest);
 
       // Set the selected user object with the latest booking request
-      if (latestBookingRequest) {
-        setSelectedUserObj({
-          hostHomeId: latestBookingRequest.host_home_id,
-          requestId: latestBookingRequest.id,
-          message: latestBookingRequest.message,
-          name: latestBookingRequest.sender.name, // Use sender name
-          profilePic: latestBookingRequest.sender.profile_picture_url, // Use sender profile pic
-          user_id: latestBookingRequest.sender_id,
-          approved: latestBookingRequest.approved,
-          receiverId: latestBookingRequest.host_id, // Use receiver ID from latestBookingRequest
-        });
+      setSelectedUserObj({
+        hostHomeId: latestBookingRequest?.host_home_id ?? '',
+        requestId: latestBookingRequest?.id ?? '',
+        message: latestBookingRequest?.message ?? '',
+        name: latestBookingRequest?.sender?.name ?? '', // Use sender name
+        profilePic: latestBookingRequest?.sender?.profile_picture_url ?? '', // Use sender profile pic
+        userId: latestBookingRequest?.sender_id ?? '',
+        approved: latestBookingRequest?.approved ?? '',
+        receiverId: latestBookingRequest?.host_id ?? '', // Use receiver ID from latestBookingRequest
+      });
         setReceiverIds(latestBookingRequest.host_id); // Set receiverIds state
         console.log(latestBookingRequest.receiver_id);
-      }
+        console.log("APPROVED" + approved);
+      
     } catch (error) {
       setLoadingMessages(false); // Set loading state to false if there's an error
 
@@ -385,24 +385,31 @@ const Chat = () => {
     };
 
     const handleDecline = () => {
+      handleBookingAction({
+        requestId: selectedUserObj.requestId,
+        hostHomeId: selectedUserObj.hostHomeId,
+        hostId: hostId,
+        guestId: selectedUser,
+        action: "decline" // Corrected syntax for the action parameter
+      });
+
       handleBookingAction(
         selectedUserObj.requestId,
         selectedUserObj.hostHomeId,
         hostId,
-        selectedUserObj.guestId,
+        selectedUser,
         "decline"
       );
       antdMessage.success("Booking request declined successfully!");
-      setShowModal(false); // Close the modal
       setShowApprovalSection(false);
     };
 
     // const selectedUserProfilePic = selectedUserObj?.image;
 
     // Filter new messages to include only messages for the selected user
-    const filteredNewMessages = newMessages.filter(msg => {
+    const filteredNewMessages = newMessages.filter((msg) => {
       return msg.receiver_id === selectedUser || msg.sender_id === selectedUser;
-  });
+    });
 
     const sortedMessages = [...userChat, ...filteredNewMessages].sort(
       (a, b) => {
@@ -417,13 +424,13 @@ const Chat = () => {
     const uniqueMessages = filteredNewMessages.filter((msg, index, self) => {
       // Check if there is a message with the same content and time earlier in the array
       const isDuplicate = self.slice(0, index).some((m) => {
-          return m.message === msg.message && m.time === msg.time;
+        return m.message === msg.message && m.time === msg.time;
       });
-  
+
       // Return true if the message is not a duplicate, false otherwise
       return !isDuplicate;
-  });
-  
+    });
+
     sortedMessages.forEach((msg) => {
       const existingMsg = uniqueMessages.find((m) => m.id === msg.id);
       if (!existingMsg) {
@@ -506,45 +513,45 @@ const Chat = () => {
             msg.sender.id !== ADMIN_ID // Check if the sender is not the admin
         ) && (
           <div className="flex justify-center mt-4">
-            {(selectedUserObj?.approved === null ||
-              loggedinuserid === receiverIds) &&
-              showApprovalSection && (
-                <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
-                  {selectedUserObj && (
-                    <div className="flex items-center justify-center mb-4">
-                      <img
-                        src={selectedUserObj.profilePic || shbrologo}
-                        alt={selectedUserObj.name}
-                        className="w-10 h-10 rounded-full mr-2"
-                      />
-                      <p className="text-lg">
-                        {selectedUserObj.name} has requested to book your
-                        apartment. Approve or decline?
-                      </p>
-                    </div>
-                  )}
-                  <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                    <button
-                      className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
-                      onClick={handleApprove}
-                    >
-                      Approve
-                    </button>
-                    <button
-                      className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-                      onClick={handleDecline}
-                    >
-                      Decline
-                    </button>
-                    <Link to={`/userdetails/${selectedUser}`}>
-                      <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
-                        View Guest Profile
-                      </button>
-                    </Link>
+          {(selectedUserObj.approved === null || loggedinuserid === receiverIds) &&
+            showApprovalSection && (
+              <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
+                {selectedUserObj && (
+                  <div className="flex items-center justify-center mb-4">
+                    <img
+                      src={selectedUserObj.profilePic || shbrologo}
+                      alt={selectedUserObj.name}
+                      className="w-10 h-10 rounded-full mr-2"
+                    />
+                    <p className="text-lg">
+                      {selectedUserObj.name} has requested to book your
+                      apartment. Approve or decline?
+                    </p>
                   </div>
+                )}
+                <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                  <button
+                    className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
+                    onClick={handleApprove}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                    onClick={handleDecline}
+                  >
+                    Decline
+                  </button>
+                  <Link to={`/userdetails/${selectedUser}`}>
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
+                      View Guest Profile
+                    </button>
+                  </Link>
                 </div>
-              )}
-          </div>
+              </div>
+            )}
+        </div>
+        
         )}
       </>
     );
