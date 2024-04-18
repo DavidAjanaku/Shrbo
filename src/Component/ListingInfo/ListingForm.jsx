@@ -166,23 +166,25 @@ export default function ListingForm({
     const fetchListingDetails = async () => {
       try {
         resetStateValues(); // Reset state values before fetching listing details
-  
+
         let response;
         let headers = {};
-  
+
         // Check if token exists in context
         if (token) {
           headers = {
             Authorization: `Bearer ${token}`,
           };
-  
-          response = await Axios.get(`showGuestHomeForAuthUser/${id}`, { headers });
+
+          response = await Axios.get(`showGuestHomeForAuthUser/${id}`, {
+            headers,
+          });
           setIsAuthenticated(true);
         } else {
           response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
           setIsAuthenticated(false);
         }
-  
+
         console.log(response);
         const receiverUserID = response.data.data.user.id;
         setReceiverId(receiverUserID);
@@ -195,37 +197,37 @@ export default function ListingForm({
         setSecurityDeposits(parseInt(response.data.data.securityDeposit));
         const discounts = response.data.data.discounts;
         const discountValues = discounts.map((discount) => discount.discount);
-  
+
         setBookingCount(response.data.data.bookingCount);
         setDiscount(discountValues);
-  
+
         const bookedDates = response.data.data.bookedDates.map((date) => {
           const checkInDate = new Date(date.check_in);
           const checkOutDate = new Date(date.check_out);
           setCheckoutDate(checkOutDate);
-  
+
           return { checkInDate, checkOutDate };
         });
-  
+
         setBookedDates(bookedDates);
-  
-        const blockedDates = response.data.data.hosthomeblockeddates.flatMap((dates) =>
-          dates.map(({ date, start_date, end_date }) => ({
-            startDate: start_date ? new Date(start_date) : new Date(date),
-            endDate: end_date ? new Date(end_date) : new Date(date),
-          }))
+
+        const blockedDates = response.data.data.hosthomeblockeddates.flatMap(
+          (dates) =>
+            dates.map(({ date, start_date, end_date }) => ({
+              startDate: start_date ? new Date(start_date) : new Date(date),
+              endDate: end_date ? new Date(end_date) : new Date(date),
+            }))
         );
-  
+
         setBlockedDates(blockedDates);
       } catch (error) {
         console.error("Error fetching listing details:", error);
         // Handle error, show error message, etc.
       }
     };
-  
+
     fetchListingDetails();
   }, [id, token]);
-  
 
   console.log();
 
@@ -735,23 +737,23 @@ export default function ListingForm({
     try {
       // Log the message before sending
       console.log("Sending message:", message);
-  
+
       // Send the message to the API
       const response = await Axios.post(`/chat/${receiverId}`, {
         message: messages,
       });
-  
+
       // Set messageSent to true to indicate that the message was sent successfully
       setMessageSent(true);
       console.log("Message sent successfully");
+      showMessage.success('Message sent successfully');
+
       // Handle the response as needed
     } catch (error) {
       console.error("Error sending message to host:", error);
       // Handle errors
     }
   };
-  
-  
 
   return (
     <div className=" block w-full h-full">
@@ -1142,13 +1144,16 @@ export default function ListingForm({
                             dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]"
-                onClick={() => {
-                  if (reservation !== "Approve or decline requests") {
-                    setMessageModalVisible(true);
-                  } else {
-                    sendMessage();
-                  }
-                }}
+                            onClick={() => {
+                              if (buttonText === "Request Book") {
+                                sendMessage();
+                              } else if (buttonText === "Message Host") {
+                                setMessageModalVisible(true);
+
+                                sendMessageToHost(receiverId, message);
+                              }
+                            }}
+                            
               >
                 {buttonText}
               </button>
@@ -1221,14 +1226,17 @@ export default function ListingForm({
           <Button key="cancel" onClick={() => setMessageModalVisible(false)}>
             Cancel
           </Button>,
-        <Button key="send" type="primary" onClick={() => sendMessageToHost(receiverId, message)}>
-        Send
-      </Button>
-      
+          <Button
+            key="send"
+            type="primary"
+            onClick={() => sendMessageToHost(receiverId, message)}
+          >
+            Send
+          </Button>,
         ]}
       >
         <Form
-          onFinish={sendMessage}
+          onFinish={sendMessageToHost}
           form={form}
           initialValues={{ message: "" }}
         >
@@ -1245,26 +1253,25 @@ export default function ListingForm({
                   },
                 ]}
               >
-              <Input.TextArea
-  placeholder="Type your message here..."
-  style={{ width: "100%", minHeight: "100px" }}
-  value={messages}
-  onChange={(e) => setMessages(e.target.value)}
-/>
-
+                <Input.TextArea
+                  placeholder="Type your message here..."
+                  style={{ width: "100%", minHeight: "100px" }}
+                  value={messages}
+                  onChange={(e) => setMessages(e.target.value)}
+                />
               </Form.Item>
               <Form.Item>
-              <Button
-  type="primary"
-  className="bg-orange-400 hover:bg-orange-600"
-  htmlType="submit"
-  onClick={() => {
-    sendMessageToHost(receiverId);
-    setMessages("");
-  }}
->
-  Send
-</Button>
+                <Button
+                  type="primary"
+                  className="bg-orange-400 hover:bg-orange-600"
+                  htmlType="submit"
+                  onClick={() => {
+                    sendMessageToHost(receiverId);
+                    setMessages("");
+                  }}
+                >
+                  Send
+                </Button>
               </Form.Item>
             </>
           )}

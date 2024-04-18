@@ -5,11 +5,9 @@ import axios from "../Axios.js";
 import { useState, useEffect, useRef } from "react";
 import { notification } from "antd";
 import { Link } from "react-router-dom";
-
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const SignUp = () => {
-
-
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +20,7 @@ const SignUp = () => {
   const hostremtoken = params.get("hostremtoken");
   const hosthomeid = params.get("hosthomeid");
   const encrptedCoHostemail = params.get("cohostemail");
-
+  const [showPassword, setShowPassword] = useState(false);
 
   const [googleUrl, setGoogleUrl] = useState("");
 
@@ -61,14 +59,9 @@ const SignUp = () => {
     hostid,
     hosthomeid,
     encrptedCoHostemail,
-  })
+  });
 
   const handleSubmmit = async (e) => {
-
-
-
-
-
     e.preventDefault();
     setLoading(true);
     try {
@@ -81,11 +74,7 @@ const SignUp = () => {
         hostid,
         hosthomeid,
         encrptedCoHostemail,
-
-
-
       });
-
 
       // Handle the success response
       console.log(response.data); // You can customize this based on your API response
@@ -105,27 +94,29 @@ const SignUp = () => {
 
       if (error.response.data.message) {
         openNotificationWithIcon("error", error.response.data.message);
-
       } else {
-
         openNotificationWithIcon("error", error.response.data);
       }
     }
   };
-
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   return (
     <>
       {contextHolder}
-      {loading ? <div className=' w-full h-screen flex items-center justify-center'>
-        <div class="containerld"></div>
-
-      </div>
-        :
-
+      {loading ? (
+        <div className=" w-full h-screen flex items-center justify-center">
+          <div class="containerld"></div>
+        </div>
+      ) : (
         <div className="flex h-full  flex-1 flex-col lg:justify-center px-6 py-16 lg:py-10 bg-slate-50/30 lg:px-8">
-
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-            <img className="mx-auto h-16 w-auto" src={logo} alt="Your Company" />
+            <img
+              className="mx-auto h-16 w-auto"
+              src={logo}
+              alt="Your Company"
+            />
             <h2 className="mt-2 text-center text-2xl md:text-2xl font-medium leading-9  text-gray-900">
               Create an account
             </h2>
@@ -135,23 +126,27 @@ const SignUp = () => {
           </div>
 
           <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm border rounded lg:bg-blend-darken bg-white    p-6 lg:p-8">
-            {!encrptedCoHostemail && <div>
-              <a href={googleUrl}>
-                <button
-                  type="submit"
-                  className="flex w-full gap-1 justify-center rounded-md border-0 ring-2 ring-inset ring-gray-300   px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-50"
-                >
-                  <img width={"24px"} height={"24px"} src={google} />
-                  <span>Sign in with Google </span>
-                </button>
-              </a>
-            </div>}
+            {!encrptedCoHostemail && (
+              <div>
+                <a href={googleUrl}>
+                  <button
+                    type="submit"
+                    className="flex w-full gap-1 justify-center rounded-md border-0 ring-2 ring-inset ring-gray-300   px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-50"
+                  >
+                    <img width={"24px"} height={"24px"} src={google} />
+                    <span>Sign in with Google </span>
+                  </button>
+                </a>
+              </div>
+            )}
             <form className="space-y-5" onSubmit={handleSubmmit}>
-              {!encrptedCoHostemail && <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
-                <p className="mx-4 mb-0 text-gray-500 text-sm text-center font-semibold ">
-                  or
-                </p>
-              </div>}
+              {!encrptedCoHostemail && (
+                <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
+                  <p className="mx-4 mb-0 text-gray-500 text-sm text-center font-semibold ">
+                    or
+                  </p>
+                </div>
+              )}
               <div>
                 <label
                   htmlFor="Fullname"
@@ -205,11 +200,11 @@ const SignUp = () => {
                     Password
                   </label>
                 </div>
-                <div className="mt-2">
+                <div className="mt-2 relative">
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     autoComplete="current-password"
                     placeholder="Enter your password"
@@ -217,6 +212,23 @@ const SignUp = () => {
                     required
                     className="block w-full rounded-md border px-2 py-1.5 text-gray-900 shadow-sm  placeholder:text-gray-400 focus:border-orange-300 focus:border-2 sm:text-sm sm:leading-6"
                   />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? (
+                      <FaEyeSlash
+                        className="h-5 w-5 text-gray-500"
+                        onClick={togglePasswordVisibility}
+                      />
+                    ) : (
+                      <FaEye
+                        className="h-5 w-5 text-gray-500"
+                        onClick={togglePasswordVisibility}
+                      />
+                    )}
+                  </button>
                 </div>
               </div>
 
@@ -230,15 +242,17 @@ const SignUp = () => {
               </div>
             </form>
 
-            {!encrptedCoHostemail&& <p className="mt-5 text-center text-sm text-gray-500">
-              Already have an account?{" "}
-              <Link
-                to={"/LogIn"}
-                className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-              >
-                Log in
-              </Link>
-            </p>}
+            {!encrptedCoHostemail && (
+              <p className="mt-5 text-center text-sm text-gray-500">
+                Already have an account?{" "}
+                <Link
+                  to={"/LogIn"}
+                  className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+                >
+                  Log in
+                </Link>
+              </p>
+            )}
           </div>
 
           <div className="mt-3 text-center text-xs sm:mx-auto sm:w-full sm:max-w-sm">
@@ -259,12 +273,16 @@ const SignUp = () => {
                 {" "}
                 Privacy policy
               </Link>
-              .<a href={verifyEmailLink} ref={verifyEmail} className=" hidden "></a>
+              .
+              <a
+                href={verifyEmailLink}
+                ref={verifyEmail}
+                className=" hidden "
+              ></a>
             </label>
           </div>
         </div>
-      }
-
+      )}
     </>
   );
 };
