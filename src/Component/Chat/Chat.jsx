@@ -89,7 +89,7 @@ const Chat = () => {
   useEffect(() => {
     // Load the audio file
     audioRef.current = new Audio(
-      "src/notifcation sound/mixkit-bell-notification-933.wav"
+      "../src/notifcation sound/mixkit-bell-notification-933.wav"
     );
   }, []);
 
