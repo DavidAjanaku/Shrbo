@@ -300,7 +300,7 @@ const Chat = () => {
         hostHomeId: latestBookingRequest?.host_home_id ?? "",
         requestId: latestBookingRequest?.id ?? "",
         message: latestBookingRequest?.message ?? "",
-        name: latestBookingRequest?.sender?.name ?? "", // Use sender name
+        name: latestBookingRequest?.userName ?? "", // Use userName
         profilePic: latestBookingRequest?.sender?.profile_picture_url ?? "", // Use sender profile pic
         userId: latestBookingRequest?.sender_id ?? "",
         approved: latestBookingRequest?.approved ?? "",
