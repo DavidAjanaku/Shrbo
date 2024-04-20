@@ -76,6 +76,7 @@ import OtpPage from "./Component/Settings/OtpPage";
 import AdminDamagePage from "./Component/AdminDashboard/AdminDamagePage";
 import CommunicationCenter from "./Component/AdminDashboard/CommunicationCenter";
 import Wallet from "./Component/Wallet/Wallet";
+import AdminSecurityDeposit from "./Component/AdminDashboard/AdminSecurityDeposit";
 function App() {
 
   return (
@@ -192,6 +193,7 @@ function App() {
           <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
           <Route path="/DamagesAndIncidentals" element={<DamagesIncidentals />} />
           <Route path="/CommunicationCenter" element={<CommunicationCenter />} />
+          <Route path="/AdminSecurityDeposit" element={<AdminSecurityDeposit />} />
 
           
           <Route path="*" element={<PageNotFound/>} />

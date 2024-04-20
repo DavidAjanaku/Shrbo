@@ -35,6 +35,7 @@ const Chat = () => {
   const [loadingUsersCard, setLoadingUsersCard] = useState(true);
   const [sending, setSending] = useState(false);
   const audioRef = useRef(null);
+  const [approved, setApproved] = useState(null);
 
   const token = localStorage.getItem("tokens");
 
@@ -257,6 +258,8 @@ const Chat = () => {
     fetchUsers();
   }, []);
 
+  console.log(loggedinuserid);
+
   const fetchUserChats = async (receiverId) => {
     try {
       setLoadingMessages(true); // Set loading state to true
@@ -306,9 +309,11 @@ const Chat = () => {
         approved: latestBookingRequest?.approved ?? "",
         receiverId: latestBookingRequest?.host_id ?? "",
       });
-      setReceiverIds(latestBookingRequest.host_id); // Set receiverIds state
-      console.log(latestBookingRequest.receiver_id);
-      console.log("APPROVED" + approved);
+      setReceiverIds(latestBookingRequest.host_id); // Set host_ids state
+      setApproved(latestBookingRequest.approved)
+      console.log(latestBookingRequest.host_id);
+
+      console.log("APPROVED " + latestBookingRequest.approved);
     } catch (error) {
       setLoadingMessages(false); // Set loading state to false if there's an error
 
@@ -512,7 +517,7 @@ const Chat = () => {
             msg.sender.id !== ADMIN_ID // Check if the sender is not the admin
         ) && (
           <div className="flex justify-center mt-4">
-            {selectedUserObj.approved === null &&
+            {approved === null &&
               loggedinuserid === receiverIds &&
               showApprovalSection && (
                 <div className="bg-gray-200 p-4 rounded-lg shadow-lg">

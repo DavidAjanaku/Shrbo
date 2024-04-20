@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Modal, Button, Input, Form } from "antd";
+import { Table, Modal, Button, Input, Form, message } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import Axios from "../../Axios";
@@ -95,6 +95,8 @@ const AdminDamagePage = () => {
     setSelectedTicket({
       id: ticket.id,
       subject: ticket.title,
+      bookingNumber: ticket.booking_number, // Corrected property name
+
       status: ticket.status,
       replies: ticket.replies || [],
       rentalName: ticket.homeName,
@@ -139,6 +141,41 @@ const AdminDamagePage = () => {
     setVideoModalVisible(true);
   };
 
+  const sendToHost = async (bookingNumber, id) => {
+    try {
+      console.log(bookingNumber, id);
+
+      const response = await Axios.get(
+        `/assignSecurityDepositToHost/${bookingNumber}/${id}`
+      );
+      message.success("Security Deposit  sent to Guest successfully"); // Show success message
+
+      console.log("Response from sending to host:", response.data);
+      setTicketModalVisible(false); // Close the modal
+
+      // Update the UI or perform other actions based on the response
+    } catch (error) {
+      console.error("Error sending to host:", error);
+    }
+  };
+
+  const sendToGuest = async (bookingNumber, id) => {
+    try {
+      console.log(bookingNumber, id);
+      const response = await Axios.get(
+        `/assignSecurityDepositToGuest/${bookingNumber}/${id}`
+      );
+      message.success("Security Deposit  sent to Guest successfully"); // Show success message
+
+      console.log("Response from sending to guest:", response.data);
+      setTicketModalVisible(false); // Close the modal
+
+      // Update the UI or perform other actions based on the response
+    } catch (error) {
+      console.error("Error sending to guest:", error);
+    }
+  };
+
   return (
     <div className="bg-gray-100 h-[100vh]">
       <AdminHeader />
@@ -169,6 +206,11 @@ const AdminDamagePage = () => {
                 <p>
                   <strong>ID:</strong> {selectedTicket.id}
                 </p>
+                <p>
+                  <strong>Booking Number:</strong>{" "}
+                  {selectedTicket.bookingNumber}
+                </p>{" "}
+                {/* Corrected here */}
                 <p>
                   <strong>Name:</strong> {selectedTicket.name}
                 </p>
@@ -233,6 +275,25 @@ const AdminDamagePage = () => {
                 <p>
                   <strong>Report Date:</strong> {selectedTicket.reportDate}
                 </p>
+                <p>After reviewing the damage report, you can decide whether to send the security deposit to the host or the guest.</p>
+
+                <Button
+                  onClick={() =>
+                    sendToHost(selectedTicket.bookingNumber, selectedTicket.id)
+                  }
+                >
+                  Send to Host
+                </Button>
+                <Button
+                  onClick={() =>
+                    sendToGuest(
+                      selectedTicket.bookingNumber,
+                      selectedTicket.id
+                    )
+                  }
+                >
+                  Send to Guest
+                </Button>
               </div>
             )}
           </Modal>

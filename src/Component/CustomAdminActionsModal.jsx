@@ -17,6 +17,8 @@ const permissionsData = [
   { label: "Review List", value: "ReviewList" },
   { label: "User Verification Dashboard", value: "UserVerificationDashboard" },
   { label: "Service Charge", value: "ServiceCharge" },
+  { label: "Security Deposit", value: "SecurityDeposit" },
+
 ];
 
 
