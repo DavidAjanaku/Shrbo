@@ -28,13 +28,19 @@ const Chat = () => {
   const [hostId, setHostId] = useState(null);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [showApprovalSection, setShowApprovalSection] = useState(true);
+  const [receiverIds, setReceiverIds] = useState(null);
+  const [loggedinuserid, setLoggedinuserid] = useState(null);
 
-  const [selectedUserObj, setSelectedUserObj] = useState(null);
+  const [selectedUserObj, setSelectedUserObj] = useState({});
   const [loadingUsersCard, setLoadingUsersCard] = useState(true);
+  const [sending, setSending] = useState(false);
+  const audioRef = useRef(null);
+  const [approved, setApproved] = useState(null);
 
   const token = localStorage.getItem("tokens");
 
   console.log(token);
+
   const initializeEcho = (token, receiverId) => {
     if (typeof window.Echo !== "undefined") {
       const channelName = `messanger.${receiverId}`;
@@ -81,6 +87,13 @@ const Chat = () => {
     initializeEcho(token, receiverId);
   }, []);
 
+  useEffect(() => {
+    // Load the audio file
+    audioRef.current = new Audio(
+      "../src/notifcation sound/mixkit-bell-notification-933.wav"
+    );
+  }, []);
+
   const [userChats, setUserChats] = useState({});
   const [message, setMessage] = useState("");
   const fileInputRef = useRef(null);
@@ -89,6 +102,8 @@ const Chat = () => {
     if (!message.trim()) return; // Prevent sending empty messages
 
     try {
+      setSending(true); // Set sending state to true
+
       const response = await Axios.post(
         `/chat/${selectedUser}`,
         { message: message.trim(), senderId: ADMIN_ID }, // Include senderId in the message object
@@ -131,9 +146,11 @@ const Chat = () => {
 
       setMessage(""); // Clear the message input after sending
       setSelectedUser(selectedUser); // Set the selectedUser state to the receiverId
+      setSending(false); // Reset sending state to false
     } catch (error) {
       console.error("Error sending message:", error);
       messages2.error(error.response.data.message);
+      setSending(false); // Reset sending state to false in case of error
     }
   };
 
@@ -176,6 +193,12 @@ const Chat = () => {
       checkTyping();
     }
   };
+  useEffect(() => {
+    // Play the sound when new messages arrive
+    if (newMessages.length > 0) {
+      audioRef.current.play();
+    }
+  }, [newMessages]);
 
   const filteredUsers = users.filter((user) => {
     const nameMatch = user.name
@@ -223,6 +246,7 @@ const Chat = () => {
       try {
         const response = await Axios.get("/user");
         setHostId(response.data.id);
+        setLoggedinuserid(response.data.id); // Set loggedinuserid state
 
         console.log(response.data.id);
       } catch (error) {
@@ -233,6 +257,8 @@ const Chat = () => {
 
     fetchUsers();
   }, []);
+
+  console.log(loggedinuserid);
 
   const fetchUserChats = async (receiverId) => {
     try {
@@ -254,29 +280,40 @@ const Chat = () => {
       setSelectedUserName(response.data.receiver.name); // Store the name of the selected user in state
       setSelectedUserProfilePic(response.data.receiver.profilePicture); // Store the profile picture of the selected user in state
       console.log(response);
-      response.data.messagesWithAUser[0].booking_request.forEach(
-        (booking, index) => {
-          console.log(`Booking Request ${index + 1}:`);
-          console.log("host_home_id:", booking.host_home_id);
-          console.log("host_id:", booking.host_id);
-          console.log("requestId:", booking.id);
-        }
-      );
 
-      // Assuming you want to select the first booking request for further processing
-      const selectedBookingRequest =
-        response.data.messagesWithAUser[0].booking_request[0];
-      if (selectedBookingRequest) {
-        setSelectedUserObj({
-          hostHomeId: selectedBookingRequest.host_home_id,
-          requestId: selectedBookingRequest.id,
-          message: selectedBookingRequest.message,
-          name: response.data.receiver.name,
-          profilePic: response.data.receiver.profilePic,
-          user_id: selectedBookingRequest.sender_id,
-          approved: selectedBookingRequest.approved, // Add approved property
-        });
-      }
+      // Find the latest booking request
+      let latestBookingRequest = null;
+      response.data.messagesWithAUser.forEach((message) => {
+        if (message.booking_request.length > 0) {
+          const bookingRequest = message.booking_request[0];
+          if (
+            !latestBookingRequest ||
+            new Date(bookingRequest.created_at) >
+              new Date(latestBookingRequest.created_at)
+          ) {
+            latestBookingRequest = bookingRequest;
+          }
+        }
+      });
+
+      console.log("Latest Booking Request:", latestBookingRequest);
+
+      // Set the selected user object with the latest booking request
+      setSelectedUserObj({
+        hostHomeId: latestBookingRequest?.host_home_id ?? "",
+        requestId: latestBookingRequest?.id ?? "",
+        message: latestBookingRequest?.message ?? "",
+        name: latestBookingRequest?.userName ?? "", // Use userName
+        profilePic: latestBookingRequest?.sender?.profile_picture_url ?? "", // Use sender profile pic
+        userId: latestBookingRequest?.sender_id ?? "",
+        approved: latestBookingRequest?.approved ?? "",
+        receiverId: latestBookingRequest?.host_id ?? "",
+      });
+      setReceiverIds(latestBookingRequest.host_id); // Set host_ids state
+      setApproved(latestBookingRequest.approved)
+      console.log(latestBookingRequest.host_id);
+
+      console.log("APPROVED " + latestBookingRequest.approved);
     } catch (error) {
       setLoadingMessages(false); // Set loading state to false if there's an error
 
@@ -287,12 +324,11 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    // Scroll to the bottom of the chat container when new messages are received or the selected user changes
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
-  }, [newMessages, selectedUser]);
+  }, [userChats, newMessages]);
 
   const renderMessages = (userChats, newMessages, selectedUser, users) => {
     const userChat = userChats[selectedUser] || [];
@@ -353,21 +389,31 @@ const Chat = () => {
     };
 
     const handleDecline = () => {
+      handleBookingAction({
+        requestId: selectedUserObj.requestId,
+        hostHomeId: selectedUserObj.hostHomeId,
+        hostId: hostId,
+        guestId: selectedUser,
+        action: "decline", // Corrected syntax for the action parameter
+      });
+
       handleBookingAction(
         selectedUserObj.requestId,
         selectedUserObj.hostHomeId,
         hostId,
-        selectedUserObj.guestId,
+        selectedUser,
         "decline"
       );
       antdMessage.success("Booking request declined successfully!");
+      setShowApprovalSection(false);
     };
 
     // const selectedUserProfilePic = selectedUserObj?.image;
 
-    const filteredNewMessages = newMessages.filter(
-      (msg) => !userChat.some((existingMsg) => existingMsg.id === msg.id)
-    );
+    // Filter new messages to include only messages for the selected user
+    const filteredNewMessages = newMessages.filter((msg) => {
+      return msg.receiver_id === selectedUser || msg.sender_id === selectedUser;
+    });
 
     const sortedMessages = [...userChat, ...filteredNewMessages].sort(
       (a, b) => {
@@ -377,14 +423,29 @@ const Chat = () => {
         return dateA - dateB;
       }
     );
+    console.log(filteredNewMessages);
 
-    const uniqueMessages = [];
+    const uniqueMessages = filteredNewMessages.filter((msg, index, self) => {
+      // Check if there is a message with the same content and time earlier in the array
+      const isDuplicate = self.slice(0, index).some((m) => {
+        return m.message === msg.message && m.time === msg.time;
+      });
+
+      // Return true if the message is not a duplicate, false otherwise
+      return !isDuplicate;
+    });
+
     sortedMessages.forEach((msg) => {
       const existingMsg = uniqueMessages.find((m) => m.id === msg.id);
       if (!existingMsg) {
         uniqueMessages.push(msg);
       }
     });
+
+    if (selectedUserObj) {
+      console.log("User ID:", selectedUserObj.user_id);
+      console.log("Receiver ID:", receiverIds);
+    }
 
     return (
       <>
@@ -446,6 +507,7 @@ const Chat = () => {
             </div>
           );
         })}
+
         {userChat.some(
           (msg) =>
             msg.message &&
@@ -455,42 +517,44 @@ const Chat = () => {
             msg.sender.id !== ADMIN_ID // Check if the sender is not the admin
         ) && (
           <div className="flex justify-center mt-4">
-            {selectedUserObj.approved === null && showApprovalSection && (
-              <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
-                {selectedUserObj && (
-                  <div className="flex items-center justify-center mb-4">
-                    <img
-                      src={selectedUserObj.profilePic || shbrologo}
-                      alt={selectedUserObj.name}
-                      className="w-10 h-10 rounded-full mr-2"
-                    />
-                    <p className="text-lg">
-                      {selectedUserObj.name} has requested to book your
-                      apartment. Approve or decline?
-                    </p>
-                  </div>
-                )}
-                <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                  <button
-                    className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
-                    onClick={handleApprove}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-                    onClick={handleDecline}
-                  >
-                    Decline
-                  </button>
-                  <Link to={`/userdetails/${selectedUser}`}>
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
-                      View Guest Profile
+            {approved === null &&
+              loggedinuserid === receiverIds &&
+              showApprovalSection && (
+                <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
+                  {selectedUserObj && (
+                    <div className="flex items-center justify-center mb-4">
+                      <img
+                        src={selectedUserObj.profilePic || shbrologo}
+                        alt={selectedUserObj.name}
+                        className="w-10 h-10 rounded-full mr-2"
+                      />
+                      <p className="text-lg">
+                        {selectedUserObj.name} has requested to book your
+                        apartment. Approve or decline?
+                      </p>
+                    </div>
+                  )}
+                  <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                    <button
+                      className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
+                      onClick={handleApprove}
+                    >
+                      Approve
                     </button>
-                  </Link>
+                    <button
+                      className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                      onClick={handleDecline}
+                    >
+                      Decline
+                    </button>
+                    <Link to={`/userdetails/${selectedUser}`}>
+                      <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
+                        View Guest Profile
+                      </button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         )}
       </>
@@ -558,7 +622,6 @@ const Chat = () => {
   }, [recentMessages]);
   return (
     <div>
-      
       <div className="bg-gray-100 ">
         {/* <AdminHeader /> */}
         <div className="flex w-full">
@@ -662,10 +725,18 @@ const Chat = () => {
                               placeholder="Type your message here..."
                               value={message}
                               onChange={handleTyping}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                  e.preventDefault(); // Prevent the default behavior of adding a new line
+                                  sendMessage("text");
+                                }
+                              }}
                             ></textarea>
+
                             <button
                               className="bg-orange-400 text-white px-4 py-2 rounded float-right"
                               onClick={() => sendMessage("text")}
+                              disabled={sending}
                             >
                               <FontAwesomeIcon
                                 icon={faPaperPlane}

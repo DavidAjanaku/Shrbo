@@ -33,7 +33,7 @@ export default function AdminSidebar() {
       try {
         const response = await Axios.get("/user");
         setUserInfo(response.data.adminRoles);
-        console.log(response.data.adminRoles); // Log user information
+        console.log(response.data.adminRoles);
       } catch (error) {
         setError(error.message);
       }
@@ -41,7 +41,7 @@ export default function AdminSidebar() {
 
     fetchUserInfo();
   }, []);
-  console.log(userInfo); // Log userInfo here
+  // console.log(userInfo);
 
   return (
     <div className="bg-orange-800 text-white p-4">
@@ -158,6 +158,17 @@ export default function AdminSidebar() {
               </ul>
             </li>
           )}
+
+        {userInfo &&
+          userInfo.some(
+            (role) => role.rolePermission === "SecurityDeposit"
+          ) && (
+            <Link to="/AdminSecurityDeposit">
+              <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+                Security Deposit
+              </li>
+            </Link>
+          )}
         {userInfo &&
           userInfo.some((role) => role.rolePermission === "BookingStatus") && (
             <li
@@ -185,9 +196,10 @@ export default function AdminSidebar() {
                   </Link>
                 </li>
                 <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
-          <Link to="/ReceivablePayable"><div>
-          Receivable & Payable</div></Link>
-        </li>
+                  <Link to="/ReceivablePayable">
+                    <div>Receivable & Payable</div>
+                  </Link>
+                </li>
               </ul>
             </li>
           )}
@@ -230,9 +242,7 @@ export default function AdminSidebar() {
             </Link>
           )}
         {userInfo &&
-          userInfo.some(
-            (role) => role.rolePermission === "ReportDamages"
-          ) && (
+          userInfo.some((role) => role.rolePermission === "ReportDamages") && (
             <Link to="/AdminDamagePage">
               <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
                 Report Damages
@@ -278,9 +288,7 @@ export default function AdminSidebar() {
             </Link>
           )}
         {userInfo &&
-          userInfo.some(
-            (role) => role.rolePermission === "ServiceCharge"
-          ) && (
+          userInfo.some((role) => role.rolePermission === "ServiceCharge") && (
             <Link to="/ServiceChargeSettings">
               <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
                 Service Charge Settings

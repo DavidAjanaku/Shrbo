@@ -10,7 +10,7 @@ const ReceivablePayable = () => {
   const columns = [
     {
       title: 'Date',
-      dataIndex: 'date',
+      dataIndex: 'Date',
       key: 'date',
       render: (text) => {
         return moment(text).format('dddd, D MMMM YYYY');
