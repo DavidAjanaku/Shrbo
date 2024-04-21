@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import logo from "../assets/logo.png";
 import google from "../assets/google.png";
 import { Link } from "react-router-dom";
-import { message, notification, Spin } from 'antd';
+import { notification} from 'antd';
 import axios from '../Axios'
-import { LoadingOutlined } from '@ant-design/icons';
+// import { LoadingOutlined } from '@ant-design/icons';
 import { useStateContext } from "../ContextProvider/ContextProvider.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
@@ -98,13 +98,12 @@ const LogIn = () => {
   return (
     <>
       {contextHolder}
-      
-      {loading ? <div className=' w-full h-screen flex items-center justify-center'>
-        <div class="containerld"></div>
 
-      </div>
-        :
-
+      {loading ? (
+        <div className=" w-full h-screen flex items-center justify-center">
+          <div class="containerld"></div>
+        </div>
+      ) : (
         <div className="flex h-full lg:max-h-screen flex-1 flex-col lg:justify-center px-6 py-16 lg:py-10 bg-slate-50/30 lg:px-8">
           <div className="sm:mx-auto  sm:w-full sm:max-w-sm">
             <img
