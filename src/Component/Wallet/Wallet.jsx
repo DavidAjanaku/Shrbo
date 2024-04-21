@@ -6,7 +6,7 @@ import verve from '../../assets/Verve-Logo.png';
 import visa from '../../assets/Visa-Payment-Card.png';
 import masterCard from '../../assets/mastercard.png';
 import { useStateContext } from "../../ContextProvider/ContextProvider";
-import { message, Popconfirm, Tag } from 'antd';
+import { message, notification, Tag } from 'antd';
 import { Link } from "react-router-dom";
 import Header from "../Navigation/Header";
 import Footer from "../Navigation/Footer";
@@ -62,7 +62,9 @@ const Wallet = () => {
 
 
     ]);
-    const [loading, setLoading] = useState(false);
+    const [loadingCards, setLoadingCards] = useState(true);
+    const [requestLoading, setRequestLoading] = useState(false);
+    const [loadingBalance, setLoadingBalance] = useState(true);
     const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
 
     const [paymentDetails, setPaymentDetails] = useState([
@@ -89,12 +91,16 @@ const Wallet = () => {
 
     ]);
     const [isViewBalance, setViewBalance] = useState(true);
+    const [balance, setBalance] = useState("");
     const [acLoading, setAcLoading] = useState(false);
     const [supportedBanks, setSupportedBanks] = useState([]);
+    const [paymentRequest, setPaymentRequests] = useState([]);
 
 
     const { user, setUser, setHost, setAdminStatus } = useStateContext();
     // const [loading, setLoading] = useState(false);
+
+
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -120,6 +126,43 @@ const Wallet = () => {
 
             fetchUserData();
         }
+    }, []);
+
+
+    useEffect(() => {
+        setLoadingCards(true);
+        setLoadingBalance(true);
+        if (user.id) {
+            fetchUserCards();
+            fetchWalletBalance()
+            fetchWalletWithdrawRequsts();
+        }
+    }, [user.id]);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                // Make a request to get the user data
+                const response = await axios.get(`/listBanks`);
+                const formattedBanks = response.data.map((bank) => ({
+                    value: bank,
+                    label: bank,
+
+                }));
+                setSupportedBanks(formattedBanks);
+
+            } catch (error) {
+                console.error('Error fetching supported banks:', error);
+            } finally {
+                // Set loading to false regardless of success or error
+                // setLoading(false);
+
+            }
+        };
+
+
+        fetchUserData();
+
     }, []);
 
 
@@ -237,17 +280,13 @@ const Wallet = () => {
         </li>
     ));
 
-    useEffect(() => {
 
-        if (user.id) {
-            fetchUserCards();
-        }
-    }, [user.id]);
+
 
 
     // Fetch user cards
     const fetchUserCards = async () => {
-        setLoading(true);
+        setLoadingCards(true);
         try {
             const response = await axios.get(`/getUserCards/${user.id}`);
             console.log('cards', response.data);
@@ -271,9 +310,126 @@ const Wallet = () => {
         } catch (error) {
             console.error('Error fetching user cards:', error);
         } finally {
-            setLoading(false)
+            setLoadingCards(false)
         }
     };
+
+    //Fetch Wallet Balance
+    const fetchWalletBalance = async () => {
+        setLoadingBalance(true);
+
+        try {
+            const response = await axios.get(`/viewUserWallet`);
+
+            console.log('balance', response.data);
+
+            const balance = response.data.total_balance;
+
+            setBalance(balance);
+
+        } catch (error) {
+
+        } finally {
+            setLoadingBalance(false);
+        }
+
+    };
+
+    //fetch Wallet Transactions
+    const fetchWalletTransactions = async () => {
+
+        try {
+            const response = await axios.get(`/viewUserWalletRecords`);
+
+            const formattedTransactions = response.data.wallet_records.map((data) => ({
+                id: data.id,
+                status: "Incoming",
+                from: "Shbro",
+                amount: data.amount,
+                time: data.created_at,
+
+            }));
+
+        } catch (error) {
+
+        }
+
+
+    }
+    const fetchWalletWithdrawRequsts = async () => {
+
+        try {
+            const response = await axios.get(`/getUserPaymentRecords`);
+
+            const formattedTransactions = response.data.payment_records.map((data) => ({
+                id: data.id,
+                
+                user_id:data.user_id,
+                account_number:data.account_number,
+                account_name:data.account_name,
+                amount: formatAmountWithCommas(data.amount),
+                bank_name: data.bank_name,
+                approvedStatus: data.approvedStatus,
+                created_at: data.created_at,
+              
+
+
+            }));
+            
+            setPaymentRequests(formattedTransactions);
+
+        } catch (error) {
+
+        }
+
+
+    }
+
+
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationWithIcon = (type, error) => {
+        api[type]({
+            message: type === "error" ? 'Error' : "Succesfull",
+            description: error,
+            placement: 'topRight',
+            className: 'bg-green'
+        });
+    };
+
+    //Request pay
+    const requestPayment = async (data) => {
+        setRequestLoading(true);
+
+        const details = {
+            account_number: data.accountNumber,
+            bank_name: data.bankName,
+            account_name: data.fullName,
+            amount: data.withdrawAmount
+        }
+
+
+        try {
+            const response = await axios.post(`/requestPay`, details);
+            setWithdrawModalOpen(false);
+            openNotificationWithIcon("success", "Your withdraw request has been sent Successfully");
+        } catch (error) {
+            setWithdrawModalOpen(false)
+            if (error.response.data.message) {
+                openNotificationWithIcon("error", error.response.data.message);
+                setError(error.response.data.message);
+
+            } else {
+
+                openNotificationWithIcon("error", error.response.data);
+                setError(error.response.data);
+            }
+        } finally {
+
+            setRequestLoading(false);
+        }
+
+
+    }
 
 
     const cardSkeletonLoader = Array.from({ length: 3 }).map((group, index) =>
@@ -304,61 +460,78 @@ const Wallet = () => {
 
 
 
+    function formatAmountWithCommas(amount) {
+        // Convert the amount to a string and split it into integer and decimal parts
+        const [integerPart, decimalPart] = amount.toString().split('.');
 
-    const handleAccountNumber = async (data) => {
+        // Add commas to the integer part
+        const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-        const details = {
-            account_number: data.accountNumber,
-            bank_name: data.bankName,
-            account_name: data.fullName,
-        }
+        // Combine the integer and decimal parts with a dot if there is a decimal part
+        const formattedAmount = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
 
-        // await axios.post(`/createUserBankinfo/${user.id}`, details).then((response) => {
-
-        //     console.log(response);
-        //     message.success(`Account Details added successfully`);
-        //     fetchUserData();
-        // }).catch(error => {
-        //     console.error("Failed to add Account detalis", error);
-        //     message.error(`An Error Occured while trying to add Account detais ${type}`)
-        // }).finally(() => {
-        //     setAcLoading(false)
-        //     setIsChangeAccountNumber(false);
-        // });
-
-
+        return formattedAmount;
     }
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                // Make a request to get the user data
-                const response = await axios.get(`/listBanks`);
-                const formattedBanks = response.data.map((bank) => ({
-                    value: bank,
-                    label: bank,
-
-                }));
-                setSupportedBanks(formattedBanks);
-
-            } catch (error) {
-                console.error('Error fetching supported banks:', error);
-            } finally {
-                // Set loading to false regardless of success or error
-                // setLoading(false);
-
-            }
-        };
-
-
-        fetchUserData();
-
-    }, []);
 
 
 
+    // viewUserWalletRecords
 
 
+    const WithdrawRequest = (
+        <div className="   example ">
+            {/* {!isCohostLoading? */}
+            <ul role="list" className="divide-y divide-gray-100">
+                {/* {cohostList.length > 0 ? */}
+                <>
+                    {paymentRequest.map((payment) => (
+                    <li key={payment.id} className="flex justify-between gap-x-6 py-5">
+                        <div className="flex min-w-0 gap-x-4">
+                            {/* <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src="" alt="" /> */}
+                            <div className="min-w-0 flex-auto">
+                                <p className="text-sm font-semibold leading-6 text-gray-900"> ₦{payment.amount}</p>
+                                <p className="mt-1 w-64 truncate text-xs leading-5 text-gray-500">To: {payment.account_name},acct {payment.account_number},{payment.bank_name} </p>
+                            </div>
+                        </div>
+                        <div className=" shrink-0 sm:flex sm:flex-col sm:items-end">
+                            <p className="text-sm leading-6 text-gray-900 text-red-500">{payment.approvedStatus??"pending"}</p>
+                            <div className="mt-1 flex items-center gap-x-1.5">
+                                {/* <div className="flex-none rounded-full bg-emerald-500/20 p-1">
+                      <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    </div> */}
+                                {/* <Popconfirm
+                          title="Remove Co-host"
+                          description={`Sure you want to remove ${person.name} as a Co-host ?`}
+                        //   onConfirm={(e) => { confirm(e, person.name, person.id) }}
+                          onCancel={cancel}
+                          okText="Delete"
+                          cancelText="Cancel"
+                        > */}
+                                <button className="text-xs border rounded-md p-[4px] font-semibold hover:bg-slate-50 transition-colors   leading-5 text-gray-500">Cancel</button>
+                                {/*     
+                        </Popconfirm> */}
+                            </div>
+                        </div>
+                    </li>
+                     ))} 
+                </>
+                :
+                <div className=" m-8 ">
+                    You have not added a co-host yet.
+                </div>
+
+                {/* } */}
+            </ul>
+            {/* : */}
+            {/* <div className="self-start my-28   p-2 rounded-lg w-full h-full flex items-center justify-center ">
+                <div className="dot-pulse1">
+                    <div className="dot-pulse1__dot"></div>
+                </div>
+            </div> */}
+            {/* } */}
+        </div>
+    )
 
 
 
@@ -372,42 +545,52 @@ const Wallet = () => {
 
     return (
         <div className="min-h-[100vh]   bg-slate-50">
-            <Header />
 
+            <Header />
+            {contextHolder}
 
             <div className=" max-w-5xl mx-auto  ">
 
                 <div className=" md:my-14 py-6    md:flex  gap-4">
 
                     <div className="h-[90vh] overflow-y-scroll example mx-4 md:w-[60%] col-span-[1.5] md:mx-0  md:h-full p-4 bg-white shadow-sm  rounded-2xl mt-2 ">
-                        <div className=" flex flex-wrap mt-3 md:mt-0 w-full h-44 rounded-2xl shadow-md bg-gradient-to-r from-orange-300/70 via-orange-500/50 to-orange-700/25 px-8 py-6 ">
+                        <div className={` flex flex-wrap mt-3 md:mt-0 w-full h-44 rounded-2xl shadow-md transition-colors  px-8 py-6 ${loadingBalance ? " bg-white" : "bg-gradient-to-r from-orange-300/70 via-orange-500/50 to-orange-700/25"} `}>
                             <div className=" h-full w-full text-slate-700 ">
                                 <div className=" text-sm text-slate-700 font-medium mb-5 flex items-center gap-3">
-                                    <p className="m-0">Wallet Balance</p>
-                                    {
+                                    {!loadingBalance ? <p className="m-0">Wallet Balance</p> : <div className="skeleton-loader h-4 mt-2 w-32 " />}
+
+                                    {!loadingBalance && <>{
                                         isViewBalance ?
                                             <button onClick={() => { setViewBalance(false) }}><VscEyeClosed className="h-5 w-5" /></button>
                                             :
                                             <button onClick={() => { setViewBalance(true) }}><VscEye className="h-5 w-5" /></button>
 
-                                    }
+                                    }</>}
                                 </div>
                                 <div className="  flex flex-wrap justify-between " >
-                                    <div className=" text-4xl font-semibold text-slate-700   ">{isViewBalance ? "₦13,280.25" : "**********"} </div>
+                                    {!loadingBalance ? <div className=" text-4xl font-semibold text-slate-700   ">{isViewBalance ? `₦${balance ? formatAmountWithCommas(balance) : "00.00"}` : "**********"} </div>
+                                        :
+                                        <div className=" skeleton-loader h-8 mt-2 w-56  " />
+                                    }
                                     <div className=" flex gap-3 " >
                                         {/* <div className=" h-full flex items-center flex-col gap-1 ">
                                             <button className=" rounded-full h-10 bg-slate-100 p-3"><TiArrowBackOutline /></button>
                                             <label className=" text-[11px] leading-4 font-medium ">Send</label>
                                         </div> */}
 
-                                        <div className=" h-full flex items-center flex-col gap-1 ">
+                                        <div className={` h-full  items-center flex-col gap-1 ${loadingBalance ? "hidden" : "flex"}   `}>
                                             <button onClick={() => { setWithdrawModalOpen(true) }} className=" rounded-full h-10 bg-slate-100 p-3"><TiArrowForwardOutline /></button>
                                             <label className=" text-[11px] leading-4 font-medium ">Request</label>
                                         </div>
-                                        <Popup isModalVisible={isWithdrawModalOpen} title={"Withdraw To"} handleCancel={() => { setWithdrawModalOpen(false) }} >
-                                            <WithdrawForm close={(bool) => { setWithdrawModalOpen(false) }} loading={acLoading} Submit={(val) => { handleAccountNumber(val) }} banks={supportedBanks} />
+                                        <Popup isModalVisible={isWithdrawModalOpen} title={"Withdraw To"} handleCancel={() => { !requestLoading && setWithdrawModalOpen(false) }} >
+                                            {requestLoading ? <div className=' w-full h-96 flex items-center justify-center'>
+                                                <div className="containerld"></div>
 
+                                            </div>
+                                                :
+                                                <WithdrawForm close={(bool) => { setWithdrawModalOpen(false) }} loading={acLoading} Submit={(val) => { requestPayment(val) }} banks={supportedBanks} />}
                                         </Popup>
+
 
                                     </div>
                                 </div>
@@ -443,11 +626,17 @@ const Wallet = () => {
 
                     </div>
 
-                    <div className="md:grid grid-rows-2 md:w-[40%] shadow-sm gap-4 mt-2 hidden ">
-                        {/*                         
+                    <div className="md:grid grid-rows-2 md:w-[40%]   gap-4 mt-2 hidden ">
+
                         <div className="   p-6 h-auto  bg-white rounded-2xl">
 
-                        </div> */}
+                            <div className="  flex justify-between ">
+                                <p className=" font-medium text-lg ">Withdraw Requests</p>
+                                {paymentDetails.length > 0 && <Link to={"/ManageCard"} className=" text-orange-500 text-sm font-medium" >View All</Link>}
+                            </div>
+                            {WithdrawRequest}
+
+                        </div>
 
                         <div className=" p-6 h-auto  bg-white rounded-2xl ">
 
@@ -459,7 +648,7 @@ const Wallet = () => {
 
                                 <ul role="list" className=" h-full overflow-y-scroll example mt-4">
 
-                                    {!loading ?
+                                    {!loadingCards ?
                                         <>
                                             {Cards}
 

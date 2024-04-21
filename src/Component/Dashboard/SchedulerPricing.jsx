@@ -81,7 +81,7 @@ const Pricing = ({
 
 
     if (type === "Custom Weekend Price") {
-      setPrice(selectedApartment.customWeekendPrice)
+      setPrice(weekendPrice?selectedApartment.customWeekendPrice:selectedApartment.basePrice);
 
 
     } else if (type === "Per night") {

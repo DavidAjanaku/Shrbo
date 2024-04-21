@@ -112,14 +112,17 @@ const receiverId = parseInt(localStorage.getItem("receiverid"), 10);
 
 useEffect(() => {
 
-  axios.get("/notification").then(response => {
-    setNotifications([...response.data.data]);
-    console.log("notification", [...response.data.data]);
-  }).catch(error => {
-    // console.log("Error",error);
-  });
+ if(token) {
 
-}, []);
+    axios.get("/notification").then(response => {
+      setNotifications([...response.data.data]);
+      console.log("notification", [...response.data.data]);
+    }).catch(error => {
+      // console.log("Error",error);
+    });
+  }
+
+}, [token]);
 
 
 
@@ -154,8 +157,11 @@ const initializeEcho = (token, receiverId) => {
 
 
 useEffect(() => {
-  initializeEcho(token, receiverId);
-}, []);
+  if(token){
+    initializeEcho(token, receiverId);
+
+  }
+}, [token]);
 
 
   return (

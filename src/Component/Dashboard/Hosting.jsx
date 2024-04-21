@@ -124,14 +124,14 @@ export default function Hosting() {
 
   useEffect(() => {
 
-    axios.get("/notification").then(response => {
+   if(token){ axios.get("/notification").then(response => {
       setNotifications([...response.data.data]);
       console.log("notification", [...response.data.data]);
     }).catch(error => {
       // console.log("Error",error);
     });
-
-  }, [isNotificationDeleted]);
+}
+  }, [isNotificationDeleted,token]);
 
 
   const DateTimeConverter = (date) => {
@@ -195,8 +195,11 @@ export default function Hosting() {
 
 
   useEffect(() => {
-    initializeEcho(token, receiverId);
-  }, []);
+    if(token){
+
+      initializeEcho(token, receiverId);
+    }
+  }, [token]);
 
 
 
@@ -700,7 +703,7 @@ export default function Hosting() {
               <div className="flex space-x-3 w-fit p-6 ">
                 {currentlyHosting.map((host, index) => (
                   <div
-                    className="shadow-xl border-2 w-64  w-[300px] p-4 mt-4 rounded-xl bg-white "
+                    className="shadow-xl border-2   w-[300px] p-4 mt-4 rounded-xl bg-white "
                     key={index}
                   >
                     <div className="current text-orange-300 text-sm">
@@ -746,7 +749,7 @@ export default function Hosting() {
               <div className="flex space-x-3 w-fit p-6 ">
                 {arrivingSoonReservations.map((reservation, index) => (
                   <div
-                    className="shadow-xl border-2 w-64  w-[300px] p-4 mt-4 rounded-xl bg-white"
+                    className="shadow-xl border-2   w-[300px] p-4 mt-4 rounded-xl bg-white"
                     key={index}
                   >
                     <div className="current text-orange-300 text-sm">
@@ -797,7 +800,7 @@ export default function Hosting() {
               <div className="flex space-x-3 w-fit p-6 ">
                 {upcomingReservations.map((reservation, index) => (
                   <div
-                    className=" shadow-xl border-2 w-64 w-[300px] p-4 mt-4 rounded-xl bg-white "
+                    className=" shadow-xl border-2  w-[300px] p-4 mt-4 rounded-xl bg-white "
                     key={index}
                   >
                     {/* Content for each upcoming reservation */}
@@ -847,7 +850,7 @@ export default function Hosting() {
               <div className="flex space-x-3 w-fit p-6 ">
                 {pendingReviews.map((review, index) => (
                   <div
-                    className="shadow-xl border-2 w-64 w-[300px] p-4 mt-4 rounded-xl bg-white "
+                    className="shadow-xl border-2  w-[300px] p-4 mt-4 rounded-xl bg-white "
                     key={index}
                   >
                     <div className="current text-orange-300 text-sm">
