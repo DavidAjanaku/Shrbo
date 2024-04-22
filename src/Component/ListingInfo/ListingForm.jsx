@@ -30,6 +30,9 @@ export default function ListingForm({
   preparation_time,
   hosthomeId,
   bookingRequestStatus,
+  coHostId,
+  userId,
+  hostIds
 }) {
   function showModal(e) {
     e.preventDefault();
@@ -746,7 +749,7 @@ export default function ListingForm({
       // Set messageSent to true to indicate that the message was sent successfully
       setMessageSent(true);
       console.log("Message sent successfully");
-      showMessage.success('Message sent successfully');
+      showMessage.success("Message sent successfully");
 
       // Handle the response as needed
     } catch (error) {
@@ -754,6 +757,27 @@ export default function ListingForm({
       // Handle errors
     }
   };
+
+  let coHostMessageShown = false;
+
+
+  const hostIDs = parseInt(localStorage.getItem('receiverid'), 10);
+  const coHostIdInt = parseInt(coHostId, 10);
+  
+  console.log("cohostID:", coHostIdInt);
+  console.log("userID:", hostIDs);
+  
+  // Function to check if co-hosts are allowed to book
+  const isCoHostNotAllowed = () => {
+    const coHostNotAllowed = hostIDs === coHostIdInt;
+    if (coHostNotAllowed && !coHostMessageShown) {
+      message.error("Co-hosts aren't allowed to book apartments");
+      coHostMessageShown = true;
+    }
+    return coHostNotAllowed;
+  };
+  
+
 
   return (
     <div className=" block w-full h-full">
@@ -1077,13 +1101,16 @@ export default function ListingForm({
                           }
                         }}
                         disabled={
+                          (checkInDate && checkOutDate && isCoHostNotAllowed()) ||
+
                           isBookButtonDisabled ||
                           !checkInDate ||
                           !checkOutDate ||
                           isDisabled ||
                           isCheckoutDisabled() ||
                           isCheckoutBlocked() ||
-                          isBlockedDatesBetweenCheckInOut()
+                          isBlockedDatesBetweenCheckInOut()  
+
                         }
                       >
                         Book
@@ -1121,13 +1148,16 @@ export default function ListingForm({
                       }
                     }}
                     disabled={
+                  
                       isBookButtonDisabled ||
                       !checkInDate ||
                       !checkOutDate ||
                       isDisabled ||
                       isCheckoutDisabled() ||
                       isCheckoutBlocked() ||
-                      isBlockedDatesBetweenCheckInOut()
+                      isBlockedDatesBetweenCheckInOut() ||
+                      (checkInDate && checkOutDate && isCoHostNotAllowed())
+
                     }
                   >
                     Book
@@ -1144,16 +1174,15 @@ export default function ListingForm({
                             dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]"
-                            onClick={() => {
-                              if (buttonText === "Request Book") {
-                                sendMessage();
-                              } else if (buttonText === "Message Host") {
-                                setMessageModalVisible(true);
+                onClick={() => {
+                  if (buttonText === "Request Book") {
+                    sendMessage();
+                  } else if (buttonText === "Message Host") {
+                    setMessageModalVisible(true);
 
-                                sendMessageToHost(receiverId, message);
-                              }
-                            }}
-                            
+                    sendMessageToHost(receiverId, message);
+                  }
+                }}
               >
                 {buttonText}
               </button>

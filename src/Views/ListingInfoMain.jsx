@@ -164,7 +164,10 @@ if (data.cohosts && data.cohosts.length > 0) {
             <div className="  md:hidden relative mr-0 ">
               <ListingForm
                 hosthomeId={id}
-                hostId={hostId}
+                hostIds={hostId}
+                coHostId={coHost ? coHost.id : null} // Pass the cohost id as a prop
+                userId={listingDetails?.user?.id || ""} // Pass the user id as a prop
+
                 price={listingDetails?.price}
                 reservations={listingDetails?.reservations}
                 reservation={listingDetails?.reservation}
@@ -212,7 +215,12 @@ if (data.cohosts && data.cohosts.length > 0) {
           <div className=" md:ml-[8.33333%] md:w-[33.33333%] hidden md:block relative mr-0 ">
             <ListingForm
               id={id}
+              hostIds={hostId}
+
               price={listingDetails?.price}
+              coHostId={coHost ? coHost.id : null} // Pass the cohost id as a prop
+              userId={listingDetails?.user?.id || ""} // Pass the user id as a prop
+
               reservations={listingDetails?.reservations}
               reservation={listingDetails?.reservation}
               guest={listingDetails?.guest}
