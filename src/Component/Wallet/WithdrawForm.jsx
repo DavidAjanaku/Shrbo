@@ -5,7 +5,7 @@ import { Select } from 'antd';
 import axios from '../../Axios'
 
 
-const WithdrawForm = ({ Submit, close, loading,banks}) => {
+const WithdrawForm = ({ Submit, close, loading,banks,requestLoading}) => {
   const [accountNumber, setAccountNumber] = useState('');
   const [withdrawAmount, setWithDrawAmount] = useState('');
   const [bankName, setBankName] = useState('');
@@ -79,15 +79,15 @@ const WithdrawForm = ({ Submit, close, loading,banks}) => {
     setAccountNumber(inputAccountNumber);
   };
   const handleAmountChange = (e) => {
-    let inputAccountNumber = e.target.value;
+    let inputWithdrawAmount = e.target.value;
 
     // Use regex to remove non-numeric characters
-    inputAccountNumber = inputAccountNumber.replace(/[^0-9]/g, '');
+    inputWithdrawAmount = inputWithdrawAmount.replace(/[^0-9]/g, '');
 
-    // Use regex to limit to exactly 10 digits
-    inputAccountNumber = inputAccountNumber.substring(0, 10);
+    // Use regex to limit to exactly 10 digits 
+    inputWithdrawAmount = inputWithdrawAmount.substring(0, 10);
 
-    setWithDrawAmount(inputAccountNumber);
+    setWithDrawAmount(inputWithdrawAmount);
   };
 
 
@@ -95,6 +95,7 @@ const WithdrawForm = ({ Submit, close, loading,banks}) => {
     setAccountNumber('');
     setBankName('');
     setFullName("");
+    setWithDrawAmount('');
 
     close(false);
   };
@@ -104,6 +105,7 @@ const WithdrawForm = ({ Submit, close, loading,banks}) => {
     accountNumber: '',
     bankName: '',
     fullName: '',
+    amount:''
   });
 
   const handleSubmit = (e) => {
@@ -115,13 +117,19 @@ const WithdrawForm = ({ Submit, close, loading,banks}) => {
       accountNumber: '',
       bankName: '',
       fullName: '',
+      amount:''
     };
 
     // Validate account number using regex
-    const accountNumberRegex = /^[0-9]+$/;
-    if (!accountNumber.trim() || !accountNumber.match(accountNumberRegex)) {
+    if (!accountNumber.trim()) {
       newErrors.accountNumber = 'Please enter a valid account number with only numeric characters.';
       isValid = false;
+    }
+
+    if(!withdrawAmount.trim()){
+      newErrors. amount = 'Withdraw amount is required';
+      isValid = false;
+
     }
 
     if (!bankName.trim()) {
@@ -137,43 +145,14 @@ const WithdrawForm = ({ Submit, close, loading,banks}) => {
     setErrors(newErrors);
 
     if (isValid) {
-    //   Submit({ accountNumber, bankName, fullName });
-      console.log('Submitted:', { accountNumber, bankName, fullName });
+      Submit({ accountNumber, bankName, fullName ,withdrawAmount});
+      console.log('Submitted:', { accountNumber, bankName, fullName,withdrawAmount });
     }
   };
 
   return (
     <div className=''>
-      <div
-        className="transition-3"
-        style={{
-          ...styles.loadingDiv,
-          ...{
-            zIndex: loading ? '10' : '-1',
-            display: loading ? "block" : "none",
-            opacity: loading ? '0.33' : '0',
-          }
-        }}
-
-      />
-      <LoadingOutlined
-        className="transition-3"
-        style={{
-          ...styles.loadingIcon,
-          ...{
-            zIndex: loading ? '10' : '-1',
-            display: loading ? "block" : "none",
-            opacity: loading ? '1' : '0',
-            fontSize: '42px',
-            top: 'calc(50% - 41px)',
-            left: 'calc(50% - 41px)',
-
-
-          }
-
-
-        }}
-      />
+      
       <div className="max-w-md mx-auto mt-6 mb-4 p-6 bg-white  rounded-md">
         {/* <h2 className="text-2xl font-bold mb-6">Bank Account Information</h2> */}
         <form onSubmit={handleSubmit}>
@@ -187,13 +166,13 @@ const WithdrawForm = ({ Submit, close, loading,banks}) => {
               placeholder='0000'
               value={withdrawAmount}
               onChange={handleAmountChange}
-              className={`w-full p-2 border ${errors.accountNumber ? 'border-red-500' : 'border-gray-300'
+              className={`w-full p-2 border ${errors.amount ? 'border-red-500' : 'border-gray-300'
                 } rounded-md focus:border-orange-500 `}
-              required
+              // required
             />
-            {/* {errors.accountNumber && (
-              <p className="text-red-500 text-sm mt-1">{errors.accountNumber}</p>
-            )} */}
+            {errors.amount && (
+              <p className="text-red-500 text-sm mt-1">{errors.amount}</p>
+            )}
           </div>
           <div className="mb-4">
             <label htmlFor="accountNumber" className="block text-sm font-semibold mb-2">

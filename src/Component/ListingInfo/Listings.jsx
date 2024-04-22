@@ -36,15 +36,18 @@ const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, 
 
 
   useEffect(() => {
-    axios.get("/getUserWishlistContainers").then(response => {
-      setWishlistContainer(response.data.userWishlist);
-      console.log("wishlist", response.data);
+    if(user?.id){
 
-    }).catch(error => {
-      console.log("wishlist", error)
-    });
+      axios.get("/getUserWishlistContainers").then(response => {
+        setWishlistContainer(response.data.userWishlist);
+        console.log("wishlist", response.data);
+  
+      }).catch(error => {
+        console.log("wishlist", error)
+      });
+    }
 
-  }, [isModalOpen]);
+  }, [isModalOpen,user]);
 
 
 
@@ -173,7 +176,7 @@ const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, 
       {imageLoaded ? <Carousel>
         {listing.pictures.map((picture, index) => (
           <div key={index}>
-            {user.name && (
+            {user?.name && (
               <button
                 onClick={() => toggleFavorite(listing.id, listing.isFavorite)}
                 className={`flex items-center absolute outline-none bg-${listing.isFavorite ? "yellow-400" : ""

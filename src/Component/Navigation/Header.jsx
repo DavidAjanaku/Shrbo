@@ -80,7 +80,7 @@ export default function Header() {
   useEffect(() => {
     setNotificationLoading(true);
 
-    axios
+   if(token){ axios
       .get("/notification")
       .then((response) => {
         setNotifications(
@@ -96,8 +96,8 @@ export default function Header() {
       })
       .finally(() => {
         setNotificationLoading(false);
-      });
-  }, [isNotificationDeleted]);
+      });}
+  }, [isNotificationDeleted,token]);
 
   const initializeEcho = (token, receiverId) => {
     if (typeof window.Echo !== "undefined") {
@@ -214,8 +214,11 @@ export default function Header() {
   };
 
   useEffect(() => {
-    initializeEcho(token, receiverId);
-  }, []);
+    if(token){
+
+      initializeEcho(token, receiverId);
+    }
+  }, [token]);
 
   return (
     <header className="bg-gray-800 text-white py-2 hidden md:block">
@@ -241,7 +244,7 @@ export default function Header() {
           {((host == 1 || coHost==1) && token) && <Link to="/Hosting" className={` hover:text-gray-300 ml-4 ${((host != 0||coHost==1) && token) ? "block text-white" : "hidden"}`}>
             Switch to {coHost==1?"CoHost":"Host"}
           </Link>}
-          {!(host === 1 || coHost === 1) && <Link to="/HostHomes" className="text-white hover:text-gray-300 ml-4"  >Shrbo your place</Link>}
+          {!((host == 1 || coHost==1) && token) && <Link to="/HostHomes" className="text-white hover:text-gray-300 ml-4"  >Shrbo your place</Link>}
           {(adminStatus == "admin") && <Link to="/AdminAnalytical" className="text-white hover:text-gray-300 ml-4">
             Dashboard
           </Link>}
