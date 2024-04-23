@@ -8,6 +8,18 @@ import { BsRobot } from "react-icons/bs";
 
 const SupportHeader = (props) => {
 
+  const extractName = (content) => {
+    if(content){
+      // Use a regular expression to match either "has joined the chat" or "has left the chat"
+      const match = content.match(/^(.*?)\s*has (joined|left) the chat/);
+      // If a match is found, return the name part, otherwise return the full content
+      return match ? match[1] : content;
+
+    }
+    return null
+  };
+
+
   return (
 
 
@@ -25,7 +37,7 @@ const SupportHeader = (props) => {
         // size="large"
 
         >
-          {props.agentName && props.agentName.name.charAt(0)}
+          {props.agentName && props.agentName.name?.charAt(0)}
         </Avatar>
 
         {/* <img
@@ -34,7 +46,7 @@ const SupportHeader = (props) => {
           alt="Avatar" /> */}
 
 
-        {props.agentName ? props.agentName.name : "Shrbo Team"}
+        {props.agentName ? extractName(props.agentName.name) : "Shrbo Team"}
       </div>
       <div className=" close-button text-white text-end w-[50%] flex justify-end items-center   " >
         <button onClick={props.close} >

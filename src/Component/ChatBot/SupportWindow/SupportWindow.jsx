@@ -74,7 +74,7 @@ const SupportWindow = (props) => {
            />
               : */}
 
-            {props.botMessage&&token &&
+            {(props.botMessage||props.agentName)&&token&&
                 <ChatEngine
                     visible={props.selectedOption === "Live chat" ? !token != null : true}
                     chat={chat}
@@ -83,6 +83,7 @@ const SupportWindow = (props) => {
                     token={token}
                     botMessage={props.botMessage}
                     selectedOption={props.selectedOption}
+                    updateHeader={props.updateHeader}
                 />
             }
             {/* } */}
