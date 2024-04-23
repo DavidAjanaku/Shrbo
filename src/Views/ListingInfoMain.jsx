@@ -21,6 +21,8 @@ const ListingInfoMain = () => {
   const [listingDetails, setListingDetails] = useState(null);
   const [refreshed, setRefreshed] = useState(false);
   const [bookingRequestStatus, setBookingRequestStatus] = useState(null);
+    const [coHost, setCoHost] = useState(null); // State for cohost
+
   const { token } = useStateContext();
 
   console.log(id);
@@ -68,7 +70,8 @@ const ListingInfoMain = () => {
           // If token doesn't exist, fetch details for unauthenticated user
           response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
         }
-        
+            const data = response.data.data;
+
         setListingDetails(response.data.data);
         setApartment(id);
         setUser(response.data.data.user.id);
@@ -78,7 +81,25 @@ const ListingInfoMain = () => {
         setPhoto(response.data.data.hosthomephotos);
         setDiscounts(response.data.data.discounts);
         setBookingRequestStatus(response.data.data.bookingRequestStatus);
+
+
         console.log(response.data.data);
+
+                // Set the cohost value
+if (data.cohosts && data.cohosts.length > 0) {
+  const cohost = data.cohosts[0]; // Assuming there is only one cohost
+  setCoHost({
+    id: cohost.id,
+    name: cohost.name,
+    email: cohost.email,
+    rating: cohost.rating,
+    // Add other cohost properties as needed
+  });
+
+  console.log("Cohost:", cohost);
+} else {
+  setCoHost(null); // No cohost found
+}
       } catch (error) {
         console.error(
           "Error fetching listing details:",
@@ -143,7 +164,10 @@ const ListingInfoMain = () => {
             <div className="  md:hidden relative mr-0 ">
               <ListingForm
                 hosthomeId={id}
-                hostId={hostId}
+                hostIds={hostId}
+                coHostId={coHost ? coHost.id : null} // Pass the cohost id as a prop
+                userId={listingDetails?.user?.id || ""} // Pass the user id as a prop
+
                 price={listingDetails?.price}
                 reservations={listingDetails?.reservations}
                 reservation={listingDetails?.reservation}
@@ -191,7 +215,12 @@ const ListingInfoMain = () => {
           <div className=" md:ml-[8.33333%] md:w-[33.33333%] hidden md:block relative mr-0 ">
             <ListingForm
               id={id}
+              hostIds={hostId}
+
               price={listingDetails?.price}
+              coHostId={coHost ? coHost.id : null} // Pass the cohost id as a prop
+              userId={listingDetails?.user?.id || ""} // Pass the user id as a prop
+
               reservations={listingDetails?.reservations}
               reservation={listingDetails?.reservation}
               guest={listingDetails?.guest}
