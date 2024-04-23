@@ -529,10 +529,10 @@ const CommunicationCenter = () => {
               };
             });
             
-            const chat = userChats[sessionId] || [];
+            // const chat = userChats[sessionId] || [];
   
-            const newChat = [...chat, ...formattedChats];
-            setUserChats(prevChats => ({ ...prevChats, [sessionId]: newChat }));
+            const newChat = [...formattedChats];
+            setUserChats({[sessionId]: newChat });
 
 
             console.log("history",newChat)

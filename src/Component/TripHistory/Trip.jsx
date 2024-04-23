@@ -8,8 +8,10 @@ import { Link } from "react-router-dom";
 import PaginationExample from "../PaginationExample";
 import BottomNavigation from "../Navigation/BottomNavigation";
 import { styles } from "../ChatBot/Style";
-import {LoadingOutlined}  from '@ant-design/icons';
+import { LoadingOutlined } from '@ant-design/icons';
 import Header from "../Navigation/Header";
+import { Modal, Button,message, Form, Input } from "antd";
+
 import {
   FaHome,
   FaHotel,
@@ -81,6 +83,11 @@ export default function Trip() {
   const [error, setError] = useState('');
   const [cancellationPolicy, setCancellationPolicy] = useState(null);
   const [filteredTrips, setFilteredTrips] = useState([]);
+  const [messageSent, setMessageSent] = useState(false);
+  const [messageModalVisible, setMessageModalVisible] = useState(false);
+  const [messages, setMessages] = useState("");
+  const [form] = Form.useForm(); // Define the form variable
+
 
   const amenityIcons = {
     Wifi: <FaWifi />,
@@ -124,7 +131,7 @@ export default function Trip() {
 
 
   useEffect(() => {
-    
+
     axios.get("/userTrips").then(response => {
       const filteredTripsData = response.data.data.map(item => ({
         id: item.id,
@@ -135,8 +142,8 @@ export default function Trip() {
         image: item.hosthomephotos[0],
         amenities: item.hosthomeamenities,
         hostName: item.hostName,
-        hostId:item.hostid,
-        bbokingid:item.bbokingid,
+        hostId: item.hostid,
+        bbokingid: item.bbokingid,
         rating: 4.8,
         bathrooms: item.hosthomebathroom,
         bedrooms: item.hosthomebedroom,
@@ -148,7 +155,7 @@ export default function Trip() {
         checkedIn: item.status,
         checkingInDate: "",
         checkingInTime: "",
-        cancellationPolicy:item.hosthomecancelationpolicy,
+        cancellationPolicy: item.hosthomecancelationpolicy,
 
 
 
@@ -212,15 +219,15 @@ export default function Trip() {
   const closeModal = () => {
     setSelectedTrip(null);
   };
-  
+
   const changeMainPhoto = (index) => {
     setSelectedPhotoIndex(index);
   };
-  
+
   const openCancellationModal = () => {
     setIsCancellationModalOpen(true); // Step 2: Open the cancellation modal
   };
-  
+
   const closeCancellationModal = () => {
     setGoNext(true);
     setReasons('');
@@ -264,8 +271,8 @@ export default function Trip() {
   const cancelTrips = async () => {
     setLoadingCancelReservation(true);
 
-  
- 
+
+
     const data =
     {
       booking_id: selectedTrip.bbokingid,
@@ -280,11 +287,12 @@ export default function Trip() {
     }).catch(error => {
       // console.log(error)
 
-    }).finally(()=>{
-      window.location.href='/trip';
-      setLoadingCancelReservation(false) 
+    }).finally(() => {
+      window.location.href = '/trip';
+      setLoadingCancelReservation(false)
       closeModal()
-      closeCancellationModal()});
+      closeCancellationModal()
+    });
   }
 
   const handleReasonChange = (e) => {
@@ -335,6 +343,28 @@ export default function Trip() {
       setFilteredTrips(filtered);
     }
     setSelectedTab(tab);
+  };
+
+  const sendMessageToHost = async (receiverId) => {
+    try {
+      // Log the message before sending
+      console.log("Sending message:", message);
+
+      // Send the message to the API
+      const response = await axios.post(`/chat/${receiverId}`, {
+        message: messages,
+      });
+
+      // Set messageSent to true to indicate that the message was sent successfully
+      setMessageSent(true);
+      console.log("Message sent successfully");
+      // showMessage.success("Message sent successfully");
+
+      // Handle the response as needed
+    } catch (error) {
+      console.error("Error sending message to host:", error);
+      // Handle errors
+    }
   };
 
   // console.log(goNext)
@@ -435,7 +465,7 @@ export default function Trip() {
                       </p>
                       <p className="flex items-center text-sm">
                         <img src={calender} className="w-4 mr-3" alt="" />{" "}
-                     
+
                         {formatDate(trip.endDate)}
                       </p>
                     </div>
@@ -610,144 +640,202 @@ export default function Trip() {
               </div>}
 
               {selectedTrip.contactHost && (
-                <Link
-                  to={selectedTrip.contactHost}
+                <button
+                  onClick={()=>setMessageModalVisible(true)}
                   className="bg-orange-400 px-4 py-2 rounded-full text-center   text-white text-sm"
                 >
                   Contact Host
-                </Link>
+                </button>
               )}
 
-
+              <Modal
+                title="Message Host"
+                open={messageModalVisible}
+                onCancel={() => setMessageModalVisible(false)}
+                footer={[
+                  <Button key="cancel" onClick={() => setMessageModalVisible(false)}>
+                    Cancel
+                  </Button>,
+                  <Button
+                    key="send"
+                    type="primary"
+                    onClick={() => sendMessageToHost(selectedTrip.hostId, message)}
+                  >
+                    Send
+                  </Button>,
+                ]}
+              >
+                <Form
+                  onFinish={sendMessageToHost}
+                  form={form}
+                  initialValues={{ message: "" }}
+                >
+                  {messageSent ? (
+                    <p>Message sent successfully</p>
+                  ) : (
+                    <>
+                      <Form.Item
+                        name="message"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter your message",
+                          },
+                        ]}
+                      >
+                        <Input.TextArea
+                          placeholder="Type your message here..."
+                          style={{ width: "100%", minHeight: "100px" }}
+                          value={messages}
+                          onChange={(e) => setMessages(e.target.value)}
+                        />
+                      </Form.Item>
+                      <Form.Item>
+                        <Button
+                          type="primary"
+                          className="bg-orange-400 hover:bg-orange-600"
+                          htmlType="submit"
+                          onClick={() => {
+                            sendMessageToHost(selectedTrip.hostId);
+                            setMessages("");
+                          }}
+                        >
+                          Send
+                        </Button>
+                      </Form.Item>
+                    </>
+                  )}
+                </Form>
+              </Modal>
             </div>
           </div>
         </div>
       )}
 
       {isCancellationModalOpen && (
-        <> 
-        {!loadingCancelReservation?<>
-          {goNext ? (
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div
-                className="absolute inset-0 bg-black opacity-50"
-                onClick={closeCancellationModal} // Step 3: Close the cancellation modal
-              ></div>
-              <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
-                <div className="text-right">
-                  <button
-                    className="text-gray-500 hover:text-gray-700"
-                    onClick={closeCancellationModal} // Step 3: Close the cancellation modal
-                  >
-                    <img src={close} className="w-4" alt="" />
-                  </button>
-                </div>
-                <h2 className="text-2xl font-semibold mt-4">Cancel Reservation</h2>
-                <p className="mt-4">
-                  Are you sure you want to cancel your reservation for{" "}
-                  {selectedTrip.destination}? Please provide a reason for cancellation:
-                </p>
-                <textarea
-                  rows="3"
-                  className="w-full mt-2 p-2 border rounded"
-                  placeholder="Reason for cancellation"
-                  onChange={handleReasonChange}
-                ></textarea>
-                <label className="text-red-500">{error}</label><br></br>
-                <button
-                  className="bg-orange-400 p-4 rounded-full text-white mt-4"
-                  onClick={handleGoNext} // Use onClick for buttons
-                >
-                  Confirm Cancellation
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div
-                className="absolute inset-0 bg-black opacity-50"
-                onClick={closeCancellationModal} // Step 3: Close the cancellation modal
-              ></div>
-              <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
-                <div className="text-right">
-                  <button
-                    className="text-gray-500 hover:text-gray-700"
-                    onClick={closeCancellationModal} // Step 3: Close the cancellation modal
-                  >
-                    <img src={close} className="w-4" alt="" />
-                  </button>
-                </div>
-                <h2 className="text-2xl font-semibold mt-4">Host Cancellation Policy</h2>
-                <p className="mt-4">
-                 {policyText}{" "}
-                  ,do you still want to Proceed?
-                </p>
-                <button
-                  className="bg-orange-400 p-4 rounded-full text-white mt-14 mr-4"
-                  onClick={cancelTrips} // Use onClick for buttons
-                >
-                 Cancel Reservation
-                </button>
-                <button
-                  className=" border-orange-400 border  p-4 rounded-full text-black mt-14"
-                  onClick={closeCancellationModal} // Use onClick for buttons
-                >
-                 Keep Reservation
-                </button>
-              </div>
-            </div>
-          )}
-        </>
-        :
         <>
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div
-                className="absolute inset-0 bg-black opacity-50"
-                onClick={closeCancellationModal} // Step 3: Close the cancellation modal
-              ></div>
-              <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
-                <div className="text-right">
+          {!loadingCancelReservation ? <>
+            {goNext ? (
+              <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div
+                  className="absolute inset-0 bg-black opacity-50"
+                  onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                ></div>
+                <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
+                  <div className="text-right">
+                    <button
+                      className="text-gray-500 hover:text-gray-700"
+                      onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                    >
+                      <img src={close} className="w-4" alt="" />
+                    </button>
+                  </div>
+                  <h2 className="text-2xl font-semibold mt-4">Cancel Reservation</h2>
+                  <p className="mt-4">
+                    Are you sure you want to cancel your reservation for{" "}
+                    {selectedTrip.destination}? Please provide a reason for cancellation:
+                  </p>
+                  <textarea
+                    rows="3"
+                    className="w-full mt-2 p-2 border rounded"
+                    placeholder="Reason for cancellation"
+                    onChange={handleReasonChange}
+                  ></textarea>
+                  <label className="text-red-500">{error}</label><br></br>
                   <button
-                    className="text-gray-500 hover:text-gray-700"
-                    onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                    className="bg-orange-400 p-4 rounded-full text-white mt-4"
+                    onClick={handleGoNext} // Use onClick for buttons
                   >
-                    <img src={close} className="w-4" alt="" />
+                    Confirm Cancellation
                   </button>
                 </div>
-                  <div
-                className="transition-3"
-                style={{
-                    ...styles.loadingDiv,
-                    ...{
-                        zIndex:loadingCancelReservation? '10':'-1',
-                        display:loadingCancelReservation? "block" :"none",
-                        opacity:loadingCancelReservation? '0.33':'0',
-                    }
-                }}
-
-            />
-            <LoadingOutlined 
-                className="transition-3"
-                style={{
-                    ...styles.loadingIcon,
-                    ...{
-                        zIndex:loadingCancelReservation? '10':'-1',
-                        display:loadingCancelReservation? "block" :"none",
-                        opacity:loadingCancelReservation? '1':'0',
-                        fontSize:'42px',
-                        top:'calc(50% - 41px)',
-                        left:'calc(50% - 41px)',
-
-
-                    }
-                
-                
-                }}
-            />
               </div>
-            </div>
-         
-        </>}
+            ) : (
+              <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div
+                  className="absolute inset-0 bg-black opacity-50"
+                  onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                ></div>
+                <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
+                  <div className="text-right">
+                    <button
+                      className="text-gray-500 hover:text-gray-700"
+                      onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                    >
+                      <img src={close} className="w-4" alt="" />
+                    </button>
+                  </div>
+                  <h2 className="text-2xl font-semibold mt-4">Host Cancellation Policy</h2>
+                  <p className="mt-4">
+                    {policyText}{" "}
+                    ,do you still want to Proceed?
+                  </p>
+                  <button
+                    className="bg-orange-400 p-4 rounded-full text-white mt-14 mr-4"
+                    onClick={cancelTrips} // Use onClick for buttons
+                  >
+                    Cancel Reservation
+                  </button>
+                  <button
+                    className=" border-orange-400 border  p-4 rounded-full text-black mt-14"
+                    onClick={closeCancellationModal} // Use onClick for buttons
+                  >
+                    Keep Reservation
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+            :
+            <>
+              <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div
+                  className="absolute inset-0 bg-black opacity-50"
+                  onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                ></div>
+                <div className="bg-white p-8 rounded-lg z-10 h-[100vh] md:h-[60vh] w-full md:w-2/5 overflow-auto">
+                  <div className="text-right">
+                    <button
+                      className="text-gray-500 hover:text-gray-700"
+                      onClick={closeCancellationModal} // Step 3: Close the cancellation modal
+                    >
+                      <img src={close} className="w-4" alt="" />
+                    </button>
+                  </div>
+                  <div
+                    className="transition-3"
+                    style={{
+                      ...styles.loadingDiv,
+                      ...{
+                        zIndex: loadingCancelReservation ? '10' : '-1',
+                        display: loadingCancelReservation ? "block" : "none",
+                        opacity: loadingCancelReservation ? '0.33' : '0',
+                      }
+                    }}
+
+                  />
+                  <LoadingOutlined
+                    className="transition-3"
+                    style={{
+                      ...styles.loadingIcon,
+                      ...{
+                        zIndex: loadingCancelReservation ? '10' : '-1',
+                        display: loadingCancelReservation ? "block" : "none",
+                        opacity: loadingCancelReservation ? '1' : '0',
+                        fontSize: '42px',
+                        top: 'calc(50% - 41px)',
+                        left: 'calc(50% - 41px)',
+
+
+                      }
+
+
+                    }}
+                  />
+                </div>
+              </div>
+
+            </>}
         </>
       )}
 

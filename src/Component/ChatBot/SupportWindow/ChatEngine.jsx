@@ -74,33 +74,7 @@ const ChatEngine = (props) => {
   };
 
 
-  const saveAgentToSession = (agent) => {
-    const data = {
-      expiry: Date.now() + 420000, // 420000 milliseconds = 7 minutes
-      id: agent.id,
-      name: agent.name,
-      session: agent.session,
-      color: agent.color
-
-    };
-    sessionStorage.setItem('supportAgent', JSON.stringify(data));
-  };
-
-  const updateSessionTime = () => {
-    // Retrieve existing data from session storage
-    const existingDataString = sessionStorage.getItem('supportAgent');
-    const existingData = JSON.parse(existingDataString);
-
-    // Update expiry value
-    if (existingData) {
-
-      existingData.expiry = Date.now() + 420000;
-    }
-
-    // Store updated data back into session storage
-    sessionStorage.setItem('supportAgent', JSON.stringify(existingData));
-
-  }
+  
 
   const getRandomColor = () => {
     const randomIndex = Math.floor(Math.random() * ColorList.length);
@@ -292,6 +266,34 @@ const ChatEngine = (props) => {
 
 
 
+  const saveAgentToSession = (agent) => {
+    const data = {
+      expiry: Date.now() + 420000, // 420000 milliseconds = 7 minutes
+      id: agent.id,
+      name: agent.name,
+      session: agent.session,
+      color: agent.color
+
+    };
+    sessionStorage.setItem('supportAgent', JSON.stringify(data));
+  };
+
+  const updateSessionTime = () => {
+    // Retrieve existing data from session storage
+    const existingDataString = sessionStorage.getItem('supportAgent');
+    const existingData = JSON.parse(existingDataString);
+
+    // Update expiry value
+    if (existingData) {
+
+      existingData.expiry = Date.now() + 420000;
+    }
+
+    // Store updated data back into session storage
+    sessionStorage.setItem('supportAgent', JSON.stringify(existingData));
+
+  }
+
 
   const loadAgentFromSession = () => {
     const storedData = sessionStorage.getItem('supportAgent');
@@ -373,6 +375,8 @@ const ChatEngine = (props) => {
           recipient_id: "",
           chat_session_id: "",
           image: "",
+          // email:"",
+          // name:"",
         });
 
         if (response.data) {
@@ -419,7 +423,7 @@ const ChatEngine = (props) => {
             };
           });
 
-          setMessages([formattedChats]);
+          setMessages([...formattedChats]);
 
 
         }

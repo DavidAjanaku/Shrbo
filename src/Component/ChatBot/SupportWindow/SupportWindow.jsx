@@ -78,7 +78,7 @@ const SupportWindow = (props) => {
                 <ChatEngine
                     visible={props.selectedOption === "Live chat" ? !token != null : true}
                     chat={chat}
-                    user={_user}
+                    guestUser={_user}
                     userId={user?.id}
                     token={token}
                     botMessage={props.botMessage}
