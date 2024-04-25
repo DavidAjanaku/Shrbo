@@ -11,7 +11,7 @@ const WelcomeForm = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here
-            props.setUser(name);
+            props.setUser({name,email});
             props.setChat("hello");
             console.log('Sending email')
 

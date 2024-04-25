@@ -61,7 +61,7 @@ const ChatEngine = (props) => {
     if (!isTyping) {
       if (storedAgent?.id) {
         try {
-          await axios.get(`/typing/${props.userId}/${supportAgent.id}`);
+          await axios.get(`/typing/${props.userId}/${storedAgent.id}`);
           console.log("typing....")
         } catch (error) {
 
@@ -74,30 +74,7 @@ const ChatEngine = (props) => {
   };
 
 
-  const saveAgentToSession = (agent) => {
-    const data = {
-      expiry: Date.now() + 420000, // 420000 milliseconds = 7 minutes
-      id: agent.id,
-      name: agent.name,
-      session: agent.session,
-      color: agent.color
-
-    };
-    sessionStorage.setItem('supportAgent', JSON.stringify(data));
-  };
-
-  const updateSessionTime = () => {
-    // Retrieve existing data from session storage
-    const existingDataString = sessionStorage.getItem('supportAgent');
-    const existingData = JSON.parse(existingDataString);
-
-    // Update expiry value
-    existingData.expiry = Date.now() + 420000;
-
-    // Store updated data back into session storage
-    sessionStorage.setItem('supportAgent', JSON.stringify(existingData));
-
-  }
+  
 
   const getRandomColor = () => {
     const randomIndex = Math.floor(Math.random() * ColorList.length);
@@ -138,6 +115,9 @@ const ChatEngine = (props) => {
         }
 
 
+        props.updateHeader(agent);
+
+
         console.table(data);
 
 
@@ -150,14 +130,16 @@ const ChatEngine = (props) => {
       };
 
       const leftChatHandler = (data) => {
-        // const color=sessionStorage.getItem('supportAgent');
+
+        const color = sessionStorage.getItem('supportAgent');
+        const parsedData = JSON.parse(color);
         const newMessage = {
           content: data.message,
           timestamp: formatDate(new Date()),
           isSentByUser: true,
           adminJoined: true, // adding this because of the styling adminJoined
           adminLeftChat: true,
-          // color:color?.color
+          color: parsedData?.color
         };
 
 
@@ -171,6 +153,7 @@ const ChatEngine = (props) => {
         messageSentSound.play();
         setMessages(prevMessages => [...prevMessages, newMessage]);
         sessionStorage.removeItem('supportAgent');
+        props.updateHeader(null);
 
 
       }
@@ -283,6 +266,34 @@ const ChatEngine = (props) => {
 
 
 
+  const saveAgentToSession = (agent) => {
+    const data = {
+      expiry: Date.now() + 420000, // 420000 milliseconds = 7 minutes
+      id: agent.id,
+      name: agent.name,
+      session: agent.session,
+      color: agent.color
+
+    };
+    sessionStorage.setItem('supportAgent', JSON.stringify(data));
+  };
+
+  const updateSessionTime = () => {
+    // Retrieve existing data from session storage
+    const existingDataString = sessionStorage.getItem('supportAgent');
+    const existingData = JSON.parse(existingDataString);
+
+    // Update expiry value
+    if (existingData) {
+
+      existingData.expiry = Date.now() + 420000;
+    }
+
+    // Store updated data back into session storage
+    sessionStorage.setItem('supportAgent', JSON.stringify(existingData));
+
+  }
+
 
   const loadAgentFromSession = () => {
     const storedData = sessionStorage.getItem('supportAgent');
@@ -354,7 +365,9 @@ const ChatEngine = (props) => {
 
   // starts the chat when the user clicks on live chat
   useEffect(() => {
-    if (props.selectedOption == "Live chat") {
+
+    const storedAgent = loadAgentFromSession();
+    if (props.selectedOption == "Live chat" && !storedAgent) {
       try {
         const response = axios.post("/admin-guest-chat/startConversationOrReplyText", {
           message: "Live chat",
@@ -362,6 +375,8 @@ const ChatEngine = (props) => {
           recipient_id: "",
           chat_session_id: "",
           image: "",
+          // email:"",
+          // name:"",
         });
 
         if (response.data) {
@@ -408,7 +423,7 @@ const ChatEngine = (props) => {
             };
           });
 
-          setMessages([formattedChats]);
+          setMessages([...formattedChats]);
 
 
         }
@@ -494,9 +509,6 @@ const ChatEngine = (props) => {
 
 
     const storedAgent = loadAgentFromSession();
-    if (storedAgent) {
-      setSupportAgent(storedAgent);
-    }
 
 
 
@@ -507,6 +519,8 @@ const ChatEngine = (props) => {
     if (inputMessage.trim() === '' && imageInput.trim() === '') {
       return; // Don't send empty messages
     } else {
+
+
       try {
         // Regular message sending logic
         messageSentSound.play();
@@ -538,14 +552,28 @@ const ChatEngine = (props) => {
           sent: true
         });
 
-        const response = await axios.post("/admin-guest-chat/startConversationOrReplyText", {
-          message: inputMessage,
-          image: imageInput,
-          status: "guest",
-          recipient_id: storedAgent ? `${storedAgent.id}` : "",
-          chat_session_id: storedAgent ? `${storedAgent.session}` : "",
-        });
-        updateSessionTime(); // update the session time back to 7 mins
+        if (storedAgent) {
+          setSupportAgent(storedAgent);
+          const response = await axios.post("/admin-guest-chat/startConversationOrReplyText", {
+            message: inputMessage,
+            image: imageInput,
+            status: "guest",
+            recipient_id: `${storedAgent.id}`,
+            chat_session_id: `${storedAgent.session}`,
+          });
+          updateSessionTime(); // update the session time back to 7 mins
+
+        }else{
+          const response = await axios.post("/admin-guest-chat/startConversationOrReplyText", {
+            message: inputMessage,
+            image: imageInput,
+            status: "guest",
+            recipient_id:"",
+            chat_session_id: "",
+          });
+
+        }
+
 
       } catch (error) {
 
@@ -700,14 +728,14 @@ const ChatEngine = (props) => {
 
                     {!(message.sessionEnded) && <>
                       <Avatar
-                      // className={` relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
-                      // bg-center rounded-[50%] bg-cover bg-no-repeat   `}
+                        // className={` relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
+                        // bg-center rounded-[50%] bg-cover bg-no-repeat   `}
                         style={{
                           backgroundColor: message.color,
                           verticalAlign: 'middle',
                         }}
                         size="large"
-                        
+
 
                       >
                         {message.content.charAt(0)}
@@ -764,13 +792,13 @@ const ChatEngine = (props) => {
 
                           <Avatar
                             style={{
-                              backgroundColor:supportAgent?supportAgent.color:"transparent",
+                              backgroundColor: supportAgent ? supportAgent.color : "transparent",
                               verticalAlign: 'middle',
                             }}
                             className={` relative   box-border block 
                             bg-center  bg-cover bg-no-repeat   `}
-                            icon={!supportAgent && <BsRobot 
-                            className=" text-orange-500 w-5 h-5    " />}
+                            icon={!supportAgent && <BsRobot
+                              className=" text-orange-500 w-5 h-5    " />}
                             size="small"
 
                           >
@@ -821,8 +849,7 @@ const ChatEngine = (props) => {
 
             {!isTyping && (<ChatOptions selectedOption={props.selectedOption} automateSlide={automateSlide} />)}
 
-            {/* this only shows when the chat has connected to a Customer support Agent */}
-
+         
             {/*typing indicator  */}
             {isTyping && (
               <div className="self-start  bg-gray-300 p-2 rounded-lg max-w-[200px]">

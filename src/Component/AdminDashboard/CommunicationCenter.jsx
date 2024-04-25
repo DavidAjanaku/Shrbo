@@ -8,7 +8,8 @@ import axios from "../../Axios";
 import { IoExitOutline } from "react-icons/io5";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { notification } from 'antd';
-
+import SessionTimer from "../ChatBot/SessionTimer";
+import { DatePicker, Select } from 'antd';
 
 
 const CommunicationCenter = () => {
@@ -16,6 +17,8 @@ const CommunicationCenter = () => {
   const [selectedUserData, setSelectedUserData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [expiry, setExpiry] = useState("");
+  const [sessionChatHistory,setSessionChatHistory]=useState([]);
 
   const [users, setUsers] = useState([
 
@@ -70,6 +73,21 @@ const CommunicationCenter = () => {
             ],
           }
         )).reverse();
+
+
+        const initialMessage = {
+          text: data.message,
+          time: data.created_at,
+          id: data.id,
+          session: data.session_id,
+          sender: "user",
+          type: "text",
+          // time: data.created_at,
+        }
+        const chat = userChats[data.session_id] || [];
+
+        const newChat = [...chat, initialMessage];
+        setUserChats(prevChats => ({ ...prevChats, [data.session_id]: newChat }));
 
 
 
@@ -131,29 +149,34 @@ const CommunicationCenter = () => {
 
   const initializeBroadcastReceiverEcho = (userId) => {
     const channelName = `chat.admin.${userId}`;
-
+  
     const privateChannel = window.Echo.private(channelName);
-
+  
     const messageHandler = (data) => {
+      const storedAgent = loadAgentFromSession();
       const newMessage = {
         id: data.id,
         session: data.sessionId,
-        text: data.image??data.message,
-        sender:"user",
-        type:!data.image?"text":"file",
+        text: data.image ?? data.message,
+        sender: "user",
+        type: !data.image ? "text" : "file",
         time: data.created_at,
       };
-
-      console.log("user sent a message", data);
+  
+      const sessionId = storedAgent?.session_id;
+      const chat = userChats[sessionId] ?? [];
+  
+      const newChat = [...chat, newMessage];
+      setUserChats(prevChats => ({ ...prevChats, [sessionId]: newChat }));
+  
+      console.log("user sent a message", newChat);
       updateSessionTime();
-      // messageSentSound.play(); // Ensure messageSentSound is defined and loaded
-      // setMessages(prevMessages => [...prevMessages, newMessage]);
     };
-
+  
     privateChannel.listen("MessageBroadcasted", messageHandler);
-
+  
     console.log("Listening for messages on channel:", channelName);
-
+  
     // Return a function to unsubscribe from the channel
     return () => {
       privateChannel.stopListening("MessageBroadcasted", messageHandler);
@@ -166,17 +189,25 @@ const CommunicationCenter = () => {
     const privateChannel = window.Echo.private(channelName);
 
     const messageHandler = (data) => {
+
+      const storedAgent = loadAgentFromSession();
       const newMessage = {
-        id: "notification",
+        id: new Date(),
         text: data.notification,
         sender: 'admin',
         sessionEnded: true,
-        type:'text',
-        time: new Date(),
-      
+        type: 'text',
+
       };
 
-    
+
+      const chat = userChats[storedAgent?.session_id] || [];
+
+      const newChat = [...chat, newMessage];
+      setUserChats(prevChats => ({ ...prevChats, [storedAgent?.session_id]: newChat }));
+
+
+
 
 
       // setMessages(prevMessages => [...prevMessages, newMessage]);
@@ -198,7 +229,7 @@ const CommunicationCenter = () => {
   };
 
   const initializeTypingEcho = (userId) => {
-    const channelName = `typing.91`;
+    const channelName = `typing.${userId}`;
 
     const privateChannel = window.Echo.private(channelName);
     let typingTimeout;
@@ -240,11 +271,13 @@ const CommunicationCenter = () => {
 
     const cleanupInitial = initializeEcho(token, user.id);
     const cleanupBroadcastReceiver = initializeBroadcastReceiverEcho(user.id);
-
+    const cleanupTyping = initializeTypingEcho(user.id);
+    const cleanupSessionEnd = initializeSessionEndEcho(user.id);
     return () => {
       cleanupInitial();
       cleanupBroadcastReceiver(); // Cleanup function to unsubscribe
-
+      cleanupTyping();
+      cleanupSessionEnd();
     };
   }, [token, user]);
 
@@ -283,29 +316,45 @@ const CommunicationCenter = () => {
 
     axios.get('/admin-guest-chat/getUnattendedChats').then((response) => {
 
-      const formattedChats = response.data.unattended_chats.map((data) => (
-        {
-          id: data.id,
-          name: `User ${data.user_id}`,
-          userId: data.user_id,
-          role: data.status,
-          session_id: data.session_id,
-          image: "https://shbro.onrender.com/assets/logo-94e89628.png",
-          userProfile: `/UserDetails/${data.user_id}`,
-          messages: [
-            {
-              text: data.message,
-              time: new Date(),
-            },
-          ],
-        }
-      )).reverse();
+      const formattedChats = response.data.unattended_chats.map((data) => ({
+        id: data.id,
+        name: `User ${data.user_id}`,
+        userId: data.user_id,
+        role: data.status,
+        session_id: data.session_id,
+        image: "https://shbro.onrender.com/assets/logo-94e89628.png",
+        userProfile: `/UserDetails/${data.user_id}`,
+        messages: [
+          {
+            text: data.message,
+            time: data.created_at,
+            id: data.id, // Assuming this id corresponds to the message
+            session: data.session_id,
+            sender: "user",
+            type: "text",
+          },
+        ],
+      })).reverse();
 
-      console.log("hmmm", formattedChats)
+      // Assuming userChats is your state containing previous chats
+      const updatedUserChats = {};
+      formattedChats.forEach((chat) => {
+        updatedUserChats[chat.session_id] = [
+          ...(userChats[chat.session_id] || []), // Existing chats for the user
+          ...chat.messages, // New messages for the user
+        ];
+      });
 
-      setUsers(formattedChats)
+      // Assuming setUsers is a state updater function
+      setUsers(formattedChats);
+      console.log("check", updatedUserChats)
+      console.log(formattedChats)
+      setUserChats(updatedUserChats);
 
-    })
+
+    }).catch((error) => {
+
+    });
 
 
 
@@ -328,6 +377,7 @@ const CommunicationCenter = () => {
       session_id: user.session_id,
 
     };
+    setExpiry(data.expiry)
     sessionStorage.setItem('supportUser', JSON.stringify(data));
   };
 
@@ -337,6 +387,7 @@ const CommunicationCenter = () => {
     if (storedData) {
       const parsedData = JSON.parse(storedData);
       if (parsedData.expiry > Date.now()) {
+        setExpiry(parsedData.expiry)
         return parsedData;
       } else {
         // Clear expired data
@@ -348,11 +399,15 @@ const CommunicationCenter = () => {
 
   const updateSessionTime = () => {
     // Retrieve existing data from session storage
-    const existingDataString = sessionStorage.getItem('supportUser'); 
+    const existingDataString = sessionStorage.getItem('supportUser');
     const existingData = JSON.parse(existingDataString);
 
     // Update expiry value
-    existingData.expiry = Date.now() + 420000;
+    if (existingData) {
+
+      existingData.expiry = Date.now() + 420000;
+      setExpiry(Date.now() + 420000);
+    }
 
     // Store updated data back into session storage
     sessionStorage.setItem('supportUser', JSON.stringify(existingData));
@@ -369,6 +424,17 @@ const CommunicationCenter = () => {
 
     const guestid = data.userId;
     const sessionId = data.session_id;
+
+    if (type == "join" && currentSession.length > 0) {// does not make a join session request when you are alreaddy in a session
+
+      console.log(data)
+
+      openNotificationWithIcon("error", "You are currently in an ongoing session")
+
+      return;
+
+
+    }
 
 
 
@@ -391,7 +457,7 @@ const CommunicationCenter = () => {
           setSelectedUser(null);
         }
 
-        openNotificationWithIcon("success", response.message)
+        openNotificationWithIcon("success", response.data.message)
 
 
 
@@ -437,57 +503,54 @@ const CommunicationCenter = () => {
 
     const storedAgent = loadAgentFromSession();
     if (storedAgent) {
-      // setSupportAgent(storedAgent);
+        const agentId=storedAgent.userId;
+        const sessionId =storedAgent.session_id;
+        const adminId=user.id
+
+        console.table({agentId,sessionId,adminId})
+
+        axios.get(`/admin-guest-chat/getChatMessages/${user.id}/${agentId}/${sessionId}`).then((response)=>{
 
 
-      try {
-
-        // const userId = props.userId;
-        const userId = storedAgent.id;
-        const sessionId = storedAgent.session_id;
-
-        const response = axios.get(`/admin-guest-chat/getChatMessages/${user.id}/${userId}/${sessionId}`)
-
-
-        if (response.data) {
-
-          const formattedChats = response.data.chat_messages.map((element) => {
-            return {
-              id: element.id,
-              text: element.image??element.message,
-              time: formatDate(element.created_at),
-              sender: element.status == "guest" ? "user" : "admin",
-              type:!element.image?"text":"file",
-
-
-
-            };
-          });
-
-          // setMessages([formattedChats]);
+           console.log("I am in here",response.data.chat_messages)
+  
+         
+            const formattedChats = response.data.chat_messages.map((element) => {
+              return {
+                id: element.id,
+                text: element.image ?? element.message,
+                time: element.created_at,
+                sender: element.status == "guest" ? "user" : "admin",
+                type: !element.image ? "text" : "file",
+                session: storedAgent.session_id,
+  
+  
+  
+              };
+            });
+            
+            // const chat = userChats[sessionId] || [];
+  
+            const newChat = [...formattedChats];
+            setUserChats({[sessionId]: newChat });
 
 
-        }
-
-
-      } catch (error) {
-
-      }
+            console.log("history",newChat)
 
 
 
 
+        }).catch((error)=>{
+          console.error(error)
+        })
 
 
 
+    }else{
+        console.log("no chats")
     }
 
-
-
-
-
-
-  }, []);
+  }, [user]);
 
 
 
@@ -501,7 +564,7 @@ const CommunicationCenter = () => {
       setCurrentSession([storedAgent]);
     }
 
-    const chat = userChats[selectedUser] || [];
+    const chat = userChats[storedAgent?.session_id] || [];
     let newChatItem;
 
     const createChatItem = (text, sender, type) => ({
@@ -513,7 +576,7 @@ const CommunicationCenter = () => {
 
     const updateChatAndSend = async (postChat) => {
       const newChat = [...chat, newChatItem];
-      setUserChats(prevChats => ({ ...prevChats, [selectedUser]: newChat }));
+      setUserChats(prevChats => ({ ...prevChats, [storedAgent?.session_id]: newChat }));
       setMessage(""); // Clear the message input after sending
 
       console.table(postChat)
@@ -521,8 +584,8 @@ const CommunicationCenter = () => {
       try {
         console.log("Sending:", postChat);
         console.log(postChat)
-        // const response = await axios.post("/admin-guest-chat/startConversationOrReplyText", postChat);
-        // console.log("Response:", response.data);
+        const response = await axios.post("/admin-guest-chat/startConversationOrReplyText", postChat);
+        console.log("Response:", response.data);
         updateSessionTime();
       } catch (error) {
         console.error("Failed to send message:", error);
@@ -536,7 +599,7 @@ const CommunicationCenter = () => {
         message: "",
         image: file,
         status: "admin",
-        recipient_id: storedAgent?.id,
+        recipient_id: storedAgent?.userId,
         chat_session_id: storedAgent?.session_id,
       };
       await updateChatAndSend(postChat);
@@ -547,16 +610,65 @@ const CommunicationCenter = () => {
         message: message.trim(),
         image: "",
         status: "admin",
-        recipient_id: storedAgent?.id,
+        recipient_id: storedAgent?.userId,
         chat_session_id: storedAgent?.session_id,
       };
       await updateChatAndSend(postChat);
     }
   };
 
+  const handleKeyUp = async (event) => {
+    // setInputValue(event.target.value);
+
+    const storedAgent = loadAgentFromSession();
+    // if (storedAgent) {
+    //   setSupportAgent(storedAgent);
+    // }
+
+
+    // Only send typing notification if the user was not already marked as typing
+    if (!isTyping) {
+      if (storedAgent?.id) {
+        try {
+          await axios.get(`/typing/${storedAgent.userId}/${user.id}`);
+          console.log("typing....")
+        } catch (error) {
+
+
+        }
+      }
+      // setIsTyping(true);
+      // sendTypingNotification(true);  // Notify that the user is typing
+    }
+  };
+
+  useEffect(() => {
+    if (isTyping) {
+      const timer = setTimeout(() => {
+        setIsTyping(false);
+      }, 1000);  // Adjust delay as necessary, 1000 ms = 1 second
+
+      // Cleanup function to clear the timer when the component unmounts or updates
+      return () => clearTimeout(timer);
+    }
+  }, [isTyping]);
+
+
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+
+  useEffect(()=>{
+
+    axios.get("/admin-guest-chat/getSessionMessages").then((response)=>{
+
+      setSessionChatHistory(response.data.session_messages);
+
+
+    })
+
+  },[]);
 
 
 
@@ -594,9 +706,9 @@ const CommunicationCenter = () => {
                   {currentSession.map((user) => (
                     <li
                       key={user.id}
-                      className={`cursor-pointer flex justify-between items-center p-2 px-4 ${selectedUser === user.id ? "bg-gray-200" : ""
+                      className={`cursor-pointer flex justify-between items-center p-2 px-4 ${selectedUser === user.session_id ? "bg-gray-200" : ""
                         }`}
-                      onClick={() => { setSelectedUser(user.id), setSelectedUserData(user) }}
+                      onClick={() => { setSelectedUser(user.session_id), setSelectedUserData(user) }}
                     >
                       <div className="flex items-center">
                         <img
@@ -608,7 +720,7 @@ const CommunicationCenter = () => {
                           <p className="font-semibold">{user.name}</p>
                           <p className="text-sm text-gray-500">{user.role}</p>
                           <p
-                            className={`text-sm ${selectedUser === user.id
+                            className={`text-sm ${selectedUser === user.session_id
                               ? "text-gray-500"
                               : "text-orange-500"
                               }`}
@@ -638,9 +750,9 @@ const CommunicationCenter = () => {
                   {filteredUsers.map((user) => (
                     <li
                       key={user.id}
-                      className={`cursor-pointer flex justify-between items-center p-2 px-4 ${selectedUser === user.id ? "bg-gray-200" : ""
+                      className={`cursor-pointer flex justify-between items-center p-2 px-4 ${selectedUser === user.session_id ? "bg-gray-200" : ""
                         }`}
-                      onClick={() => { setSelectedUser(user.id), setSelectedUserData(user) }}
+                      onClick={() => { setSelectedUser(user.session_id), setSelectedUserData(user) }}
                     >
                       <div className="flex items-center">
                         <img
@@ -652,7 +764,7 @@ const CommunicationCenter = () => {
                           <p className="font-semibold">{user.name}</p>
                           <p className="text-sm text-gray-500">{user.role}</p>
                           <p
-                            className={`text-sm ${selectedUser === user.id
+                            className={`text-sm ${selectedUser === user.session_id
                               ? "text-gray-500"
                               : "text-orange-500"
                               }`}
@@ -686,10 +798,11 @@ const CommunicationCenter = () => {
                           {users.name}
                         </p> */}
                         <p className="text-sm text-gray-500">
-                          Ticket #{selectedUser}
+                          Ticket: {selectedUser}
                         </p>
-                        <button onClick={() => { handleJoinLeaveChat(selectedUserData, currentSession.find(chat => chat.id === selectedUser) ? "leave" : "join"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
-                          {currentSession.find(chat => chat.id === selectedUser) ? <>Leave <IoExitOutline className=" h-4 w-4 " /></> : <>Join Ticket </>}
+                        <div className="text-sm text-gray-500"><SessionTimer expiry={expiry} /></div> 
+                        <button onClick={() => { handleJoinLeaveChat(selectedUserData, currentSession.find(chat => chat.session_id === selectedUser) ? "leave" : "join"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
+                          {currentSession.find(chat => chat.session_id === selectedUser) ? <>Leave <IoExitOutline className=" h-4 w-4 " /></> : <>Join Ticket </>}
                         </button>
 
                       </div>
@@ -702,41 +815,49 @@ const CommunicationCenter = () => {
                           )}
 
                         {userChats[selectedUser]?.map((msg, index) => (
-                          <div
-                            key={index}
-                            className={`mb-2 p-2 rounded ${msg.sender === "admin"
-                              ? "bg-orange-100 w-fit self-end "
-                              : "bg-gray-100"
-                              } ${msg.sender === "admin"
-                                ? "text-blue-900"
-                                : "text-gray-900"
-                              }`}
-                            style={{ wordBreak: 'break-word' }}
-                          >
-                            {msg.type === "text" ? (
-                              <>
-                                <p>{msg.text}</p>
-                                <p className="text-xs text-gray-500">
-                                  {msg.time.toLocaleString(undefined, {
-                                    weekday: "long",
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                  })}
-                                </p>
-                              </>
-                            ) : (
-                              <img
-                                src={msg.text}
-                                alt="Attachment"
-                                className=" h-auto"
-                              />
-                            )}
-                          </div>
+                          // <div key={index}>
+                          //   {!msg.sessionEnded ? 
+                          <div key={index}
+
+                              className={`mb-2 p-2 rounded ${msg.sender === "admin"
+                                ? "bg-orange-100 w-fit  "
+                                : "bg-gray-100"
+                                } ${msg.sender === "admin"
+                                  ? "text-blue-900"
+                                  : "text-gray-900"
+                                }`}
+                              style={{ wordBreak: 'break-word' }}
+                            >
+                              {msg.type === "text" ? (
+                                <>
+                                  <p>{msg.text}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {formatDate(msg.time)}
+                                  </p>
+                                </>
+
+                              ) : (
+                                <img
+                                  src={msg.text}
+                                  alt="Attachment"
+                                  className=" h-auto"
+                                />
+                              )}
+                            </div>
+                          //     :
+                          //     <div className=" my-2 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session ended</div>}
+                          // </div>
                         ))}
+
+
+                        {isTyping && <div className=" text-slate-500 text-sm ">User typing........</div>}
+
+
                       </div>
 
-                      {currentSession.find(chat => chat.id === selectedUser) && <div className="mt-4 flex gap-2">
+
+
+                      {currentSession.find(chat => chat.session_id === selectedUser) && <div className="mt-4 flex gap-2">
                         <button
                           className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
                           onClick={() => fileInputRef.current.click()}
@@ -768,6 +889,7 @@ const CommunicationCenter = () => {
                           placeholder="Type your message here..."
                           value={message}
                           onChange={(e) => setMessage(e.target.value)}
+                          onKeyUp={handleKeyUp}
                         ></textarea>
                         <button
                           className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
@@ -792,7 +914,78 @@ const CommunicationCenter = () => {
         </div>
       </div>
     </div>
+
+    // <ChatHistory sessionMessages={sessionChatHistory}/>
   );
 };
 
 export default CommunicationCenter;
+
+
+
+
+
+
+
+
+const { Option } = Select;
+
+const ChatHistory = ({ sessionMessages }) => {
+  const [selectedSessionID, setSelectedSessionID] = useState('');
+
+  const handleSessionIDChange = (value) => {
+      setSelectedSessionID(value);
+  };
+
+  const session = sessionMessages.find(session => session.session_id === selectedSessionID);
+
+  const sessionIDs = [...new Set(sessionMessages.map(session => session.session_id))];
+
+  return (
+      <div className="p-6 space-y-6">
+          <div className="mb-4">
+              <label htmlFor="sessionID" className="block text-lg font-semibold mb-1">Filter by Session ID:</label>
+              <Select
+                  id="sessionID"
+                  className="w-full"
+                  value={selectedSessionID}
+                  onChange={handleSessionIDChange}
+                  placeholder="Select Session ID"
+              >
+                  {sessionIDs.map(id => (
+                      <Option key={id} value={id}>{id}</Option>
+                  ))}
+              </Select>
+          </div>
+
+          {/* <div className="mb-4">
+              <label htmlFor="date" className="block text-lg font-semibold mb-1">Filter by Date:</label>
+              <DatePicker id="date" className="w-full" />
+          </div> */}
+
+          {session && (
+              <div className="border rounded-lg p-4">
+                  <div className="mb-4">
+                      <p className="text-lg font-semibold">Session Information:</p>
+                      <p>User: {session.user_name} ({session.user_email})</p>
+                      <p>Admin: {session.admin_name} ({session.admin_email})</p>
+                      <p>Session ID: {session.session_id}</p>
+                      <p>Date: {session.dateOfChat}</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {session.messages.map((message, index) => (
+                          <div key={index} className="bg-gray-100 rounded-lg p-4">
+                              <p className="text-lg font-semibold">Message:</p>
+                              <p>{message.message}</p>
+                              <p className="mt-2">Sent by: {message.whoSentMessage === 'guest' ? 'User' : 'Admin'}</p>
+                              <p>Sent at: {new Date(message.created_at).toLocaleString()}</p>
+                              {message.image && <img src={message.image} alt="Image" className="mt-2" />}
+                          </div>
+                      ))}
+                  </div>
+              </div>
+          )}
+      </div>
+  );
+};
+

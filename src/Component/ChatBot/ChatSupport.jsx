@@ -70,7 +70,7 @@ const ChatSupport = () => {
   useEffect(() => {
     const storedAgent = loadAgentFromSession();
     if (storedAgent) {
-      setAgentName(storedAgent.name);
+      setAgentName(storedAgent);
       // setVisible(true);
       setShowOption(false);
       setSelectedCategory("Live chat");
@@ -83,7 +83,12 @@ const ChatSupport = () => {
   }, []);
 
 
+const updateHeader=(agentDetails)=>{
+    
+  setAgentName(agentDetails)
 
+
+}
 
 
 
@@ -122,6 +127,8 @@ const ChatSupport = () => {
         botMessage={botMessage}
         selectedOption={selectedIssue}
         agentName={agentName}
+        updateHeader={(data)=>{updateHeader(data)}}
+
 
 
       />

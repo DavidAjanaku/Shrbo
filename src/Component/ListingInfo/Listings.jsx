@@ -36,7 +36,7 @@ const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, 
 
 
   useEffect(() => {
-    if(user?.id){
+    
 
       axios.get("/getUserWishlistContainers").then(response => {
         setWishlistContainer(response.data.userWishlist);
@@ -45,9 +45,9 @@ const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, 
       }).catch(error => {
         console.log("wishlist", error)
       });
-    }
+ 
 
-  }, [isModalOpen,user]);
+  }, [isModalOpen]);
 
 
 
