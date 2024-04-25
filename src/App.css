@@ -404,7 +404,6 @@ The slider*/
 .available-dates{
   color: rgb(0, 0, 0);
   background-color: transparent;
-  background: transparent;
  
   cursor:pointer ;
 
@@ -412,7 +411,6 @@ The slider*/
 .blocked-dates{
   color: rgb(0, 0, 0);
   background-color: transparent;
-  background: transparent;
  
   cursor:pointer ;
 

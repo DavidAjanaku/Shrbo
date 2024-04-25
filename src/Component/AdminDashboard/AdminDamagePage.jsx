@@ -246,12 +246,19 @@ const AdminDamagePage = () => {
                               selectedTicket.images.length > 0 &&
                               selectedTicket.images.map((image) => (
                                 <img
-                                  key={image.id}
-                                  src={image.images}
-                                  alt="Damage Image"
-                                  className="w-full h-auto cursor-pointer"
-                                  onClick={() => handleImageClick(image.images)}
-                                />
+                                key={image.id}
+                                src={image.images}
+                                alt="Damage Image"
+                                className="w-full h-auto cursor-pointer"
+                                onClick={() => handleImageClick(image.images)}
+                                onKeyDown={(event) => {
+                                  if (event.key === 'Enter') {
+                                    handleImageClick(image.images);
+                                  }
+                                }}
+                                tabIndex="0" // Make the element focusable
+                              />
+                              
                               ))}
                           </div>
                         )}

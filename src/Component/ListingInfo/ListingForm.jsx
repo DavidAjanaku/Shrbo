@@ -32,7 +32,7 @@ export default function ListingForm({
   bookingRequestStatus,
   coHostId,
   userId,
-  hostIds
+  hostIds,
 }) {
   function showModal(e) {
     e.preventDefault();
@@ -82,6 +82,8 @@ export default function ListingForm({
   const [hostId, setHostId] = useState(null); // State for hostId
   const { token } = useStateContext();
   const [messages, setMessages] = useState("");
+  const [reservedPrice, setReservedPrice] = useState(0);
+  const [matchedReservedPrices, setMatchedReservedPrices] = useState([]);
 
   // useEffect(() => {
   //   const fetchUsers = async () => {
@@ -129,6 +131,10 @@ export default function ListingForm({
 
   const [form] = Form.useForm(); // Define the form variable
   const [listingDetails, setListingDetails] = useState(null);
+
+  useEffect(() => {
+    setTotalCost(reservedPrice);
+  }, [reservedPrice]);
 
   const showMessageModal = () => {
     setMessageModalVisible(true);
@@ -395,32 +401,39 @@ export default function ListingForm({
       let basePrice = nights * nightlyPrice;
       console.log(basePrice);
       let basenormalPrice = basePrice;
+      let reservedPrice = 0; // Initialize reservedPrice
 
       if (reservedPricesForCertainDay.length > 0) {
         const flattenedReservedDates = reservedPricesForCertainDay.flat();
+        console.log(flattenedReservedDates);
         const checkInDate = checkIn.getTime();
         const checkOutDate = checkOut.getTime();
-
+      
+        // Filter out reservations that don't match the current check-in and check-out dates
+        const updatedMatchedReservedPrices = matchedReservedPrices.filter(
+          (reservation) => {
+            const reservationDate = new Date(reservation.date).getTime();
+            return reservationDate >= checkInDate && reservationDate < checkOutDate;
+          }
+        );
+      
+        setMatchedReservedPrices(updatedMatchedReservedPrices);
+      
         flattenedReservedDates.forEach((reservedDate) => {
-          const reservedStartDate = new Date(reservedDate.start_date).getTime();
+          const reservedDateValue = new Date(reservedDate.date).getTime();
           const reservedEndDate = reservedDate.end_date
             ? new Date(reservedDate.end_date).getTime()
-            : null;
+            : reservedDateValue;
           const reservedPriceValue = Number(reservedDate.price);
-
+      
           if (
-            (reservedStartDate <= checkOutDate &&
-              reservedStartDate >= checkInDate) ||
-            (reservedEndDate &&
-              reservedEndDate <= checkOutDate &&
-              reservedEndDate >= checkInDate) ||
-            (reservedStartDate <= checkInDate &&
-              reservedEndDate &&
-              reservedEndDate >= checkOutDate)
+            (reservedDateValue < checkOutDate && reservedDateValue >= checkInDate) ||
+            (reservedEndDate && reservedEndDate < checkOutDate && reservedEndDate >= checkInDate) ||
+            (reservedDateValue < checkInDate && reservedEndDate && reservedEndDate >= checkOutDate)
           ) {
             let reservedDays = 0;
             for (
-              let date = new Date(reservedStartDate);
+              let date = new Date(reservedDateValue);
               date <= reservedEndDate;
               date.setDate(date.getDate() + 1)
             ) {
@@ -429,17 +442,46 @@ export default function ListingForm({
                 reservedDays++;
               }
             }
-
+      
             basenormalPrice -= reservedDays * nightlyPrice;
+            const totalnightlydays = nightlyPrice * reservedDays;
+            console.log("reservedPriceValue " + reservedPriceValue);
+            console.log("reservedDays " + reservedDays);
             basenormalPrice += reservedPriceValue * reservedDays;
+      
+            reservedPrice = basenormalPrice - totalnightlydays + securityDeposit + nightlyPrice;
+      
+            console.log(basenormalPrice - totalnightlydays);
+      
+            // Add the new reservation to matchedReservedPrices if it's not already there
+            if (
+              !updatedMatchedReservedPrices.some(
+                (r) =>
+                  new Date(r.date).getTime() === reservedDateValue &&
+                  new Date(r.end_date).getTime() === reservedEndDate
+              )
+            ) {
+              updatedMatchedReservedPrices.push({
+                date: reservedDateValue,
+                end_date: reservedEndDate,
+                price: reservedPriceValue,
+                reservedDays: reservedDays,
+              });
+            }
           }
         });
       }
+      
+       // Update reservedPrice state here
+    setReservedPrice(reservedPrice);
+    console.log(reservedPrice);
+    console.log(securityDeposit);
+    setTotalCost(reservedPrice)
+    console.log(totalCost);
+      
 
       // Deduct 20,000 from the final basenormalPrice
-      basenormalPrice -= 20000;
-
-      console.log("Base Price:", basenormalPrice);
+      
 
       // This is for weekend calculation
       // Check if the weekend price should be applied
@@ -469,10 +511,14 @@ export default function ListingForm({
       const securityDeposits = securityDeposit;
       const totalPrice = nights * nightlyPrice;
       const TotalPrice = basePrice + securityDeposits;
+      console.log(TotalPrice);
 
       setHousePrice(price);
       setNights(nights);
       setTotalPrice(totalPrice);
+      console.log(totalPrice);
+      console.log(reservedPrice);
+      console.log(totalCost);
       setHostFee(hostFees);
       setHostFees(hostFees);
       setTotalCosts(totalCosts);
@@ -760,13 +806,12 @@ export default function ListingForm({
 
   let coHostMessageShown = false;
 
-
-  const hostIDs = parseInt(localStorage.getItem('receiverid'), 10);
+  const hostIDs = parseInt(localStorage.getItem("receiverid"), 10);
   const coHostIdInt = parseInt(coHostId, 10);
-  
+
   console.log("cohostID:", coHostIdInt);
   console.log("userID:", hostIDs);
-  
+
   // Function to check if co-hosts are allowed to book
   const isCoHostNotAllowed = () => {
     const coHostNotAllowed = hostIDs === coHostIdInt;
@@ -776,8 +821,6 @@ export default function ListingForm({
     }
     return coHostNotAllowed;
   };
-  
-
 
   return (
     <div className=" block w-full h-full">
@@ -1011,6 +1054,37 @@ export default function ListingForm({
                                   </div>
                                 </div>
                               </div>
+                              <div>
+  <h2 className="text-lg font-semibold mb-2">
+    Reserved Dates and Prices
+  </h2>
+  {matchedReservedPrices.length > 0 && (
+    <ul className="divide-y divide-gray-200">
+      {matchedReservedPrices.map((reservation, index) => (
+        <li key={index} className="py-2 ">
+          <div className="flex text-sm justify-between ">
+            
+           
+          </div>
+          <div className="flex text-sm justify-between ">
+            <p className="">
+              Reserved Date:{" "}
+              {new Date(reservation.date).toLocaleDateString()}
+            </p>
+            <p className="">
+              Reserved Days: {reservation.reservedDays}
+            </p>
+          </div>
+          <p className="">
+               ₦{reservation.price}
+            </p>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
+
                               {weekend && !isNaN(Number(weekend)) && (
                                 <div className=" mb-2 box-border block">
                                   <div className=" flex items-end justify-between break-words    ">
@@ -1101,16 +1175,16 @@ export default function ListingForm({
                           }
                         }}
                         disabled={
-                          (checkInDate && checkOutDate && isCoHostNotAllowed()) ||
-
+                          (checkInDate &&
+                            checkOutDate &&
+                            isCoHostNotAllowed()) ||
                           isBookButtonDisabled ||
                           !checkInDate ||
                           !checkOutDate ||
                           isDisabled ||
                           isCheckoutDisabled() ||
                           isCheckoutBlocked() ||
-                          isBlockedDatesBetweenCheckInOut()  
-
+                          isBlockedDatesBetweenCheckInOut()
                         }
                       >
                         Book
@@ -1148,7 +1222,6 @@ export default function ListingForm({
                       }
                     }}
                     disabled={
-                  
                       isBookButtonDisabled ||
                       !checkInDate ||
                       !checkOutDate ||
@@ -1157,7 +1230,6 @@ export default function ListingForm({
                       isCheckoutBlocked() ||
                       isBlockedDatesBetweenCheckInOut() ||
                       (checkInDate && checkOutDate && isCoHostNotAllowed())
-
                     }
                   >
                     Book
