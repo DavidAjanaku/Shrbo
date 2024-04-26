@@ -234,7 +234,7 @@ const Wallet = () => {
                 {transaction.status == "Incoming" ? <LuArrowDownLeft /> : <LuArrowUpRight />}
 
                 <div className="min-w-0 flex-auto">
-                    <p className="text-sm font-semibold leading-6 text-gray-900">{transaction.status}</p>
+                    <p className="text-sm font-semibold leading-6 text-gray-900">{transaction.for}</p>
                     <p className="mt-1 truncate text-xs leading-5 text-gray-500">{transaction.status == "Incoming" ? "From" : "To"}: {transaction.from},{transaction.for} {transaction.time}</p>
                 </div>
             </div>
@@ -385,7 +385,7 @@ const Wallet = () => {
 
             console.error(error);
 
-        }finally{
+        } finally {
             setLoadingTransactions(false);
         }
 
@@ -720,14 +720,14 @@ const Wallet = () => {
 
                             <div className=" flex justify-between ">
                                 <p className=" font-medium text-lg ">Last Transactions</p>
-                              {!loadingTransactions&&<Link to={"/TransactionHistory"} className=" text-orange-500 text-sm font-medium" >View All</Link>}
+                                {!loadingTransactions && <Link to={"/TransactionHistory"} className=" text-orange-500 text-sm font-medium" >View All</Link>}
                             </div>
 
-                            {!loadingTransactions? 
+                            {!loadingTransactions ?
 
-                            <ul role="list" className="divide-y divide-gray-100 h-full overflow-y-scroll example mt-4">
+                                <ul role="list" className="divide-y divide-gray-100 h-full overflow-y-scroll example mt-4">
 
-                              
+
                                     {transactions.length > 0 ?
                                         <>
                                             {Transactions}
@@ -737,11 +737,11 @@ const Wallet = () => {
                                         :
                                         <li className=" text-black w-full text-center flex mt-28  justify-center h-full ">No Transaction History</li>
                                     }
-                              
-                              
-                            </ul>
-                            :
-                            <div className=" flex flex-col gap-3 "  >{transactionSkeletonLoader}</div>}
+
+
+                                </ul>
+                                :
+                                <div className=" flex flex-col gap-3 "  >{transactionSkeletonLoader}</div>}
 
 
                         </div>
