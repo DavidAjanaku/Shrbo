@@ -82,22 +82,24 @@ const AdminSupportPage = () => {
       id: ticket.id,
       subject: ticket.title,
       status: ticket.status,
-      replies: ticket.replies || [],
+      replies: ticket.replies || [], // Initialize as empty array if null or undefined
       rentalName: ticket.homeName,
       disputeMessage: ticket.reasonforreporting,
       disputeEmail: ticket.disputeEmail,
     });
     setTicketModalVisible(true);
   };
+  
 
   const handleReplySubmit = () => {
     const { id } = selectedTicket;
     replyForm.validateFields().then((values) => {
       const updatedTickets = supportTickets.map((ticket) => {
         if (ticket.id === id) {
+          const replies = Array.isArray(ticket.replies) ? ticket.replies : [];
           return {
             ...ticket,
-            replies: [...ticket.replies, values.reply],
+            replies: [...replies, values.reply],
           };
         }
         return ticket;
@@ -106,6 +108,7 @@ const AdminSupportPage = () => {
       replyForm.resetFields();
     });
   };
+  
 
   return (
     <div className="bg-gray-100 h-[100vh]">

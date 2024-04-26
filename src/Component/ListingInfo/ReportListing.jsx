@@ -4,7 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import Axios from "../../Axios";
 import { notification } from "antd";
 
-const ReportListing = ({ id }) => {
+const ReportListing = ({ id,onSubmit }) => {
   const [goNext, setGoNext] = useState(false);
   const [reportCategory, setReportCategory] = useState(0);
   const [reportType, setReportType] = useState();
@@ -37,53 +37,51 @@ const ReportListing = ({ id }) => {
 
   const handleReport = (e) => {
     e.preventDefault();
-
-     if (!reportType) {
-    notification.error({
-      message: "Error",
-      description: "Please select a report type.",
-    });
-    return;
-  }
-
-  // Check if a report category is selected (only if goNext is true)
-  if (goNext && reportCategory === 0) {
-    notification.error({
-      message: "Error",
-      description: "Please select a reason for reporting.",
-    });
-    return;
-  }
-
-    // Prepare the request body
+  
+    if (!reportType) {
+      notification.error({
+        message: "Error",
+        description: "Please select a report type.",
+      });
+      return;
+    }
+  
+    if (goNext && reportCategory === 0) {
+      notification.error({
+        message: "Error",
+        description: "Please select a reason for reporting.",
+      });
+      return;
+    }
+  
     const requestBody = {
       title: ReportTypes.find((report) => report.index === reportType).report,
       reasonforreporting: ReportCategories.find(
         (report) => report.index === reportType
       ).category[reportCategory],
-      host_home_id: id, // Corrected to use 'id' instead of 'host_home_id'
+      host_home_id: id,
       extrareasonforreporting: extraReason,
     };
-
-    // Make the API call
+  
     Axios.post("/reporthosthome", requestBody)
       .then((response) => {
         console.log("Report submitted successfully");
-        // Optionally, you can handle success actions here
         notification.success({
           message: "Success",
           description: "Report submitted successfully!",
         });
+        // Call the onSubmit callback
+        onSubmit();
       })
       .catch((error) => {
         console.error("Error while submitting report:", error);
-        // Optionally, you can handle error actions here
         notification.error({
           message: "Error",
           description: "Failed to submit report. Please try again later.",
         });
       });
   };
+  
 
   // Your existing code for rendering the component goes here
 
