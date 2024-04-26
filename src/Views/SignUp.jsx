@@ -79,6 +79,12 @@ const SignUp = () => {
       // Handle the success response
       console.log(response.data); // You can customize this based on your API response
       if (response.data) {
+        /// Live Chat unAuthenticated user logic
+        localStorage.removeItem("gnT");
+        localStorage.removeItem("gnU");
+        localStorage.removeItem("gnUID");
+
+
         setLoading(false);
         openNotificationWithIcon("success");
         setVerifyEmailLink(response.data.link);

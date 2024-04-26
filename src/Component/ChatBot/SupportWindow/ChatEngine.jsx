@@ -4,9 +4,10 @@ import messagesent from '../../../assets/message-sent.mp3'
 import { SendOutlined } from '@ant-design/icons'
 import { Avatar } from 'antd';
 import ChatOptions from "./ChatOptions";
-import axios from "../../../Axios"
+import axios from "../../../Axios";
 import Logo from "../../../assets/logo.png";
 import { BsRobot } from "react-icons/bs";
+import SessionTimer from "../SessionTimer";
 
 
 
@@ -27,6 +28,7 @@ const ChatEngine = (props) => {
   const [emailProvided, setEmailProvided] = useState(false);
   const [supportAgentConnected, isSupportAgentConnected] = useState(false);
   const ColorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#4CAF50', '#E91E63', '#2196F3', '#FFC107', '#607D8B'];
+  const [expiry, setExpiry] = useState("");
 
 
   const messageSentSound = new Audio(messagesent);
@@ -51,6 +53,8 @@ const ChatEngine = (props) => {
   const handleKeyUp = async (event) => {
     // setInputValue(event.target.value);
 
+
+
     const storedAgent = loadAgentFromSession();
     if (storedAgent) {
       setSupportAgent(storedAgent);
@@ -74,7 +78,7 @@ const ChatEngine = (props) => {
   };
 
 
-  
+
 
   const getRandomColor = () => {
     const randomIndex = Math.floor(Math.random() * ColorList.length);
@@ -248,6 +252,10 @@ const ChatEngine = (props) => {
       messageSentSound.play(); // Ensure messageSentSound is defined and loaded
       setMessages(prevMessages => [...prevMessages, newMessage]);
       sessionStorage.removeItem('supportAgent');
+      localStorage.removeItem("gnT");
+      localStorage.removeItem("gnU");
+      localStorage.removeItem("gnUID");
+
 
 
       console.log("SessionEnded", data)
@@ -275,6 +283,7 @@ const ChatEngine = (props) => {
       color: agent.color
 
     };
+    setExpiry(data.expiry);
     sessionStorage.setItem('supportAgent', JSON.stringify(data));
   };
 
@@ -287,6 +296,7 @@ const ChatEngine = (props) => {
     if (existingData) {
 
       existingData.expiry = Date.now() + 420000;
+      setExpiry(Date.now() + 420000);
     }
 
     // Store updated data back into session storage
@@ -300,10 +310,14 @@ const ChatEngine = (props) => {
     if (storedData) {
       const parsedData = JSON.parse(storedData);
       if (parsedData.expiry > Date.now()) {
+        setExpiry(parsedData.expiry)
         return parsedData;
       } else {
         // Clear expired data
         sessionStorage.removeItem('supportAgent');
+        localStorage.removeItem("gnT");
+        localStorage.removeItem("gnU");
+        localStorage.removeItem("gnUID");
       }
     }
     return null;
@@ -364,32 +378,32 @@ const ChatEngine = (props) => {
 
 
   // starts the chat when the user clicks on live chat
-  useEffect(() => {
+  // useEffect(() => {
 
-    const storedAgent = loadAgentFromSession();
-    if (props.selectedOption == "Live chat" && !storedAgent) {
-      try {
-        const response = axios.post("/admin-guest-chat/startConversationOrReplyText", {
-          message: "Live chat",
-          status: "guest",
-          recipient_id: "",
-          chat_session_id: "",
-          image: "",
-          // email:"",
-          // name:"",
-        });
+  //   const storedAgent = loadAgentFromSession();
+  //   if (props.selectedOption == "Live chat" && !storedAgent) {
+  //     try {
+  //       const response = axios.post("/admin-guest-chat/startConversationOrReplyText", {
+  //         message: "Live chat",
+  //         status: "guest",
+  //         recipient_id: "",
+  //         chat_session_id: "",
+  //         image: "",
+  //         email:"",
+  //         name:"",
+  //       });
 
-        if (response.data) {
+  //       if (response.data) {
 
-          console.log("Live chat", response.data)
-        }
-      } catch (error) {
+  //         console.log("Live chat", response.data)
+  //       }
+  //     } catch (error) {
 
-      }
+  //     }
 
-    }
+  //   }
 
-  }, []);
+  // }, [props.selectedOption]);
 
 
   // loads the chat in a current session
@@ -397,41 +411,49 @@ const ChatEngine = (props) => {
 
     const storedAgent = loadAgentFromSession();
     if (storedAgent) {
-      setSupportAgent(storedAgent);
+      // setSupportAgent(storedAgent);
 
 
-      try {
 
-        const userId = props.userId;
-        const adminId = storedAgent.id;
-        const sessionId = storedAgent.session;
+      const userId = props.userId;
+      const adminId = storedAgent.id;
+      const sessionId = storedAgent.session;
 
-        const response = axios.get(`/admin-guest-chat/getChatMessages/${adminId}/${userId}/${sessionId}`)
+      console.table({ userId, sessionId, adminId })
 
+      axios.get(`/admin-guest-chat/getChatMessages/${adminId}/${userId}/${sessionId}`).then((response) => {
 
-        if (response.data) {
+        console.log("history", response.data)
 
-          const formattedChats = response.data.chat_messages.map((element) => {
-            return {
-              id: element.id,
-              content: element.message,
-              image: element.image,
-              timestamp: formatDate(element.created_at),
-              isSentByUser: element.status == "guest" ? true : false,
-
-
-            };
-          });
-
-          setMessages([...formattedChats]);
+        const formattedChats = response.data.chat_messages.map((element) => {
+          return {
+            id: element.id,
+            content: element.message,
+            image: element.image,
+            timestamp: element.created_at,
+            isSentByUser: element.status == "guest" ? true : false,
 
 
-        }
+          }
+        });
+
+        console.log("historyformatted", formattedChats)
+
+        setMessages([...formattedChats]);
 
 
-      } catch (error) {
 
-      }
+
+
+
+
+
+
+      }).catch(() => { })
+
+
+
+
 
 
 
@@ -446,7 +468,7 @@ const ChatEngine = (props) => {
 
 
 
-  }, []);
+  }, [props.userId]);
 
 
 
@@ -554,22 +576,50 @@ const ChatEngine = (props) => {
 
         if (storedAgent) {
           setSupportAgent(storedAgent);
+
+          console.log("sent1?", {
+            mmessage: inputMessage,
+            image: imageInput,
+            status: "guest",
+            recipient_id: `${storedAgent.id}`,
+            chat_session_id: `${storedAgent.session}`,
+            name: props.guestUser?.name || "",
+            email: props.guestUser?.email || ""
+          });
+
+
           const response = await axios.post("/admin-guest-chat/startConversationOrReplyText", {
             message: inputMessage,
             image: imageInput,
             status: "guest",
             recipient_id: `${storedAgent.id}`,
             chat_session_id: `${storedAgent.session}`,
+            name: props.guestUser?.name || "",
+            email: props.guestUser?.email || ""
           });
+
+
+
           updateSessionTime(); // update the session time back to 7 mins
 
-        }else{
+        } else {
+          console.log("sent2?", {
+            mmessage: inputMessage,
+            image: imageInput,
+            status: "guest",
+            recipient_id: `${storedAgent.id}`,
+            chat_session_id: `${storedAgent.session}`,
+            name: props.guestUser?.name || "",
+            email: props.guestUser?.email || ""
+          });
           const response = await axios.post("/admin-guest-chat/startConversationOrReplyText", {
             message: inputMessage,
             image: imageInput,
             status: "guest",
-            recipient_id:"",
+            recipient_id: "",
             chat_session_id: "",
+            name: props.guestUser?.name || "",
+            email: props.guestUser?.email || ""
           });
 
         }
@@ -676,6 +726,10 @@ const ChatEngine = (props) => {
         {/* Timestamp for when the chat started */}
         {/* Timestamp for when the chat started */}
 
+        <div className="text-sm bg-white text-gray-500" style="position: sticky; top: 0;">
+          <SessionTimer expiry={expiry} />
+        </div>
+
 
         {/* Chat messages display */}
 
@@ -769,11 +823,20 @@ const ChatEngine = (props) => {
 
                     {message.image ? (
                       <div className="relative">
-                        <div className={`${message.isSentByUser ? "-right-3 hidden" : "-left-3 block"} absolute -bottom-11  `}>  <img
-                          src="https://tecdn.b-cdn.net/img/new/avatars/2.webp"
-                          className="md:w-5 rounded-full"
-                          alt="Avatar" /></div>
+                        <Avatar
+                          style={{
+                            backgroundColor: supportAgent ? supportAgent.color : "transparent",
+                            verticalAlign: 'middle',
+                          }}
+                          className={` relative   box-border block 
+                            bg-center  bg-cover bg-no-repeat   `}
+                          icon={!supportAgent && <BsRobot
+                            className=" text-orange-500 w-5 h-5    " />}
+                          size="small"
 
+                        >
+                          {supportAgent?.name.charAt(0)}
+                        </Avatar>
                         <a href={message.image} download={`image_${index}.png`} className="text-blue-500 hover:underline block">
                           <img src={message.image} alt="Sent Image" className="max-w-full md:max-h-[150px] mb-2" />
                           Download Image
@@ -849,7 +912,7 @@ const ChatEngine = (props) => {
 
             {!isTyping && (<ChatOptions selectedOption={props.selectedOption} automateSlide={automateSlide} />)}
 
-         
+
             {/*typing indicator  */}
             {isTyping && (
               <div className="self-start  bg-gray-300 p-2 rounded-lg max-w-[200px]">

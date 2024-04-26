@@ -18,7 +18,7 @@ const CommunicationCenter = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [expiry, setExpiry] = useState("");
-  const [sessionChatHistory,setSessionChatHistory]=useState([]);
+  const [sessionChatHistory, setSessionChatHistory] = useState([]);
 
   const [users, setUsers] = useState([
 
@@ -84,10 +84,11 @@ const CommunicationCenter = () => {
           type: "text",
           // time: data.created_at,
         }
-        const chat = userChats[data.session_id] || [];
+        const sessionId=data.session_id
+        const chat = userChats[sessionId] || [];
 
         const newChat = [...chat, initialMessage];
-        setUserChats(prevChats => ({ ...prevChats, [data.session_id]: newChat }));
+        setUserChats(prevChats => ({ ...prevChats, [sessionId]: newChat }));
 
 
 
@@ -136,7 +137,7 @@ const CommunicationCenter = () => {
       console.log("Listening for messages on channel:", channel);
 
       return () => {
-        privateChannel.stopListening("MessageBroadcastedt", messageHandler);
+        privateChannel.stopListening("MessageBroadcasted", messageHandler);
         privateChannelLeftChat.stopListening("LeaveChatEvent", leftChatHandler);
       };
     } else {
@@ -149,9 +150,9 @@ const CommunicationCenter = () => {
 
   const initializeBroadcastReceiverEcho = (userId) => {
     const channelName = `chat.admin.${userId}`;
-  
+
     const privateChannel = window.Echo.private(channelName);
-  
+
     const messageHandler = (data) => {
       const storedAgent = loadAgentFromSession();
       const newMessage = {
@@ -162,21 +163,21 @@ const CommunicationCenter = () => {
         type: !data.image ? "text" : "file",
         time: data.created_at,
       };
-  
+
       const sessionId = storedAgent?.session_id;
-      const chat = userChats[sessionId] ?? [];
-  
+      const chat = userChats[sessionId] || [];
+
       const newChat = [...chat, newMessage];
       setUserChats(prevChats => ({ ...prevChats, [sessionId]: newChat }));
-  
+
       console.log("user sent a message", newChat);
       updateSessionTime();
     };
-  
+
     privateChannel.listen("MessageBroadcasted", messageHandler);
-  
+
     console.log("Listening for messages on channel:", channelName);
-  
+
     // Return a function to unsubscribe from the channel
     return () => {
       privateChannel.stopListening("MessageBroadcasted", messageHandler);
@@ -200,11 +201,11 @@ const CommunicationCenter = () => {
 
       };
 
-
-      const chat = userChats[storedAgent?.session_id] || [];
+      const sessionId = storedAgent?.session_id;
+      const chat = userChats[sessionId] || [];
 
       const newChat = [...chat, newMessage];
-      setUserChats(prevChats => ({ ...prevChats, [storedAgent?.session_id]: newChat }));
+      setUserChats(prevChats => ({ ...prevChats, [sessionId]: newChat }));
 
 
 
@@ -503,51 +504,51 @@ const CommunicationCenter = () => {
 
     const storedAgent = loadAgentFromSession();
     if (storedAgent) {
-        const agentId=storedAgent.userId;
-        const sessionId =storedAgent.session_id;
-        const adminId=user.id
+      const agentId = storedAgent.userId;
+      const sessionId = storedAgent.session_id;
+      const adminId = user.id
 
-        console.table({agentId,sessionId,adminId})
+      console.table({ agentId, sessionId, adminId })
 
-        axios.get(`/admin-guest-chat/getChatMessages/${user.id}/${agentId}/${sessionId}`).then((response)=>{
-
-
-           console.log("I am in here",response.data.chat_messages)
-  
-         
-            const formattedChats = response.data.chat_messages.map((element) => {
-              return {
-                id: element.id,
-                text: element.image ?? element.message,
-                time: element.created_at,
-                sender: element.status == "guest" ? "user" : "admin",
-                type: !element.image ? "text" : "file",
-                session: storedAgent.session_id,
-  
-  
-  
-              };
-            });
-            
-            // const chat = userChats[sessionId] || [];
-  
-            const newChat = [...formattedChats];
-            setUserChats({[sessionId]: newChat });
+      axios.get(`/admin-guest-chat/getChatMessages/${user.id}/${agentId}/${sessionId}`).then((response) => {
 
 
-            console.log("history",newChat)
+        console.log("I am in here", response.data.chat_messages)
+
+
+        const formattedChats = response.data.chat_messages.map((element) => {
+          return {
+            id: element.id,
+            text: element.image ?? element.message,
+            time: element.created_at,
+            sender: element.status == "guest" ? "user" : "admin",
+            type: !element.image ? "text" : "file",
+            session: storedAgent.session_id,
 
 
 
+          };
+        });
 
-        }).catch((error)=>{
-          console.error(error)
-        })
+        // const chat = userChats[sessionId] || [];
+
+        const newChat = [...formattedChats];
+        setUserChats({ [sessionId]: newChat });
+
+
+        console.log("history", newChat)
 
 
 
-    }else{
-        console.log("no chats")
+
+      }).catch((error) => {
+        console.error(error)
+      })
+
+
+
+    } else {
+      console.log("no chats")
     }
 
   }, [user]);
@@ -558,32 +559,31 @@ const CommunicationCenter = () => {
 
   const sendMessage = async (msgType, file) => {
     if (!message.trim() && !file) return; // Prevent sending empty messages
-
+  
     const storedAgent = loadAgentFromSession();
-    if (storedAgent) {
-      setCurrentSession([storedAgent]);
+    if (!storedAgent) {
+      return; // Do nothing if storedAgent is empty
     }
-
-    const chat = userChats[storedAgent?.session_id] || [];
+  
+    const chat = userChats[storedAgent.session_id] || [];
     let newChatItem;
-
+  
     const createChatItem = (text, sender, type) => ({
       text,
       sender,
       type,
       time: new Date(),
     });
-
+  
     const updateChatAndSend = async (postChat) => {
       const newChat = [...chat, newChatItem];
-      setUserChats(prevChats => ({ ...prevChats, [storedAgent?.session_id]: newChat }));
+      setUserChats(prevChats => ({ ...prevChats, [storedAgent.session_id]: newChat }));
       setMessage(""); // Clear the message input after sending
-
-      console.table(postChat)
-
+  
+      console.table(postChat);
+  
       try {
         console.log("Sending:", postChat);
-        console.log(postChat)
         const response = await axios.post("/admin-guest-chat/startConversationOrReplyText", postChat);
         console.log("Response:", response.data);
         updateSessionTime();
@@ -591,31 +591,32 @@ const CommunicationCenter = () => {
         console.error("Failed to send message:", error);
       }
     };
-
+  
     if (file) {
       newChatItem = createChatItem(file, "admin", msgType);
-
+  
       const postChat = {
         message: "",
         image: file,
         status: "admin",
-        recipient_id: storedAgent?.userId,
-        chat_session_id: storedAgent?.session_id,
+        recipient_id: storedAgent.userId,
+        chat_session_id: storedAgent.session_id,
       };
       await updateChatAndSend(postChat);
-
+  
     } else {
       newChatItem = createChatItem(message.trim(), "admin", msgType);
       const postChat = {
         message: message.trim(),
         image: "",
         status: "admin",
-        recipient_id: storedAgent?.userId,
-        chat_session_id: storedAgent?.session_id,
+        recipient_id: storedAgent.userId,
+        chat_session_id: storedAgent.session_id,
       };
       await updateChatAndSend(postChat);
     }
   };
+  
 
   const handleKeyUp = async (event) => {
     // setInputValue(event.target.value);
@@ -659,16 +660,16 @@ const CommunicationCenter = () => {
   );
 
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    axios.get("/admin-guest-chat/getSessionMessages").then((response)=>{
+    axios.get("/admin-guest-chat/getSessionMessages").then((response) => {
 
       setSessionChatHistory(response.data.session_messages);
 
 
     })
 
-  },[]);
+  }, []);
 
 
 
@@ -800,10 +801,18 @@ const CommunicationCenter = () => {
                         <p className="text-sm text-gray-500">
                           Ticket: {selectedUser}
                         </p>
-                        <div className="text-sm text-gray-500"><SessionTimer expiry={expiry} /></div> 
-                        <button onClick={() => { handleJoinLeaveChat(selectedUserData, currentSession.find(chat => chat.session_id === selectedUser) ? "leave" : "join"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
-                          {currentSession.find(chat => chat.session_id === selectedUser) ? <>Leave <IoExitOutline className=" h-4 w-4 " /></> : <>Join Ticket </>}
-                        </button>
+                        {currentSession.find(chat => chat.session_id === selectedUser) && <div className="text-sm text-gray-500"><SessionTimer expiry={expiry} /></div>}
+                        {currentSession.length > 0 && currentSession[0].session_id === selectedUser ? (
+                          <button onClick={() => { handleJoinLeaveChat(selectedUserData, "leave"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
+                            Leave Chat <IoExitOutline className="h-4 w-4" />
+                          </button>
+                        ) : currentSession.length === 0 ? (
+                          <button onClick={() => { handleJoinLeaveChat(selectedUserData, "join"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
+                            Join Chat
+                          </button>
+                        ) : null}
+
+
 
                       </div>
                       <div className="h-[70vh] overflow-y-auto example">
@@ -819,38 +828,38 @@ const CommunicationCenter = () => {
                           //   {!msg.sessionEnded ? 
                           <div key={index}
 
-                              className={`mb-2 p-2 rounded ${msg.sender === "admin"
-                                ? "bg-orange-100 w-fit  "
-                                : "bg-gray-100"
-                                } ${msg.sender === "admin"
-                                  ? "text-blue-900"
-                                  : "text-gray-900"
-                                }`}
-                              style={{ wordBreak: 'break-word' }}
-                            >
-                              {msg.type === "text" ? (
-                                <>
-                                  <p>{msg.text}</p>
-                                  <p className="text-xs text-gray-500">
-                                    {formatDate(msg.time)}
-                                  </p>
-                                </>
+                            className={`mb-2 p-2 rounded ${msg.sender === "admin"
+                              ? "bg-orange-100 w-fit  "
+                              : "bg-gray-100"
+                              } ${msg.sender === "admin"
+                                ? "text-blue-900"
+                                : "text-gray-900"
+                              }`}
+                            style={{ wordBreak: 'break-word' }}
+                          >
+                            {msg.type === "text" ? (
+                              <>
+                                <p>{msg.text}</p>
+                                <p className="text-xs text-gray-500">
+                                  {formatDate(msg.time)}
+                                </p>
+                              </>
 
-                              ) : (
-                                <img
-                                  src={msg.text}
-                                  alt="Attachment"
-                                  className=" h-auto"
-                                />
-                              )}
-                            </div>
+                            ) : (
+                              <img
+                                src={msg.text}
+                                alt="Attachment"
+                                className=" h-auto"
+                              />
+                            )}
+                          </div>
                           //     :
                           //     <div className=" my-2 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session ended</div>}
                           // </div>
                         ))}
 
 
-                        {isTyping && <div className=" text-slate-500 text-sm ">User typing........</div>}
+                        {isTyping&&currentSession[0].session_id === selectedUser && <div className=" text-slate-500 text-sm ">User typing........</div>}
 
 
                       </div>
@@ -934,7 +943,7 @@ const ChatHistory = ({ sessionMessages }) => {
   const [selectedSessionID, setSelectedSessionID] = useState('');
 
   const handleSessionIDChange = (value) => {
-      setSelectedSessionID(value);
+    setSelectedSessionID(value);
   };
 
   const session = sessionMessages.find(session => session.session_id === selectedSessionID);
@@ -942,50 +951,50 @@ const ChatHistory = ({ sessionMessages }) => {
   const sessionIDs = [...new Set(sessionMessages.map(session => session.session_id))];
 
   return (
-      <div className="p-6 space-y-6">
-          <div className="mb-4">
-              <label htmlFor="sessionID" className="block text-lg font-semibold mb-1">Filter by Session ID:</label>
-              <Select
-                  id="sessionID"
-                  className="w-full"
-                  value={selectedSessionID}
-                  onChange={handleSessionIDChange}
-                  placeholder="Select Session ID"
-              >
-                  {sessionIDs.map(id => (
-                      <Option key={id} value={id}>{id}</Option>
-                  ))}
-              </Select>
-          </div>
+    <div className="p-6 space-y-6">
+      <div className="mb-4">
+        <label htmlFor="sessionID" className="block text-lg font-semibold mb-1">Filter by Session ID:</label>
+        <Select
+          id="sessionID"
+          className="w-full"
+          value={selectedSessionID}
+          onChange={handleSessionIDChange}
+          placeholder="Select Session ID"
+        >
+          {sessionIDs.map(id => (
+            <Option key={id} value={id}>{id}</Option>
+          ))}
+        </Select>
+      </div>
 
-          {/* <div className="mb-4">
+      {/* <div className="mb-4">
               <label htmlFor="date" className="block text-lg font-semibold mb-1">Filter by Date:</label>
               <DatePicker id="date" className="w-full" />
           </div> */}
 
-          {session && (
-              <div className="border rounded-lg p-4">
-                  <div className="mb-4">
-                      <p className="text-lg font-semibold">Session Information:</p>
-                      <p>User: {session.user_name} ({session.user_email})</p>
-                      <p>Admin: {session.admin_name} ({session.admin_email})</p>
-                      <p>Session ID: {session.session_id}</p>
-                      <p>Date: {session.dateOfChat}</p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {session.messages.map((message, index) => (
-                          <div key={index} className="bg-gray-100 rounded-lg p-4">
-                              <p className="text-lg font-semibold">Message:</p>
-                              <p>{message.message}</p>
-                              <p className="mt-2">Sent by: {message.whoSentMessage === 'guest' ? 'User' : 'Admin'}</p>
-                              <p>Sent at: {new Date(message.created_at).toLocaleString()}</p>
-                              {message.image && <img src={message.image} alt="Image" className="mt-2" />}
-                          </div>
-                      ))}
-                  </div>
+      {session && (
+        <div className="border rounded-lg p-4">
+          <div className="mb-4">
+            <p className="text-lg font-semibold">Session Information:</p>
+            <p>User: {session.user_name} ({session.user_email})</p>
+            <p>Admin: {session.admin_name} ({session.admin_email})</p>
+            <p>Session ID: {session.session_id}</p>
+            <p>Date: {session.dateOfChat}</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {session.messages.map((message, index) => (
+              <div key={index} className="bg-gray-100 rounded-lg p-4">
+                <p className="text-lg font-semibold">Message:</p>
+                <p>{message.message}</p>
+                <p className="mt-2">Sent by: {message.whoSentMessage === 'guest' ? 'User' : 'Admin'}</p>
+                <p>Sent at: {new Date(message.created_at).toLocaleString()}</p>
+                {message.image && <img src={message.image} alt="Image" className="mt-2" />}
               </div>
-          )}
-      </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

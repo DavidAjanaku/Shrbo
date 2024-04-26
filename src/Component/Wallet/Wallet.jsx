@@ -6,7 +6,7 @@ import verve from '../../assets/Verve-Logo.png';
 import visa from '../../assets/Visa-Payment-Card.png';
 import masterCard from '../../assets/mastercard.png';
 import { useStateContext } from "../../ContextProvider/ContextProvider";
-import { message, notification, Tag } from 'antd';
+import { message, notification, Tag, Popconfirm } from 'antd';
 import { Link } from "react-router-dom";
 import Header from "../Navigation/Header";
 import Footer from "../Navigation/Footer";
@@ -25,46 +25,48 @@ const Wallet = () => {
 
     const [transactions, setTransactions] = useState([
 
-        {
-            id: "1",
-            imageUrl: url,
-            status: "Incoming",
-            from: "Shbro",
-            amount: "1,000"
+        // {
+        //     id: "1",
+        //     imageUrl: url,
+        //     status: "Incoming",
+        //     from: "Shbro",
+        //     amount: "1,000"
 
-        },
+        // },
 
 
-        {
-            id: "2",
-            imageUrl: url,
-            status: "Outgoing",
-            from: "Shbro",
-            amount: "3,000"
+        // {
+        //     id: "2",
+        //     imageUrl: url,
+        //     status: "Outgoing",
+        //     from: "Shbro",
+        //     amount: "3,000"
 
-        },
-        {
-            id: "3",
-            imageUrl: url,
-            status: "Incoming",
-            from: "Shbro",
-            amount: "500"
+        // },
+        // {
+        //     id: "3",
+        //     imageUrl: url,
+        //     status: "Incoming",
+        //     from: "Shbro",
+        //     amount: "500"
 
-        },
-        {
-            id: "4",
-            imageUrl: url,
-            status: "Outgoing",
-            from: "Shbro",
-            amount: "4,000"
+        // },
+        // {
+        //     id: "4",
+        //     imageUrl: url,
+        //     status: "Outgoing",
+        //     from: "Shbro",
+        //     amount: "4,000"
 
-        },
+        // },
 
 
     ]);
     const [loadingCards, setLoadingCards] = useState(true);
     const [requestLoading, setRequestLoading] = useState(false);
     const [loadingBalance, setLoadingBalance] = useState(true);
+    const [loadingRequest, setLoadingRequest] = useState(true);
+    const [loadingTransactions, setLoadingTransactions] = useState(true);
     const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
 
     const [paymentDetails, setPaymentDetails] = useState([
@@ -132,12 +134,15 @@ const Wallet = () => {
     useEffect(() => {
         setLoadingCards(true);
         setLoadingBalance(true);
+        setLoadingRequest(true);
+        setLoadingTransactions(true);
         if (user.id) {
             fetchUserCards();
             fetchWalletBalance()
             fetchWalletWithdrawRequsts();
+            fetchWalletTransactions();
         }
-    }, [user.id]);
+    }, [user]);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -230,7 +235,7 @@ const Wallet = () => {
 
                 <div className="min-w-0 flex-auto">
                     <p className="text-sm font-semibold leading-6 text-gray-900">{transaction.status}</p>
-                    <p className="mt-1 truncate text-xs leading-5 text-gray-500">{transaction.status == "Incoming" ? "From" : "To"}: {transaction.from}</p>
+                    <p className="mt-1 truncate text-xs leading-5 text-gray-500">{transaction.status == "Incoming" ? "From" : "To"}: {transaction.from},{transaction.for} {transaction.time}</p>
                 </div>
             </div>
             <div className=" shrink-0 sm:flex sm:flex-col sm:items-end">
@@ -291,7 +296,7 @@ const Wallet = () => {
             const response = await axios.get(`/getUserCards/${user.id}`);
             console.log('cards', response.data);
 
-            const newDetails = response.data.data.map((card) => {
+            const newDetails = response.data.data.slice(0, 3).map((card) => {
                 const formattedCreatedAt = new Date(card.created_at).toLocaleString();
                 return {
                     title: `${card.cardtype} ****${card.card_number.slice(-4)}`,
@@ -335,23 +340,53 @@ const Wallet = () => {
 
     };
 
+    function formatDate(inputDate) {
+        const date = new Date(inputDate); // Parse the input date string
+        const day = String(date.getDate()).padStart(2, '0'); // Get day and pad with leading zero if necessary
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Get month (zero-based) and pad with leading zero if necessary
+        const year = date.getFullYear(); // Get full year
+        const hours = String(date.getHours()).padStart(2, '0'); // Get hours and pad with leading zero if necessary
+        const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes and pad with leading zero if necessary
+
+        // Return formatted date string in "DD/MM/YYYY HH:mm" format
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    }
+
+    // Example usage:
+    //   const inputDate = "2024-04-24T14:22:50.000000Z";
+    //   const formattedDate = formatDate(inputDate);
+    //   console.log(formattedDate); // Output: "24/04/2024 14:22"
+
+
     //fetch Wallet Transactions
     const fetchWalletTransactions = async () => {
 
         try {
             const response = await axios.get(`/viewUserWalletRecords`);
 
-            const formattedTransactions = response.data.wallet_records.map((data) => ({
-                id: data.id,
-                status: "Incoming",
-                from: "Shbro",
-                amount: data.amount,
-                time: data.created_at,
+            // Extracting and formatting data
+            const formattedTransactions = Object.entries(response.data.wallet_records).slice(0, 5).flatMap(([title, walletRecord]) => {
+                return walletRecord.records.map(record => ({
+                    id: record.id,
+                    status: "Incoming", // Assuming status is always "Incoming" for this format
+                    from: `Shbro,${walletRecord.title}`,
+                    for: record.hosthome_title, // Determine "for" value based on the presence of hosthome
+                    amount: record.amount,
+                    time: formatDate(record.created_at)
+                }));
+            });
 
-            }));
+
+            setTransactions(formattedTransactions)
+
+            console.log("check", formattedTransactions);
 
         } catch (error) {
 
+            console.error(error);
+
+        }finally{
+            setLoadingTransactions(false);
         }
 
 
@@ -361,25 +396,28 @@ const Wallet = () => {
         try {
             const response = await axios.get(`/getUserPaymentRecords`);
 
-            const formattedTransactions = response.data.payment_records.map((data) => ({
+            const formattedTransactions = response.data.payment_records.slice(0, 3).map((data) => ({
                 id: data.id,
-                
-                user_id:data.user_id,
-                account_number:data.account_number,
-                account_name:data.account_name,
+
+                user_id: data.user_id,
+                account_number: data.account_number,
+                account_name: data.account_name,
                 amount: formatAmountWithCommas(data.amount),
                 bank_name: data.bank_name,
                 approvedStatus: data.approvedStatus,
                 created_at: data.created_at,
-              
+
 
 
             }));
-            
+
             setPaymentRequests(formattedTransactions);
 
         } catch (error) {
 
+        } finally {
+
+            setLoadingRequest(false);
         }
 
 
@@ -453,9 +491,82 @@ const Wallet = () => {
 
 
 
+    const requestSkeletonLoader = Array.from({ length: 3 }).map((group, index) =>
+        <div
+            key={index}
+            className=" relative  h-fit row-span-1  items-center gap-2   w-full  md:mt-2 "
+        >
+            <div
+                className=" justify-between   flex hover:bg-slate-100/10  w-full  "
+            >
+                <div className=" skeleton-loader h-5 w-6 "></div>
+                <div className=" skeleton-loader h-5 w-14 "></div>
+
+
+
+            </div>
+            <div
+                className="  h-5 skeleton-loader cursor-pointer p-2  flex hover:bg-slate-100/10 w-full "
+            />
+
+
+
+        </div>
+
+    );
+
+
+    const transactionSkeletonLoader = Array.from({ length: 5 }).map((group, index) =>
+        <div
+            key={index}
+            className=" relative  h-fit row-span-1  items-center gap-2   w-full  md:mt-2 "
+        >
+            <div
+                className=" justify-between   flex hover:bg-slate-100/10  w-full  "
+            >
+                <div className=" skeleton-loader h-3 w-6 "></div>
+                <div className=" skeleton-loader h-3 w-14 "></div>
+
+
+
+            </div>
+            <div
+                className="  h-3 skeleton-loader cursor-pointer p-2  flex hover:bg-slate-100/10 w-full "
+            />
+
+
+
+        </div>
+
+    );
+
+
+
+
     message.config({
         duration: 5,
     });
+
+
+
+    //Confirm cancelling Request
+    const confirm = async (e, id) => {
+        // console.log(e);
+
+        await axios.delete(`/cancelPayRequest/${id}`).then(response => {
+            console.log(response);
+            message.success(`Cancelled request`);
+            // fetchUserCards();
+            openViewCohostModal();
+        }).catch(error => {
+            console.error("Failed to Cancel request", error);
+            message.error(`An Error Occured while trying to Cancel request `)
+        })
+
+    };
+    const cancel = (e) => {
+        console.log();
+    };
 
 
 
@@ -480,56 +591,54 @@ const Wallet = () => {
 
 
     const WithdrawRequest = (
-        <div className="   example ">
-            {/* {!isCohostLoading? */}
-            <ul role="list" className="divide-y divide-gray-100">
-                {/* {cohostList.length > 0 ? */}
-                <>
-                    {paymentRequest.map((payment) => (
-                    <li key={payment.id} className="flex justify-between gap-x-6 py-5">
-                        <div className="flex min-w-0 gap-x-4">
-                            {/* <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src="" alt="" /> */}
-                            <div className="min-w-0 flex-auto">
-                                <p className="text-sm font-semibold leading-6 text-gray-900"> ₦{payment.amount}</p>
-                                <p className="mt-1 w-64 truncate text-xs leading-5 text-gray-500">To: {payment.account_name},acct {payment.account_number},{payment.bank_name} </p>
-                            </div>
-                        </div>
-                        <div className=" shrink-0 sm:flex sm:flex-col sm:items-end">
-                            <p className="text-sm leading-6 text-gray-900 text-red-500">{payment.approvedStatus??"pending"}</p>
-                            <div className="mt-1 flex items-center gap-x-1.5">
-                                {/* <div className="flex-none rounded-full bg-emerald-500/20 p-1">
+        <div className=" h-full   example ">
+            {!loadingRequest ?
+                <ul role="list" className="divide-y divide-gray-100  ">
+                    {paymentRequest.length > 0 ?
+                        <>
+                            {paymentRequest.map((payment) => (
+                                <li key={payment.id} className="flex justify-between gap-x-6 py-5">
+                                    <div className="flex min-w-0 gap-x-4">
+                                        {/* <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src="" alt="" /> */}
+                                        <div className="min-w-0 flex-auto">
+                                            <p className="text-sm font-semibold leading-6 text-gray-900"> ₦{payment.amount}</p>
+                                            <p className="mt-1 w-[22vw] truncate text-xs leading-5 text-gray-500">To: acct {payment.account_number},{payment.bank_name},{payment.account_name}</p>
+                                        </div>
+                                    </div>
+                                    <div className=" shrink-0 sm:flex sm:flex-col sm:items-end">
+                                        <p className={`text-sm leading-6 ${payment.approvedStatus ? "text-gray-900 " : "text-red-500"}`}>{payment.approvedStatus ?? "pending"}</p>
+                                        <div className="mt-1 flex items-center gap-x-1.5">
+                                            {/* <div className="flex-none rounded-full bg-emerald-500/20 p-1">
                       <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                     </div> */}
-                                {/* <Popconfirm
-                          title="Remove Co-host"
-                          description={`Sure you want to remove ${person.name} as a Co-host ?`}
-                        //   onConfirm={(e) => { confirm(e, person.name, person.id) }}
-                          onCancel={cancel}
-                          okText="Delete"
-                          cancelText="Cancel"
-                        > */}
-                                <button className="text-xs border rounded-md p-[4px] font-semibold hover:bg-slate-50 transition-colors   leading-5 text-gray-500">Cancel</button>
-                                {/*     
-                        </Popconfirm> */}
-                            </div>
-                        </div>
-                    </li>
-                     ))} 
-                </>
-                :
-                <div className=" m-8 ">
-                    You have not added a co-host yet.
-                </div>
+                                            {!payment.approvedStatus && <Popconfirm
+                                                title="Cancel Request"
+                                                description={`Sure you want to cancel this payout request ?`}
+                                                onConfirm={(e) => { confirm(e, payment.id) }}
+                                                onCancel={cancel}
+                                                okText="Delete"
+                                                cancelText="Cancel"
+                                            >
+                                                <button className="text-xs border rounded-md p-[4px] font-semibold hover:bg-slate-50 transition-colors   leading-5 text-gray-500">Cancel</button>
 
-                {/* } */}
-            </ul>
-            {/* : */}
-            {/* <div className="self-start my-28   p-2 rounded-lg w-full h-full flex items-center justify-center ">
-                <div className="dot-pulse1">
-                    <div className="dot-pulse1__dot"></div>
+                                            </Popconfirm>}
+                                        </div>
+                                    </div>
+                                </li>
+                            ))}
+                        </>
+                        :
+                        <div className=" m-11 mt-20 text-sm ">
+                            You have not added a co-host yet.
+                        </div>
+
+                    }
+                </ul>
+                :
+                <div className=" w-full h-full ml-1 flex flex-col gap-2  ">
+                    {requestSkeletonLoader}
                 </div>
-            </div> */}
-            {/* } */}
+            }
         </div>
     )
 
@@ -549,11 +658,11 @@ const Wallet = () => {
             <Header />
             {contextHolder}
 
-            <div className=" max-w-5xl mx-auto  ">
+            <div className=" max-w-5xl mx-auto h-full  ">
 
-                <div className=" md:my-14 py-6    md:flex  gap-4">
+                <div className=" md:my-14 py-6 md:px-6    md:flex  gap-4">
 
-                    <div className="h-[90vh] overflow-y-scroll example mx-4 md:w-[60%] col-span-[1.5] md:mx-0  md:h-full p-4 bg-white shadow-sm  rounded-2xl mt-2 ">
+                    <div className="h-[90vh] overflow-y-scroll example mx-4 md:w-[60%] col-span-[1.5] md:mx-0 md:h-[60vh] xl:h-[90vh]  p-4 bg-white shadow-sm  rounded-2xl mt-2 ">
                         <div className={` flex flex-wrap mt-3 md:mt-0 w-full h-44 rounded-2xl shadow-md transition-colors  px-8 py-6 ${loadingBalance ? " bg-white" : "bg-gradient-to-r from-orange-300/70 via-orange-500/50 to-orange-700/25"} `}>
                             <div className=" h-full w-full text-slate-700 ">
                                 <div className=" text-sm text-slate-700 font-medium mb-5 flex items-center gap-3">
@@ -598,7 +707,7 @@ const Wallet = () => {
                             </div>
                         </div>
 
-                        <div className=" mt-6 mx-1  ">
+                        <div className=" mt-6 mx-1 h-full  ">
 
                             <div className=" w-full pb-4 md:hidden ">
                                 <div className=" flex flex-col justify-center ">
@@ -611,13 +720,29 @@ const Wallet = () => {
 
                             <div className=" flex justify-between ">
                                 <p className=" font-medium text-lg ">Last Transactions</p>
-                                <Link to={"/TransactionHistory"} className=" text-orange-500 text-sm font-medium" >View All</Link>
+                              {!loadingTransactions&&<Link to={"/TransactionHistory"} className=" text-orange-500 text-sm font-medium" >View All</Link>}
                             </div>
+
+                            {!loadingTransactions? 
 
                             <ul role="list" className="divide-y divide-gray-100 h-full overflow-y-scroll example mt-4">
 
-                                {Transactions}
+                              
+                                    {transactions.length > 0 ?
+                                        <>
+                                            {Transactions}
+
+                                        </>
+
+                                        :
+                                        <li className=" text-black w-full text-center flex mt-28  justify-center h-full ">No Transaction History</li>
+                                    }
+                              
+                              
                             </ul>
+                            :
+                            <div className=" flex flex-col gap-3 "  >{transactionSkeletonLoader}</div>}
+
 
                         </div>
 
@@ -626,9 +751,9 @@ const Wallet = () => {
 
                     </div>
 
-                    <div className="md:grid grid-rows-2 md:w-[40%]   gap-4 mt-2 hidden ">
+                    <div className="md:grid grid-rows-2 md:w-[40%] md:h-[60vh] xl:h-[90vh] gap-4 mt-2 hidden ">
 
-                        <div className="   p-6 h-auto  bg-white rounded-2xl">
+                        <div className=" w-full   p-6 h-auto  bg-white rounded-2xl">
 
                             <div className="  flex justify-between ">
                                 <p className=" font-medium text-lg ">Withdraw Requests</p>

@@ -12,7 +12,7 @@ const ChatSupport = () => {
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [botMessage, setBotMessage] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [agentName, setAgentName] = useState(null);
+  const [agent, setAgentName] = useState(null);
 
   const handleOptionSelected = (option) => {
 
@@ -75,6 +75,7 @@ const ChatSupport = () => {
       setShowOption(false);
       setSelectedCategory("Live chat");
       setSelectedIssue("Live chat")
+      setBotMessage("hhhhh")
     }
 
 
@@ -126,7 +127,7 @@ const updateHeader=(agentDetails)=>{
         close={handleClose}
         botMessage={botMessage}
         selectedOption={selectedIssue}
-        agentName={agentName}
+        agentName={agent}
         updateHeader={(data)=>{updateHeader(data)}}
 
 

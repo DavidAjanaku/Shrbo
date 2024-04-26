@@ -22,7 +22,9 @@ export default function HostModal({ isOpen, onClose, userData, hostStatus, admin
         localStorage.removeItem("A_Status");
         localStorage.removeItem("H_Status");
         localStorage.removeItem("CH_Status");
-        // setIsLoggedIn(false);
+        localStorage.removeItem("supportAgent")
+        localStorage.removeItem("supportUser")
+        // setIsLoggedIn(false);;
         window.location.replace('/');
       });
     } catch (error) {

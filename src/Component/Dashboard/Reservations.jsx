@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tabs, Table, Button, DatePicker, Dropdown } from "antd";
+import { Tabs, Button, DatePicker, Dropdown, Modal,message, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import GoBackButton from "../GoBackButton";
 import Popup from "../../hoc/Popup";
@@ -8,7 +8,7 @@ import {
   CheckCircleOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import Logo from "../../assets/logo.png";
+// import Logo from "../../assets/logo.png";
 import axios from '../../Axios';
 import Rating from "../ListingInfo/Ratings";
 import { Avatar } from 'antd';
@@ -24,6 +24,10 @@ const Reservations = () => {
   const [drawer, setDrawer] = useState(false);
   const [dataMain, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [messageSent, setMessageSent] = useState(false);
+  const [messageModalVisible, setMessageModalVisible] = useState(false);
+  const [messages, setMessages] = useState("");
+  const [form] = Form.useForm(); //
 
   const calculateDaysDifference = (date1, date2) => {
     const startDate = new Date(date1);
@@ -307,6 +311,29 @@ const Reservations = () => {
 
   ));
 
+  const sendMessageToHost = async (receiverId) => {
+    try {
+      // Log the message before sending
+      console.log("Sending message:", message);
+
+      // Send the message to the API
+      const response = await axios.post(`/chat/${receiverId}`, {
+        message: messages,
+      });
+
+      // Set messageSent to true to indicate that the message was sent successfully
+      setMessageSent(true);
+      console.log("Message sent successfully");
+      // showMessage.success("Message sent successfully");
+
+      // Handle the response as needed
+    } catch (error) {
+      console.error("Error sending message to host:", error);
+      // Handle errors
+    }
+  };
+
+
 
 
 
@@ -560,11 +587,9 @@ const Reservations = () => {
                   </Link>
 
                   <div className=" py-6">
-                    <Link
-                      to={"/ChatAndNotifcationTab"}
-                      className=" hover:text-white "
-                    >
+                
                       <button
+                        onClick={()=>setMessageModalVisible(true)}
                         className="block  w-[140px]  h-11 rounded-3xl bg-orange-400 px-6 pb-2 pt-2 text-base font-medium  leading-normal 
                             text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
                             focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
@@ -575,7 +600,68 @@ const Reservations = () => {
                       >
                         Message
                       </button>
-                    </Link>
+                
+
+                    <Modal
+                      title="Message Host"
+                      open={messageModalVisible}
+                      onCancel={() => setMessageModalVisible(false)}
+                      footer={[
+                        <Button key="cancel" onClick={() => setMessageModalVisible(false)}>
+                          Cancel
+                        </Button>,
+                        <Button
+                          key="send"
+                          type="primary"
+                          onClick={() => sendMessageToHost(filteredData[selectedReservation].key, message)}
+                        >
+                          Send
+                        </Button>,
+                      ]}
+                    >
+                      <Form
+                        onFinish={sendMessageToHost}
+                        form={form}
+                        initialValues={{ message: "" }}
+                      >
+                        {messageSent ? (
+                          <p>Message sent successfully</p>
+                        ) : (
+                          <>
+                            <Form.Item
+                              name="message"
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Please enter your message",
+                                },
+                              ]}
+                            >
+                              <Input.TextArea
+                                placeholder="Type your message here..."
+                                style={{ width: "100%", minHeight: "100px" }}
+                                value={messages}
+                                onChange={(e) => setMessages(e.target.value)}
+                              />
+                            </Form.Item>
+                            <Form.Item>
+                              <Button
+                                type="primary"
+                                className="bg-orange-400 hover:bg-orange-600"
+                                htmlType="submit"
+                                onClick={() => {
+                                  sendMessageToHost(filteredData[selectedReservation].key);
+                                  setMessages("");
+                                }}
+                              >
+                                Send
+                              </Button>
+                            </Form.Item>
+                          </>
+                        )}
+                      </Form>
+                    </Modal>
+
                   </div>
                 </div>
 

@@ -68,6 +68,11 @@ const LogIn = () => {
 
         setUser(response.data.user);
         setToken(response.data.token);
+            /// Live Chat unAuthenticated user logic
+        localStorage.removeItem("gnT");
+        localStorage.removeItem("gnU");
+        localStorage.removeItem("gnUID");
+
         console.log(response.data);
         openNotificationWithIcon("success");
         window.location.href = "/";
@@ -101,7 +106,7 @@ const LogIn = () => {
 
       {loading ? (
         <div className=" w-full h-screen flex items-center justify-center">
-          <div class="containerld"></div>
+          <div className="containerld"></div>
         </div>
       ) : (
         <div className="flex h-full lg:max-h-screen flex-1 flex-col lg:justify-center px-6 py-16 lg:py-10 bg-slate-50/30 lg:px-8">

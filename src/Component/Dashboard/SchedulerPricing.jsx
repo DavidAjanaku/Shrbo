@@ -122,6 +122,7 @@ const Pricing = ({
     if (loading) {
       return;
     }
+    setPercentage("");
     setCustomModalVisible(false);
   };
 

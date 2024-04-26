@@ -137,6 +137,8 @@ export default function Header() {
         localStorage.removeItem("A_Status");
         localStorage.removeItem("H_Status");
         localStorage.removeItem("CH_Status");
+        localStorage.removeItem("supportAgent")
+        localStorage.removeItem("supportUser")
         setIsLoggedIn(false);
         window.location.replace("/");
       });

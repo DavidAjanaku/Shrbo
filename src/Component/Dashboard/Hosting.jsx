@@ -19,7 +19,7 @@ import logoImage from "../../assets/shbro logo.png"
 export default function Hosting() {
   const [activeTab, setActiveTab] = useState("checkingOut");
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const { setUser, setToken, token, setHost, setAdminStatus, user,host } = useStateContext();
+  const { setUser, setToken, token, setHost, setAdminStatus, user, host } = useStateContext();
   const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
   const [tips, setTips] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
@@ -124,14 +124,15 @@ export default function Hosting() {
 
   useEffect(() => {
 
-   if(token){ axios.get("/notification").then(response => {
-      setNotifications([...response.data.data]);
-      console.log("notification", [...response.data.data]);
-    }).catch(error => {
-      // console.log("Error",error);
-    });
-}
-  }, [isNotificationDeleted,token]);
+    if (token) {
+      axios.get("/notification").then(response => {
+        setNotifications([...response.data.data]);
+        console.log("notification", [...response.data.data]);
+      }).catch(error => {
+        // console.log("Error",error);
+      });
+    }
+  }, [isNotificationDeleted, token]);
 
 
   const DateTimeConverter = (date) => {
@@ -181,7 +182,7 @@ export default function Hosting() {
         // console.log("Received Notification:", data);
         // console.log("User ID:", data.user_id);
 
-        setNotifications([data.notification,...notifications]);
+        setNotifications([data.notification, ...notifications]);
 
       });
 
@@ -195,7 +196,7 @@ export default function Hosting() {
 
 
   useEffect(() => {
-    if(token){
+    if (token) {
 
       initializeEcho(token, receiverId);
     }
@@ -1077,54 +1078,54 @@ export default function Hosting() {
 
   const CohostModal = (
     <div className=" h-full overflow-y-scroll example ">
-      {!isCohostLoading?
-      <ul role="list" className="divide-y divide-gray-100">
-        {cohostList.length > 0 ?
-          <>
-            {cohostList.map((person) => (
-              <li key={person.id} className="flex justify-between gap-x-6 py-5">
-                <div className="flex min-w-0 gap-x-4">
-                  <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.profilePicture || logoImage} alt="" />
-                  <div className="min-w-0 flex-auto">
-                    <p className="text-sm font-semibold leading-6 text-gray-900">{person.name}</p>
-                    <p className="mt-1 truncate text-xs leading-5 text-gray-500">{person.email}</p>
+      {!isCohostLoading ?
+        <ul role="list" className="divide-y divide-gray-100">
+          {cohostList.length > 0 ?
+            <>
+              {cohostList.map((person) => (
+                <li key={person.id} className="flex justify-between gap-x-6 py-5">
+                  <div className="flex min-w-0 gap-x-4">
+                    <img className="h-12 w-12 flex-none rounded-full bg-gray-50" src={person.profilePicture || logoImage} alt="" />
+                    <div className="min-w-0 flex-auto">
+                      <p className="text-sm font-semibold leading-6 text-gray-900">{person.name}</p>
+                      <p className="mt-1 truncate text-xs leading-5 text-gray-500">{person.email}</p>
+                    </div>
                   </div>
-                </div>
-                <div className=" shrink-0 sm:flex sm:flex-col sm:items-end">
-                  <p className="text-sm leading-6 text-gray-900">Co-Host</p>
-                  <div className="mt-1 flex items-center gap-x-1.5">
-                    {/* <div className="flex-none rounded-full bg-emerald-500/20 p-1">
+                  <div className=" shrink-0 sm:flex sm:flex-col sm:items-end">
+                    <p className="text-sm leading-6 text-gray-900">Co-Host</p>
+                    <div className="mt-1 flex items-center gap-x-1.5">
+                      {/* <div className="flex-none rounded-full bg-emerald-500/20 p-1">
                   <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 </div> */}
-                    <Popconfirm
-                      title="Remove Co-host"
-                      description={`Sure you want to remove ${person.name} as a Co-host ?`}
-                      onConfirm={(e) => { confirm(e, person.name, person.id) }}
-                      onCancel={cancel}
-                      okText="Delete"
-                      cancelText="Cancel"
-                    >
-                      <button className="text-xs border rounded-md p-[4px] font-semibold hover:bg-slate-50 transition-colors   leading-5 text-gray-500">Remove</button>
+                      <Popconfirm
+                        title="Remove Co-host"
+                        description={`Sure you want to remove ${person.name} as a Co-host ?`}
+                        onConfirm={(e) => { confirm(e, person.name, person.id) }}
+                        onCancel={cancel}
+                        okText="Delete"
+                        cancelText="Cancel"
+                      >
+                        <button className="text-xs border rounded-md p-[4px] font-semibold hover:bg-slate-50 transition-colors   leading-5 text-gray-500">Remove</button>
 
-                    </Popconfirm>
+                      </Popconfirm>
+                    </div>
                   </div>
-                </div>
-              </li>
-            ))}
-          </>
-          :
-          <div className=" m-8 ">
-            You have not added a co-host yet.
-          </div>
+                </li>
+              ))}
+            </>
+            :
+            <div className=" m-8 ">
+              You have not added a co-host yet.
+            </div>
 
-        }
-      </ul>
-      :
-      <div className="self-start my-28   p-2 rounded-lg w-full h-full flex items-center justify-center ">
-      <div className="dot-pulse1">
-        <div className="dot-pulse1__dot"></div>
-      </div>
-    </div>
+          }
+        </ul>
+        :
+        <div className="self-start my-28   p-2 rounded-lg w-full h-full flex items-center justify-center ">
+          <div className="dot-pulse1">
+            <div className="dot-pulse1__dot"></div>
+          </div>
+        </div>
       }
     </div>
   )
@@ -1254,9 +1255,17 @@ export default function Hosting() {
 
           </div>
 
-        {host==1&&  <div className=" flex gap-8  md:justify-end w-full ">
-            <button onClick={() => { setCohostModalOpen(true) }} className=" bg-orange-400 text-white p-1 rounded  ">+ Add co-host</button>
-            <button onClick={openViewCohostModal} className=" bg-orange-400 text-white px-2 py-1 rounded   ">view co-host</button>
+          {host == 1 && <div className=" flex gap-8  md:justify-end w-full ">
+
+           {!loadingGeneral ? <>
+              <button onClick={() => { setCohostModalOpen(true) }} className=" bg-orange-400 text-white p-1 rounded  ">+ Add co-host</button>
+              <button onClick={openViewCohostModal} className=" bg-orange-400 text-white px-2 py-1 rounded   ">view co-host</button>
+            </>
+            :
+            <>
+              <div className="skeleton-loader my-7 w-56 rounded-[2px] h-7 ml-3" />
+              <div className="skeleton-loader my-3 w-56 rounded-[2px] h-7 ml-3" />
+            </>}
 
           </div>}
           <Popup isModalVisible={isCohostModalOpen} handleCancel={handleCohostModal} title={"Adding a Cohost"} centered={true}  >
