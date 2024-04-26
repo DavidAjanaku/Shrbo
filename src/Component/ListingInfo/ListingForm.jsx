@@ -473,11 +473,7 @@ export default function ListingForm({
       }
       
        // Update reservedPrice state here
-    setReservedPrice(reservedPrice);
-    console.log(reservedPrice);
-    console.log(securityDeposit);
-    setTotalCost(reservedPrice)
-    console.log(totalCost);
+  
       
 
       // Deduct 20,000 from the final basenormalPrice
@@ -485,21 +481,41 @@ export default function ListingForm({
 
       // This is for weekend calculation
       // Check if the weekend price should be applied
+      let weekendNights = 0; // Initialize a counter for weekend nights
+
       if (weekend !== null && weekend !== "" && !isNaN(Number(weekend))) {
         const weekendPrice = Number(weekend);
+        console.log("Weekend Price:", weekendPrice);
         const startDate = new Date(checkIn);
         const endDate = new Date(checkOut);
         let currentDate = new Date(startDate);
-
+      
         while (currentDate < endDate) {
           if (currentDate.getDay() === 5 || currentDate.getDay() === 6) {
-            // If the current date is Saturday or Sunday, update the basePrice with the weekend price
-            basePrice -= nightlyPrice; // Subtract the normal nightly price
-            basePrice += weekendPrice; // Add the weekend price
+            weekendNights++; // Increment the counter for weekend nights
           }
           currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
         }
+      
+        const weekendCost = weekendNights * nightlyPrice;
+        console.log("Number of weekend nights:", weekendNights);
+        console.log("Total cost for weekend nights:", weekendCost);
+      
+        // Subtract the total cost of the original nightly price for weekend nights
+        reservedPrice -= weekendCost;
+      
+        // Add the new total cost for weekend nights based on the weekend price
+        reservedPrice += weekendNights * weekendPrice;
+      
+        console.log("Updated reserved price after weekend calculation:", reservedPrice);
       }
+      
+      setReservedPrice(reservedPrice);
+      console.log(reservedPrice);
+      console.log(securityDeposit);
+      setTotalCost(reservedPrice)
+      console.log(totalCost);
+      
       //
 
       // Assuming host fees is 20%, service fee is 5%, and tax is 4%
