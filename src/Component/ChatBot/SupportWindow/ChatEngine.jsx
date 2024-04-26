@@ -726,7 +726,7 @@ const ChatEngine = (props) => {
         {/* Timestamp for when the chat started */}
         {/* Timestamp for when the chat started */}
 
-        <div className="text-sm bg-white text-gray-500" style="position: sticky; top: 0;">
+        <div className="text-sm bg-white text-gray-500 sticky top-0" >
           <SessionTimer expiry={expiry} />
         </div>
 
