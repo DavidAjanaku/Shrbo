@@ -22,14 +22,32 @@ instance.interceptors.request.use(
   }
 );
 
-// instance.interceptors.request.use(request=>{
-// 	// console.log(request);
-// 	return request;
-// }, error =>{
-// 	console.log(error);
-//   message.error("Please check your Internet connection")
-// 	return Promise.reject(error);
-// });
+instance.interceptors.response.use(response=>{
+	// console.log(request);
+	return response;
+}, error =>{
+  
+  if (error.response && error.response.data) {
+    const errorMessage = error.response.data.message;
+    console.log("Interceptor",error.response.data.message);
+    
+    // Check if the error message is "Unauthenticated."
+    if (errorMessage === "Unauthenticated.") {
+      // logUser out if accessing auth required API's
+      localStorage.removeItem("Shbro");
+      localStorage.removeItem("A_Status");
+      localStorage.removeItem("H_Status");
+      localStorage.removeItem("CH_Status");
+      localStorage.removeItem("supportAgent")
+      localStorage.removeItem("supportUser")
+      window.location.replace("/");
+
+      message.error("Please check your Internet connection 1");
+    }
+  }
+
+	return Promise.reject(error);
+});
 
 
 export default instance;

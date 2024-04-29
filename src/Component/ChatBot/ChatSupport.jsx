@@ -33,6 +33,17 @@ const ChatSupport = () => {
 
   }
 
+  const goToOptions=()=>{
+
+    setAgentName(null);
+    // setVisible(true);
+    setShowOption(true);
+    setSelectedCategory(null);
+    setSelectedIssue(null)
+    setBotMessage(null)
+
+  }
+
   const handleOpen = () => {
     if (selectedIssue === null) {
       setShowOption(true);
@@ -129,6 +140,7 @@ const updateHeader=(agentDetails)=>{
         selectedOption={selectedIssue}
         agentName={agent}
         updateHeader={(data)=>{updateHeader(data)}}
+        goToOptions={goToOptions}
 
 
 

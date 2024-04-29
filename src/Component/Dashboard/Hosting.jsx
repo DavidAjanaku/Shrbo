@@ -14,7 +14,7 @@ import { message, notification, Popconfirm } from 'antd';
 import Popup from "../../hoc/Popup";
 import { LoadingOutlined } from '@ant-design/icons';
 import { styles } from "../ChatBot/Style";
-import logoImage from "../../assets/shbro logo.png"
+import logoImage from "../../assets/logo.png"
 
 export default function Hosting() {
   const [activeTab, setActiveTab] = useState("checkingOut");
@@ -396,7 +396,7 @@ export default function Hosting() {
         checkOutDate: item.check_out_date,
         // amountPaid: "half payment made",
         time: item.check_out_time,
-        image: item.profilepic ? item.profilepic : "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+        image: item.profilepic ? item.profilepic : logoImage,
       }));
       setUpcoming(filteredUpcoming);
       console.log(response.data);
@@ -416,12 +416,12 @@ export default function Hosting() {
       const filteredData = response.data.data.map(item => ({
         name: item.username,
         checkInDate: item.check_in,
-        id: item.aboutGuest?.id,
+        id: item.userid,
         reservationId: item.id,
-        image: item.guestProfilePic ? item.guestProfilePic : "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+        image: item.guestProfilePic ? item.guestProfilePic : logoImage,
       }));
       setPending(filteredData)
-      console.log("pending", filteredData);
+      console.log("pending", response);
     } catch (error) {
       console.log("pending", error);
     }
@@ -440,7 +440,7 @@ export default function Hosting() {
         id: item.aboutGuest.id,
         date: item.check_in_date,
         time: item.check_in_time,
-        image: item.profilepic ? item.profilepic : "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+        image: item.profilepic ? item.profilepic : logoImage,
       }));
       setArriving(filteredData)
       console.log("Arriving", filteredData);
@@ -460,7 +460,7 @@ export default function Hosting() {
         name: item.name,
         id: item.aboutGuest.id,
         date: item.check_in_date + "-" + item.check_out_date,
-        image: item.profilepic ? item.profilepic : "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+        image: item.profilepic ? item.profilepic : logoImage,
       }));
       setHosting(filteredData)
       console.log("CurrentlyHosting", filteredData);
@@ -481,7 +481,7 @@ export default function Hosting() {
         id: item.aboutGuest.id,
         date: item.check_out_date,
         time: item.check_in_time,
-        image: item.profilepic ? item.profilepic : "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
+        image: item.profilepic ? item.profilepic : logoImage,
       }));
       setChecking(filteredData)
       console.log("CheckingOut", filteredData);
@@ -673,16 +673,16 @@ export default function Hosting() {
                         <Link to={`/UserDetails/${host.id}`}>
                           <img
                             src={host.image || logoImage}
-                            className="w-10 h-10 object-cover rounded-full"
+                            className="w-10 h-10 object-cover rounded-full bg-gray-100"
                             alt=""
                           />
                         </Link>
                       </div>
                     </div>
                     <div className="mt-4">
-                      <button className="bg-orange-400 rounded-full py-2 px-4 w-full text-white ">
+                      {/* <button className="bg-orange-400 rounded-full py-2 px-4 w-full text-white ">
                         message
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 ))}
@@ -719,16 +719,16 @@ export default function Hosting() {
                         <Link to={`/UserDetails/${host.id}`}>
                           <img
                             src={host.image || logoImage}
-                            className="w-10 h-10 object-cover rounded-full"
+                            className="w-10 h-10 object-cover rounded-full bg-gray-100"
                             alt=""
                           />
                         </Link>
                       </div>
                     </div>
                     <div className="mt-4">
-                      <button className="bg-orange-400 rounded-full py-2 px-4 w-full text-white ">
+                      {/* <button className="bg-orange-400 rounded-full py-2 px-4 w-full text-white ">
                         message
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 ))}
@@ -769,16 +769,16 @@ export default function Hosting() {
                         <Link to={`/UserDetails/${reservation.id}`}>
                           <img
                             src={reservation.image || logoImage}
-                            className="w-10 h-10 object-cover rounded-full"
+                            className="w-10 h-10 object-cover rounded-full bg-gray-100"
                             alt=""
                           />
                         </Link>
                       </div>
                     </div>
                     <div className="mt-4">
-                      <button className="bg-orange-400 rounded-full py-2 px-4 w-full text-white ">
+                      {/* <button className="bg-orange-400 rounded-full py-2 px-4 w-full text-white ">
                         message
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 ))}
@@ -820,16 +820,16 @@ export default function Hosting() {
                         <Link to={`/UserDetails/${reservation.id}`}>
                           <img
                             src={reservation.image || logoImage}
-                            className="w-10 h-10 object-cover rounded-full"
+                            className="w-10 h-10 object-cover rounded-full bg-gray-100"
                             alt=""
                           />
                         </Link>
                       </div>
                     </div>
                     <div className="mt-4">
-                      <button className="bg-orange-400 rounded-full py-2 px-4 w-full text-white ">
+                      {/* <button className="bg-orange-400 rounded-full py-2 px-4 w-full text-white ">
                         Message
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 ))}
@@ -866,16 +866,16 @@ export default function Hosting() {
                         <Link to={`/UserDetails/${review.id}`}>
                           <img
                             src={review.image || logoImage}
-                            className="w-10 h-10 object-cover rounded-full"
+                            className="w-10 h-10 object-cover rounded-full bg-gray-100"
                             alt=""
                           />
                         </Link>
                       </div>
                     </div>
                     <div className="mt-4">
-                      <button className="bg-orange-400 rounded-full py-2 px-4 w-full text-white">
+                      {/* <button className="bg-orange-400 rounded-full py-2 px-4 w-full text-white">
                         Message
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 ))}

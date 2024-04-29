@@ -77,6 +77,7 @@ import AdminDamagePage from "./Component/AdminDashboard/AdminDamagePage";
 import CommunicationCenter from "./Component/AdminDashboard/CommunicationCenter";
 import Wallet from "./Component/Wallet/Wallet";
 import AdminSecurityDeposit from "./Component/AdminDashboard/AdminSecurityDeposit";
+import WalletRecords from "./Component/Wallet/WalletRecords";
 import AdminUserReports from "./Component/AdminDashboard/AdminUserReports";
 function App() {
 
@@ -93,6 +94,7 @@ function App() {
       
           <Route element={<Protected />} >
 
+              <Route path="/WalletRecords/:id" element={<WalletRecords/>} />
               <Route path="/payments" element={<Wallet />} />
               <Route path="/Settings" element={<Settings />} />
               <Route path="/Profile" element={<Profile />} />

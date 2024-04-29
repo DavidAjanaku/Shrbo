@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
-import { TiArrowForwardOutline, TiArrowBackOutline } from "react-icons/ti";
+import { TiArrowForwardOutline } from "react-icons/ti";
 import { FaRegCreditCard } from "react-icons/fa";
 import verve from '../../assets/Verve-Logo.png';
 import visa from '../../assets/Visa-Payment-Card.png';
@@ -12,10 +12,13 @@ import Header from "../Navigation/Header";
 import Footer from "../Navigation/Footer";
 import { FaPlusCircle } from "react-icons/fa";
 import axios from "../../Axios";
-import url from "../../assets/apartment1.jpeg"
-import { LuArrowDownLeft, LuArrowUpRight } from "react-icons/lu";
+import { LuArrowDownLeft, LuArrowUpRight, LuArrowUpWideNarrow, LuFileClock } from "react-icons/lu";
 import Popup from "../../hoc/Popup";
 import WithdrawForm from "./WithdrawForm";
+
+
+
+
 
 
 
@@ -556,8 +559,7 @@ const Wallet = () => {
         await axios.delete(`/cancelPayRequest/${id}`).then(response => {
             console.log(response);
             message.success(`Cancelled request`);
-            // fetchUserCards();
-            openViewCohostModal();
+            // fetchWalletWithdrawRequsts();
         }).catch(error => {
             console.error("Failed to Cancel request", error);
             message.error(`An Error Occured while trying to Cancel request `)
@@ -616,7 +618,7 @@ const Wallet = () => {
                                                 description={`Sure you want to cancel this payout request ?`}
                                                 onConfirm={(e) => { confirm(e, payment.id) }}
                                                 onCancel={cancel}
-                                                okText="Delete"
+                                                okText="Leave"
                                                 cancelText="Cancel"
                                             >
                                                 <button className="text-xs border rounded-md p-[4px] font-semibold hover:bg-slate-50 transition-colors   leading-5 text-gray-500">Cancel</button>
@@ -654,7 +656,6 @@ const Wallet = () => {
 
     return (
         <div className="min-h-[100vh]   bg-slate-50">
-
             <Header />
             {contextHolder}
 
@@ -709,18 +710,25 @@ const Wallet = () => {
 
                         <div className=" mt-6 mx-1 h-full  ">
 
-                            <div className=" w-full pb-4 md:hidden ">
-                                <div className=" flex flex-col justify-center ">
+                            <div className={` w-full pb-4 md:hidden   gap-8  ${loadingTransactions ? "hidden" : "flex"} `}>
+                                <div className=" flex flex-col justify-center items-center ">
 
                                     <Link to={"/ManageCard"} className=" rounded-full w-10 p-2 shadow-sm bg-white "> <FaRegCreditCard className=" w-5 h-5  text-orange-500" /></Link>
-                                    <label className=" text-xs ">Linked Cards</label>
+                                    <label className=" text-xs ">Linked cards</label>
+                                </div>
+                                <div className=" flex flex-col justify-center items-center ">
+
+                                    <Link to={"/WalletRecords/RequestHistory"} className=" rounded-full w-10 p-2 shadow-sm bg-white "> <LuFileClock className=" w-5 h-5 font-bold text-orange-500" />
+                                        {/* <LuArrowUpWideNarrow className=" w-5 h-5 font-bold text-orange-500" /> */}
+                                    </Link>
+                                    <label className=" text-xs ">Request history</label>
                                 </div>
                             </div>
 
 
                             <div className=" flex justify-between ">
                                 <p className=" font-medium text-lg ">Last Transactions</p>
-                                {!loadingTransactions && <Link to={"/TransactionHistory"} className=" text-orange-500 text-sm font-medium" >View All</Link>}
+                                {!loadingTransactions && <Link to={"/WalletRecords/WalletHistory"} className=" text-orange-500 text-sm font-medium" >View All</Link>}
                             </div>
 
                             {!loadingTransactions ?
@@ -757,7 +765,7 @@ const Wallet = () => {
 
                             <div className="  flex justify-between ">
                                 <p className=" font-medium text-lg ">Withdraw Requests</p>
-                                {paymentDetails.length > 0 && <Link to={"/ManageCard"} className=" text-orange-500 text-sm font-medium" >View All</Link>}
+                                {paymentDetails.length > 0 && <Link to={"/WalletRecords/RequestHistory"} className=" text-orange-500 text-sm font-medium" >View All</Link>}
                             </div>
                             {WithdrawRequest}
 

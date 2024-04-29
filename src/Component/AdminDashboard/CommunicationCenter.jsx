@@ -19,6 +19,8 @@ const CommunicationCenter = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [expiry, setExpiry] = useState("");
   const [sessionChatHistory, setSessionChatHistory] = useState([]);
+  const [isSessionEnded, setSessionEnded] = useState(false);
+  const [isUserLeftchat, setUserLeftchat] = useState(false);
 
   const [users, setUsers] = useState([
 
@@ -84,7 +86,7 @@ const CommunicationCenter = () => {
           type: "text",
           // time: data.created_at,
         }
-        const sessionId=data.session_id
+        const sessionId = data.session_id
         const chat = userChats[sessionId] || [];
 
         const newChat = [...chat, initialMessage];
@@ -108,13 +110,16 @@ const CommunicationCenter = () => {
       };
 
       const leftChatHandler = (data) => {
-        const newMessage = {
-          content: data.message,
-          timestamp: new Date(),
-          isSentByUser: true,
-          adminJoined: true, // adding this because of the styling adminJoined
-          adminLeftChat: true,
-        };
+        // const newMessage = {
+        //   content: data.message,
+        //   timestamp: new Date(),
+        //   isSentByUser: true,
+        //   adminJoined: true, // adding this because of the styling adminJoined
+        //   adminLeftChat: true,
+        // };
+
+
+        setUserLeftchat(true);
 
 
 
@@ -153,26 +158,24 @@ const CommunicationCenter = () => {
 
     const privateChannel = window.Echo.private(channelName);
 
-    const messageHandler = (data) => {
+    const messageHandler = (dataArray) => {
       const storedAgent = loadAgentFromSession();
-      const newMessage = {
+      const formattedData = dataArray.map(data => ({
         id: data.id,
         session: data.sessionId,
         text: data.image ?? data.message,
-        sender: "user",
+        sender: data.status == "guest" ? "user" : "admin",
         type: !data.image ? "text" : "file",
         time: data.created_at,
-      };
+      }));
 
       const sessionId = storedAgent?.session_id;
-      const chat = userChats[sessionId] || [];
+      setUserChats(prevChats => ({ ...prevChats, [sessionId]: formattedData }));
 
-      const newChat = [...chat, newMessage];
-      setUserChats(prevChats => ({ ...prevChats, [sessionId]: newChat }));
-
-      console.log("user sent a message", newChat);
+      console.log("user sent a message", dataArray);
       updateSessionTime();
     };
+
 
     privateChannel.listen("MessageBroadcasted", messageHandler);
 
@@ -191,27 +194,30 @@ const CommunicationCenter = () => {
 
     const messageHandler = (data) => {
 
-      const storedAgent = loadAgentFromSession();
-      const newMessage = {
-        id: new Date(),
-        text: data.notification,
-        sender: 'admin',
-        sessionEnded: true,
-        type: 'text',
+      // const storedAgent = loadAgentFromSession();
+      // const newMessage = {
+      //   id: new Date(),
+      //   text: data.notification,
+      //   sender: 'admin',
+      //   sessionEnded: true,
+      //   type: 'text',
 
-      };
+      // };
 
-      const sessionId = storedAgent?.session_id;
-      const chat = userChats[sessionId] || [];
+      // const sessionId = storedAgent?.session_id;
+      // const chat = userChats[sessionId] || [];
 
-      const newChat = [...chat, newMessage];
-      setUserChats(prevChats => ({ ...prevChats, [sessionId]: newChat }));
+      // const newChat = [...chat, newMessage];
+      // setUserChats(prevChats => ({ ...prevChats, [sessionId]: newChat }));
 
 
 
 
 
       // setMessages(prevMessages => [...prevMessages, newMessage]);
+
+      setSessionEnded(true);
+
       sessionStorage.removeItem('supportUser');
 
 
@@ -453,6 +459,8 @@ const CommunicationCenter = () => {
           setCurrentSession([data]);
 
         } else if (type == "leave") {
+          setSessionEnded(false);
+          setUserLeftchat(false);
           setCurrentSession([]);
           sessionStorage.removeItem('supportUser');
           setSelectedUser(null);
@@ -559,29 +567,29 @@ const CommunicationCenter = () => {
 
   const sendMessage = async (msgType, file) => {
     if (!message.trim() && !file) return; // Prevent sending empty messages
-  
+
     const storedAgent = loadAgentFromSession();
     if (!storedAgent) {
       return; // Do nothing if storedAgent is empty
     }
-  
+
     const chat = userChats[storedAgent.session_id] || [];
     let newChatItem;
-  
+
     const createChatItem = (text, sender, type) => ({
       text,
       sender,
       type,
       time: new Date(),
     });
-  
+
     const updateChatAndSend = async (postChat) => {
       const newChat = [...chat, newChatItem];
       setUserChats(prevChats => ({ ...prevChats, [storedAgent.session_id]: newChat }));
       setMessage(""); // Clear the message input after sending
-  
+
       console.table(postChat);
-  
+
       try {
         console.log("Sending:", postChat);
         const response = await axios.post("/admin-guest-chat/startConversationOrReplyText", postChat);
@@ -591,10 +599,10 @@ const CommunicationCenter = () => {
         console.error("Failed to send message:", error);
       }
     };
-  
+
     if (file) {
       newChatItem = createChatItem(file, "admin", msgType);
-  
+
       const postChat = {
         message: "",
         image: file,
@@ -603,7 +611,7 @@ const CommunicationCenter = () => {
         chat_session_id: storedAgent.session_id,
       };
       await updateChatAndSend(postChat);
-  
+
     } else {
       newChatItem = createChatItem(message.trim(), "admin", msgType);
       const postChat = {
@@ -616,7 +624,7 @@ const CommunicationCenter = () => {
       await updateChatAndSend(postChat);
     }
   };
-  
+
 
   const handleKeyUp = async (event) => {
     // setInputValue(event.target.value);
@@ -647,7 +655,7 @@ const CommunicationCenter = () => {
     if (isTyping) {
       const timer = setTimeout(() => {
         setIsTyping(false);
-      }, 1000);  // Adjust delay as necessary, 1000 ms = 1 second
+      }, 2000);  // Adjust delay as necessary, 1000 ms = 1 second
 
       // Cleanup function to clear the timer when the component unmounts or updates
       return () => clearTimeout(timer);
@@ -854,19 +862,26 @@ const CommunicationCenter = () => {
                             )}
                           </div>
                           //     :
-                          //     <div className=" my-2 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session ended</div>}
+
                           // </div>
                         ))}
 
 
-                        {isTyping&&currentSession[0].session_id === selectedUser && <div className=" text-slate-500 text-sm ">User typing........</div>}
+                        {isTyping && currentSession[0].session_id === selectedUser && <div className=" text-slate-500 text-sm ">User typing........</div>}
+
+
+                        {isSessionEnded && currentSession[0].session_id === selectedUser && <div className=" my-4 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session has ended leave the chat </div>}
+
+                        {isUserLeftchat&&currentSession[0].session_id === selectedUser && <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
+                          user{currentSession[0].userId} left the chat
+                        </div>}
 
 
                       </div>
 
 
 
-                      {currentSession.find(chat => chat.session_id === selectedUser) && <div className="mt-4 flex gap-2">
+                      {currentSession.find(chat => chat.session_id === selectedUser) && !isSessionEnded && !isUserLeftchat && <div className="mt-4 flex gap-2">
                         <button
                           className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
                           onClick={() => fileInputRef.current.click()}

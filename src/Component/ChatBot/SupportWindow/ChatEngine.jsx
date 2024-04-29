@@ -8,6 +8,10 @@ import axios from "../../../Axios";
 import Logo from "../../../assets/logo.png";
 import { BsRobot } from "react-icons/bs";
 import SessionTimer from "../SessionTimer";
+import { RiArrowDropLeftLine } from "react-icons/ri";
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
+
 
 
 
@@ -42,7 +46,7 @@ const ChatEngine = (props) => {
     if (isTyping) {
       const timer = setTimeout(() => {
         setIsTyping(false);
-      }, 1000);  // Adjust delay as necessary, 1000 ms = 1 second
+      }, 2000);  // Adjust delay as necessary, 1000 ms = 1 second
 
       // Cleanup function to clear the timer when the component unmounts or updates
       return () => clearTimeout(timer);
@@ -212,7 +216,7 @@ const ChatEngine = (props) => {
   };
 
   const initializeTypingEcho = (userId) => {
-    const channelName = `typing.91`;
+    const channelName = `typing.${userId}`;
 
     const privateChannel = window.Echo.private(channelName);
     let typingTimeout;
@@ -331,30 +335,31 @@ const ChatEngine = (props) => {
 
 
 
+    if (props.selectedOption == "Live chat") {
+
+      const storedAgent = loadAgentFromSession();
+      if (storedAgent) {
+        setSupportAgent(storedAgent);
+      }
 
 
-    const storedAgent = loadAgentFromSession();
-    if (storedAgent) {
-      setSupportAgent(storedAgent);
+
+
+
+
+      const cleanupInitial = initializeEcho(props.token, props.userId);
+      const cleanupBroadcastReceiver = initializeBroadcastReceiverEcho(props.userId);
+      const cleanupTyping = initializeTypingEcho(props.userId);
+      const cleanupSessionEnd = initializeSessionEndEcho(props.userId);
+
+      return () => {
+        cleanupInitial();
+        cleanupBroadcastReceiver(); // Cleanup function to unsubscribe
+        cleanupTyping();
+        cleanupSessionEnd();
+
+      };
     }
-
-
-
-
-
-
-    const cleanupInitial = initializeEcho(props.token, props.userId);
-    const cleanupBroadcastReceiver = initializeBroadcastReceiverEcho(props.userId);
-    const cleanupTyping = initializeTypingEcho(props.userId);
-    const cleanupSessionEnd = initializeSessionEndEcho(props.userId);
-
-    return () => {
-      cleanupInitial();
-      cleanupBroadcastReceiver(); // Cleanup function to unsubscribe
-      cleanupTyping();
-      cleanupSessionEnd();
-
-    };
   }, [props.token, props.userId]);
 
 
@@ -712,7 +717,7 @@ const ChatEngine = (props) => {
 
 
   return (
-    <div className={`transition-3 overflow-hidden ${props.visible ? "md:h-[90%] h-[92%] " : "md:h-[0%] h-[0%]"}  `} style={{
+    <div className={`transition-3 overflow-hidden ${props.visible ? `${props.showLeaveChatConfirm ? "md:h-[100%] h-[100%]" : "md:h-[90%] h-[92%]"} ` : "md:h-[0%] h-[0%]"}  `} style={{
       ...styles.chatEngineWindow,
       ...{
         // height:props.visible ? '90%':'0%',
@@ -722,25 +727,78 @@ const ChatEngine = (props) => {
         ,
       }
     }}>
-      <div className="h-full" >
-        {/* Timestamp for when the chat started */}
-        {/* Timestamp for when the chat started */}
 
-        <div className="text-sm bg-white text-gray-500 sticky top-0" >
-          <SessionTimer expiry={expiry} />
-        </div>
+      {props.showLeaveChatConfirm ?
+        //    levechat modal confirm
+        <div className="h-full relative "  >
+          <div className=" ml-1  mt-2  "> <button disabled={props.leaveChatLoading} onClick={() => { props.handleShowLeaveChatConfirm() }}  ><RiArrowDropLeftLine className=" h-8 hover:bg-slate-50/70 rounded-lg  w-8" /></button></div>
 
+          <div className=" justify-center mx-2 md:mx-6 mt-[25%] md:mt-[5%] flex flex-col space-y-32" >
 
-        {/* Chat messages display */}
+            <div className=" flex flex-col gap-6 items-center ">
+              <img src={Logo} alt="Sent Image" className=" w-28 h-28 mb-2" />
 
-        <form className="flex flex-col h-full w-full border p-4">
-          <div className="flex example flex-col gap-4 flex-grow overflow-y-auto mb-4 ">
-            <div className="mb-4 text-center ">
-              Chat started: {startTime && formatDate(startTime)}
+              <p className=" text-center text-slate-700  " >Closing this chat will end our current session, but rest assured, we will have a record of your conversation for future reference.</p>
+
             </div>
 
+            <div className=" flex gap-4 ">
 
-            {/* <div
+              <button disabled={props.leaveChatLoading}
+                className=" bg-slate-50 hover:bg-slate-100 text-orange-400 rounded-full p-3 w-full  text-lg "
+                onClick={() => { props.handleShowLeaveChatConfirm() }}  >Return to Chat</button>
+              <button disabled={props.leaveChatLoading}
+                className=" bg-slate-100 hover:bg-slate-200 text-orange-400 rounded-full p-3 w-full  text-lg font-medium "
+                onClick={() => { props.handleLeaveChat() }} >
+
+                {props.leaveChatLoading ?
+                  <>
+                    <Spin
+                      indicator={
+                        <LoadingOutlined
+                          style={{
+                            fontSize: 28,
+                            color: "orange"
+                          }}
+                          spin
+                        />
+                      }
+
+                    />
+                    Leaving Chat
+                  </>
+                  :
+                  <>Leave Chat   </>}
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        :
+
+
+        <div className="h-full" >
+          {/* Timestamp for when the chat started */}
+          {/* Timestamp for when the chat started */}
+
+          <div className="text-sm text-center w-fit shadow bg-white text-gray-500 sticky top-0" >
+            <SessionTimer expiry={expiry} />
+          </div>
+
+
+          {/* Chat messages display */}
+
+          <form className="flex flex-col h-full w-full border p-4">
+            <div className="flex example flex-col gap-4 flex-grow overflow-y-auto mb-4 ">
+              <div className="mb-4 text-center ">
+                Chat started: {startTime && formatDate(startTime)}
+              </div>
+
+
+              {/* <div
             
             className= ' self-start bg-gray-200 text-slate-800 p-3 rounded-lg max-w-3/4 '
           >
@@ -751,108 +809,78 @@ const ChatEngine = (props) => {
 
 
 
-            <div
+              <div
 
-              className=' self-end bg-blue-500/80 text-white rounded p-3  max-w-3/4 '
-            >
-
-              <p className="text-sm">{props.selectedOption}</p>
-              <span className="text-xs text-right">{startTime && formatDate(startTime)}</span>
-            </div>
-
-
-
-
-
-
-            {messages.map((message, index) => (
-
-              <div className={`${message.adminJoined ? `flex flex-col my-4 gap-1 items-center justify-center text-center` :
-                `${message.isSentByUser ? 'self-end bg-blue-500/90 text-white' : 'self-start text-slate-800 bg-gray-200/40'
-                } p-3  max-w-[250px] rounded   `}`} key={index}
-                style={!(message.adminJoined) ? { wordBreak: 'break-word' } : {}}
+                className=' self-end bg-blue-500/80 text-white rounded p-3  max-w-3/4 '
               >
 
+                <p className="text-sm">{props.selectedOption}</p>
+                <span className="text-xs text-right">{startTime && formatDate(startTime)}</span>
+              </div>
 
 
-                {message.adminJoined ? (
-                  // <div className="flex flex-col my-4 gap-1 items-center justify-center text-center">
-
-                  <>
-
-                    {!(message.sessionEnded) && <>
-                      <Avatar
-                        // className={` relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
-                        // bg-center rounded-[50%] bg-cover bg-no-repeat   `}
-                        style={{
-                          backgroundColor: message.color,
-                          verticalAlign: 'middle',
-                        }}
-                        size="large"
 
 
-                      >
-                        {message.content.charAt(0)}
-                      </Avatar>
-                      <p className="max-w-[200px]  text-gray-800 font-medium text-xl whitespace-normal" style={{ wordBreak: 'break-word' }}>
-                        {extractName(message.content)}
-                      </p>
-                      <p className="max-w-[200px] font-medium whitespace-normal">
-                        {message.adminLeftChat ? " left the chat" : " joined the chat"}
-                      </p>
-                      <span className="text-xs">{message.timestamp}</span>
 
-                    </>
-                    }
 
-                    {message.sessionEnded && <div className=" my-2 w-full font-medium text-slate-600 bg-slate-50 text-center " >{message.content}</div>}
+              {messages.map((message, index) => (
 
-                  </>
+                <div className={`${message.adminJoined ? `flex flex-col my-4 gap-1 items-center justify-center text-center` :
+                  `${message.isSentByUser ? 'self-end bg-blue-500/90 text-white' : 'self-start text-slate-800 bg-gray-200/40'
+                  } p-3  max-w-[250px] rounded   `}`} key={index}
+                  style={!(message.adminJoined) ? { wordBreak: 'break-word' } : {}}
+                >
 
-                  // </div>
-                )
-                  :
-                  // <div
 
-                  //   className={`${message.isSentByUser ? 'self-end bg-blue-500/90 text-white' : 'self-start text-slate-800 bg-gray-200/40'
-                  //     } p-3  max-w-[250px] rounded   `}
-                  //   style={{ wordBreak: 'break-word' }}
-                  // >
 
-                  <>
+                  {message.adminJoined ? (
+                    // <div className="flex flex-col my-4 gap-1 items-center justify-center text-center">
 
-                    {message.image ? (
-                      <div className="relative">
+                    <>
+
+                      {!(message.sessionEnded) && <>
                         <Avatar
+                          // className={` relative   box-border block md:h-[60px] md:w-[60px] h-[45px] w-[45px] 
+                          // bg-center rounded-[50%] bg-cover bg-no-repeat   `}
                           style={{
-                            backgroundColor: supportAgent ? supportAgent.color : "transparent",
+                            backgroundColor: message.color,
                             verticalAlign: 'middle',
                           }}
-                          className={` relative   box-border block 
-                            bg-center  bg-cover bg-no-repeat   `}
-                          icon={!supportAgent && <BsRobot
-                            className=" text-orange-500 w-5 h-5    " />}
-                          size="small"
+                          size="large"
+
 
                         >
-                          {supportAgent?.name.charAt(0)}
+                          {message.content.charAt(0)}
                         </Avatar>
-                        <a href={message.image} download={`image_${index}.png`} className="text-blue-500 hover:underline block">
-                          <img src={message.image} alt="Sent Image" className="max-w-full md:max-h-[150px] mb-2" />
-                          Download Image
-                        </a>
-                      </div>
-                    ) : (
+                        <p className="max-w-[200px]  text-gray-800 font-medium text-xl whitespace-normal" style={{ wordBreak: 'break-word' }}>
+                          {extractName(message.content)}
+                        </p>
+                        <p className="max-w-[200px] font-medium whitespace-normal">
+                          {message.adminLeftChat ? " left the chat" : " joined the chat"}
+                        </p>
+                        <span className="text-xs">{message.timestamp}</span>
 
+                      </>
+                      }
 
-                      <div className="relative" >
-                        <div className={`${message.isSentByUser ? "-right-3 hidden" : "-left-3 block"} absolute  -bottom-11  `}>
-                          {/* <img
-                            src="https://tecdn.b-cdn.net/img/new/avatars/2.webp"
-                            className="md:w-5 w-5 rounded-full"
-                            alt="Avatar" /> */}
+                      {message.sessionEnded && <div className=" my-2 w-full font-medium text-slate-600 bg-slate-50 text-center " >{message.content}</div>}
 
+                    </>
 
+                    // </div>
+                  )
+                    :
+                    // <div
+
+                    //   className={`${message.isSentByUser ? 'self-end bg-blue-500/90 text-white' : 'self-start text-slate-800 bg-gray-200/40'
+                    //     } p-3  max-w-[250px] rounded   `}
+                    //   style={{ wordBreak: 'break-word' }}
+                    // >
+
+                    <>
+
+                      {message.image ? (
+                        <div className="relative">
                           <Avatar
                             style={{
                               backgroundColor: supportAgent ? supportAgent.color : "transparent",
@@ -867,118 +895,174 @@ const ChatEngine = (props) => {
                           >
                             {supportAgent?.name.charAt(0)}
                           </Avatar>
+                          <a href={message.image} download={`image_${index}.png`} className="text-blue-500 hover:underline block">
+                            <img src={message.image} alt="Sent Image" className="max-w-full md:max-h-[150px] mb-2" />
+                            Download Image
+                          </a>
+                        </div>
+                      ) : (
 
+
+                        <div className="relative" >
+                          <div className={`${message.isSentByUser ? "-right-3 hidden" : "-left-3 block"} absolute  -bottom-11  `}>
+                            {/* <img
+                            src="https://tecdn.b-cdn.net/img/new/avatars/2.webp"
+                            className="md:w-5 w-5 rounded-full"
+                            alt="Avatar" /> */}
+
+
+                            <Avatar
+                              style={{
+                                backgroundColor: supportAgent ? supportAgent.color : "transparent",
+                                verticalAlign: 'middle',
+                              }}
+                              className={` relative   box-border block 
+                            bg-center  bg-cover bg-no-repeat   `}
+                              icon={!supportAgent && <BsRobot
+                                className=" text-orange-500 w-5 h-5    " />}
+                              size="small"
+
+                            >
+                              {supportAgent?.name.charAt(0)}
+                            </Avatar>
+
+                          </div>
+
+                          <p className="text-sm relative">
+                            {message.content}
+
+                          </p>
                         </div>
 
-                        <p className="text-sm relative">
-                          {message.content}
-
-                        </p>
-                      </div>
 
 
 
 
+                      )}
 
-                    )}
-
-                    <span className="text-xs">{formatDate(message.timestamp)}</span>
+                      <span className="text-xs">{formatDate(message.timestamp)}</span>
 
 
 
 
 
 
-                  </>
+                    </>
 
 
 
-                  // </div>
+                    // </div>
 
 
-                }
-
-
-
-
-
-
-              </div>
+                  }
 
 
 
 
-            ))}
-
-            {!isTyping && (<ChatOptions selectedOption={props.selectedOption} automateSlide={automateSlide} />)}
 
 
-            {/*typing indicator  */}
-            {isTyping && (
-              <div className="self-start  bg-gray-300 p-2 rounded-lg max-w-[200px]">
-                <div className="dot-pulse1">
-                  <div className="dot-pulse1__dot"></div>
                 </div>
-              </div>
-            )}
-
-            <span ref={automateSlide} className=" mt-1  "></span>
-          </div>
 
 
 
 
-          {/* Input area for typing messages */}
+              ))}
 
-          <>
+              {!isTyping && (<ChatOptions selectedOption={props.selectedOption} automateSlide={automateSlide} />)}
 
-            <div className={` relative ${props.selectedOption === "Find hosting questions" || props.selectedOption === "Find booking questions" || props.selectedOption === "Shrbo Support" ? "hidden" : "flex"}`}>
-              <input
-                type="text"
-                placeholder="Type your message..."
-                className="flex-grow rounded-l-lg p-2 border pr-7 focus:border-2 focus:border-r-0 focus:border-blue-500 "
-                value={inputMessage}
-                onKeyUp={handleKeyUp}
-                onChange={(e) => { setInputMessage(e.target.value); }}
 
-              />
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                ref={imageRef}
-                onChange={handleImageInputChange}
-              />
+              {/*typing indicator  */}
+              {isTyping && (
+                <div className="self-start  bg-gray-300 p-2 rounded-lg max-w-[200px]">
+                  <div className="dot-pulse1">
+                    <div className="dot-pulse1__dot"></div>
+                  </div>
+                </div>
+              )}
 
-              <button className="bg-blue-500 text-white  rounded-r-lg p-2" onClick={handleSendMessage}>
-                <span className={`${imageInput !== "" || inputMessage !== "" ? "hidden" : "block"}`}  >Send</span>
-                <SendOutlined className={`${imageInput !== "" || inputMessage !== "" ? "block" : "hidden"} w-8  `} />
-              </button>
-              <button
-                className=" text-white rounded-r-lg p-2 right-12 absolute  "
-                onClick={clickImage}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width={"24px"} height={"24px"} viewBox="0 0 24 24"><title>Upload Image</title><path d="M16.5,6V17.5A4,4 0 0,1 12.5,21.5A4,4 0 0,1 8.5,17.5V5A2.5,2.5 0 0,1 11,2.5A2.5,2.5 0 0,1 13.5,5V15.5A1,1 0 0,1 12.5,16.5A1,1 0 0,
-            1 11.5,15.5V6H10V15.5A2.5,2.5 0 0,0 12.5,18A2.5,2.5 0 0,0 15,15.5V5A4,4 0 0,0 11,1A4,4 0 0,0 7,5V17.5A5.5,5.5 0 0,0 12.5,23A5.5,5.5 0 0,0 18,17.5V6H16.5Z" /></svg>
-              </button>
-
+              <span ref={automateSlide} className=" mt-1  "></span>
             </div>
-            {imagePreview && (
-              <div className="max-w-[200px] max-h-[100px] mt-2">
-                <img
-                  src={imagePreview}
-                  alt="Image Preview"
-                  className="max-w-full max-h-full rounded-lg"
-                />
-              </div>
-            )}
-          </>
-          {/* )} */}
 
-        </form>
-      </div>
+
+
+
+            {/* Input area for typing messages */}
+
+            <>
+
+              <div className={` relative ${props.selectedOption === "Find hosting questions" || props.selectedOption === "Find booking questions" || props.selectedOption === "Shrbo Support" ? "hidden" : "flex"}`}>
+                <input
+                  type="text"
+                  placeholder="Type your message..."
+                  className="flex-grow rounded-l-lg p-2 border pr-7 focus:border-2 focus:border-r-0 focus:border-blue-500 "
+                  value={inputMessage}
+                  onKeyUp={handleKeyUp}
+                  onChange={(e) => { setInputMessage(e.target.value); }}
+
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={imageRef}
+                  onChange={handleImageInputChange}
+                />
+
+                <button className="bg-blue-500 text-white  rounded-r-lg p-2" onClick={handleSendMessage}>
+                  <span className={`${imageInput !== "" || inputMessage !== "" ? "hidden" : "block"}`}  >Send</span>
+                  <SendOutlined className={`${imageInput !== "" || inputMessage !== "" ? "block" : "hidden"} w-8  `} />
+                </button>
+                <button
+                  className=" text-white rounded-r-lg p-2 right-12 absolute  "
+                  onClick={clickImage}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width={"24px"} height={"24px"} viewBox="0 0 24 24"><title>Upload Image</title><path d="M16.5,6V17.5A4,4 0 0,1 12.5,21.5A4,4 0 0,1 8.5,17.5V5A2.5,2.5 0 0,1 11,2.5A2.5,2.5 0 0,1 13.5,5V15.5A1,1 0 0,1 12.5,16.5A1,1 0 0,
+            1 11.5,15.5V6H10V15.5A2.5,2.5 0 0,0 12.5,18A2.5,2.5 0 0,0 15,15.5V5A4,4 0 0,0 11,1A4,4 0 0,0 7,5V17.5A5.5,5.5 0 0,0 12.5,23A5.5,5.5 0 0,0 18,17.5V6H16.5Z" /></svg>
+                </button>
+
+              </div>
+              {imagePreview && (
+                <div className="max-w-[200px] max-h-[100px] mt-2">
+                  <img
+                    src={imagePreview}
+                    alt="Image Preview"
+                    className="max-w-full max-h-full rounded-lg"
+                  />
+                </div>
+              )}
+            </>
+            {/* )} */}
+
+          </form>
+        </div>
+
+
+
+      }
+
+
+
+
+
     </div>
   )
 }
 
 export default ChatEngine;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
