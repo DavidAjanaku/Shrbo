@@ -249,6 +249,14 @@ export default function AdminSidebar() {
               </li>
             </Link>
           )}
+           {userInfo &&
+          userInfo.some((role) => role.rolePermission === "AdminUserReports") && (
+            <Link to="/AdminUserReports">
+              <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+                User Reported
+              </li>
+            </Link>
+          )}
         {userInfo &&
           userInfo.some(
             (role) => role.rolePermission === "AnnouncementPage"

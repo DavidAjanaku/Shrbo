@@ -30,23 +30,23 @@ const ReportForm = () => {
   const handleNext = async () => {
     try {
       setLoading(true);
-      const response = await Axios.post("/reportUser", {
-        reasonforreporting: reportType,
+      const selectedReport = ReportTypes.find((cat) => cat.index === reportType);
+      const formData = {
+        reasonforreporting: selectedReport.type,
         hostorguestuser_id: id,
         extrareasonforreporting: additionalDetails,
-      });
+      };
+      console.log("Form Data:", formData);
+      const response = await Axios.post("/reportUser", formData);
       console.log("Report submitted successfully:", response.data);
+  
       setLoading(false);
       notification.success({
         message: "Report Submitted",
         description: "Your report has been submitted successfully.",
       });
-      setModalVisible(false); // Close the modal after successful submission
-
-      // Handle any success behavior here, like showing a success message
     } catch (error) {
       console.error("Error submitting report:", error);
-      // Handle any error behavior here, like showing an error message
       setLoading(false);
       notification.error({
         message: "Error",
@@ -54,6 +54,8 @@ const ReportForm = () => {
       });
     }
   };
+  
+  
   
 
 
@@ -129,13 +131,14 @@ const ReportForm = () => {
             </div>
             <div className="">
               <div className="mt-2.5">
-                <textarea
+              <textarea
                   name="message"
                   id="message"
                   rows={4}
                   placeholder="(optional) give us more details on why you think the listing is inaccurate "
-                  className="block w-full rounded-md ring-0 outline-gray-400  border px-3.5 py-2 text-gray-900 shadow-sm focus:outline-gray-400  placeholder:text-gray-400 sm:text-sm sm:leading-6"
-                  defaultValue={""}
+                  className="block w-full rounded-md ring-0 outline-gray-400 border px-3.5 py-2 text-gray-900 shadow-sm focus:outline-gray-400 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                  value={additionalDetails}
+                  onChange={(e) => setAdditionalDetails(e.target.value)}
                 />
               </div>
             </div>

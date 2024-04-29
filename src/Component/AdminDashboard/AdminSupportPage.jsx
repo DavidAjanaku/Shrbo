@@ -47,7 +47,6 @@ const AdminSupportPage = () => {
       dataIndex: "title",
       key: "title",
     },
-   
     {
       title: "Rental Name",
       dataIndex: "homeName",
@@ -72,24 +71,35 @@ const AdminSupportPage = () => {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
-        <Button onClick={() => showTicketModal(record)}>View Details</Button>
+        <Button onClick={() => handleDelete(record.id)}>Delete</Button>
       ),
     },
   ];
+
+  const handleDelete = async (id) => {
+    try {
+      await Axios.delete(`/reporthosthome/${id}`);
+      setSupportTickets((prevTickets) =>
+        prevTickets.filter((ticket) => ticket.id !== id)
+      );
+      console.log("Ticket deleted successfully");
+    } catch (error) {
+      console.error("Error deleting ticket:", error);
+    }
+  };
 
   const showTicketModal = (ticket) => {
     setSelectedTicket({
       id: ticket.id,
       subject: ticket.title,
       status: ticket.status,
-      replies: ticket.replies || [], // Initialize as empty array if null or undefined
+      replies: ticket.replies || [],
       rentalName: ticket.homeName,
       disputeMessage: ticket.reasonforreporting,
       disputeEmail: ticket.disputeEmail,
     });
     setTicketModalVisible(true);
   };
-  
 
   const handleReplySubmit = () => {
     const { id } = selectedTicket;
@@ -108,7 +118,6 @@ const AdminSupportPage = () => {
       replyForm.resetFields();
     });
   };
-  
 
   return (
     <div className="bg-gray-100 h-[100vh]">
@@ -120,8 +129,7 @@ const AdminSupportPage = () => {
 
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
           <h1 className="text-2xl font-semibold mb-4">Support Tickets</h1>
-          <div className="mb-4">
-          </div>
+          <div className="mb-4"></div>
           <div className="overflow-x-auto">
             <Table
               columns={columns}

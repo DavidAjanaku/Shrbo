@@ -401,35 +401,45 @@ export default function ListingForm({
       let basePrice = nights * nightlyPrice;
       console.log(basePrice);
       let basenormalPrice = basePrice;
-      let reservedPrice = 0; // Initialize reservedPrice
+      let reservedPrice = basePrice; // Initialize reservedPrice
+      let weekendPrices = 0;
+      let weekendCost = 0;
+      
 
       if (reservedPricesForCertainDay.length > 0) {
         const flattenedReservedDates = reservedPricesForCertainDay.flat();
         console.log(flattenedReservedDates);
         const checkInDate = checkIn.getTime();
         const checkOutDate = checkOut.getTime();
-      
+
         // Filter out reservations that don't match the current check-in and check-out dates
         const updatedMatchedReservedPrices = matchedReservedPrices.filter(
           (reservation) => {
             const reservationDate = new Date(reservation.date).getTime();
-            return reservationDate >= checkInDate && reservationDate < checkOutDate;
+            return (
+              reservationDate >= checkInDate && reservationDate < checkOutDate
+            );
           }
         );
-      
+
         setMatchedReservedPrices(updatedMatchedReservedPrices);
-      
+
         flattenedReservedDates.forEach((reservedDate) => {
           const reservedDateValue = new Date(reservedDate.date).getTime();
           const reservedEndDate = reservedDate.end_date
             ? new Date(reservedDate.end_date).getTime()
             : reservedDateValue;
           const reservedPriceValue = Number(reservedDate.price);
-      
+
           if (
-            (reservedDateValue < checkOutDate && reservedDateValue >= checkInDate) ||
-            (reservedEndDate && reservedEndDate < checkOutDate && reservedEndDate >= checkInDate) ||
-            (reservedDateValue < checkInDate && reservedEndDate && reservedEndDate >= checkOutDate)
+            (reservedDateValue < checkOutDate &&
+              reservedDateValue >= checkInDate) ||
+            (reservedEndDate &&
+              reservedEndDate < checkOutDate &&
+              reservedEndDate >= checkInDate) ||
+            (reservedDateValue < checkInDate &&
+              reservedEndDate &&
+              reservedEndDate >= checkOutDate)
           ) {
             let reservedDays = 0;
             for (
@@ -442,17 +452,29 @@ export default function ListingForm({
                 reservedDays++;
               }
             }
-      
-            basenormalPrice -= reservedDays * nightlyPrice;
+
+            // Calculate the total nightly price for the reserved days
             const totalnightlydays = nightlyPrice * reservedDays;
-            console.log("reservedPriceValue " + reservedPriceValue);
-            console.log("reservedDays " + reservedDays);
+
+            // Subtract the total nightly price for the reserved days from basenormalPrice
+            basenormalPrice -= totalnightlydays;
+
+            // Add the reserved price for the reserved days to basenormalPrice
             basenormalPrice += reservedPriceValue * reservedDays;
-      
-            reservedPrice = basenormalPrice - totalnightlydays + securityDeposit + nightlyPrice;
-      
-            console.log(basenormalPrice - totalnightlydays);
-      
+
+            // Calculate the reserved price
+            reservedPrice = basenormalPrice;
+
+            console.log(
+              "Total nightly price for reserved days:",
+              totalnightlydays
+            );
+            console.log(
+              "Updated basenormalPrice after adjusting for reserved days:",
+              basenormalPrice
+            );
+            console.log("Reserved price after calculation:", reservedPrice);
+
             // Add the new reservation to matchedReservedPrices if it's not already there
             if (
               !updatedMatchedReservedPrices.some(
@@ -469,37 +491,73 @@ export default function ListingForm({
               });
             }
           }
+          // if (reservedPricesForCertainDay.length < 0) {
+          //   reservedPrice = basePrice;
+
+          // }
         });
+
+        // Calculate the total price for the booking
+        // const totalPrice =
+        //   nightlyPrice * (checkOutDate - checkInDate) +
+        //   updatedMatchedReservedPrices.reduce(
+        //     (acc, cur) => acc + cur.price * cur.reservedDays,
+        //     0
+        //   );
+        // console.log("Total price for the booking:", totalPrice);
       }
-      
-       // Update reservedPrice state here
-    setReservedPrice(reservedPrice);
-    console.log(reservedPrice);
-    console.log(securityDeposit);
-    setTotalCost(reservedPrice)
-    console.log(totalCost);
-      
+
+      // Update reservedPrice state here
 
       // Deduct 20,000 from the final basenormalPrice
-      
 
       // This is for weekend calculation
       // Check if the weekend price should be applied
+      let weekendNights = 0; // Initialize a counter for weekend nights
+
       if (weekend !== null && weekend !== "" && !isNaN(Number(weekend))) {
         const weekendPrice = Number(weekend);
+        console.log("Weekend Price:", weekendPrice);
         const startDate = new Date(checkIn);
         const endDate = new Date(checkOut);
         let currentDate = new Date(startDate);
 
         while (currentDate < endDate) {
           if (currentDate.getDay() === 5 || currentDate.getDay() === 6) {
-            // If the current date is Saturday or Sunday, update the basePrice with the weekend price
-            basePrice -= nightlyPrice; // Subtract the normal nightly price
-            basePrice += weekendPrice; // Add the weekend price
+            weekendNights++; // Increment the counter for weekend nights
           }
           currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
         }
+
+         weekendCost = weekendNights * weekendPrice;
+        console.log("Number of weekend nights:", weekendNights);
+        console.log("Total cost for weekend nights:", weekendCost);
+        console.log("weekendCost " + weekendCost);
+        weekendPrices = weekendCost;
+        console.log("Updated weekendPrices with weekendCost:", weekendPrices);
+
+        // Adjust the reserved price for weekend nights
+        if (weekendNights === 0) {
+          // Do nothing if there are no weekend nights
+          reservedPrice = reservedPrice;
+          console.log(reservedPrice);
+        } else {
+          console.log(reservedPrice);
+          // Remove two nightly prices from the reserved price and add the weekend price
+          reservedPrice =
+            reservedPrice - weekendNights * nightlyPrice;
+        }
+
+        console.log(
+          "Updated reserved price after weekend calculation:",
+          reservedPrice
+        );
       }
+
+      reservedPrice + weekendCost + securityDeposit
+      let reservedPriceForApartment = reservedPrice + weekendPrices ;
+      console.log(reservedPriceForApartment);
+
       //
 
       // Assuming host fees is 20%, service fee is 5%, and tax is 4%
@@ -510,13 +568,22 @@ export default function ListingForm({
 
       const securityDeposits = securityDeposit;
       const totalPrice = nights * nightlyPrice;
-      const TotalPrice = basePrice + securityDeposits;
-      console.log(TotalPrice);
+      console.log("totalPrice " + totalPrice);
+      const TotalPrice = reservedPriceForApartment + securityDeposit;
+      console.log("basePrice " + basePrice);
+      console.log("TotalPrice " + TotalPrice);
+      setTotalCost(reservedPriceForApartment);
 
       setHousePrice(price);
       setNights(nights);
-      setTotalPrice(totalPrice);
+      setTotalPrice(reservedPriceForApartment);
       console.log(totalPrice);
+
+      // setReservedPrice(reservedPrice);
+      console.log(reservedPrice);
+      console.log(securityDeposit);
+      console.log(totalCost);
+
       console.log(reservedPrice);
       console.log(totalCost);
       setHostFee(hostFees);
@@ -547,22 +614,30 @@ export default function ListingForm({
         } else if (nights >= 7 && weekDiscount > 0) {
           customDiscountPercentage = weekDiscount / 100;
         }
+        console.log(customDiscountPercentage);
 
         const baseDiscountedPrice = parseFloat(
-          (basePrice * customDiscountPercentage).toFixed(2)
+          (reservedPriceForApartment * customDiscountPercentage).toFixed(2)
         );
+
+        console.log(baseDiscountedPrice);
         const securityDepositDiscountedPrice =
           securityDeposits * customDiscountPercentage;
+
+          console.log(securityDepositDiscountedPrice);
         const totalDiscountedPrice =
           baseDiscountedPrice + securityDepositDiscountedPrice;
+          console.log(totalDiscountedPrice);
         const discountedPrice =
-          basePrice + securityDeposits - baseDiscountedPrice;
+          reservedPriceForApartment + securityDeposits - baseDiscountedPrice;
+          console.log(discountedPrice);
 
         if (customDiscountPercentage > 0) {
           const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
           setAppliedDiscount(
             `Custom discount applied (${formattedDiscount}% off)`
           );
+          console.log(discountedPrice);
           setTotalCost(discountedPrice);
           return; // Exit early since custom discount is applied
         }
@@ -571,15 +646,16 @@ export default function ListingForm({
       // Apply predefined discounts if custom discount is not applied
       if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
         setAppliedDiscount("20% New listing promotion (20% off)");
-        const discountedPrice = basePrice * 0.8 + securityDeposits;
+        const discountedPrice = reservedPriceForApartment * 0.8 + securityDeposits;
         setTotalCost(discountedPrice);
       } else if (nights >= 28 && discount.includes("10% Monthly discount")) {
         setAppliedDiscount("10% Monthly discount (10% off)");
-        const discountedPrice = basePrice * 0.9 + securityDeposits;
+        const discountedPrice = reservedPriceForApartment * 0.9 + securityDeposits;
+        console.log(discountedPrice);
         setTotalCost(discountedPrice);
       } else if (nights >= 7 && discount.includes("5% Weekly discount")) {
         setAppliedDiscount("5% Weekly discount (5% off)");
-        const discountedPrice = basePrice * 0.95 + securityDeposits;
+        const discountedPrice = reservedPriceForApartment * 0.95 + securityDeposits;
         setTotalCost(discountedPrice);
       } else {
         setAppliedDiscount("");
@@ -1002,7 +1078,7 @@ export default function ListingForm({
                   handleCancel={handleCancel}
                   title={"Price details"}
                 >
-                  <div className="p-3 pt-6 border-y   ">
+                  <div className="p-3 pt-6 border-y   h-[59vh] overflow-auto example">
                     <div>
                       <div className=" pb-4 md:pb-0 ">
                         <div className=" ">
@@ -1055,35 +1131,36 @@ export default function ListingForm({
                                 </div>
                               </div>
                               <div>
-  <h2 className="text-lg font-semibold mb-2">
-    Reserved Dates and Prices
-  </h2>
-  {matchedReservedPrices.length > 0 && (
-    <ul className="divide-y divide-gray-200">
-      {matchedReservedPrices.map((reservation, index) => (
-        <li key={index} className="py-2 ">
-          <div className="flex text-sm justify-between ">
-            
-           
-          </div>
-          <div className="flex text-sm justify-between ">
-            <p className="">
-              Reserved Date:{" "}
-              {new Date(reservation.date).toLocaleDateString()}
-            </p>
-            <p className="">
-              Reserved Days: {reservation.reservedDays}
-            </p>
-          </div>
-          <p className="">
-               ₦{reservation.price}
-            </p>
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
+                                <h2 className="text-lg font-semibold mb-2">
+                                  Reserved Dates and Prices
+                                </h2>
+                                {matchedReservedPrices.length > 0 && (
+                                  <ul className="divide-y divide-gray-200">
+                                    {matchedReservedPrices.map(
+                                      (reservation, index) => (
+                                        <li key={index} className="py-2 ">
+                                          <div className="flex text-sm justify-between "></div>
+                                          <div className="flex text-sm justify-between ">
+                                            <p className="">
+                                              Reserved Date:{" "}
+                                              {new Date(
+                                                reservation.date
+                                              ).toLocaleDateString()}
+                                            </p>
+                                            <p className="">
+                                              Reserved Days:{" "}
+                                              {reservation.reservedDays}
+                                            </p>
+                                          </div>
+                                          <p className="">
+                                            ₦{reservation.price}
+                                          </p>
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                )}
+                              </div>
 
                               {weekend && !isNaN(Number(weekend)) && (
                                 <div className=" mb-2 box-border block">
