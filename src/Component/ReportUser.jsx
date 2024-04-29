@@ -30,19 +30,15 @@ const ReportForm = () => {
   const handleNext = async () => {
     try {
       setLoading(true);
-      const response = await Axios.post("/reportUser", {
-        reasonforreporting: reportType,
+      const selectedReport = ReportTypes.find((cat) => cat.index === reportType);
+      const formData = {
+        reasonforreporting: selectedReport.type,
         hostorguestuser_id: id,
         extrareasonforreporting: additionalDetails,
-      });
+      };
+      console.log("Form Data:", formData);
+      const response = await Axios.post("/reportUser", formData);
       console.log("Report submitted successfully:", response.data);
-  
-      // Log the data sent in the Axios request
-      console.log("Data sent:", {
-        reasonforreporting: reportType,
-        hostorguestuser_id: id,
-        extrareasonforreporting: additionalDetails,
-      });
   
       setLoading(false);
       notification.success({
@@ -58,6 +54,7 @@ const ReportForm = () => {
       });
     }
   };
+  
   
   
 
