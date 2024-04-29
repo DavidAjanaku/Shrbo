@@ -15,7 +15,7 @@ import axios from "../../Axios";
 import { LuArrowDownLeft, LuArrowUpRight, LuArrowUpWideNarrow, LuFileClock } from "react-icons/lu";
 import Popup from "../../hoc/Popup";
 import WithdrawForm from "./WithdrawForm";
-import GoBackButton from "../GoBackButton";
+
 
 
 
@@ -660,10 +660,6 @@ const Wallet = () => {
             {contextHolder}
 
             <div className=" max-w-5xl mx-auto h-full  ">
-                <div className=" ml-4 mt-1 "  >
-
-                    <GoBackButton />
-                </div>
 
                 <div className=" md:my-14 py-6 md:px-6    md:flex  gap-4">
 
