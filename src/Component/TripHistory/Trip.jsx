@@ -501,13 +501,14 @@ export default function Trip() {
                 <div>
                   <p className="text-lg">
                     No trips booked...yet! Time to dust off your bags and start
-                    planning your next adventure.
+                    planning your next vacation.
                   </p>
                 </div>
 
-                <button className="bg-orange-400 p-4 rounded-full mt-7 text-white text-lg">
+               <Link to="/">
+               <button className="bg-orange-400 p-4 rounded-full mt-7 text-white text-lg">
                   Start Searching
-                </button>
+                </button></Link>
               </div>
             )}
           </div>

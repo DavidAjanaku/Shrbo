@@ -86,13 +86,7 @@ const AdminUserReports = () => {
         dataIndex: "extrareasonforreporting",
         key: "extrareasonforreporting",
       },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (text, record) => (
-        <Button onClick={() => showTicketModal(record)}>Show Details</Button>
-      ),
-    },
+   
   ];
 
   const showTicketModal = (ticket) => {
