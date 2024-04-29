@@ -25,8 +25,7 @@ export default function Home() {
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(true);
-  const { setUser, setToken, token, setHost, setAdminStatus, user ,setCoHost} =
-    useStateContext();
+  const { setUser, setToken, token, setHost, setAdminStatus, user ,setCoHost} =useStateContext();
   const [loading, setLoading] = useState(true);
   const [showMoreLoading, setShowMoreLoading] = useState(true);
   const [listingLoading, setListingLoading] = useState(true);
@@ -81,13 +80,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    // Extract the parameters from the URL
+    const params = new URLSearchParams(window.location.search);
+    const verified = params.get("verified");
+    const remtoken = params.get("remtoken");
+    const ustoken = params.get("ustoken");
+
     const fetchUserData = async () => {
       try {
-        // Extract the parameters from the URL
-        const params = new URLSearchParams(window.location.search);
-        const verified = params.get("verified");
-        const remtoken = params.get("remtoken");
-        const ustoken = params.get("ustoken");
 
         // Log out the parameters
         console.log("Verified:", verified);
@@ -124,7 +124,11 @@ export default function Home() {
     };
 
     // Call the fetchUserData function when the component mounts
-    fetchUserData();
+    if(verified&&remtoken&&ustoken){
+      setLoading(true);
+
+      fetchUserData();
+    }
   }, []);
 
   useEffect(() => {
@@ -152,8 +156,13 @@ export default function Home() {
       }
     };
 
-    fetchUserData();
-  }, []);
+ 
+
+    if(token){
+      setLoading(true);
+      fetchUserData();
+    }
+  }, [token]);
 
   useEffect(() => {
     const tokens = token;
@@ -184,6 +193,12 @@ export default function Home() {
         })
         .catch((error) => {
           console.error(error);
+        }).finally(()=>{
+          if(!token){  // this is so the loader does not stop showing when the request to /user is being made
+            setLoading(false);
+
+          }
+
         });
     };
 
@@ -206,7 +221,7 @@ export default function Home() {
 
     viewCount();
   }, []);
-  0;
+
 
   useEffect(() => {
     // Simulate fetching house details after 5 seconds
@@ -601,25 +616,30 @@ export default function Home() {
   // Reviews
 
   useEffect(() => {
-    axios.get("/getPendingReviews").then(response => {
+    if(user?.id){
 
-      const formattedHostHomes = response.data.data.map((item) => ({
-        id: item.id,
-        location: item.address,
-        title: item.title,
-        bookingid: item.bookingid,
-        userid: item.userid,
-        hostid: item.hostid,
-        hosthomeid: item.hosthomeid,
-      }));
-      setHouseDetails(formattedHostHomes);
-      console.log("pendingReviews", response.data.data)
+      console.log("GET PENDING REVIEWS")
 
-    }).catch(error => {
+      axios.get("/getPendingReviews").then(response => {
+  
+        const formattedHostHomes = response.data.data.map((item) => ({
+          id: item.id,
+          location: item.address,
+          title: item.title,
+          bookingid: item.bookingid,
+          userid: item.userid,
+          hostid: item.hostid,
+          hosthomeid: item.hosthomeid,
+        }));
+        setHouseDetails(formattedHostHomes);
+        console.log("pendingReviews", response.data.data)
+  
+      }).catch(error => {
+  
+      });
+    }
 
-    });
-
-  }, []);
+  }, [user]);
 
   useEffect(() => {
 

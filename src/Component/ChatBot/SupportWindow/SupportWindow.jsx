@@ -7,6 +7,8 @@ import OptionWindow from "./OptionWindow";
 import WelcomeForm from "./WelcomeForm";
 import { useStateContext } from "../../../ContextProvider/ContextProvider";
 import axios from "../../../Axios";
+import { Button, Modal, Space } from 'antd';
+
 
 
 
@@ -37,6 +39,9 @@ const SupportWindow = (props) => {
     const { user, token } = useStateContext();
     const [generatedToken, setGeneratedToken] = useState(localStorage.getItem("gnT"));
     const [generatedUserId, setGeneratedUserId] = useState(localStorage.getItem("gnUID"));
+    const { confirm } = Modal;
+    const[showLeaveChatConfirm,setLeaveChatConfirm]=useState(false);
+    const [loading,setLoading]=useState(false);
 
 
 
@@ -56,7 +61,7 @@ const SupportWindow = (props) => {
 
             _setGeneratedUserId(response.data.user_id);
             _setGeneratedToken(response.data.token);
-            _setGeneratedUser({name: data.name, email:data.email });
+            _setGeneratedUser({ name: data.name, email: data.email });
 
         }).catch((error) => {
 
@@ -115,30 +120,90 @@ const SupportWindow = (props) => {
 
 
         if (props.selectedOption == "Live chat" && !storedAgent && token) {
-          try {
-            const response = axios.post("/admin-guest-chat/startConversationOrReplyText", {
-              message: "Live chat",
-              status: "guest",
-              recipient_id: "",
-              chat_session_id: "",
-              image: "",
-            });
+            try {
+                const response = axios.post("/admin-guest-chat/startConversationOrReplyText", {
+                    message: "Live chat",
+                    status: "guest",
+                    recipient_id: "",
+                    chat_session_id: "",
+                    image: "",
+                });
 
-            if (response.data) {
+                if (response.data) {
 
-              console.log("Live chat", response.data)
+                    console.log("Live chat", response.data)
+                }
+            } catch (error) {
+
             }
-          } catch (error) {
-
-          }
 
         }
 
     }, [props.selectedOption]);
 
 
+    const handleLeaveChat = async () => {
 
 
+        try {
+            const adminId = props.agentName?.id
+            const guestId = user?.id || generatedUserId;
+
+            if(adminId){
+                setLoading(true);
+                
+                await axios.get(`/admin-guest-chat/leaveChat/${adminId}/${guestId}/guest`)
+                
+                console.log("left chat 👍")
+                setLoading(false);
+
+            }
+
+
+            sessionStorage.removeItem('supportAgent');
+            localStorage.removeItem("gnT");
+            localStorage.removeItem("gnU");
+            localStorage.removeItem("gnUID");
+            setLeaveChatConfirm(false)
+            props.goToOptions();
+
+        } catch (error) {
+            console.error(error);
+
+        }
+
+
+
+
+    }
+
+
+    const showPromiseConfirm = () => {
+        confirm({
+            title: 'Do you want to delete these items?',
+            //   icon: <ExclamationCircleFilled />,
+            okText: 'Leave Chat',
+            cancelText: 'Return to Chat',
+            centered:true,
+            content: 'When clicked the OK button, this dialog will be closed after 1 second',
+            async onOk() {
+                try {
+                    return await new Promise((resolve, reject) => {
+                        setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+                    });
+                } catch {
+                    return console.log('Oops errors!');
+                }
+            },
+            onCancel() { },
+        });
+    };
+
+
+    const handleShowLeaveChatConfirm =()=>{
+        setLeaveChatConfirm(!showLeaveChatConfirm);
+
+    }
 
 
 
@@ -157,13 +222,13 @@ const SupportWindow = (props) => {
                 }
             }}>
 
-            <SupportHeader close={props.close} agentName={props.agentName} />
+            <SupportHeader close={props.close} agentName={props.agentName} leaveChat={props.selectedOption === "Live chat"?handleShowLeaveChatConfirm:handleLeaveChat} showLeaveChatConfirm={showLeaveChatConfirm} />
 
 
             {/* <OptionWindow/> */}
 
 
-            {(props.selectedOption === "Live chat" && token === null&&_user===null) && <WelcomeForm visible={_user === null || chat === null} setUser={(user) => _setUser(user)}
+            {(props.selectedOption === "Live chat" && token === null && _user === null) && <WelcomeForm visible={_user === null || chat === null} setUser={(user) => _setUser(user)}
                 setChat={(chat) => setChat(chat)} onSubmit={handleSubmitWelcomeForm} />}
 
 
@@ -186,6 +251,10 @@ const SupportWindow = (props) => {
                     botMessage={props.botMessage}
                     selectedOption={props.selectedOption}
                     updateHeader={props.updateHeader}
+                    showLeaveChatConfirm={showLeaveChatConfirm}
+                    handleShowLeaveChatConfirm={handleShowLeaveChatConfirm}
+                    handleLeaveChat={handleLeaveChat}
+                    leaveChatLoading={loading}
                 />
             }
             {/* } */}
