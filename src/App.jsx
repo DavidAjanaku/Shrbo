@@ -77,6 +77,7 @@ import AdminDamagePage from "./Component/AdminDashboard/AdminDamagePage";
 import CommunicationCenter from "./Component/AdminDashboard/CommunicationCenter";
 import Wallet from "./Component/Wallet/Wallet";
 import AdminSecurityDeposit from "./Component/AdminDashboard/AdminSecurityDeposit";
+import AdminUserReports from "./Component/AdminDashboard/AdminUserReports";
 function App() {
 
   return (
@@ -194,10 +195,11 @@ function App() {
           <Route path="/DamagesAndIncidentals" element={<DamagesIncidentals />} />
           <Route path="/CommunicationCenter" element={<CommunicationCenter />} />
           <Route path="/AdminSecurityDeposit" element={<AdminSecurityDeposit />} />
+          <Route path="/AdminUserReports" element={<AdminUserReports />} />
 
           
           <Route path="*" element={<PageNotFound/>} />
-
+          
         </Routes>
         </BookingInfoData>
 

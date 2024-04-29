@@ -18,6 +18,8 @@ const permissionsData = [
   { label: "User Verification Dashboard", value: "UserVerificationDashboard" },
   { label: "Service Charge", value: "ServiceCharge" },
   { label: "Security Deposit", value: "SecurityDeposit" },
+  { label: "Admin User Reports", value: "AdminUserReports" },
+
 
 ];
 
