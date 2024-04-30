@@ -21,7 +21,8 @@ const CommunicationCenter = () => {
   const [sessionChatHistory, setSessionChatHistory] = useState([]);
   const [isSessionEnded, setSessionEnded] = useState(false);
   const [isUserLeftchat, setUserLeftchat] = useState(false);
-
+  const [viewPastSession, setViewPastSession] = useState(false);
+  const [loadingChats, setLoadingChats] = useState(false);
   const [users, setUsers] = useState([
 
   ]);
@@ -121,17 +122,17 @@ const CommunicationCenter = () => {
 
         setUserLeftchat(true);
 
+        
 
-
-
+        setExpiry("")
         console.table(data);
 
 
         console.log("User left ", data)
+        sessionStorage.removeItem('supportUser');
 
         // messageSentSound.play();
         // setMessages(prevMessages => [...prevMessages, newMessage]);
-        // sessionStorage.removeItem('supportAgent');
 
 
       }
@@ -512,6 +513,7 @@ const CommunicationCenter = () => {
 
     const storedAgent = loadAgentFromSession();
     if (storedAgent) {
+      setLoadingChats(true);
       const agentId = storedAgent.userId;
       const sessionId = storedAgent.session_id;
       const adminId = user.id
@@ -551,6 +553,9 @@ const CommunicationCenter = () => {
 
       }).catch((error) => {
         console.error(error)
+      }).finally(() => {
+
+        setLoadingChats(false);
       })
 
 
@@ -680,6 +685,19 @@ const CommunicationCenter = () => {
   }, []);
 
 
+  const handleViewPaastSession = () => {
+
+    console.log(viewPastSession)
+
+    setViewPastSession(!viewPastSession);
+
+
+
+
+
+  }
+
+
 
 
 
@@ -695,10 +713,15 @@ const CommunicationCenter = () => {
             <AdminSidebar users={users} setSelectedUser={setSelectedUser} />
           </div>
 
-          <div className="w-full md:w-4/5 p-4 h-screen overflow-auto example">
-            <h1 className="text-2xl font-semibold mb-4">
-              Communication Center
-            </h1>
+          {!viewPastSession ? <div className="w-full md:w-4/5 p-4 h-screen overflow-auto example">
+            <div className="flex justify-between">
+              <h1 className="text-2xl font-semibold mb-4">
+                Communication Center
+              </h1>
+
+              <button onClick={() => { handleViewPaastSession() }}  >View all session history</button>
+
+            </div>
             <div className="flex ">
               <div className="w-1/4 border-r pr-4">
                 <input
@@ -799,6 +822,7 @@ const CommunicationCenter = () => {
                 </ul>
               </div>
               <div className="w-3/4 pl-4">
+                {!loadingChats? 
                 <div className="bg-white h-[90vh] p-4 rounded shadow">
                   {selectedUser ? (
                     <>
@@ -824,12 +848,12 @@ const CommunicationCenter = () => {
 
                       </div>
                       <div className="h-[70vh] overflow-y-auto example">
-                        {selectedUser &&
+                        {/* {selectedUser &&
                           userChats[selectedUser]?.length === 0 && (
                             <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
                               Admin joined the chat
                             </div>
-                          )}
+                          )} */}
 
                         {userChats[selectedUser]?.map((msg, index) => (
                           // <div key={index}>
@@ -867,12 +891,12 @@ const CommunicationCenter = () => {
                         ))}
 
 
-                        {isTyping && currentSession[0].session_id === selectedUser && <div className=" text-slate-500 text-sm ">User typing........</div>}
+                        {isTyping && currentSession[0]?.session_id == selectedUser && <div className=" text-slate-500 text-sm ">User typing........</div>}
 
 
-                        {isSessionEnded && currentSession[0].session_id === selectedUser && <div className=" my-4 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session has ended leave the chat </div>}
+                        {isSessionEnded && currentSession[0]?.session_id == selectedUser && <div className=" my-4 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session has ended leave the chat </div>}
 
-                        {isUserLeftchat&&currentSession[0].session_id === selectedUser && <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
+                        {isUserLeftchat && currentSession[0]?.session_id == selectedUser && <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
                           user{currentSession[0].userId} left the chat
                         </div>}
 
@@ -881,7 +905,7 @@ const CommunicationCenter = () => {
 
 
 
-                      {currentSession.find(chat => chat.session_id === selectedUser) && !isSessionEnded && !isUserLeftchat && <div className="mt-4 flex gap-2">
+                      {currentSession.find(chat => chat.session_id === selectedUser) && !isSessionEnded && !isUserLeftchat&& <div className="mt-4 flex gap-2">
                         <button
                           className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
                           onClick={() => fileInputRef.current.click()}
@@ -895,7 +919,7 @@ const CommunicationCenter = () => {
                         <input
                           ref={fileInputRef}
                           type="file"
-                          accept="image/*, video/*"
+                          accept="image/*"
                           style={{ display: "none" }}
                           onChange={(e) => {
                             const file = e.target.files[0];
@@ -932,14 +956,20 @@ const CommunicationCenter = () => {
                     </p>
                   )}
                 </div>
+                :<p className="text-gray-500 flex items-center h-[80vh] justify-center">Loading chats....</p>}
               </div>
             </div>
           </div>
+            :
+            <div className="w-full min-h-[90vh] h-[90vh]    " >
+
+              <ChatHistory sessionMessages={sessionChatHistory} handleViewPaastSession={handleViewPaastSession} />
+            </div>
+          }
         </div>
       </div>
     </div>
 
-    // <ChatHistory sessionMessages={sessionChatHistory}/>
   );
 };
 
@@ -954,7 +984,7 @@ export default CommunicationCenter;
 
 const { Option } = Select;
 
-const ChatHistory = ({ sessionMessages }) => {
+const ChatHistory = ({ sessionMessages, handleViewPaastSession }) => {
   const [selectedSessionID, setSelectedSessionID] = useState('');
 
   const handleSessionIDChange = (value) => {
@@ -963,16 +993,18 @@ const ChatHistory = ({ sessionMessages }) => {
 
   const session = sessionMessages.find(session => session.session_id === selectedSessionID);
 
-  const sessionIDs = [...new Set(sessionMessages.map(session => session.session_id))];
+  const sessionIDs = [...new Set(sessionMessages.map(session => session.session_id).reverse())];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 h-full overflow-y-scroll example bg-white">
       <div className="mb-4">
+        <button onClick={() => { handleViewPaastSession() }} className=" bg-slate-500 text-white p-2 rounded font-medium mb-2 "> Back to Chat </button>
         <label htmlFor="sessionID" className="block text-lg font-semibold mb-1">Filter by Session ID:</label>
         <Select
           id="sessionID"
           className="w-full"
           value={selectedSessionID}
+          showSearch
           onChange={handleSessionIDChange}
           placeholder="Select Session ID"
         >

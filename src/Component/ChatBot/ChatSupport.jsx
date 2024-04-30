@@ -4,8 +4,10 @@ import SupportWindow from "./SupportWindow/SupportWindow";
 import { FloatButton } from 'antd';
 import { CommentOutlined } from '@ant-design/icons';
 import OptionWindow from "./SupportWindow/OptionWindow";
+import { useStateContext } from "../../ContextProvider/ContextProvider";
 
 const ChatSupport = () => {
+
   const ref = useRef(null)
   const [visible, setVisible] = useState(false);
   const [showOption, setShowOption] = useState(false);
@@ -13,6 +15,8 @@ const ChatSupport = () => {
   const [botMessage, setBotMessage] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [agent, setAgentName] = useState(null);
+  const [unreadCount, setunreadCount] = useState(0)
+  const { user, token } = useStateContext();
 
   const handleOptionSelected = (option) => {
 
@@ -33,10 +37,10 @@ const ChatSupport = () => {
 
   }
 
-  const goToOptions=()=>{
+  const goToOptions = () => {
 
     setAgentName(null);
-    // setVisible(true);
+    setVisible(false);
     setShowOption(true);
     setSelectedCategory(null);
     setSelectedIssue(null)
@@ -76,6 +80,59 @@ const ChatSupport = () => {
     return null;
   };
 
+  
+
+  // const initializeUnreadMessagesReceiverEcho = (token,userId) => {
+
+  //   if (typeof window.Echo !== "undefined") {
+  //     const channelName = `chat.user.${userId}`;
+
+  //     window.Echo.connector.options.auth.headers.Authorization = `Bearer ${token}`;
+  //     console.log(
+  //       "Authentication token is set:",
+  //       window.Echo.connector.options.auth.headers.Authorization
+  //     );
+
+
+
+  //     const privateChannel = window.Echo.private(channelName);
+
+  //     const messageHandler = (data) => {
+  //       // messageSentSound.play(); // Ensure messageSentSound is defined and loaded
+  //       // const newMessage = {
+  //       //   id: data.id,
+  //       //   content: data.message,
+  //       //   image: data.image,
+  //       //   timestamp: data.created_at,
+  //       //   isSentByUser: false,
+  //       //   session: data.sessionId
+  //       // };
+
+  //       // const count=unreadCount++
+
+  //       setunreadCount(prevCount => prevCount++);
+
+  //       console.log("Admin sent a message Chat Support", data);
+
+  //       // setMessages(prevMessages => [...prevMessages, newMessage]);
+  //       // updateSessionTime(); // update the session time back to 7 mins
+  //     };
+
+  //     privateChannel.listen("MessageBroadcasted", messageHandler);
+
+  //     console.log("Listening for messages on channel:", channelName);
+
+  //     // Return a function to unsubscribe from the channel
+  //     return () => {
+  //       privateChannel.stopListening("MessageBroadcasted", messageHandler);
+  //     };
+  //   } else {
+  //     console.error(
+  //       "Echo is not defined. Make sure Laravel Echo is properly configured."
+  //     );
+  //   }
+  // };
+
 
 
   useEffect(() => {
@@ -87,7 +144,24 @@ const ChatSupport = () => {
       setSelectedCategory("Live chat");
       setSelectedIssue("Live chat")
       setBotMessage("hhhhh")
+
+      // const uToken=token||localStorage.getItem("gnT");
+      // const userId=user?.id||localStorage.getItem("gnUID");
+
+      // const cleanupBroadcastReceiver= initializeUnreadMessagesReceiverEcho(uToken,userId) ;
+
+      // console.log("In Here")
+
+      // return () => {
+      //   cleanupBroadcastReceiver(); // Cleanup function to unsubscribe
+      
+  
+      // };
+
+
+
     }
+
 
 
 
@@ -95,12 +169,12 @@ const ChatSupport = () => {
   }, []);
 
 
-const updateHeader=(agentDetails)=>{
-    
-  setAgentName(agentDetails)
+  const updateHeader = (agentDetails) => {
+
+    setAgentName(agentDetails)
 
 
-}
+  }
 
 
 
@@ -117,6 +191,19 @@ const updateHeader=(agentDetails)=>{
       console.log("Category not found.");
     }
   };
+
+
+  const handleUpdateUnreadCount = () => {
+    setunreadCount(prevCount => prevCount + 1);
+};
+
+
+
+ 
+
+
+
+
 
 
 
@@ -139,8 +226,10 @@ const updateHeader=(agentDetails)=>{
         botMessage={botMessage}
         selectedOption={selectedIssue}
         agentName={agent}
-        updateHeader={(data)=>{updateHeader(data)}}
+        updateHeader={(data) => { updateHeader(data) }}
         goToOptions={goToOptions}
+        clearUnreadCount={(count)=>{setunreadCount(count)}}
+        UpdateUnreadCount={handleUpdateUnreadCount}
 
 
 
@@ -151,10 +240,11 @@ const updateHeader=(agentDetails)=>{
 
 
       {!visible && <FloatButton type="default" icon={<CommentOutlined />} badge={{
-        count: 1,
+        count: unreadCount,
       }}
 
-        tooltip={<div className="   ">Customer Support</div>} onClick={handleOpen} />
+        // tooltip={<div className="   ">Customer Support</div>}
+        onClick={handleOpen} />
       }
 
       {/* {!visible&& <Avatar style={" bottom-2  right-6 fixed "} />

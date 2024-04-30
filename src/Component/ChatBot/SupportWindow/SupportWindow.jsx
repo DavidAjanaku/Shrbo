@@ -205,6 +205,16 @@ const SupportWindow = (props) => {
 
     }
 
+    useEffect(()=>{
+
+        if(props.visible==true){
+            props.clearUnreadCount(0);
+        }
+
+
+
+    },[props.visible]);
+
 
 
 
@@ -255,6 +265,7 @@ const SupportWindow = (props) => {
                     handleShowLeaveChatConfirm={handleShowLeaveChatConfirm}
                     handleLeaveChat={handleLeaveChat}
                     leaveChatLoading={loading}
+                    UpdateUnreadCount={props.UpdateUnreadCount}
                 />
             }
             {/* } */}

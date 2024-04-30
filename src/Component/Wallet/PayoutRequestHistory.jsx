@@ -88,7 +88,7 @@ const RequestHistory = () => {
         await axios.delete(`/cancelPayRequest/${id}`).then(response => {
             console.log(response);
             message.success(`Cancelled request`);
-            // fetchUserCards();
+            fetchWalletWithdrawRequsts();
             // openViewCohostModal();
         }).catch(error => {
             console.error("Failed to Cancel request", error);
@@ -140,6 +140,7 @@ const RequestHistory = () => {
 
 
     const fetchWalletWithdrawRequsts = async () => {
+        setLoadingRequest(true);
 
         try {
             const response = await axios.get(`/getUserPaymentRecords`);

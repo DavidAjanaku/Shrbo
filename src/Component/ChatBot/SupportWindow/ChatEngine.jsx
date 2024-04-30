@@ -157,7 +157,7 @@ const ChatEngine = (props) => {
 
 
         console.log("Admin left ", data)
-
+        setExpiry("")
         messageSentSound.play();
         setMessages(prevMessages => [...prevMessages, newMessage]);
         sessionStorage.removeItem('supportAgent');
@@ -190,6 +190,7 @@ const ChatEngine = (props) => {
 
     const messageHandler = (data) => {
       messageSentSound.play(); // Ensure messageSentSound is defined and loaded
+      props.UpdateUnreadCount()
       const newMessage = {
         id: data.id,
         content: data.message,
@@ -202,6 +203,7 @@ const ChatEngine = (props) => {
       console.log("Admin sent a message", data);
 
       setMessages(prevMessages => [...prevMessages, newMessage]);
+      automateSlide.current.scrollIntoView({ behavior: 'smooth' });
       updateSessionTime(); // update the session time back to 7 mins
     };
 
@@ -255,10 +257,11 @@ const ChatEngine = (props) => {
 
       messageSentSound.play(); // Ensure messageSentSound is defined and loaded
       setMessages(prevMessages => [...prevMessages, newMessage]);
+      automateSlide.current.scrollIntoView({ behavior: 'smooth' });
       sessionStorage.removeItem('supportAgent');
-      localStorage.removeItem("gnT");
-      localStorage.removeItem("gnU");
-      localStorage.removeItem("gnUID");
+      // localStorage.removeItem("gnT");
+      // localStorage.removeItem("gnU");
+      // localStorage.removeItem("gnUID");
 
 
 
@@ -319,9 +322,9 @@ const ChatEngine = (props) => {
       } else {
         // Clear expired data
         sessionStorage.removeItem('supportAgent');
-        localStorage.removeItem("gnT");
-        localStorage.removeItem("gnU");
-        localStorage.removeItem("gnUID");
+        // localStorage.removeItem("gnT");
+        // localStorage.removeItem("gnU");
+        // localStorage.removeItem("gnUID");
       }
     }
     return null;
@@ -412,6 +415,8 @@ const ChatEngine = (props) => {
 
 
   // loads the chat in a current session
+ 
+ 
   useEffect(() => {
 
     const storedAgent = loadAgentFromSession();
@@ -498,6 +503,24 @@ const ChatEngine = (props) => {
 
         };
       });
+
+      if(props.selectedOption == "Live chat"){
+
+        const userInitialMessage ={
+      
+            content: "Live chat",
+            timestamp: new Date(),
+            isSentByUser: true,
+  
+  
+        }
+        
+        setMessages([userInitialMessage]);
+
+
+      }
+
+
       setIsTyping(true);
       clearTimeout(delayBot);
 
@@ -707,7 +730,12 @@ const ChatEngine = (props) => {
     return match ? match[1] : content;
   };
 
+//  useEffect(()=>{
+//   if(props.visible==true){
 
+//     automateSlide.current.scrollIntoView({ behavior: 'smooth' });
+//   }
+//  },[props.visible])
 
 
 
@@ -780,11 +808,11 @@ const ChatEngine = (props) => {
         :
 
 
-        <div className="h-full" >
+        <div className="h-full relative" >
           {/* Timestamp for when the chat started */}
           {/* Timestamp for when the chat started */}
 
-          <div className="text-sm text-center w-fit shadow bg-white text-gray-500 sticky top-0" >
+          <div className="text-sm  self-center text-center left-[1%] p-1 w-fit shadow bg-white/70 text-gray-500 absolute top-0" >
             <SessionTimer expiry={expiry} />
           </div>
 
@@ -809,14 +837,14 @@ const ChatEngine = (props) => {
 
 
 
-              <div
+             {props.selectedOption!="Live chat" &&<div
 
                 className=' self-end bg-blue-500/80 text-white rounded p-3  max-w-3/4 '
               >
 
                 <p className="text-sm">{props.selectedOption}</p>
                 <span className="text-xs text-right">{startTime && formatDate(startTime)}</span>
-              </div>
+              </div>}
 
 
 
@@ -881,6 +909,8 @@ const ChatEngine = (props) => {
 
                       {message.image ? (
                         <div className="relative">
+                      
+                          <div className={`${message.isSentByUser ? "-right-3 hidden" : "-left-3 block"} absolute  -bottom-11  `}>
                           <Avatar
                             style={{
                               backgroundColor: supportAgent ? supportAgent.color : "transparent",
@@ -895,6 +925,8 @@ const ChatEngine = (props) => {
                           >
                             {supportAgent?.name.charAt(0)}
                           </Avatar>
+                          </div>
+                       
                           <a href={message.image} download={`image_${index}.png`} className="text-blue-500 hover:underline block">
                             <img src={message.image} alt="Sent Image" className="max-w-full md:max-h-[150px] mb-2" />
                             Download Image
