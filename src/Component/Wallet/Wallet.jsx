@@ -556,13 +556,19 @@ const Wallet = () => {
     const confirm = async (e, id) => {
         // console.log(e);
 
-        await axios.delete(`/cancelPayRequest/${id}`).then(response => {
+        await axios.get(`/cancelPayRequest/${id}`).then(response => {
             console.log(response);
             message.success(`Cancelled request`);
             // fetchWalletWithdrawRequsts();
         }).catch(error => {
             console.error("Failed to Cancel request", error);
-            message.error(`An Error Occured while trying to Cancel request `)
+            if (error.response.data.message) {
+                message.error(error.response.data.message)
+                
+            }else{
+                message.error(error.response.data);
+
+            }
         })
 
     };
@@ -618,7 +624,7 @@ const Wallet = () => {
                                                 description={`Sure you want to cancel this payout request ?`}
                                                 onConfirm={(e) => { confirm(e, payment.id) }}
                                                 onCancel={cancel}
-                                                okText="Leave"
+                                                okText="Yes"
                                                 cancelText="Cancel"
                                             >
                                                 <button className="text-xs border rounded-md p-[4px] font-semibold hover:bg-slate-50 transition-colors   leading-5 text-gray-500">Cancel</button>
