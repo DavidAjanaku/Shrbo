@@ -122,7 +122,7 @@ const WelcomeForm = (props) => {
                 <LoadingOutlined
                   style={{
                     fontSize: 28,
-                    color: "orange"
+                    color: "white"
                   }}
                   spin
                 />
