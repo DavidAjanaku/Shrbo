@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import { styles } from '../Style';
 import Avatar from "../Avatar";
 import { Link } from 'react-router-dom'
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
+import logo from '../../../assets/logo.png'
+
+
+
+
 const WelcomeForm = (props) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -11,7 +18,7 @@ const WelcomeForm = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here
-  
+
     props.setChat("hello");
     console.log('Sending email')
 
@@ -30,7 +37,7 @@ const WelcomeForm = (props) => {
 
   };
 
-  
+
 
 
   return (
@@ -51,8 +58,8 @@ const WelcomeForm = (props) => {
       <div className=" px-6 w-full text-2xl font-medium pt-3 support/bot gap-2 relative   text-white flex justify-start items-center ">
 
         <img
-          src="https://tecdn.b-cdn.net/img/new/avatars/2.webp"
-          className="w-20 rounded-full"
+          src={logo}
+          className="w-20 rounded-full bg-slate-100"
           alt="Avatar" />
         Hello,
       </div>
@@ -106,9 +113,28 @@ const WelcomeForm = (props) => {
         </div>
         <button
           type="submit"
+          disabled={props.loading}
           className="bg-orange-400 text-white px-4 py-2 rounded-md hover:bg-orange-500 focus:outline-none focus:shadow-outline-blue"
         >
-          Submit
+         {props.loading?<>
+            <Spin
+              indicator={
+                <LoadingOutlined
+                  style={{
+                    fontSize: 28,
+                    color: "white"
+                  }}
+                  spin
+                />
+              }
+
+            />
+          
+          </>
+            :
+          <>
+            Submit
+          </>}
         </button>
       </form>
     </div>

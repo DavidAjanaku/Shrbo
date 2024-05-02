@@ -40,13 +40,14 @@ const SupportWindow = (props) => {
     const [generatedToken, setGeneratedToken] = useState(localStorage.getItem("gnT"));
     const [generatedUserId, setGeneratedUserId] = useState(localStorage.getItem("gnUID"));
     const { confirm } = Modal;
-    const[showLeaveChatConfirm,setLeaveChatConfirm]=useState(false);
-    const [loading,setLoading]=useState(false);
+    const [showLeaveChatConfirm, setLeaveChatConfirm] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [loadingWelcomeForm, setLoadingWelcomeForm] = useState(false);
 
 
 
     const handleSubmitWelcomeForm = async (data) => {
-
+        setLoadingWelcomeForm(true);
         await axios.post("/admin-guest-chat/startConversationOrReplyText", {
             message: "Live chat",
             status: "guest",
@@ -65,6 +66,9 @@ const SupportWindow = (props) => {
 
         }).catch((error) => {
 
+
+        }).finally(() => {
+            setLoadingWelcomeForm(false)
         });
 
 
@@ -149,11 +153,11 @@ const SupportWindow = (props) => {
             const adminId = props.agentName?.id
             const guestId = user?.id || generatedUserId;
 
-            if(adminId){
+            if (adminId) {
                 setLoading(true);
-                
+
                 await axios.get(`/admin-guest-chat/leaveChat/${adminId}/${guestId}/guest`)
-                
+
                 console.log("left chat 👍")
                 setLoading(false);
 
@@ -184,7 +188,7 @@ const SupportWindow = (props) => {
             //   icon: <ExclamationCircleFilled />,
             okText: 'Leave Chat',
             cancelText: 'Return to Chat',
-            centered:true,
+            centered: true,
             content: 'When clicked the OK button, this dialog will be closed after 1 second',
             async onOk() {
                 try {
@@ -200,10 +204,20 @@ const SupportWindow = (props) => {
     };
 
 
-    const handleShowLeaveChatConfirm =()=>{
+    const handleShowLeaveChatConfirm = () => {
         setLeaveChatConfirm(!showLeaveChatConfirm);
 
     }
+
+    useEffect(() => {
+
+        if (props.visible == true) {
+            props.clearUnreadCount(0);
+        }
+
+
+
+    }, [props.visible]);
 
 
 
@@ -222,14 +236,14 @@ const SupportWindow = (props) => {
                 }
             }}>
 
-            <SupportHeader close={props.close} agentName={props.agentName} leaveChat={props.selectedOption === "Live chat"?handleShowLeaveChatConfirm:handleLeaveChat} showLeaveChatConfirm={showLeaveChatConfirm} />
+            <SupportHeader close={props.close} agentName={props.agentName} leaveChat={props.selectedOption === "Live chat" ? handleShowLeaveChatConfirm : handleLeaveChat} showLeaveChatConfirm={showLeaveChatConfirm} />
 
 
             {/* <OptionWindow/> */}
 
 
             {(props.selectedOption === "Live chat" && token === null && _user === null) && <WelcomeForm visible={_user === null || chat === null} setUser={(user) => _setUser(user)}
-                setChat={(chat) => setChat(chat)} onSubmit={handleSubmitWelcomeForm} />}
+                setChat={(chat) => setChat(chat)} onSubmit={handleSubmitWelcomeForm} loading={loadingWelcomeForm} />}
 
 
             {/* 
@@ -241,7 +255,9 @@ const SupportWindow = (props) => {
            />
               : */}
 
-            {(props.botMessage || props.agentName) && (token || _user) &&
+            {(props.botMessage || props.agentName) 
+            && (props.selectedOption === "Live chat" ?(token || _user) : true)
+             &&
                 <ChatEngine
                     visible={props.selectedOption === "Live chat" ? !token != null : true}
                     chat={chat}
@@ -255,6 +271,7 @@ const SupportWindow = (props) => {
                     handleShowLeaveChatConfirm={handleShowLeaveChatConfirm}
                     handleLeaveChat={handleLeaveChat}
                     leaveChatLoading={loading}
+                    UpdateUnreadCount={props.UpdateUnreadCount}
                 />
             }
             {/* } */}

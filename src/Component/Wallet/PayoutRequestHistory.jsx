@@ -1,6 +1,6 @@
 import axios from "../../Axios";
 import React, { useState, useEffect } from "react";
-import { Table, Tag, Button, Popconfirm,message } from 'antd';
+import { Table, Tag, Button, Popconfirm, message } from 'antd';
 
 
 
@@ -69,30 +69,36 @@ const RequestHistory = () => {
                             description={`Sure you want to cancel this payout request ?`}
                             onConfirm={(e) => { confirm(e, record.id) }}
                             onCancel={cancel}
-                            okText="Leave"
+                            okText="Yes"
                             cancelText="Cancel"
                         >
                             <Button >Cancel</Button>
                         </Popconfirm>
-    
+
                     }
                 </>
             ),
         },
     ];
-    
+
     //Confirm cancelling Request
     const confirm = async (e, id) => {
         // console.log(e);
 
-        await axios.delete(`/cancelPayRequest/${id}`).then(response => {
+        await axios.get(`/cancelPayRequest/${id}`).then(response => {
             console.log(response);
             message.success(`Cancelled request`);
-            // fetchUserCards();
+            fetchWalletWithdrawRequsts();
             // openViewCohostModal();
         }).catch(error => {
             console.error("Failed to Cancel request", error);
-            message.error(`An Error Occured while trying to Cancel request `)
+            if (error.response.data.message) {
+                message.error(error.response.data.message)
+                
+            }else{
+                message.error(error.response.data);
+
+            }
         })
 
     };
@@ -102,16 +108,16 @@ const RequestHistory = () => {
 
     useEffect(() => {
         setLoadingRequest(true);
-        
-        
-            // fetchUserCards();
-            // fetchWalletBalance()
-            fetchWalletWithdrawRequsts();
-            // fetchWalletTransactions();
-        
+
+
+        // fetchUserCards();
+        // fetchWalletBalance()
+        fetchWalletWithdrawRequsts();
+        // fetchWalletTransactions();
+
     }, []);
 
-    
+
     function formatAmountWithCommas(amount) {
         // Convert the amount to a string and split it into integer and decimal parts
         const [integerPart, decimalPart] = amount.toString().split('.');
@@ -140,6 +146,7 @@ const RequestHistory = () => {
 
 
     const fetchWalletWithdrawRequsts = async () => {
+        setLoadingRequest(true);
 
         try {
             const response = await axios.get(`/getUserPaymentRecords`);
@@ -154,7 +161,7 @@ const RequestHistory = () => {
                 bank_name: data.bank_name,//d
                 approvedStatus: data.approvedStatus,//d
                 created_at: formatDate(data.created_at),//d
-                tags:[data.approvedStatus]
+                tags: [data.approvedStatus]
 
 
 
