@@ -37,6 +37,9 @@ const ListingInfoMain = () => {
   } = useDateContext();
 
   const [hostId, setHostId] = useState(null); // State for hostId
+  const [vatFee, setVatFee] = useState(0);
+  const [guestFeePrice, setGuestFeePrice] = useState(0);
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -81,7 +84,8 @@ const ListingInfoMain = () => {
         setPhoto(response.data.data.hosthomephotos);
         setDiscounts(response.data.data.discounts);
         setBookingRequestStatus(response.data.data.bookingRequestStatus);
-
+        setVatFee(response.data.data.vat)
+        setGuestFeePrice(response.data.data.guest_fee)
 
         console.log(response.data.data);
 
@@ -185,6 +189,8 @@ if (data.cohosts && data.cohosts.length > 0) {
                 }
                 weekend={listingDetails?.weekend}
                 bookingRequestStatus={listingDetails?.bookingRequestStatus}
+                vatFee={listingDetails?.vat}
+                guestFee={listingDetails?.guest_fee}
               />
             </div>
             <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 opacity-100 dark:opacity-50" />
@@ -235,6 +241,8 @@ if (data.cohosts && data.cohosts.length > 0) {
               }
               weekend={listingDetails?.weekend}
               bookingRequestStatus={listingDetails?.bookingRequestStatus}
+              vatFee={listingDetails?.vat}
+              guestFeePrice={listingDetails?.guest_fee}
             />
           </div>
         </div>

@@ -23,9 +23,9 @@ const PendingPayment = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await Axios.get('/receivablePayable');
-        setData(response.data.data);
-        console.log(response.data.data);
+        const response = await Axios.get('/viewRequestsToApprove');
+        setData(response.data.payment_requests);
+        console.log(response.data.payment_requests);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -43,19 +43,40 @@ const PendingPayment = () => {
       },
     },
     {
-      title: 'Booking No',
-      dataIndex: 'paymentId',
-      key: 'paymentId',
+      title: 'Id',
+      dataIndex: 'id',
+      key: 'id',
     },
     {
-      title: 'Host Email',
-      dataIndex: 'hostEmail',
-      key: 'hostEmail',
+      title: 'Bank Name',
+      dataIndex: 'bank_name',
+      key: 'bank_name',
+    },
+
+    {
+      title: 'Account Number',
+      dataIndex: 'account_number',
+      key: 'account_number',
     },
     {
-      title: 'Total Amount',
-      dataIndex: 'totalAmount',
-      key: 'totalAmount',
+      title: "User Email",
+      dataIndex: ["user", "email"],
+      key: "user_email",
+    },
+    {
+      title: "User ID",
+      dataIndex: "user_id",
+      key: "user_id",
+    },
+    {
+      title: "User Name",
+      dataIndex: ["user", "name"],
+      key: "user_name",
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
       render: (totalAmount) => (
         <span>
           ₦{new Intl.NumberFormat().format(totalAmount)}
@@ -63,61 +84,34 @@ const PendingPayment = () => {
       ),
     },
     {
-      title: 'Guest Service Charge',
-      dataIndex: 'guestServiceCharge',
-      key: 'guestServiceCharge',
-      render: (guestServiceCharge) => (
-        <span>
-          ₦{new Intl.NumberFormat().format(guestServiceCharge)}
-        </span>
-      ),
+      title: 'Account Name',
+      dataIndex: 'account_name',
+      key: 'account_name',
     },
-    {
-      title: 'Host Service Charge',
-      dataIndex: 'hostServiceCharge',
-      key: 'hostServiceCharge',
-      render: (hostServiceCharge) => (
-        <span>
-          ₦{new Intl.NumberFormat().format(hostServiceCharge)}
-        </span>
-      ),
-    },
-    {
-      title: 'Net Profit',
-      dataIndex: 'netProfit',
-      key: 'netProfit',
-      render: (netProfit) => (
-        <span>
-          ₦{new Intl.NumberFormat().format(netProfit)}
-        </span>
-      ),
-    },
-    {
-      title: 'Amount to Host',
-      dataIndex: 'amountToHost',
-      key: 'amountToHost',
-      render: (amountToHost) => (
-        <span>
-          ₦{new Intl.NumberFormat().format(amountToHost)}
-        </span>
-      ),
-    },
+   
     {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
         <Space>
-            <Dropdown
+          <Dropdown
             menu={{
-              items,
+              items: [
+                {
+                  label: <div>Approve</div>,
+                  key: "0",
+                  onClick: (e) => handleApprove(record.id),
+                },
+                {
+                  label: <div>Decline</div>,
+                  key: "1",
+                },
+              ],
             }}
             trigger={["click"]}
           >
-            <a onClick={(e) => e.preventDefault()}>
-              <Space>Edit</Space>
-            </a>
+            <a onClick={(e) => e.preventDefault()}>Edit</a>
           </Dropdown>
-       
         </Space>
       ),
     },
@@ -157,6 +151,7 @@ const PendingPayment = () => {
     {
       label: <div>Approve</div>,
       key: "0",
+      onClick: (e) => handleApprove(e, record.paymentId),
     },
     {
       label: <div>Decline</div>,
@@ -164,6 +159,26 @@ const PendingPayment = () => {
     },
   
   ];
+
+  const handleApprove = async (requestId) => {
+    try {
+      await Axios.get(`/approvePaymentRequest/${requestId}`);
+      notification.success({
+        message: 'Payment Approved',
+        description: 'The payment request has been approved successfully.',
+      });
+      // Assuming success means refreshing the data
+      fetchData();
+    } catch (error) {
+      console.error('Error approving payment request:', error);
+      notification.error({
+        message: 'Error',
+        description: 'An error occurred while approving the payment request. Please try again later.',
+      });
+    }
+  };
+  
+  
 
   return (
     <div className="bg-gray-100 h-[100vh]">
