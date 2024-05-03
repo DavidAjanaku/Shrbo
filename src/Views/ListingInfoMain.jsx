@@ -42,21 +42,30 @@ const ListingInfoMain = () => {
 
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await Axios.get("/user");
-        setUser(response.data.id);
-        setHostId(response.data.id);
-
-        console.log(response.data.id);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        // Handle error, show error message, etc.
-      }
-    };
-
-    fetchUsers();
-  }, []);
+    const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+  
+    if (token) {
+      const fetchUsers = async () => {
+        try {
+          const response = await Axios.get("/user", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setUser(response.data.id);
+          setHostId(response.data.id);
+  
+          console.log(response.data.id);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+          // Handle error, show error message, etc.
+        }
+      };
+  
+      fetchUsers();
+    }
+  }, []); // No dependencies, so it will run once when the component mounts
+  
 
   useEffect(() => {
     const fetchListingDetails = async () => {
