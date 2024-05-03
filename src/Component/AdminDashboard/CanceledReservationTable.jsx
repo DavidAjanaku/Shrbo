@@ -70,7 +70,7 @@ export default function CanceledReservationTable() {
         <AdminHeader />
 
         <div className="flex">
-          <div className="bg-orange-400 text-white hidden md:block md:w-1/5 h-[100vh] p-4">
+          <div className="bg-orange-400 overflow-scroll example text-white hidden md:block md:w-1/5 h-[100vh] p-4">
             <AdminSidebar />
           </div>
           <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">

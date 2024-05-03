@@ -157,7 +157,7 @@ export default function ReviewListings() {
     <div className="bg-gray-100 h-[100vh]">
       <AdminHeader />
       <div className="flex">
-        <div className="hidden md:block bg-orange-400 text-white md:w-1/5 h-[100vh] p-4">
+        <div className="hidden md:block overflow-scroll example bg-orange-400 text-white md:w-1/5 h-[100vh] p-4">
           <AdminSidebar />
         </div>
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">

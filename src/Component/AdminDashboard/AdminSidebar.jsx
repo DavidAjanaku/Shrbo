@@ -44,7 +44,7 @@ export default function AdminSidebar() {
   // console.log(userInfo);
 
   return (
-    <div className="bg-orange-800 text-white p-4">
+    <div className="bg-orange-800 text-white p-4 overflow-auto">
       <ul>
         {userInfo &&
           userInfo.some((role) => role.rolePermission === "Dashboard") && (
