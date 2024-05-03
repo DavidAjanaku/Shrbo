@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Table, Space, Input, DatePicker, Select, Dropdown, Modal } from "antd";
+import { Table, Space, Input, DatePicker, Select, Dropdown, Modal,Spin } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import { parse, isAfter } from "date-fns";
@@ -25,15 +25,19 @@ const DisplayBookingsPaid = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [paymentData, setPaymentData] = useState([]);
+  const [loading, setLoading] = useState(false); // State to track loading status
 
   useEffect(() => {
     const fetchTransactionHistory = async () => {
+      setLoading(true); // Set loading to true when fetching data
       try {
         const response = await Axios.get("/paidPayments");
         setPaymentData(response.data.data);
         console.log(response.data.data);
       } catch (error) {
         console.error("Error fetching transaction history:", error);
+      } finally {
+        setLoading(false); // Set loading to false when data is fetched
       }
     };
 
@@ -227,11 +231,13 @@ const DisplayBookingsPaid = () => {
               />
             </div>
             <div className="overflow-x-auto">
-              {filteredData.length > 0 ? (
-                <Table columns={columns} dataSource={paymentData} rowKey="paymentId" />
-              ) : (
-                <div>No data found.</div>
-              )}
+            <Spin spinning={loading}> {/* Use Spin component for loading */}
+                {filteredData.length > 0 ? (
+                  <Table columns={columns} dataSource={paymentData} rowKey="paymentId" />
+                ) : (
+                  <div>No data found.</div>
+                )}
+              </Spin>
             </div>
 
             <Modal

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table } from 'antd';
+import { Table,Spin } from 'antd';
 import AdminHeader from './AdminNavigation/AdminHeader';
 import AdminSidebar from './AdminSidebar';
 import Axios from "../../Axios"
 import moment from 'moment';
 const ReceivablePayable = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true); // Initially set to true
 
   const columns = [
     {
@@ -59,9 +60,11 @@ const ReceivablePayable = () => {
       try {
         const response = await Axios.get('/receivablePayable');
         setData(response.data.data);
+        setLoading(false); // Set loading to false after data is fetched
         console.log(response.data.data);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setLoading(false); // Set loading to false on error as well
       }
     };
     fetchData();
@@ -82,8 +85,9 @@ const ReceivablePayable = () => {
         <h1 className="text-2xl font-semibold mb-4">Receivable & Payable</h1>
         <div className="bg-white p-4 rounded shadow">
           <div className="overflow-x-auto">
-            <Table columns={columns} dataSource={data} />
-          </div>
+          <Spin spinning={loading}>
+                <Table columns={columns} dataSource={data} />
+              </Spin>          </div>
         </div>
       </div>
         </div>

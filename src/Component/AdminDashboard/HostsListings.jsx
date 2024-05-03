@@ -6,6 +6,7 @@ import { Table, Input, Select, Modal, Space, Dropdown, Spin, notification, Butto
 import { ExclamationCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import axiosInstance from "../../Axios";
 import moment from "moment";
+import ShbroLogo from "../../assets/shbro logo.png"
 
 const { confirm } = Modal;
 
@@ -57,6 +58,8 @@ export default function HostsListings() {
         const sortedHosts = response.data.data.sort((a, b) => {
           return new Date(b.user.created_at) - new Date(a.user.created_at);
         });
+        console.log(response);
+
   
         // Set the sorted hosts data
         setHosts(sortedHosts);
@@ -204,15 +207,16 @@ export default function HostsListings() {
   const columns = [
     {
       title: "Image",
-      dataIndex: "image",
-      key: "image",
+      dataIndex: ["user", "profilePicture"],
+      key: "profilePicture",
       render: (image) => (
         <img
-          src={image}
+          src={image || ShbroLogo}
           alt="Host"
           style={{ width: "30px", height: "30px", borderRadius: "50%" }}
         />
       ),
+      
     },
     {
       title: "Name",

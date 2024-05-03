@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Space, Input, DatePicker, Select, Dropdown } from "antd";
+import { Table, Space, Input, DatePicker, Select, Dropdown,Spin } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import { parse, isAfter } from 'date-fns';
@@ -12,6 +12,7 @@ const { Option } = Select;
 
 const PendingPayment = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [filters, setFilters] = useState({
     hostName: "",
@@ -22,12 +23,15 @@ const PendingPayment = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await Axios.get('/viewRequestsToApprove');
         setData(response.data.payment_requests);
         console.log(response.data.payment_requests);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -208,8 +212,9 @@ const PendingPayment = () => {
               />
             </div>
             <div className="overflow-x-auto">
-            <Table columns={columns} dataSource={data} rowKey="paymentId" />
-
+            <Spin spinning={loading}>
+                <Table columns={columns} dataSource={data} rowKey="paymentId" />
+              </Spin>
             </div>
           </div>
         </div>
