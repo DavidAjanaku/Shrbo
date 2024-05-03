@@ -40,7 +40,7 @@ instance.interceptors.response.use(response=>{
       localStorage.removeItem("CH_Status");
       localStorage.removeItem("supportAgent")
       localStorage.removeItem("supportUser")
-      window.location.replace("/");
+      window.location.replace("/Login");
 
       message.error("Please check your Internet connection 1");
     }

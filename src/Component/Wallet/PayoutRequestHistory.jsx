@@ -45,12 +45,12 @@ const RequestHistory = () => {
                 <>
                     {tags.map((tag) => {
                         let color = 'green';
-                        if (tag === null) {
+                        if (tag === null || tag.toUpperCase() !="APPROVED" ) {
                             color = 'volcano';
                         }
                         return (
                             <Tag color={color} key={tag}>
-                                {tag ? tag.toUpperCase() : "pending"}
+                                {tag ? tag.toUpperCase() : "PENDING"}
                             </Tag>
                         );
                     })}

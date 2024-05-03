@@ -9,7 +9,8 @@ import { IoExitOutline } from "react-icons/io5";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { notification } from 'antd';
 import SessionTimer from "../ChatBot/SessionTimer";
-import { DatePicker, Select } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import { DatePicker, Select,Spin } from 'antd';
 
 
 const CommunicationCenter = () => {
@@ -26,6 +27,8 @@ const CommunicationCenter = () => {
   const [users, setUsers] = useState([
 
   ]);
+
+  const [joinorleaveLoading, setLoading] = useState(false)
 
   const [currentSession, setCurrentSession] = useState([]);
 
@@ -122,7 +125,7 @@ const CommunicationCenter = () => {
 
         setUserLeftchat(true);
 
-        
+
 
         setExpiry("")
         console.table(data);
@@ -428,6 +431,7 @@ const CommunicationCenter = () => {
   const handleJoinLeaveChat = async (data, type) => {
 
 
+
     console.table(type == "join")
 
     const guestid = data.userId;
@@ -443,6 +447,8 @@ const CommunicationCenter = () => {
 
 
     }
+
+    setLoading(true)
 
 
 
@@ -484,6 +490,8 @@ const CommunicationCenter = () => {
           // setError(error.response.data);
         }
 
+      }).finally(() => {
+        setLoading(false);
       });
 
 
@@ -822,141 +830,174 @@ const CommunicationCenter = () => {
                 </ul>
               </div>
               <div className="w-3/4 pl-4">
-                {!loadingChats? 
-                <div className="bg-white h-[90vh] p-4 rounded shadow">
-                  {selectedUser ? (
-                    <>
-                      <div className="flex justify-between" >
-                        {/* <p className="text-lg font-semibold">
+                {!loadingChats ?
+                  <div className="bg-white h-[90vh] p-4 rounded shadow">
+                    {selectedUser ? (
+                      <>
+                        <div className="flex justify-between" >
+                          {/* <p className="text-lg font-semibold">
                           {users.name}
                         </p> */}
-                        <p className="text-sm text-gray-500">
-                          Ticket: {selectedUser}
-                        </p>
-                        {currentSession.find(chat => chat.session_id === selectedUser) && <div className="text-sm text-gray-500"><SessionTimer expiry={expiry} /></div>}
-                        {currentSession.length > 0 && currentSession[0].session_id === selectedUser ? (
-                          <button onClick={() => { handleJoinLeaveChat(selectedUserData, "leave"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
-                            Leave Chat <IoExitOutline className="h-4 w-4" />
-                          </button>
-                        ) : currentSession.length === 0 ? (
-                          <button onClick={() => { handleJoinLeaveChat(selectedUserData, "join"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
-                            Join Chat
-                          </button>
-                        ) : null}
+                          <p className="text-sm text-gray-500">
+                            Ticket: {selectedUser}
+                          </p>
+                          {currentSession.find(chat => chat.session_id === selectedUser) && <div className="text-sm text-gray-500"><SessionTimer expiry={expiry} /></div>}
+                          {currentSession.length > 0 && currentSession[0].session_id === selectedUser ? (
+                            <button disabled={joinorleaveLoading}  onClick={() => { handleJoinLeaveChat(selectedUserData, "leave"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
+                              {joinorleaveLoading ? <>
+                                <Spin
+                                  indicator={
+                                    <LoadingOutlined
+                                      style={{
+                                        fontSize: 28,
+                                        color: "white"
+                                      }}
+                                      spin
+                                    />
+                                  }
+
+                                />
+
+                              </>
+                              :
+                           <>  Leave Chat <IoExitOutline className="h-4 w-4" />     </> }
+                            </button>
+                          ) : currentSession.length === 0 ? (
+                            <button disabled={joinorleaveLoading} onClick={() => { handleJoinLeaveChat(selectedUserData, "join"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
+                                 {joinorleaveLoading ? <>
+                                <Spin
+                                  indicator={
+                                    <LoadingOutlined
+                                      style={{
+                                        fontSize: 28,
+                                        color: "white"
+                                      }}
+                                      spin
+                                    />
+                                  }
+
+                                />
+
+                              </>
+                              :
+                             <>Join Chat</> 
+                                }
+                            </button>
+                          ) : null}
 
 
 
-                      </div>
-                      <div className="h-[70vh] overflow-y-auto example">
-                        {/* {selectedUser &&
+                        </div>
+                        <div className="h-[70vh] overflow-y-auto example">
+                          {/* {selectedUser &&
                           userChats[selectedUser]?.length === 0 && (
                             <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
                               Admin joined the chat
                             </div>
                           )} */}
 
-                        {userChats[selectedUser]?.map((msg, index) => (
-                          // <div key={index}>
-                          //   {!msg.sessionEnded ? 
-                          <div key={index}
+                          {userChats[selectedUser]?.map((msg, index) => (
+                            // <div key={index}>
+                            //   {!msg.sessionEnded ? 
+                            <div key={index}
 
-                            className={`mb-2 p-2 rounded ${msg.sender === "admin"
-                              ? "bg-orange-100 w-fit  "
-                              : "bg-gray-100"
-                              } ${msg.sender === "admin"
-                                ? "text-blue-900"
-                                : "text-gray-900"
-                              }`}
-                            style={{ wordBreak: 'break-word' }}
+                              className={`mb-2 p-2 rounded ${msg.sender === "admin"
+                                ? "bg-orange-100 w-fit  "
+                                : "bg-gray-100"
+                                } ${msg.sender === "admin"
+                                  ? "text-blue-900"
+                                  : "text-gray-900"
+                                }`}
+                              style={{ wordBreak: 'break-word' }}
+                            >
+                              {msg.type === "text" ? (
+                                <>
+                                  <p>{msg.text}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {formatDate(msg.time)}
+                                  </p>
+                                </>
+
+                              ) : (
+                                <img
+                                  src={msg.text}
+                                  alt="Attachment"
+                                  className=" h-auto"
+                                />
+                              )}
+                            </div>
+                            //     :
+
+                            // </div>
+                          ))}
+
+
+                          {isTyping && currentSession[0]?.session_id == selectedUser && <div className=" text-slate-500 text-sm ">User typing........</div>}
+
+
+                          {isSessionEnded && currentSession[0]?.session_id == selectedUser && <div className=" my-4 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session has ended leave the chat </div>}
+
+                          {isUserLeftchat && currentSession[0]?.session_id == selectedUser && <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
+                            user{currentSession[0].userId} left the chat
+                          </div>}
+
+
+                        </div>
+
+
+
+                        {currentSession.find(chat => chat.session_id === selectedUser) && !isSessionEnded && !isUserLeftchat && <div className="mt-4 flex gap-2">
+                          <button
+                            className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
+                            onClick={() => fileInputRef.current.click()}
                           >
-                            {msg.type === "text" ? (
-                              <>
-                                <p>{msg.text}</p>
-                                <p className="text-xs text-gray-500">
-                                  {formatDate(msg.time)}
-                                </p>
-                              </>
-
-                            ) : (
-                              <img
-                                src={msg.text}
-                                alt="Attachment"
-                                className=" h-auto"
-                              />
-                            )}
-                          </div>
-                          //     :
-
-                          // </div>
-                        ))}
-
-
-                        {isTyping && currentSession[0]?.session_id == selectedUser && <div className=" text-slate-500 text-sm ">User typing........</div>}
-
-
-                        {isSessionEnded && currentSession[0]?.session_id == selectedUser && <div className=" my-4 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session has ended leave the chat </div>}
-
-                        {isUserLeftchat && currentSession[0]?.session_id == selectedUser && <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
-                          user{currentSession[0].userId} left the chat
+                            <FontAwesomeIcon
+                              icon={faPaperclip}
+                              className="mr-2"
+                            />
+                            Attach File
+                          </button>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                  sendMessage("file", e.target.result);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                          <textarea
+                            className="w-full p-2 border rounded"
+                            placeholder="Type your message here..."
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyUp={handleKeyUp}
+                          ></textarea>
+                          <button
+                            className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
+                            onClick={() => sendMessage("text")}
+                          >
+                            <FontAwesomeIcon
+                              icon={faPaperPlane}
+                              className="mr-2"
+                            />
+                          </button>
                         </div>}
-
-
-                      </div>
-
-
-
-                      {currentSession.find(chat => chat.session_id === selectedUser) && !isSessionEnded && !isUserLeftchat&& <div className="mt-4 flex gap-2">
-                        <button
-                          className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
-                          onClick={() => fileInputRef.current.click()}
-                        >
-                          <FontAwesomeIcon
-                            icon={faPaperclip}
-                            className="mr-2"
-                          />
-                          Attach File
-                        </button>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          style={{ display: "none" }}
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (e) => {
-                                sendMessage("file", e.target.result);
-                              };
-                              reader.readAsDataURL(file);
-                            }
-                          }}
-                        />
-                        <textarea
-                          className="w-full p-2 border rounded"
-                          placeholder="Type your message here..."
-                          value={message}
-                          onChange={(e) => setMessage(e.target.value)}
-                          onKeyUp={handleKeyUp}
-                        ></textarea>
-                        <button
-                          className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
-                          onClick={() => sendMessage("text")}
-                        >
-                          <FontAwesomeIcon
-                            icon={faPaperPlane}
-                            className="mr-2"
-                          />
-                        </button>
-                      </div>}
-                    </>
-                  ) : (
-                    <p className="text-gray-500 flex items-center h-[80vh] justify-center">
-                      Select a user to start chatting.
-                    </p>
-                  )}
-                </div>
-                :<p className="text-gray-500 flex items-center h-[80vh] justify-center">Loading chats....</p>}
+                      </>
+                    ) : (
+                      <p className="text-gray-500 flex items-center h-[80vh] justify-center">
+                        Select a user to start chatting.
+                      </p>
+                    )}
+                  </div>
+                  : <p className="text-gray-500 flex items-center h-[80vh] justify-center">Loading chats....</p>}
               </div>
             </div>
           </div>
