@@ -222,7 +222,7 @@ export default function ApartmentListingApproval() {
     <div className="bg-gray-100 h-[100vh]">
       <AdminHeader />
       <div className="flex">
-        <div className="hidden md:block bg-orange-400 text-white w-1/5 h-[100vh] p-4">
+        <div className="hidden md:block overflow-scroll example bg-orange-400 text-white w-1/5 h-[100vh] p-4">
           <AdminSidebar />
         </div>
 

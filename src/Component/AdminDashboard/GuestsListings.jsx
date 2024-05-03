@@ -16,6 +16,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import axiosInstance from "../../Axios";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Button } from "antd";
+import ShbroLogo from "../../assets/shbro logo.png"
 
 const { confirm } = Modal;
 
@@ -170,7 +171,7 @@ export default function GuestsListings() {
       key: "image",
       render: (image, record) => (
         <img
-          src={image}
+          src={image || ShbroLogo}
           alt={`Guest ${record.id}`}
           style={{ width: "30px", height: "30px", borderRadius: "50%" }}
         />
@@ -438,7 +439,7 @@ export default function GuestsListings() {
     <div className="bg-gray-100 h-[100vh]">
       <AdminHeader />
       <div className="flex">
-        <div className="hidden md:block bg-orange-400 text-white md:w-1/5 h-[100vh] p-4">
+        <div className="hidden md:block overflow-scroll example overflow-scroll example bg-orange-400 text-white md:w-1/5 h-[100vh] p-4">
           <AdminSidebar />
         </div>
 

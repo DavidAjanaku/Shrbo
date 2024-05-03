@@ -137,7 +137,7 @@ export default function CurrentBookingsList() {
     <div className="bg-gray-100 h-[100vh]">
       <AdminHeader />
       <div className="flex">
-        <div className="bg-orange-400 hidden md:block text-white w-1/5 h-[100vh] p-4">
+        <div className="bg-orange-400 overflow-scroll example hidden md:block text-white w-1/5 h-[100vh] p-4">
           <AdminSidebar />
         </div>
 

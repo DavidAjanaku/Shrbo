@@ -709,7 +709,7 @@ const CommunicationCenter = () => {
       <div className="bg-gray-100 min-h-screen">
         <AdminHeader />
         <div className="flex">
-          <div className="bg-orange-400 hidden md:block text-white md:w-1/5 h-screen p-4">
+          <div className="bg-orange-400 overflow-scroll example hidden md:block text-white md:w-1/5 h-screen p-4">
             <AdminSidebar users={users} setSelectedUser={setSelectedUser} />
           </div>
 

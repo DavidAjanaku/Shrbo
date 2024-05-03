@@ -33,7 +33,7 @@ const DisplayBookingsPaid = () => {
       try {
         const response = await Axios.get("/paidPayments");
         setPaymentData(response.data.data);
-        console.log(response.data.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching transaction history:", error);
       } finally {
@@ -90,56 +90,61 @@ const DisplayBookingsPaid = () => {
 
   const columns = [
     {
-      title: "Email",
-      dataIndex: "hostEmail",
-      key: "hostEmail",
+      title: 'Date',
+      dataIndex: 'Date',
+      key: 'Date',
+      render: (text) => {
+        return moment(text).format('dddd, D MMMM YYYY');
+      },
     },
     {
-      title: "Payment Date",
-      dataIndex: "paidHostdate",
-      key: "paidHostdate",
+      title: 'Id',
+      dataIndex: 'id',
+      key: 'id',
     },
     {
-      title: "Booking No",
-      dataIndex: "paymentId",
-      key: "paymentId",
+      title: 'Bank Name',
+      dataIndex: 'bank_name',
+      key: 'bank_name',
+    },
+
+    {
+      title: 'Account Number',
+      dataIndex: 'account_number',
+      key: 'account_number',
     },
     {
-      title: "Total Amount",
-      dataIndex: "amountToHost",
-      key: "amountToHost",
-      render: (amountToHost) => (
+      title: "User Email",
+      dataIndex: ["user", "email"],
+      key: "user_email",
+    },
+    {
+      title: "User ID",
+      dataIndex: "user_id",
+      key: "user_id",
+    },
+    {
+      title: "User Name",
+      dataIndex: ["user", "name"],
+      key: "user_name",
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+      render: (totalAmount) => (
         <span>
-          ₦{new Intl.NumberFormat().format(amountToHost)}
+          ₦{new Intl.NumberFormat().format(totalAmount)}
         </span>
       ),
     },
-    
+    {
+      title: 'Account Name',
+      dataIndex: 'account_name',
+      key: 'account_name',
+    },
    
    
-    
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (text, record) => (
-        <div className=" flex space-x-4">
-       
-          
-          <div
-            onClick={() => handleViewDetails(record)}
-            className="cursor-pointer"
-          >
-            View Details
-          </div>{" "}
-          {/* Pass the record here */}
-        </div>
-      ),
-    },
   ];
 
   const data = [
@@ -207,12 +212,17 @@ const DisplayBookingsPaid = () => {
     <div className="bg-gray-100 h-[100vh]">
       <AdminHeader />
       <div className="flex">
-        <div className="bg-orange-400 text-white hidden md:block md:w-1/5 h-[100vh] p-4">
+        <div className="bg-orange-400 overflow-scroll example text-white hidden md:block md:w-1/5 h-[100vh] p-4">
           <AdminSidebar />
         </div>
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
           <h1 className="text-2xl font-semibold mb-4">Paid Payments</h1>
           <div className="bg-white p-4 rounded shadow">
+            <div className="mb-4">
+              <p className="text-gray-400 text-sm">
+              Paid Payment section provides a record of all the payout requests that have been successfully processed and paid out to the hosts.
+              </p>
+            </div>
             
             <div className="mb-4 flex justify-end">
               <Input

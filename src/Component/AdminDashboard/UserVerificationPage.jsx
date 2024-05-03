@@ -159,7 +159,7 @@ export default function UserVerificationPage() {
       <AdminHeader />
 
       <div className="flex">
-        <div className="hidden md:block p-4 bg-orange-400 text-white w-1/5 h-[100vh]">
+        <div className="hidden md:block overflow-scroll example p-4 bg-orange-400 text-white w-1/5 h-[100vh]">
           <AdminSidebar />
         </div>
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
