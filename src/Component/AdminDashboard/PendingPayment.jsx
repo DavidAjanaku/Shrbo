@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Space, Input, DatePicker, Select, Dropdown,Spin } from "antd";
+import { Table, Space, Input, DatePicker, Select, Dropdown,Spin,notification } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import { parse, isAfter } from 'date-fns';
@@ -172,7 +172,7 @@ const PendingPayment = () => {
         description: 'The payment request has been approved successfully.',
       });
       // Assuming success means refreshing the data
-      fetchData();
+      window.location.reload();
     } catch (error) {
       console.error('Error approving payment request:', error);
       notification.error({
