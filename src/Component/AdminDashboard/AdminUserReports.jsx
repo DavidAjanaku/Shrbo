@@ -185,6 +185,11 @@ const AdminUserReports = () => {
 
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
           <h1 className="text-2xl font-semibold mb-4">Reported Users </h1>
+          <div className="mb-4">
+            <div className="text-gray-400 text-sm">
+            The Reported Users section provides a detailed overview of all the users who have been reported on your platform.
+            </div>
+          </div>
           <div className="mb-4"></div>
           <div className="overflow-x-auto">
             <Table

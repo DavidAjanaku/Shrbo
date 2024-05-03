@@ -185,7 +185,13 @@ const AdminDamagePage = () => {
         </div>
 
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
+          
           <h1 className="text-2xl font-semibold mb-4">Damage Reports</h1>
+          <div className="mb-4">
+            <div className="text-gray-400 text-sm">
+            The Damage Reports section is designed for hosts to report any damages to their apartments. 
+            </div>
+          </div>
           <div className="mb-4"></div>
           <div className="overflow-x-auto">
             <Table

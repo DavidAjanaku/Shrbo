@@ -168,6 +168,11 @@ export default function UserVerificationPage() {
           </h1>
 
           <div className="bg-white p-4 shadow">
+            <div className="mb-4">
+              <div className="text-gray-400 text-sm">
+              The User ID Verification section is designed to manage the verification process of users on your platform.
+              </div>
+            </div>
             {loading ? ( // Render loader if loading state is true
                <div className="flex justify-center h-52 items-center">
                <Spin

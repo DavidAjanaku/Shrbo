@@ -84,6 +84,11 @@ const ReceivablePayable = () => {
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
         <h1 className="text-2xl font-semibold mb-4">Receivable & Payable</h1>
         <div className="bg-white p-4 rounded shadow">
+          <div className="mb-4">
+            <p className="text-sm text-gray-400">
+            Receivable & Payable section indeed shows the amount that is being paid to the host for each booking. This includes the total amount of the booking, any service charges, and the final amount that is payable to the host. This information is crucial for transparency and ensuring that hosts are aware of their earnings from each booking
+            </p>
+          </div>
           <div className="overflow-x-auto">
           <Spin spinning={loading}>
                 <Table columns={columns} dataSource={data} />

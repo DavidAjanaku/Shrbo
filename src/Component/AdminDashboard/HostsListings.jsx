@@ -309,6 +309,11 @@ export default function HostsListings() {
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
           <h1 className="text-2xl font-semibold mb-4">Host Listings</h1>
           <div className="bg-white p-4 rounded shadow">
+            <div className="mb-4">
+              <p className="text-gray-400 text-sm">
+              The Host Listings section provides a detailed overview of all the hosts registered on your platform. Each entry includes the host’s name, email, number of houses hosted, verification status, date of account creation, and last login date.
+              </p>
+            </div>
             <div className="mb-4 flex justify-end">
               <Input
                 type="text"

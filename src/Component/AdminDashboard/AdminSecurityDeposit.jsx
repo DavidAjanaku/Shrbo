@@ -75,6 +75,11 @@ export default function AdminSecurityDeposit() {
             <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
             <h1 className="text-2xl font-semibold mb-4">Pending Security Deposit</h1>
             <div className="bg-white p-4 rounded shadow">
+            <div className="mb-4">
+              <p className="text-gray-400 text-sm">
+              The Pending Security Deposit section provides a detailed overview of all the security deposits for hosts that are currently pending. 
+              </p>
+            </div>
               <div className="overflow-x-auto">
               <Spin spinning={loading}>
                   <Table columns={columns} dataSource={data} />

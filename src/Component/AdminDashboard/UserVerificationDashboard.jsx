@@ -137,6 +137,11 @@ const UserVerificationDashboard = () => {
             </div>
 
             <div className="bg-white p-4 rounded shadow">
+              <div className="mb-4">
+                <div className="text-gray-400 text-sm">
+                The User Verification Dashboard then displays a list of users who have successfully completed the verification process on your platform
+                </div>
+              </div>
               {loading ? (
                   <div className="flex justify-center h-52 items-center">
                   <Spin

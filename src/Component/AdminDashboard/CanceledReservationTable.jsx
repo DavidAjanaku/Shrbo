@@ -77,6 +77,11 @@ export default function CanceledReservationTable() {
             <h1 className="text-2xl font-semibold mb-4">Canceled Reservation Table </h1>
 
             <div className="bg-white p-4 rounded shadow">
+              <div className="mb-4">
+                <p className="text-sm text-gray-400">
+                The Canceled Reservation Table is a section that provides a detailed overview of all the reservations that have been canceled on your platform.
+                </p>
+              </div>
               <div className="overflow-x-auto">
               {loading ? (
                   <Spin size="large" />

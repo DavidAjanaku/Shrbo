@@ -32,7 +32,9 @@ export default function AdminAnalytical() {
     async function fetchHostAnalytics() {
       try {
         setLoading(true); // Set loading to true when fetching data
-        const response = await Axios.get(`/filterAnalyticalData/${selectedFilter}`);
+        const response = await Axios.get(
+          `/filterAnalyticalData/${selectedFilter}`
+        );
         setAnalyticsData(response.data.data);
         setTimeout(() => {
           setLoading(false); // Set loading to false after 2 seconds
@@ -43,19 +45,17 @@ export default function AdminAnalytical() {
         setLoading(false); // Set loading to false even if there's an error
       }
     }
-  
+
     fetchHostAnalytics();
   }, [selectedFilter]);
-  
 
   const handleFilterChange = (value) => {
     setSelectedFilter(value);
   };
- 
+
   useEffect(() => {
     setSelectedFilter("today"); // Set the default filter to "today" when the component mounts
   }, []);
-
 
   return (
     <div className="bg-gray-100 h-[100vh]">
@@ -72,27 +72,29 @@ export default function AdminAnalytical() {
               <label htmlFor="" className="mr-4">
                 Filter by:
               </label>
-             <select
-  name=""
-  className="border border-gray-300 rounded p-2"
-  id=""
-  defaultValue={selectedFilter}
-  onChange={(e) => setSelectedFilter(e.target.value)}
->
-  <option value="today">Today</option>
-  <option value="this_week">Week</option>
-  <option value="this_month">Month</option>
-  <option value="this_year">Year</option>
-  <option value="all_time">All Time</option>
-</select>
-
+              <select
+                name=""
+                className="border border-gray-300 rounded p-2"
+                id=""
+                defaultValue={selectedFilter}
+                onChange={(e) => setSelectedFilter(e.target.value)}
+              >
+                <option value="today">Today</option>
+                <option value="this_week">Week</option>
+                <option value="this_month">Month</option>
+                <option value="this_year">Year</option>
+                <option value="all_time">All Time</option>
+              </select>
+            </div>
+            <div className=" mb-4">
+              <p className="text-gray-400 text-sm">The Admin Analytical Page is a dashboard that offers a daily summary of user activity, property listings, revenue, and bookings, aiding in informed decision-making.</p>
             </div>
 
-           {loading && (
-  <div className="bg-white p-4 rounded shadow flex justify-center items-center h-96">
-    <Spin size="large" />
-  </div>
-)}
+            {loading && (
+              <div className="bg-white p-4 rounded shadow flex justify-center items-center h-96">
+                <Spin size="large" />
+              </div>
+            )}
 
             {error && <div className="w-full p-4 text-red-500">{error}</div>}
 

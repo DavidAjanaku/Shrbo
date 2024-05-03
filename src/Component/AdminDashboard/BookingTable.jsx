@@ -145,6 +145,11 @@ const BookingTable = () => {
             <h1 className="text-2xl font-semibold mb-4">New Booking</h1>
 
             <div className="bg-white p-4 rounded shadow">
+              <div className="mb-4">
+                <p className="text-gray-400 text-sm">
+                The New Booking page is a section of your platform that displays the most recent apartment bookings. It provides a real-time update of the latest transactions, showcasing the apartments that have just been booked.
+                </p>
+              </div>
               <div className="overflow-x-auto">
                 {loading ? (
                  <div className="flex justify-center h-52 items-center">

@@ -150,6 +150,11 @@ export default function PropertyList() {
 
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
           <h1 className="text-2xl font-semibold mb-4">Property Listings</h1>
+          <div className="mb-4">
+            <p className="text-gray-400 text-sm">
+            The Property Listings section provides a detailed overview of all the properties listed on your platform. Each entry includes the property name, property ID, price, who added the property, when it was created, its current status (published or not), and whether it’s verified.
+            </p>
+          </div>
           <div className="bg-white p-4 rounded shadow">
             <Input
               placeholder="Search by Property Name or Added By"

@@ -242,6 +242,11 @@ const AdminRolesPage = () => {
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
           <h1>Admin Roles</h1>
           <div className="mb-4">
+            <p className="text-gray-400 text-sm">
+            The Admin Roles section provides an overview of all the administrators on your platform.
+            </p>
+          </div>
+          <div className="mb-4">
             <Button
               type="primary"
               onClick={() => setNewAdminModalVisible(true)}
