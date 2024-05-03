@@ -445,6 +445,11 @@ export default function GuestsListings() {
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
           <h1 className="text-2xl font-semibold mb-4">Guest Listings</h1>
           <div className="bg-white p-4 rounded shadow">
+            <div className="mb-4">
+              <p className="text-gray-400 text-sm">
+              The Guest Listings section provides a comprehensive view of all the guests registered on your platform. Each entry includes the guest’s name, email, verification status, date of account creation, and last login date.
+              </p>
+            </div>
             <div className="mb-4 flex justify-end">
               <Input
                 type="text"

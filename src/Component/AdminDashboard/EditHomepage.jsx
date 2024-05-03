@@ -80,8 +80,14 @@ export default function EditHomepage() {
         </div>
 
         <div className="md:w-4/5 w-full p-4 h-[100vh]">
+        
           <h1 className="text-2xl font-semibold mb-4">Edit Homepage</h1>
           <div className="bg-white p-4 rounded shadow">
+          <div className="mb-4">
+            <p className="text-gray-400 text-sm">
+            This is where you can upload the main image for your homepage
+            </p>
+          </div>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">

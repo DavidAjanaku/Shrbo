@@ -13,32 +13,31 @@ const ThumbnailSlider = (props) => {
   const [listingDetails, setListingDetails] = useState(null);
 
   useEffect(() => {
+    const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+  
     const fetchListingDetails = async () => {
       let response;
       try {
-        response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
-        setListingDetails(response.data.data);
-
-      } catch (error) {
-        console.error(
-          "Error fetching listing details for authenticated user:",
-          error
-        );
-        try {
+        if (token) {
+          // If token exists, fetch details for authenticated user
+          response = await Axios.get(`showGuestHomeForAuthUser/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } else {
+          // If token doesn't exist, fetch details for unauthenticated user
           response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
-          setListingDetails(response.data.data);
-
-        } catch (error) {
-          console.error(
-            "Error fetching listing details for unauthenticated user:",
-            error
-          );
         }
+        setListingDetails(response.data.data);
+      } catch (error) {
+        console.error("Error fetching listing details:", error);
       }
     };
   
     fetchListingDetails();
-  }, [id]);
+  }, [id]); // Include id if you want the data to be refetched when id changes
+  
 
   
   const hosthomephotos = listingDetails?.hosthomephotos || [];

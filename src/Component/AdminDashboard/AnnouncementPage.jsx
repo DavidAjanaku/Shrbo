@@ -44,12 +44,17 @@ const AnnouncementPage = () => {
         <div className="bg-orange-400 text-white hidden md:block md:w-1/5 h-[100vh] p-4">
           <AdminSidebar />
         </div>
+      
 
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
           <h1 className="text-2xl font-semibold mb-4">
             Send Announcement to All Users
           </h1>
-
+          <div className="mb-4">
+          <div className="text-sm text-gray-400">
+          The Send Announcement to All Users feature allows you to send a mass message or announcement to all users on your platform. 
+          </div>
+        </div>
           <Form form={form} onFinish={handleSubmit}>
             <Form.Item
               name="target"

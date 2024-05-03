@@ -10,7 +10,7 @@ import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { notification } from 'antd';
 import SessionTimer from "../ChatBot/SessionTimer";
 import { LoadingOutlined } from '@ant-design/icons';
-import { DatePicker, Select,Spin } from 'antd';
+import { DatePicker, Select, Spin } from 'antd';
 
 
 const CommunicationCenter = () => {
@@ -835,6 +835,11 @@ const CommunicationCenter = () => {
                     {selectedUser ? (
                       <>
                         <div className="flex justify-between" >
+                          <div className="mb-4">
+                            <p className="text-gray-400 text-sm">
+                              The Communication Center in the admin dashboard serves as a live chat feature where admins can directly respond to user questions or problems. This real-time communication tool is essential for providing immediate assistance and support to users, enhancing user satisfaction and engagement with the platform.
+                            </p>
+                          </div>
                           {/* <p className="text-lg font-semibold">
                           {users.name}
                         </p> */}
@@ -843,7 +848,7 @@ const CommunicationCenter = () => {
                           </p>
                           {currentSession.find(chat => chat.session_id === selectedUser) && <div className="text-sm text-gray-500"><SessionTimer expiry={expiry} /></div>}
                           {currentSession.length > 0 && currentSession[0].session_id === selectedUser ? (
-                            <button disabled={joinorleaveLoading}  onClick={() => { handleJoinLeaveChat(selectedUserData, "leave"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
+                            <button disabled={joinorleaveLoading} onClick={() => { handleJoinLeaveChat(selectedUserData, "leave"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
                               {joinorleaveLoading ? <>
                                 <Spin
                                   indicator={
@@ -859,12 +864,12 @@ const CommunicationCenter = () => {
                                 />
 
                               </>
-                              :
-                           <>  Leave Chat <IoExitOutline className="h-4 w-4" />     </> }
+                                :
+                                <>  Leave Chat <IoExitOutline className="h-4 w-4" />     </>}
                             </button>
                           ) : currentSession.length === 0 ? (
                             <button disabled={joinorleaveLoading} onClick={() => { handleJoinLeaveChat(selectedUserData, "join"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
-                                 {joinorleaveLoading ? <>
+                              {joinorleaveLoading ? <>
                                 <Spin
                                   indicator={
                                     <LoadingOutlined
@@ -879,9 +884,9 @@ const CommunicationCenter = () => {
                                 />
 
                               </>
-                              :
-                             <>Join Chat</> 
-                                }
+                                :
+                                <>Join Chat</>
+                              }
                             </button>
                           ) : null}
 

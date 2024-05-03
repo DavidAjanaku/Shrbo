@@ -59,6 +59,11 @@ const ServiceChargeSettings = () => {
             <h2 className="text-2xl font-semibold mb-4">
               Service Charge Settings
             </h2>
+            <div className="mb-4">
+              <p className="text-gray-400 text-sm">
+              The Service Charge Settings section is where you can view and potentially adjust the service charges applied to transactions on your platform.
+              </p>
+            </div>
 
             <div>
               <label>Guest Service Charge:</label>

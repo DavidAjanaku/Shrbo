@@ -129,7 +129,11 @@ const AdminSupportPage = () => {
 
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
           <h1 className="text-2xl font-semibold mb-4">Support Tickets</h1>
-          <div className="mb-4"></div>
+          <div className="mb-4">
+            <p className="text-gray-400 text-sm">
+            The Support Tickets section then serves as a platform for users to report issues or concerns about an apartment. 
+            </p>
+          </div>
           <div className="overflow-x-auto">
             <Table
               columns={columns}

@@ -33,6 +33,8 @@ export default function ListingForm({
   coHostId,
   userId,
   hostIds,
+  vatFee,
+  guestFeePrice
 }) {
   function showModal(e) {
     e.preventDefault();
@@ -71,7 +73,6 @@ export default function ListingForm({
   const [totalPrice] = useState(null);
   const [selectedCheckIn, setSelectedCheckIn] = useState(null);
   const [selectedCheckOut, setSelectedCheckOut] = useState(null);
-  const [hostFee, setHostFee] = useState(0);
   const [serviceFees, setServiceFees] = useState(0);
   const [taxFees, setTaxFees] = useState(0);
   const [totalCosts, setTotalCosts] = useState(0);
@@ -248,7 +249,6 @@ export default function ListingForm({
     setTotalPrice(null);
     setHousePrice(null);
     setNights(0);
-    setHostFee(0);
     setHostFees(0);
     setTotalCosts(0);
     setServiceFee(0);
@@ -384,6 +384,9 @@ export default function ListingForm({
       }
     }
   }, [preparation_time, checkoutDates]);
+  console.log(vatFee);
+  console.log(guestFeePrice);
+
 
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
@@ -569,7 +572,7 @@ export default function ListingForm({
       const securityDeposits = securityDeposit;
       const totalPrice = nights * nightlyPrice;
       console.log("totalPrice " + totalPrice);
-      const TotalPrice = reservedPriceForApartment + securityDeposit;
+      const TotalPrice = reservedPriceForApartment + securityDeposit ;
       console.log("basePrice " + basePrice);
       console.log("TotalPrice " + TotalPrice);
       setTotalCost(reservedPriceForApartment);
@@ -586,7 +589,6 @@ export default function ListingForm({
 
       console.log(reservedPrice);
       console.log(totalCost);
-      setHostFee(hostFees);
       setHostFees(hostFees);
       setTotalCosts(totalCosts);
       setServiceFee(serviceFees);
@@ -896,6 +898,11 @@ export default function ListingForm({
       coHostMessageShown = true;
     }
     return coHostNotAllowed;
+  };
+
+  const isLoggedIn = () => {
+    const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+    return !!token; // Convert to boolean
   };
 
   return (
@@ -1324,6 +1331,10 @@ export default function ListingForm({
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]"
                 onClick={() => {
+                  if (!isLoggedIn()) {
+                    navigate('/login'); // Redirect to login page
+                    return;
+                  }
                   if (buttonText === "Request Book") {
                     sendMessage();
                   } else if (buttonText === "Message Host") {

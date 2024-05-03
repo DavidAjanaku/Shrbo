@@ -43,7 +43,13 @@ const ListingPhotos = ({
   };
 
   useEffect(() => {
-    Axios.get("/getUserWishlistContainers")
+    const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+  
+    Axios.get("/getUserWishlistContainers", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         setWishlistContainer(response.data.userWishlist);
         console.log("wishlist", response.data);
@@ -51,7 +57,8 @@ const ListingPhotos = ({
       .catch((error) => {
         console.log("wishlist", error);
       });
-  }, [isModalOpen]);
+  }, [isModalOpen]); // Include isModalOpen if you want the data to be refetched when isModalOpen changes
+  
 
   const handleWindowSizeChange = () => {
     setWidth(window.innerWidth);
