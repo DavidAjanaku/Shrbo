@@ -14,6 +14,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import close from "../../assets/svg/close-line-icon 2.svg";
 // import './MainSlider.css'; // Import your custom CSS file
 import Axios from "../../Axios";
+import { useStateContext } from "../../ContextProvider/ContextProvider";
 
 const modalStyles = {
   overlay: {
@@ -52,34 +53,32 @@ const MainSlider = (props) => {
   const { id } = useParams(); // Get the ID parameter from the route
 
   const [listingDetails, setListingDetails] = useState(null);
-
+  const { token } = useStateContext();
+  console.log(token);
   useEffect(() => {
     const fetchListingDetails = async () => {
       let response;
       try {
-        response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
-        setListingDetails(response.data.data);
-
-      } catch (error) {
-        console.error(
-          "Error fetching listing details for authenticated user:",
-          error
-        );
-        try {
+        if (token) {
+          // If token exists, fetch details for authenticated user
+          response = await Axios.get(`showGuestHomeForAuthUser/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } else {
+          // If token doesn't exist, fetch details for unauthenticated user
           response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
-          setListingDetails(response.data.data);
-
-        } catch (error) {
-          console.error(
-            "Error fetching listing details for unauthenticated user:",
-            error
-          );
         }
+        setListingDetails(response.data.data);
+      } catch (error) {
+        console.error("Error fetching listing details:", error);
       }
-    }
-
+    };
+  
     fetchListingDetails();
-  }, [id]);
+  }, [id, token]);
+  
 
   const hosthomephotos = listingDetails?.hosthomephotos || [];
   const hosthomevideo = listingDetails?.hosthomevideo || null;

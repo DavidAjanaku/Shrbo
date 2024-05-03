@@ -900,6 +900,11 @@ export default function ListingForm({
     return coHostNotAllowed;
   };
 
+  const isLoggedIn = () => {
+    const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+    return !!token; // Convert to boolean
+  };
+
   return (
     <div className=" block w-full h-full">
       <div
@@ -1326,6 +1331,10 @@ export default function ListingForm({
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]"
                 onClick={() => {
+                  if (!isLoggedIn()) {
+                    navigate('/login'); // Redirect to login page
+                    return;
+                  }
                   if (buttonText === "Request Book") {
                     sendMessage();
                   } else if (buttonText === "Message Host") {

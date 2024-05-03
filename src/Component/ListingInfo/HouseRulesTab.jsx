@@ -2,38 +2,38 @@ import React, { useState, useEffect } from "react";
 import Axios from "../../Axios";
 import { useParams } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
+import { useStateContext } from "../../ContextProvider/ContextProvider";
 
 const HouseRulesTab = () => {
   const [listingDetails, setListingDetails] = useState(null);
   const { id } = useParams(); // Get the ID parameter from the route
+  const { token } = useStateContext();
+  console.log(token);
 
   useEffect(() => {
     const fetchListingDetails = async () => {
       let response;
       try {
-        response = await Axios.get(`showGuestHomeForAuthUser/${id}`);
-        console.log(response.data.data);
-        setListingDetails(response.data.data);
-
-      } catch (error) {
-        console.error(
-          "Error fetching listing details for authenticated user:",
-          error
-        );
-        try {
+        if (token) {
+          // If token exists, fetch details for authenticated user
+          response = await Axios.get(`showGuestHomeForAuthUser/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } else {
+          // If token doesn't exist, fetch details for unauthenticated user
           response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
-          setListingDetails(response.data.data);
-
-        } catch (error) {
-          console.error(
-            "Error fetching listing details for unauthenticated user:",
-            error
-          );
-  }}
+        }
+        setListingDetails(response.data.data);
+      } catch (error) {
+        console.error("Error fetching listing details:", error);
+      }
     };
-
+  
     fetchListingDetails();
-  }, []);
+  }, [id, token]);
+  
 
   if (!listingDetails) {
     return <div>Loading...</div>;
