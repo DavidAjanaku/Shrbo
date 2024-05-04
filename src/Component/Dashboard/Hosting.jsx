@@ -294,7 +294,7 @@ export default function Hosting() {
 
         setTips(tipsResponse.data);
 
-        await fetchInitialData();
+      
 
 
 
@@ -312,6 +312,7 @@ export default function Hosting() {
 
 
     fetchData();
+    fetchInitialData();
 
     // fetchUserTips();
     // fetchInitialData();

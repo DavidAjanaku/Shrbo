@@ -16,12 +16,12 @@ const WalletHistory = () => {
             render: (text) => <a>{text}</a>,
         },
         {
-            title: 'Bank',
+            title: 'Listing',
             dataIndex: 'for',
             key: 'for',
         },
         {
-            title: 'Request ID',
+            title: 'ID',
             dataIndex: 'id',
             key: 'id',
         },

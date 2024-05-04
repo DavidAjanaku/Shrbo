@@ -4,10 +4,12 @@ import HostHeader from "../Navigation/HostHeader";
 import HostTransactionHistory from "./HostTransactionHistory";
 import CompletedPayout from "./CompletedPayout";
 import RequestHistory from "../Wallet/PayoutRequestHistory";
+import { useStateContext } from "../../ContextProvider/ContextProvider";
 
 const { TabPane } = Tabs;
 
 export default function HostPayment() {
+  const {coHost}=useStateContext();
   return (
     <div>
       <HostHeader />
@@ -19,7 +21,8 @@ export default function HostPayment() {
           <TabPane tab="Transaction History" key="2">
             <div><HostTransactionHistory /></div>
           </TabPane>
-          <TabPane tab="Payout Requests" key="3">
+
+          {coHost!=1&&<TabPane tab="Payout Requests" key="3">
             <div>
               <h1 className="text-2xl font-semibold mb-4">
                 Payout Requests
@@ -27,7 +30,7 @@ export default function HostPayment() {
               <RequestHistory />
 
             </div>
-          </TabPane>
+          </TabPane>}
         </Tabs>
       </div>
     </div>

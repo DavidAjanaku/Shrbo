@@ -11,6 +11,7 @@ import { notification } from 'antd';
 import SessionTimer from "../ChatBot/SessionTimer";
 import { LoadingOutlined } from '@ant-design/icons';
 import { DatePicker, Select, Spin } from 'antd';
+import Logo from '../../assets/logo.png';
 
 
 const CommunicationCenter = () => {
@@ -69,7 +70,7 @@ const CommunicationCenter = () => {
             userId: data.user_id,
             role: data.status,
             session_id: data.session_id,
-            image: "https://shbro.onrender.com/assets/logo-94e89628.png",
+            image: `${Logo}`,
             userProfile: `/UserDetails/${data.user_id}`,
             messages: [
               {
@@ -177,6 +178,7 @@ const CommunicationCenter = () => {
       setUserChats(prevChats => ({ ...prevChats, [sessionId]: formattedData }));
 
       console.log("user sent a message", dataArray);
+      console.log("user sent a message f", formattedData);
       updateSessionTime();
     };
 
@@ -330,10 +332,11 @@ const CommunicationCenter = () => {
       const formattedChats = response.data.unattended_chats.map((data) => ({
         id: data.id,
         name: `User ${data.user_id}`,
+        // name: `${data.name}`,
         userId: data.user_id,
         role: data.status,
         session_id: data.session_id,
-        image: "https://shbro.onrender.com/assets/logo-94e89628.png",
+        image: `${Logo}`,
         userProfile: `/UserDetails/${data.user_id}`,
         messages: [
           {
@@ -358,7 +361,7 @@ const CommunicationCenter = () => {
 
       // Assuming setUsers is a state updater function
       setUsers(formattedChats);
-      console.log("check", updatedUserChats)
+      console.log("check", response.data.unattended_chats)
       console.log(formattedChats)
       setUserChats(updatedUserChats);
 
@@ -772,7 +775,7 @@ const CommunicationCenter = () => {
                         </div>
                       </div>
 
-                      <button
+                      {/* <button
                         className="bg-orange-300 text-white h-fit mx-auto text-sm px-2 py-1 ml-2 rounded"
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent the li click event from firing
@@ -780,7 +783,7 @@ const CommunicationCenter = () => {
                         }}
                       >
                         <FontAwesomeIcon icon={faUser} className="mr-2" />
-                      </button>
+                      </button> */}
                     </li>
                   ))}
                   {currentSession.length <= 0 && <div className=" text-xs py-8 w-full break-words text-center text-slate-700 " >No current Chat session at the moment </div>}
@@ -815,7 +818,7 @@ const CommunicationCenter = () => {
                           </p>
                         </div>
                       </div>
-
+{/* 
                       <button
                         className="bg-orange-300 text-white h-fit mx-auto text-sm px-2 py-1 ml-2 rounded"
                         onClick={(e) => {
@@ -824,7 +827,7 @@ const CommunicationCenter = () => {
                         }}
                       >
                         <FontAwesomeIcon icon={faUser} className="mr-2" />
-                      </button>
+                      </button> */}
                     </li>
                   ))}
                 </ul>
@@ -832,14 +835,14 @@ const CommunicationCenter = () => {
               <div className="w-3/4 pl-4">
                 {!loadingChats ?
                   <div className="bg-white h-[90vh] p-4 rounded shadow">
-                    {selectedUser ? (
-                      <>
-                        <div className="flex justify-between" >
-                          <div className="mb-4">
-                            <p className="text-gray-400 text-sm">
+                      <div className="mb-4">
+                            <p className="text-gray-400 text-xs">
                               The Communication Center in the admin dashboard serves as a live chat feature where admins can directly respond to user questions or problems. This real-time communication tool is essential for providing immediate assistance and support to users, enhancing user satisfaction and engagement with the platform.
                             </p>
                           </div>
+                    {selectedUser ? (
+                      <>
+                        <div className="flex justify-between" >                        
                           {/* <p className="text-lg font-semibold">
                           {users.name}
                         </p> */}
