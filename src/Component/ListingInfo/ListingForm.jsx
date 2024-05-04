@@ -1331,10 +1331,10 @@ export default function ListingForm({
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]"
                 onClick={() => {
-                  if (!isLoggedIn()) {
-                    navigate('/login'); // Redirect to login page
+                  if (!token) {
+                    navigate('/login'); // Redirect to login page if no token
                     return;
-                  }
+                }
                   if (buttonText === "Request Book") {
                     sendMessage();
                   } else if (buttonText === "Message Host") {
