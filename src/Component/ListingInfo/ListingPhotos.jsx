@@ -100,7 +100,7 @@ const ListingPhotos = ({
   };
 
  useEffect(() => {
-  const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+  const token = localStorage.getItem('Shbro'); // Assuming token is stored in localStorage
 
   if (token) {
     // Fetch the user's wishlist containers and items
