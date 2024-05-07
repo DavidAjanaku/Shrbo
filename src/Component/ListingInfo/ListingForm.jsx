@@ -56,6 +56,9 @@ export default function ListingForm({
   const [modalMessage, setModalMessage] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [buttonText, setButtonText] = useState("Message Host");
+  const [buttonTexts, setButtonTexts] = useState("Book");
+
+
 
   const messageRef = useRef(null);
   // const [checkInDate, setCheckInDate] = useState(null);
@@ -156,6 +159,12 @@ export default function ListingForm({
         setButtonText("Request Book");
       } else {
         setButtonText("Message Host");
+      }
+
+      if (reservation === "Approve or decline requests") {
+        setButtonTexts("Request Book");
+      } else {
+        setButtonTexts("Book");
       }
 
       setShowMessageHostButton(!experiencedGuest && !pendingApproval);
@@ -1235,45 +1244,49 @@ export default function ListingForm({
                   </div>
 
                   <div className="p-2">
-                    <Link to={verified !== null ? "/RequestBook" : undefined}>
-                      <button
-                        type="button"
-                        className="block w-full h-11 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
-                            text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
-                            focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
-                            focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
-                            dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
-                            dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
-                            ,0_4px_18px_0_rgba(59,113,202,0.1)]]"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          if (isAuthenticated) {
-                            if (verified == null) {
-                              setShowVerifyModal(true);
-                            } else {
-                              navigate("/RequestBook");
-                            }
-                          } else {
-                            // Redirect to login page if not authenticated
-                            navigate("/login");
-                          }
-                        }}
-                        disabled={
-                          (checkInDate &&
-                            checkOutDate &&
-                            isCoHostNotAllowed()) ||
-                          isBookButtonDisabled ||
-                          !checkInDate ||
-                          !checkOutDate ||
-                          isDisabled ||
-                          isCheckoutDisabled() ||
-                          isCheckoutBlocked() ||
-                          isBlockedDatesBetweenCheckInOut()
-                        }
-                      >
-                        Book
-                      </button>
-                    </Link>
+                  <Link to={verified !== null ? "/" : undefined}>
+    <button
+      type="button"
+      className="block w-full h-11 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
+        text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
+        focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+        focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
+        dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
+        dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
+        ,0_4px_18px_0_rgba(59,113,202,0.1)]]"
+      onClick={(event) => {
+        event.preventDefault();
+        if (isAuthenticated) {
+          if (verified == null) {
+            setShowVerifyModal(true);
+          } else {
+            // Disable the button to prevent multiple submissions
+            setIsBookButtonDisabled(true);
+
+            // Call sendMessage function
+            sendMessage();
+          }
+        } else {
+          // Redirect to login page if not authenticated
+          navigate("/login");
+        }
+      }}
+      disabled={
+        (checkInDate &&
+          checkOutDate &&
+          isCoHostNotAllowed()) ||
+        isBookButtonDisabled ||
+        !checkInDate ||
+        !checkOutDate ||
+        isDisabled ||
+        isCheckoutDisabled() ||
+        isCheckoutBlocked() ||
+        isBlockedDatesBetweenCheckInOut()
+      }
+    >
+      {buttonTexts}
+    </button>
+  </Link>
                   </div>
                 </Popup>
               </div>
