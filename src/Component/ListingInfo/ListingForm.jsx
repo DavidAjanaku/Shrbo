@@ -34,7 +34,7 @@ export default function ListingForm({
   userId,
   hostIds,
   vatFee,
-  guestFeePrice
+  guestFeePrice,
 }) {
   function showModal(e) {
     e.preventDefault();
@@ -57,8 +57,6 @@ export default function ListingForm({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [buttonText, setButtonText] = useState("Message Host");
   const [buttonTexts, setButtonTexts] = useState("Book");
-
-
 
   const messageRef = useRef(null);
   // const [checkInDate, setCheckInDate] = useState(null);
@@ -396,7 +394,6 @@ export default function ListingForm({
   console.log(vatFee);
   console.log(guestFeePrice);
 
-
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
     if (checkIn instanceof Date && checkOut instanceof Date) {
@@ -416,7 +413,6 @@ export default function ListingForm({
       let reservedPrice = basePrice; // Initialize reservedPrice
       let weekendPrices = 0;
       let weekendCost = 0;
-      
 
       if (reservedPricesForCertainDay.length > 0) {
         const flattenedReservedDates = reservedPricesForCertainDay.flat();
@@ -541,7 +537,7 @@ export default function ListingForm({
           currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
         }
 
-         weekendCost = weekendNights * weekendPrice;
+        weekendCost = weekendNights * weekendPrice;
         console.log("Number of weekend nights:", weekendNights);
         console.log("Total cost for weekend nights:", weekendCost);
         console.log("weekendCost " + weekendCost);
@@ -556,8 +552,7 @@ export default function ListingForm({
         } else {
           console.log(reservedPrice);
           // Remove two nightly prices from the reserved price and add the weekend price
-          reservedPrice =
-            reservedPrice - weekendNights * nightlyPrice;
+          reservedPrice = reservedPrice - weekendNights * nightlyPrice;
         }
 
         console.log(
@@ -566,8 +561,8 @@ export default function ListingForm({
         );
       }
 
-      reservedPrice + weekendCost + securityDeposit
-      let reservedPriceForApartment = reservedPrice + weekendPrices ;
+      reservedPrice + weekendCost + securityDeposit;
+      let reservedPriceForApartment = reservedPrice + weekendPrices;
       console.log(reservedPriceForApartment);
 
       //
@@ -581,7 +576,7 @@ export default function ListingForm({
       const securityDeposits = securityDeposit;
       const totalPrice = nights * nightlyPrice;
       console.log("totalPrice " + totalPrice);
-      const TotalPrice = reservedPriceForApartment + securityDeposit ;
+      const TotalPrice = reservedPriceForApartment + securityDeposit;
       console.log("basePrice " + basePrice);
       console.log("TotalPrice " + TotalPrice);
       setTotalCost(reservedPriceForApartment);
@@ -635,13 +630,13 @@ export default function ListingForm({
         const securityDepositDiscountedPrice =
           securityDeposits * customDiscountPercentage;
 
-          console.log(securityDepositDiscountedPrice);
+        console.log(securityDepositDiscountedPrice);
         const totalDiscountedPrice =
           baseDiscountedPrice + securityDepositDiscountedPrice;
-          console.log(totalDiscountedPrice);
+        console.log(totalDiscountedPrice);
         const discountedPrice =
           reservedPriceForApartment + securityDeposits - baseDiscountedPrice;
-          console.log(discountedPrice);
+        console.log(discountedPrice);
 
         if (customDiscountPercentage > 0) {
           const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
@@ -657,16 +652,19 @@ export default function ListingForm({
       // Apply predefined discounts if custom discount is not applied
       if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
         setAppliedDiscount("20% New listing promotion (20% off)");
-        const discountedPrice = reservedPriceForApartment * 0.8 + securityDeposits;
+        const discountedPrice =
+          reservedPriceForApartment * 0.8 + securityDeposits;
         setTotalCost(discountedPrice);
       } else if (nights >= 28 && discount.includes("10% Monthly discount")) {
         setAppliedDiscount("10% Monthly discount (10% off)");
-        const discountedPrice = reservedPriceForApartment * 0.9 + securityDeposits;
+        const discountedPrice =
+          reservedPriceForApartment * 0.9 + securityDeposits;
         console.log(discountedPrice);
         setTotalCost(discountedPrice);
       } else if (nights >= 7 && discount.includes("5% Weekly discount")) {
         setAppliedDiscount("5% Weekly discount (5% off)");
-        const discountedPrice = reservedPriceForApartment * 0.95 + securityDeposits;
+        const discountedPrice =
+          reservedPriceForApartment * 0.95 + securityDeposits;
         setTotalCost(discountedPrice);
       } else {
         setAppliedDiscount("");
@@ -910,7 +908,7 @@ export default function ListingForm({
   };
 
   const isLoggedIn = () => {
-    const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+    const token = localStorage.getItem("token"); // Assuming you store the token in localStorage
     return !!token; // Convert to boolean
   };
 
@@ -1244,49 +1242,49 @@ export default function ListingForm({
                   </div>
 
                   <div className="p-2">
-                  <Link to={verified !== null ? "/" : undefined}>
-    <button
-      type="button"
-      className="block w-full h-11 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
+                    <Link to={verified !== null ? "/" : undefined}>
+                      <button
+                        type="button"
+                        className="block w-full h-11 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
         text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
         focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
         focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
         dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
         dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
         ,0_4px_18px_0_rgba(59,113,202,0.1)]]"
-      onClick={(event) => {
-        event.preventDefault();
-        if (isAuthenticated) {
-          if (verified == null) {
-            setShowVerifyModal(true);
-          } else {
-            // Disable the button to prevent multiple submissions
-            setIsBookButtonDisabled(true);
+                        onClick={(event) => {
+                          event.preventDefault();
+                          if (isAuthenticated) {
+                            if (verified == null) {
+                              setShowVerifyModal(true);
+                            } else {
+                              // Disable the button to prevent multiple submissions
+                              setIsBookButtonDisabled(true);
 
-            // Call sendMessage function
-            sendMessage();
-          }
-        } else {
-          // Redirect to login page if not authenticated
-          navigate("/login");
-        }
-      }}
-      disabled={
-        (checkInDate &&
-          checkOutDate &&
-          isCoHostNotAllowed()) ||
-        isBookButtonDisabled ||
-        !checkInDate ||
-        !checkOutDate ||
-        isDisabled ||
-        isCheckoutDisabled() ||
-        isCheckoutBlocked() ||
-        isBlockedDatesBetweenCheckInOut()
-      }
-    >
-      {buttonTexts}
-    </button>
-  </Link>
+                              // Call sendMessage function
+                              sendMessage();
+                            }
+                          } else {
+                            // Redirect to login page if not authenticated
+                            navigate("/login");
+                          }
+                        }}
+                        disabled={
+                          (checkInDate &&
+                            checkOutDate &&
+                            isCoHostNotAllowed()) ||
+                          isBookButtonDisabled ||
+                          !checkInDate ||
+                          !checkOutDate ||
+                          isDisabled ||
+                          isCheckoutDisabled() ||
+                          isCheckoutBlocked() ||
+                          isBlockedDatesBetweenCheckInOut()
+                        }
+                      >
+                        {buttonTexts}
+                      </button>
+                    </Link>
                   </div>
                 </Popup>
               </div>
@@ -1320,6 +1318,7 @@ export default function ListingForm({
                     }}
                     disabled={
                       isBookButtonDisabled ||
+                      isCoHostNotAllowed() ||
                       !checkInDate ||
                       !checkOutDate ||
                       isDisabled ||
@@ -1334,6 +1333,7 @@ export default function ListingForm({
                 </Link>
               )}
               <button
+                disabled={isCoHostNotAllowed()}
                 type="button"
                 // onClick={showMessageModal}
                 className="block w-full h-11 mt-3 rounded bg-orange-500 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal 
@@ -1345,9 +1345,9 @@ export default function ListingForm({
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]"
                 onClick={() => {
                   if (!token) {
-                    navigate('/login'); // Redirect to login page if no token
+                    navigate("/login"); // Redirect to login page if no token
                     return;
-                }
+                  }
                   if (buttonText === "Request Book") {
                     sendMessage();
                   } else if (buttonText === "Message Host") {
