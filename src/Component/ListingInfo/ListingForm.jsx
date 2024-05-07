@@ -57,6 +57,7 @@ export default function ListingForm({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [buttonText, setButtonText] = useState("Message Host");
   const [buttonTexts, setButtonTexts] = useState("Book");
+  const [coHostNotAllowed, setCoHostNotAllowed] = useState(false);
 
   const messageRef = useRef(null);
   // const [checkInDate, setCheckInDate] = useState(null);
@@ -897,15 +898,26 @@ export default function ListingForm({
   console.log("cohostID:", coHostIdInt);
   console.log("userID:", hostIDs);
 
-  // Function to check if co-hosts are allowed to book
-  const isCoHostNotAllowed = () => {
-    const coHostNotAllowed = hostIDs === coHostIdInt;
-    if (coHostNotAllowed && !coHostMessageShown) {
-      message.error("Co-hosts aren't allowed to book apartments");
-      coHostMessageShown = true;
+  const fetchCoHostData = async () => {
+    try {
+      const response = await Axios.get(`user`);
+      const coHostData = response.data;
+      setCoHostNotAllowed(coHostData.co_host);
+    } catch (error) {
+      console.error("Error fetching co-host data:", error);
     }
-    return coHostNotAllowed;
   };
+  
+  const isCoHostNotAllowed = () => {
+    if (coHostNotAllowed === 1) {
+      message.error("Co-hosts aren't allowed to book apartments");
+      return true; // Co-host is not allowed to book
+    }
+    return false; // Co-host is allowed to book
+  };
+  
+  
+  fetchCoHostData();
 
   const isLoggedIn = () => {
     const token = localStorage.getItem("token"); // Assuming you store the token in localStorage
@@ -1262,11 +1274,18 @@ export default function ListingForm({
                               setIsBookButtonDisabled(true);
 
                               // Call sendMessage function
-                              sendMessage();
+                              // sendMessage();
                             }
                           } else {
                             // Redirect to login page if not authenticated
                             navigate("/login");
+                          }
+
+                          if (buttonTexts === "Request Book") {
+                            sendMessage();
+                          } else if (buttonTexts === "Book") {
+                            navigate("/RequestBook");
+
                           }
                         }}
                         disabled={
