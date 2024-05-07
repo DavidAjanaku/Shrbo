@@ -46,6 +46,12 @@ instance.interceptors.response.use(response=>{
     }
   }
 
+  if (error.response && error.response.status === 451) {
+    // Handle the status code 451 error here
+    // For example, redirect to a page explaining legal restrictions
+    window.location.replace("/Login");
+  }
+
 	return Promise.reject(error);
 });
 
