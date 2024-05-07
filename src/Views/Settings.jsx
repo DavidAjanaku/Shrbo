@@ -117,13 +117,16 @@ export default function Settings() {
                 text="Enhance the security of your account with password and login management options."
               />
             </Link>
-            <Link to="/payments">
+
+           {coHost!=1&&<Link to="/payments">
               <Card
                 icon={PaymentIcon}
                 title="Payment Method"
                 text="Manage your payment methods "
               />
-            </Link>
+              
+            </Link>}
+
             <Link to="/AccountNotifications">
               <Card
                 icon={ProfileIcon}

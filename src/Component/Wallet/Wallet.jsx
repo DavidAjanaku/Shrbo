@@ -564,8 +564,8 @@ const Wallet = () => {
             console.error("Failed to Cancel request", error);
             if (error.response.data.message) {
                 message.error(error.response.data.message)
-                
-            }else{
+
+            } else {
                 message.error(error.response.data);
 
             }
@@ -667,9 +667,9 @@ const Wallet = () => {
 
             <div className=" max-w-5xl mx-auto h-full  ">
 
-                <div className=" md:my-14 py-6 md:px-6    md:flex  gap-4">
+                <div className=" md:my-14 py-6 md:px-6 h-full   md:flex  gap-4">
 
-                    <div className="h-[90vh] overflow-y-scroll example mx-4 md:w-[60%] col-span-[1.5] md:mx-0 md:h-[60vh] xl:h-[90vh]  p-4 bg-white shadow-sm  rounded-2xl mt-2 ">
+                    <div className="h-[90vh] overflow-y-scroll example mx-4 md:w-[60%] col-span-[1.5] md:mx-0 md:h-[600px]  p-4 bg-white shadow-sm  rounded-2xl mt-2 ">
                         <div className={` flex flex-wrap mt-3 md:mt-0 w-full h-44 rounded-2xl shadow-md transition-colors  px-8 py-6 ${loadingBalance ? " bg-white" : "bg-gradient-to-r from-orange-300/70 via-orange-500/50 to-orange-700/25"} `}>
                             <div className=" h-full w-full text-slate-700 ">
                                 <div className=" text-sm text-slate-700 font-medium mb-5 flex items-center gap-3">
@@ -765,9 +765,9 @@ const Wallet = () => {
 
                     </div>
 
-                    <div className="md:grid grid-rows-2 md:w-[40%] md:h-[60vh] xl:h-[90vh] gap-4 mt-2 hidden ">
+                    <div className="md:grid grid-rows-2 md:w-[40%] md:h-[600px] gap-4 mt-2 hidden ">
 
-                        <div className=" w-full   p-6 h-auto  bg-white rounded-2xl">
+                        <div className=" w-full  overflow-y-scroll example   p-6 h-full  bg-white rounded-2xl">
 
                             <div className="  flex justify-between ">
                                 <p className=" font-medium text-lg ">Withdraw Requests</p>
@@ -777,9 +777,9 @@ const Wallet = () => {
 
                         </div>
 
-                        <div className=" p-6 h-auto  bg-white rounded-2xl ">
+                        <div className=" p-6 h-full bg-white rounded-2xl ">
 
-                            <div className=" h-auto ">
+                            <div className=" h-full overflow-y-scroll example ">
                                 <div className="  flex justify-between ">
                                     <p className=" font-medium text-lg ">Linked Cards</p>
                                     {paymentDetails.length > 0 && <Link to={"/ManageCard"} className=" text-orange-500 text-sm font-medium" >View All</Link>}
@@ -824,7 +824,10 @@ const Wallet = () => {
 
                 </div>
             </div>
-            <Footer />
+            <div className="md:block hidden mt-[13vh] ">
+
+                <Footer />
+            </div>
         </div>
 
     );

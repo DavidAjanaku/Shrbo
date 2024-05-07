@@ -169,7 +169,9 @@ const SupportWindow = (props) => {
             localStorage.removeItem("gnU");
             localStorage.removeItem("gnUID");
             setLeaveChatConfirm(false)
+            _setUser(null);
             props.goToOptions();
+           
 
         } catch (error) {
             console.error(error);
@@ -226,8 +228,9 @@ const SupportWindow = (props) => {
 
 
     return (
-        <div className="transition-5 cursor-default bg-slate-800 z-[1000] bottom-0  overflow-hidden md:rounded-xl 
-        fixed h-full w-full md:w-[400px] md:h-[550px] lg:h-[560px] md:bottom-3 md:right-6 md:max-h-[calc(100% - 48px)] md:max-w-[calc(100% - 48px)] " style={{
+        <div className={`transition-5 cursor-default bg-slate-800 z-[1000] bottom-0  overflow-hidden md:rounded-xl 
+        fixed h-full w-full md:w-[400px] md:h-[550px] lg:h-[560px] md:bottom-3 md:right-6 md:max-h-[calc(100% - 48px)] md:max-w-[calc(100% - 48px)] ${props.visible===true}`}
+         style={{
                 ...styles.supportWindow,
                 ...{
                     display: props.visible ? 'block' : 'none',
@@ -236,7 +239,7 @@ const SupportWindow = (props) => {
                 }
             }}>
 
-            <SupportHeader close={props.close} agentName={props.agentName} leaveChat={props.selectedOption === "Live chat" ? handleShowLeaveChatConfirm : handleLeaveChat} showLeaveChatConfirm={showLeaveChatConfirm} />
+            <SupportHeader close={props.close} agentName={props.agentName}  leaveChat={(props.selectedOption === "Live chat"&& (token != null || _user != null)) ? handleShowLeaveChatConfirm : handleLeaveChat} showLeaveChatConfirm={showLeaveChatConfirm} />
 
 
             {/* <OptionWindow/> */}
@@ -272,6 +275,7 @@ const SupportWindow = (props) => {
                     handleLeaveChat={handleLeaveChat}
                     leaveChatLoading={loading}
                     UpdateUnreadCount={props.UpdateUnreadCount}
+                    clearUnreadCount={()=>{props.clearUnreadCount(0)}}
                 />
             }
             {/* } */}

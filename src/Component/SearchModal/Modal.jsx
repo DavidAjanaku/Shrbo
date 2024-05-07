@@ -296,7 +296,7 @@ const SearchModal = ({ isOpen, onClose,search }) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 z-50 w-full h-[100vh] overflow-auto md:h-full flex items-center justify-center bg-slate-900  bg-opacity-90 ${isOpen ? "visible " : "invisible"
+      className={`fixed top-0 left-0 z-50 w-full h-[100vh] overflow-auto md:h-full items-center justify-center bg-slate-900  bg-opacity-90 ${isOpen ? "flex " : "hidden"
         }`}
     >
       <div className=" relative bg-white p-4  w-full h-[100vh] overflow-auto md:h-[70vh] md:w-[50%] md:rounded-xl">
@@ -314,10 +314,10 @@ const SearchModal = ({ isOpen, onClose,search }) => {
               components={{ DropdownIndicator }}
             />
           </div>
-          <div className="mb-4 overflow-scroll">
-            <Space direction="vertical " size={12}>
+          <div className="mb-4 overflow-scroll example w-full">
+            {/* <Space direction="vertical " > */}
               <RangePicker
-                className="custom-picker"
+                // className="custom-picker"
                 disabledDate={(current) => current && current < moment().startOf('day')}
                 value={
                   checkInDate && checkOutDate
@@ -336,7 +336,7 @@ const SearchModal = ({ isOpen, onClose,search }) => {
                   }
                 }}
               />
-            </Space>
+            {/* </Space> */}
             
           </div>
           <div className=" text-red-500">{error}</div>

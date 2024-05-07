@@ -30,6 +30,7 @@ const ChatEngine = (props) => {
   const [email, setEmail] = useState('');
   const [supportAgent, setSupportAgent] = useState();
   const [emailProvided, setEmailProvided] = useState(false);
+  const [isSessionEnded, setisSessionEnded] = useState(false);
   const [supportAgentConnected, isSupportAgentConnected] = useState(false);
   const ColorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#4CAF50', '#E91E63', '#2196F3', '#FFC107', '#607D8B'];
   const [expiry, setExpiry] = useState("");
@@ -69,7 +70,7 @@ const ChatEngine = (props) => {
     if (!isTyping) {
       if (storedAgent?.id) {
         try {
-          await axios.get(`/typing/${props.userId}/${storedAgent.id}`);
+          await axios.get(`/typing/${storedAgent.id}/${props.userId}`);
           console.log("typing....")
         } catch (error) {
 
@@ -161,6 +162,10 @@ const ChatEngine = (props) => {
         messageSentSound.play();
         setMessages(prevMessages => [...prevMessages, newMessage]);
         sessionStorage.removeItem('supportAgent');
+        localStorage.removeItem("gnT");
+        localStorage.removeItem("gnU");
+        localStorage.removeItem("gnUID");
+        setisSessionEnded(true);
         props.updateHeader(null);
 
 
@@ -259,9 +264,11 @@ const ChatEngine = (props) => {
       setMessages(prevMessages => [...prevMessages, newMessage]);
       automateSlide.current.scrollIntoView({ behavior: 'smooth' });
       sessionStorage.removeItem('supportAgent');
-      // localStorage.removeItem("gnT");
-      // localStorage.removeItem("gnU");
-      // localStorage.removeItem("gnUID");
+      props.updateHeader(null);
+      setisSessionEnded(true);
+      localStorage.removeItem("gnT");
+      localStorage.removeItem("gnU");
+      localStorage.removeItem("gnUID");
 
 
 
@@ -415,8 +422,8 @@ const ChatEngine = (props) => {
 
 
   // loads the chat in a current session
- 
- 
+
+
   useEffect(() => {
 
     const storedAgent = loadAgentFromSession();
@@ -504,17 +511,17 @@ const ChatEngine = (props) => {
         };
       });
 
-      if(props.selectedOption == "Live chat"){
+      if (props.selectedOption == "Live chat") {
 
-        const userInitialMessage ={
-      
-            content: "Live chat",
-            timestamp: new Date(),
-            isSentByUser: true,
-  
-  
+        const userInitialMessage = {
+
+          content: "Live chat",
+          timestamp: new Date(),
+          isSentByUser: true,
+
+
         }
-        
+
         setMessages([userInitialMessage]);
 
 
@@ -730,13 +737,54 @@ const ChatEngine = (props) => {
     return match ? match[1] : content;
   };
 
-//  useEffect(()=>{
-//   if(props.visible==true){
+  useEffect(() => {
+    if (props.visible == true) {
 
-//     automateSlide.current.scrollIntoView({ behavior: 'smooth' });
-//   }
-//  },[props.visible])
+      props.clearUnreadCount();
+    }
+  }, [props.visible])
 
+
+
+  /// Logic for if no one joins after 5 mins
+  useEffect(() => {
+    if (props.selectedOption === "Live chat") {
+      let timeoutTriggered = false;
+      let agentAvailable = false;
+  
+      // Function to set initial message if agent is not available after 5 minutes
+      const setInitialMessage = () => {
+        if (!timeoutTriggered && !agentAvailable) {
+          setIsTyping(true);
+          const userInitialMessage = {
+            content: "No agent available. Please contact our support desk at info@shortletbooking.com",
+            timestamp: new Date(),
+            isSentByUser: false,
+          };
+          setMessages(prevMessages => [...prevMessages, userInitialMessage]);
+          setIsTyping(false);
+          setisSessionEnded(true);
+        }
+      };
+  
+      // Load agent from session
+      const storedAgent = loadAgentFromSession();
+  
+      // If agent is not available, set initial message after 5 minutes
+      if (!storedAgent) {
+        const timeout = setTimeout(setInitialMessage, 5 * 60 * 1000); // 5 minutes in milliseconds
+  
+        // Cleanup function to prevent setting the initial message if agent becomes available
+        return () => {
+          clearTimeout(timeout);
+          timeoutTriggered = true; // Flag indicating the timeout has been triggered
+        };
+      } else {
+        agentAvailable = true; // Marking agent as available
+      }
+    }
+  }, [supportAgent]);
+  
 
 
 
@@ -837,7 +885,7 @@ const ChatEngine = (props) => {
 
 
 
-             {props.selectedOption!="Live chat" &&<div
+              {props.selectedOption != "Live chat" && <div
 
                 className=' self-end bg-blue-500/80 text-white rounded p-3  max-w-3/4 '
               >
@@ -909,24 +957,24 @@ const ChatEngine = (props) => {
 
                       {message.image ? (
                         <div className="relative">
-                      
-                          <div className={`${message.isSentByUser ? "-right-3 hidden" : "-left-3 block"} absolute  -bottom-11  `}>
-                          <Avatar
-                            style={{
-                              backgroundColor: supportAgent ? supportAgent.color : "transparent",
-                              verticalAlign: 'middle',
-                            }}
-                            className={` relative   box-border block 
-                            bg-center  bg-cover bg-no-repeat   `}
-                            icon={!supportAgent && <BsRobot
-                              className=" text-orange-500 w-5 h-5    " />}
-                            size="small"
 
-                          >
-                            {supportAgent?.name.charAt(0)}
-                          </Avatar>
+                          <div className={`${message.isSentByUser ? "-right-3 hidden" : "-left-3 block"} absolute  -bottom-11  `}>
+                            <Avatar
+                              style={{
+                                backgroundColor: supportAgent ? supportAgent.color : "transparent",
+                                verticalAlign: 'middle',
+                              }}
+                              className={` relative   box-border block 
+                            bg-center  bg-cover bg-no-repeat   `}
+                              icon={!supportAgent && <BsRobot
+                                className=" text-orange-500 w-5 h-5    " />}
+                              size="small"
+
+                            >
+                              {supportAgent?.name.charAt(0)}
+                            </Avatar>
                           </div>
-                       
+
                           <a href={message.image} download={`image_${index}.png`} className="text-blue-500 hover:underline block">
                             <img src={message.image} alt="Sent Image" className="max-w-full md:max-h-[150px] mb-2" />
                             Download Image
@@ -1022,7 +1070,7 @@ const ChatEngine = (props) => {
 
             <>
 
-              <div className={` relative ${props.selectedOption === "Find hosting questions" || props.selectedOption === "Find booking questions" || props.selectedOption === "Shrbo Support" ? "hidden" : "flex"}`}>
+              <div className={` relative ${props.selectedOption === "Find hosting questions" || props.selectedOption === "Find booking questions" || props.selectedOption === "Shrbo Support"||isSessionEnded ? "hidden" : "flex"}`}>
                 <input
                   type="text"
                   placeholder="Type your message..."

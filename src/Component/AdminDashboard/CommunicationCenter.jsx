@@ -9,7 +9,9 @@ import { IoExitOutline } from "react-icons/io5";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { notification } from 'antd';
 import SessionTimer from "../ChatBot/SessionTimer";
-import { DatePicker, Select } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import { DatePicker, Select, Spin,Image } from 'antd';
+import Logo from '../../assets/logo.png';
 
 
 const CommunicationCenter = () => {
@@ -26,6 +28,8 @@ const CommunicationCenter = () => {
   const [users, setUsers] = useState([
 
   ]);
+
+  const [joinorleaveLoading, setLoading] = useState(false)
 
   const [currentSession, setCurrentSession] = useState([]);
 
@@ -66,7 +70,7 @@ const CommunicationCenter = () => {
             userId: data.user_id,
             role: data.status,
             session_id: data.session_id,
-            image: "https://shbro.onrender.com/assets/logo-94e89628.png",
+            image: `${Logo}`,
             userProfile: `/UserDetails/${data.user_id}`,
             messages: [
               {
@@ -122,7 +126,7 @@ const CommunicationCenter = () => {
 
         setUserLeftchat(true);
 
-        
+
 
         setExpiry("")
         console.table(data);
@@ -174,6 +178,7 @@ const CommunicationCenter = () => {
       setUserChats(prevChats => ({ ...prevChats, [sessionId]: formattedData }));
 
       console.log("user sent a message", dataArray);
+      console.log("user sent a message f", formattedData);
       updateSessionTime();
     };
 
@@ -327,10 +332,11 @@ const CommunicationCenter = () => {
       const formattedChats = response.data.unattended_chats.map((data) => ({
         id: data.id,
         name: `User ${data.user_id}`,
+        // name: `${data.name}`,
         userId: data.user_id,
         role: data.status,
         session_id: data.session_id,
-        image: "https://shbro.onrender.com/assets/logo-94e89628.png",
+        image: `${Logo}`,
         userProfile: `/UserDetails/${data.user_id}`,
         messages: [
           {
@@ -355,7 +361,7 @@ const CommunicationCenter = () => {
 
       // Assuming setUsers is a state updater function
       setUsers(formattedChats);
-      console.log("check", updatedUserChats)
+      console.log("check", response.data.unattended_chats)
       console.log(formattedChats)
       setUserChats(updatedUserChats);
 
@@ -394,7 +400,7 @@ const CommunicationCenter = () => {
     const storedData = sessionStorage.getItem('supportUser');
     if (storedData) {
       const parsedData = JSON.parse(storedData);
-      if (parsedData.expiry > Date.now()) {
+      if (parsedData?.expiry > Date.now()) {
         setExpiry(parsedData.expiry)
         return parsedData;
       } else {
@@ -428,6 +434,7 @@ const CommunicationCenter = () => {
   const handleJoinLeaveChat = async (data, type) => {
 
 
+
     console.table(type == "join")
 
     const guestid = data.userId;
@@ -443,6 +450,8 @@ const CommunicationCenter = () => {
 
 
     }
+
+    setLoading(true)
 
 
 
@@ -484,6 +493,8 @@ const CommunicationCenter = () => {
           // setError(error.response.data);
         }
 
+      }).finally(() => {
+        setLoading(false);
       });
 
 
@@ -744,7 +755,7 @@ const CommunicationCenter = () => {
                     >
                       <div className="flex items-center">
                         <img
-                          src={user.image}
+                          src={Logo}
                           alt={user.name}
                           className="w-8 h-8 rounded-full mr-2"
                         />
@@ -764,7 +775,7 @@ const CommunicationCenter = () => {
                         </div>
                       </div>
 
-                      <button
+                      {/* <button
                         className="bg-orange-300 text-white h-fit mx-auto text-sm px-2 py-1 ml-2 rounded"
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent the li click event from firing
@@ -772,7 +783,7 @@ const CommunicationCenter = () => {
                         }}
                       >
                         <FontAwesomeIcon icon={faUser} className="mr-2" />
-                      </button>
+                      </button> */}
                     </li>
                   ))}
                   {currentSession.length <= 0 && <div className=" text-xs py-8 w-full break-words text-center text-slate-700 " >No current Chat session at the moment </div>}
@@ -788,7 +799,7 @@ const CommunicationCenter = () => {
                     >
                       <div className="flex items-center">
                         <img
-                          src={user.image}
+                          src={Logo}
                           alt={user.name}
                           className="w-8 h-8 rounded-full mr-2"
                         />
@@ -807,7 +818,7 @@ const CommunicationCenter = () => {
                           </p>
                         </div>
                       </div>
-
+{/* 
                       <button
                         className="bg-orange-300 text-white h-fit mx-auto text-sm px-2 py-1 ml-2 rounded"
                         onClick={(e) => {
@@ -816,152 +827,210 @@ const CommunicationCenter = () => {
                         }}
                       >
                         <FontAwesomeIcon icon={faUser} className="mr-2" />
-                      </button>
+                      </button> */}
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="w-3/4 pl-4">
-                {!loadingChats? 
-                <div className="bg-white h-[90vh] p-4 rounded shadow">
-                  <div className="mb-4">
-                    <p className="text-gray-400 text-sm">
-                    The Communication Center in the admin dashboard serves as a live chat feature where admins can directly respond to user questions or problems. This real-time communication tool is essential for providing immediate assistance and support to users, enhancing user satisfaction and engagement with the platform. 
-                    </p>
-                  </div>
-                  {selectedUser ? (
-                    <>
-                      <div className="flex justify-between" >
-                        {/* <p className="text-lg font-semibold">
+                {!loadingChats ?
+                  <div className="bg-white h-[90vh] p-4 rounded shadow">
+                      <div className="mb-4">
+                            <p className="text-gray-400 text-xs">
+                              The Communication Center in the admin dashboard serves as a live chat feature where admins can directly respond to user questions or problems. This real-time communication tool is essential for providing immediate assistance and support to users, enhancing user satisfaction and engagement with the platform.
+                            </p>
+                          </div>
+                    {selectedUser ? (
+                      <>
+                        <div className="flex justify-between" >                        
+                          {/* <p className="text-lg font-semibold">
                           {users.name}
                         </p> */}
-                        <p className="text-sm text-gray-500">
-                          Ticket: {selectedUser}
-                        </p>
-                        {currentSession.find(chat => chat.session_id === selectedUser) && <div className="text-sm text-gray-500"><SessionTimer expiry={expiry} /></div>}
-                        {currentSession.length > 0 && currentSession[0].session_id === selectedUser ? (
-                          <button onClick={() => { handleJoinLeaveChat(selectedUserData, "leave"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
-                            Leave Chat <IoExitOutline className="h-4 w-4" />
-                          </button>
-                        ) : currentSession.length === 0 ? (
-                          <button onClick={() => { handleJoinLeaveChat(selectedUserData, "join"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
-                            Join Chat
-                          </button>
-                        ) : null}
+                          <p className="text-sm text-gray-500">
+                            Ticket: {selectedUser}
+                          </p>
+                          {currentSession.find(chat => chat.session_id === selectedUser) && <div className="text-sm text-gray-500"><SessionTimer expiry={expiry} /></div>}
+                          {currentSession.length > 0 && currentSession[0].session_id === selectedUser ? (
+                            <button disabled={joinorleaveLoading} onClick={() => { handleJoinLeaveChat(selectedUserData, "leave"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
+                              {joinorleaveLoading ? <>
+                                <Spin
+                                  indicator={
+                                    <LoadingOutlined
+                                      style={{
+                                        fontSize: 28,
+                                        color: "white"
+                                      }}
+                                      spin
+                                    />
+                                  }
+
+                                />
+
+                              </>
+                                :
+                                <>  Leave Chat <IoExitOutline className="h-4 w-4" />     </>}
+                            </button>
+                          ) : currentSession.length === 0 ? (
+                            <button disabled={joinorleaveLoading} onClick={() => { handleJoinLeaveChat(selectedUserData, "join"); }} className="text-sm bg-orange-400 rounded flex items-center gap-1 font-medium text-white p-3">
+                              {joinorleaveLoading ? <>
+                                <Spin
+                                  indicator={
+                                    <LoadingOutlined
+                                      style={{
+                                        fontSize: 28,
+                                        color: "white"
+                                      }}
+                                      spin
+                                    />
+                                  }
+
+                                />
+
+                              </>
+                                :
+                                <>Join Chat</>
+                              }
+                            </button>
+                          ) : null}
 
 
 
-                      </div>
-                      <div className="h-[70vh] overflow-y-auto example">
-                        {/* {selectedUser &&
+                        </div>
+                        <div className="h-[70vh] overflow-y-auto example">
+                          {/* {selectedUser &&
                           userChats[selectedUser]?.length === 0 && (
                             <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
                               Admin joined the chat
                             </div>
                           )} */}
 
-                        {userChats[selectedUser]?.map((msg, index) => (
-                          // <div key={index}>
-                          //   {!msg.sessionEnded ? 
-                          <div key={index}
+                          {userChats[selectedUser]?.map((msg, index) => (
+                            // <div key={index}>
+                            //   {!msg.sessionEnded ? 
+                            <div key={index}
 
-                            className={`mb-2 p-2 rounded ${msg.sender === "admin"
-                              ? "bg-orange-100 w-fit  "
-                              : "bg-gray-100"
-                              } ${msg.sender === "admin"
-                                ? "text-blue-900"
-                                : "text-gray-900"
-                              }`}
-                            style={{ wordBreak: 'break-word' }}
-                          >
-                            {msg.type === "text" ? (
-                              <>
-                                <p>{msg.text}</p>
-                                <p className="text-xs text-gray-500">
-                                  {formatDate(msg.time)}
-                                </p>
-                              </>
+                              className={`mb-2 p-2 rounded ${msg.sender === "admin"
+                                ? "bg-orange-100 w-fit  "
+                                : "bg-gray-100"
+                                } ${msg.sender === "admin"
+                                  ? "text-blue-900"
+                                  : "text-gray-900"
+                                }`}
+                              style={{ wordBreak: 'break-word' }}
+                            >
+                              {msg.type === "text" ? (
+                                <>
+                                  <p>{msg.text}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {formatDate(msg.time)}
+                                  </p>
+                                </>
 
-                            ) : (
-                              <img
+                              ) : (
+                                <Image
+                                width={80}
+                                height={80}
                                 src={msg.text}
-                                alt="Attachment"
-                                className=" h-auto"
+                                fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJF
+                                jYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkkt
+                                TgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dy
+                                HgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEq
+                                EO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAA
+                                AAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3PTWBSGcbGzM6GCKqlIBRV0dHRJFarQ0eUT8LH4BnRU0NHR0UEFVdIlFR
+                                V7TzRksomPY8uykTk/zewQfKw/9znv4yvJynLv4uLiV2dBoDiBf4qP3/ARuCRABEFAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQ
+                                KAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghg
+                                gQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEg
+                                ghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBE
+                                gghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghgg0Aj8i0JO4OzsrPv69Wv+hi2qPHr0qNvf39+iI97s
+                                oRIh4f3z58/u7du3SXX7Xt7Z2enevHmzfQe+oSN2apSAPj09TSrb+XKI/f379+08+A0cNRE2ANkupk+ACNPvkSPcAAEibACyXUyfABGm3yNHuAECRNgAZLuYPgEirKlHu7u7Xdyy
+                                tGwHAd8jjNyng4OD7vnz51dbPT8/7z58+NB9+/bt6jU/TI+AGWHEnrx48eJ/EsSmHzx40L18+fLyzxF3ZVMjEyDCiEDjMYZZS5wiPXnyZFbJaxMhQIQRGzHvWR7XCyOCXsOmiDAi1
+                                HmPMMQjDpbpEiDCiL358eNHurW/5SnWdIBbXiDCiA38/Pnzrce2YyZ4//59F3ePLNMl4PbpiL2J0L979+7yDtHDhw8vtzzvdGnEXdvUigSIsCLAWavHp/+qM0BcXMd/q25n1vF57
+                                TYBp0a3mUzilePj4+7k5KSLb6gt6ydAhPUzXnoPR0dHl79WGTNCfBnn1uvSCJdegQhLI1vvCk+fPu2ePXt2tZOYEV6/fn31dz+shwAR1sP1cqvLntbEN9MxA9xcYjsxS1jWR4AIa2I
+                                bzx0tc44fYX/16lV6NDFLXH+YL32jwiACRBiEbf5KcXoTIsQSpzXx4N28Ja4BQoK7rgXiydbHjx/P25TaQAJEGAguWy0+2Q8PD6/Ki4R8EVl+bzBOnZY95fq9rj9zAkTI2SxdidBHqG
+                                9+skdw43borCXO/ZcJdraPWdv22uIEiLA4q7nvvCug8WTqzQveOH26fodo7g6uFe/a17W3+nFBAkRYENRdb1vkkz1CH9cPsVy/jrhr27PqMYvENYNlHAIesRiBYwRy0V+8iXP8+/fvX11Mr7L
+                                7ECueb/r48eMqm7FuI2BGWDEG8cm+7G3NEOfmdcTQw4h9/55lhm7DekRYKQPZF2ArbXTAyu4kDYB2YxUzwg0gi/41ztHnfQG26HbGel/crVrm7tNY+/1btkOEAZ2M05r4FB7r9GbAIdxaZYrHd
+                                OsgJ/wCEQY0J74TmOKnbxxT9n3FgGGWWsVdowHtjt9Nnvf7yQM2aZU/TIAIAxrw6dOnAWtZZcoEnBpNuTuObWMEiLAx1HY0ZQJEmHJ3HNvGCBBhY6jtaMoEiJB0Z29vL6ls58vxPcO8/zfrdo5qv
+                                KO+d3Fx8Wu8zf1dW4p/cPzLly/dtv9Ts/EbcvGAHhHyfBIhZ6NSiIBTo0LNNtScABFyNiqFCBChULMNNSdAhJyNSiECRCjUbEPNCRAhZ6NSiAARCjXbUHMCRMjZqBQiQIRCzTbUnAARcjYqhQgQo
+                                VCzDTUnQIScjUohAkQo1GxDzQkQIWejUogAEQo121BzAkTI2agUIkCEQs021JwAEXI2KoUIEKFQsw01J0CEnI1KIQJEKNRsQ80JECFno1KIABEKNdtQcwJEyNmoFCJAhELNNtScABFyNiqFCBChULMN
+                                NSdAhJyNSiECRCjUbEPNCRAhZ6NSiAARCjXbUHMCRMjZqBQiQIRCzTbUnAARcjYqhQgQoVCzDTUnQIScjUohAkQo1GxDzQkQIWejUogAEQo121BzAkTI2agUIkCEQs021JwAEXI2KoUIEKFQsw01J0CEn
+                                I1KIQJEKNRsQ80JECFno1KIABEKNdtQcwJEyNmoFCJAhELNNtScABFyNiqFCBChULMNNSdAhJyNSiECRCjUbEPNCRAhZ6NSiAARCjXbUHMCRMjZqBQiQIRCzTbUnAARcjYqhQgQoVCzDTUnQIScjUohAk
+                                Qo1GxDzQkQIWejUogAEQo121BzAkTI2agUIkCEQs021JwAEXI2KoUIEKFQsw01J0CEnI1KIQJEKNRsQ80JECFno1KIABEKNdtQcwJEyNmoFCJAhELNNtScABFyNiqFCBChULMNNSdAhJyNSiEC/wGgKKC4
+                                YMA4TAAAAABJRU5ErkJggg=="
                               />
-                            )}
-                          </div>
-                          //     :
+                              )}
+                            </div>
+                            //     :
 
-                          // </div>
-                        ))}
-
-
-                        {isTyping && currentSession[0]?.session_id == selectedUser && <div className=" text-slate-500 text-sm ">User typing........</div>}
+                            // </div>
+                          ))}
 
 
-                        {isSessionEnded && currentSession[0]?.session_id == selectedUser && <div className=" my-4 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session has ended leave the chat </div>}
+                          {isTyping && currentSession[0]?.session_id == selectedUser && <div className=" text-slate-500 text-sm ">User typing........</div>}
 
-                        {isUserLeftchat && currentSession[0]?.session_id == selectedUser && <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
-                          user{currentSession[0].userId} left the chat
+
+                          {isSessionEnded && currentSession[0]?.session_id == selectedUser && <div className=" my-4 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session has ended leave the chat </div>}
+
+                          {isUserLeftchat && currentSession[0]?.session_id == selectedUser && <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
+                            user{currentSession[0].userId} left the chat
+                          </div>}
+
+
+                        </div>
+
+
+
+                        {currentSession.find(chat => chat.session_id === selectedUser) && !isSessionEnded && !isUserLeftchat && <div className="mt-4 flex gap-2">
+                          <button
+                            className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
+                            onClick={() => fileInputRef.current.click()}
+                          >
+                            <FontAwesomeIcon
+                              icon={faPaperclip}
+                              className="mr-2"
+                            />
+                            Attach File
+                          </button>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                  sendMessage("file", e.target.result);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                          <textarea
+                            className="w-full p-2 border rounded"
+                            placeholder="Type your message here..."
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyUp={handleKeyUp}
+                          ></textarea>
+                          <button
+                            className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
+                            onClick={() => sendMessage("text")}
+                          >
+                            <FontAwesomeIcon
+                              icon={faPaperPlane}
+                              className="mr-2"
+                            />
+                          </button>
                         </div>}
-
-
-                      </div>
-
-
-
-                      {currentSession.find(chat => chat.session_id === selectedUser) && !isSessionEnded && !isUserLeftchat&& <div className="mt-4 flex gap-2">
-                        <button
-                          className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
-                          onClick={() => fileInputRef.current.click()}
-                        >
-                          <FontAwesomeIcon
-                            icon={faPaperclip}
-                            className="mr-2"
-                          />
-                          Attach File
-                        </button>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          style={{ display: "none" }}
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (e) => {
-                                sendMessage("file", e.target.result);
-                              };
-                              reader.readAsDataURL(file);
-                            }
-                          }}
-                        />
-                        <textarea
-                          className="w-full p-2 border rounded"
-                          placeholder="Type your message here..."
-                          value={message}
-                          onChange={(e) => setMessage(e.target.value)}
-                          onKeyUp={handleKeyUp}
-                        ></textarea>
-                        <button
-                          className="bg-orange-400 text-white px-4 py-2 ml-2 rounded"
-                          onClick={() => sendMessage("text")}
-                        >
-                          <FontAwesomeIcon
-                            icon={faPaperPlane}
-                            className="mr-2"
-                          />
-                        </button>
-                      </div>}
-                    </>
-                  ) : (
-                    <p className="text-gray-500 flex items-center h-[80vh] justify-center">
-                      Select a user to start chatting.
-                    </p>
-                  )}
-                </div>
-                :<p className="text-gray-500 flex items-center h-[80vh] justify-center">Loading chats....</p>}
+                      </>
+                    ) : (
+                      <p className="text-gray-500 flex items-center h-[80vh] justify-center">
+                        Select a user to start chatting.
+                      </p>
+                    )}
+                  </div>
+                  : <p className="text-gray-500 flex items-center h-[80vh] justify-center">Loading chats....</p>}
               </div>
             </div>
           </div>
