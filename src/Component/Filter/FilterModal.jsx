@@ -119,6 +119,20 @@ export default function FilterModal({search,clearAll}) {
 
   };
 
+  function formatAmountWithCommas(amount) {
+    // Convert the amount to a string and split it into integer and decimal parts
+    const [integerPart, decimalPart] = amount.toString().split('.');
+
+    // Add commas to the integer part
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    // Combine the integer and decimal parts with a dot if there is a decimal part
+    const formattedAmount = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+
+    return formattedAmount;
+}
+
+
   return (
     <div className="flex">
       <button
@@ -156,17 +170,17 @@ export default function FilterModal({search,clearAll}) {
                   </p>
                   <div className="flex justify-between items-center">
                     <div className="border w-[40%] p-2">
-                      <span>Min</span>
-                      <input type="text" placeholder={`${values[0]}`} />
+                      <span className=" text-slate-300" >Min</span>
+                      <input type="text" readOnly  placeholder={`₦ ${formatAmountWithCommas(values[0])}`} />
                     </div>{" "}
                     -{" "}
                     <div className="border w-[40%] p-2">
-                      Max
-                      <input type="text" placeholder={`${values[1]}`} />
+                    <span className=" text-slate-300" >Max</span>
+                      <input type="text" readOnly placeholder={`₦ ${formatAmountWithCommas(values[1])}`} />
                     </div>{" "}
                   </div>
                   <small>
-                    Current Range: ${values[0]} - ${values[1]}
+                    Current Range: ₦{values[0]} - ₦{values[1]}
                   </small>
 
                   <Slider

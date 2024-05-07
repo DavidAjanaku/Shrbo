@@ -42,7 +42,7 @@ instance.interceptors.response.use(response=>{
       localStorage.removeItem("supportUser")
       window.location.replace("/Login");
 
-      message.error("Please check your Internet connection 1");
+      // message.error("Please check your Internet connection 1");
     }
   }
 

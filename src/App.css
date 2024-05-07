@@ -244,13 +244,13 @@ The slider*/
   -moz-transition: all 0.66s ease;
 }
 
-
+/* 
 .ant-picker-panel-layout{
   width: 80%;
   height: 300px;
   flex-wrap: wrap !important;
   overflow: scroll;
-}
+} */
 
 
 
@@ -360,11 +360,11 @@ The slider*/
 }
 
 
-
+/* 
 :where(.css-dev-only-do-not-override-3mqfnx).ant-picker-dropdown-range {
   padding: 10.666666666666666px 0;
   width: 80% !important;
-}
+} */
 
 
 .custom-table .ant-table-thead th {

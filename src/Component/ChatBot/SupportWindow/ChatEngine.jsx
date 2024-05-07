@@ -70,7 +70,7 @@ const ChatEngine = (props) => {
     if (!isTyping) {
       if (storedAgent?.id) {
         try {
-          await axios.get(`/typing/${props.userId}/${storedAgent.id}`);
+          await axios.get(`/typing/${storedAgent.id}/${props.userId}`);
           console.log("typing....")
         } catch (error) {
 
@@ -162,6 +162,10 @@ const ChatEngine = (props) => {
         messageSentSound.play();
         setMessages(prevMessages => [...prevMessages, newMessage]);
         sessionStorage.removeItem('supportAgent');
+        localStorage.removeItem("gnT");
+        localStorage.removeItem("gnU");
+        localStorage.removeItem("gnUID");
+        setisSessionEnded(true);
         props.updateHeader(null);
 
 
@@ -262,9 +266,9 @@ const ChatEngine = (props) => {
       sessionStorage.removeItem('supportAgent');
       props.updateHeader(null);
       setisSessionEnded(true);
-      // localStorage.removeItem("gnT");
-      // localStorage.removeItem("gnU");
-      // localStorage.removeItem("gnUID");
+      localStorage.removeItem("gnT");
+      localStorage.removeItem("gnU");
+      localStorage.removeItem("gnUID");
 
 
 
@@ -744,45 +748,43 @@ const ChatEngine = (props) => {
 
   /// Logic for if no one joins after 5 mins
   useEffect(() => {
-
-    if (props.selectedOption == "Live chat") {
+    if (props.selectedOption === "Live chat") {
       let timeoutTriggered = false;
-
+      let agentAvailable = false;
+  
       // Function to set initial message if agent is not available after 5 minutes
       const setInitialMessage = () => {
-        if (!timeoutTriggered) {
+        if (!timeoutTriggered && !agentAvailable) {
           setIsTyping(true);
           const userInitialMessage = {
-            content: "No agent available. Please contact our support desk at supportDesk@gmail.com",
+            content: "No agent available. Please contact our support desk at info@shortletbooking.com",
             timestamp: new Date(),
             isSentByUser: false,
           };
           setMessages(prevMessages => [...prevMessages, userInitialMessage]);
-          setIsTyping(false)
+          setIsTyping(false);
+          setisSessionEnded(true);
         }
       };
-
+  
       // Load agent from session
       const storedAgent = loadAgentFromSession();
-
+  
       // If agent is not available, set initial message after 5 minutes
       if (!storedAgent) {
         const timeout = setTimeout(setInitialMessage, 5 * 60 * 1000); // 5 minutes in milliseconds
-
+  
         // Cleanup function to prevent setting the initial message if agent becomes available
         return () => {
           clearTimeout(timeout);
           timeoutTriggered = true; // Flag indicating the timeout has been triggered
         };
+      } else {
+        agentAvailable = true; // Marking agent as available
       }
-
     }
-
-    // If agent is available, do something else
-    // For example:
-    // doSomethingWithAgent(storedAgent);
-  }, []); // Empty dependency array ensures this effect runs only once
-
+  }, [supportAgent]);
+  
 
 
 

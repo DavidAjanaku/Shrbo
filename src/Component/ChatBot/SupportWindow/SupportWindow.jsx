@@ -169,6 +169,7 @@ const SupportWindow = (props) => {
             localStorage.removeItem("gnU");
             localStorage.removeItem("gnUID");
             setLeaveChatConfirm(false)
+            _setUser(null);
             props.goToOptions();
            
 
@@ -238,7 +239,7 @@ const SupportWindow = (props) => {
                 }
             }}>
 
-            <SupportHeader close={props.close} agentName={props.agentName} leaveChatVisible={""} leaveChat={(props.selectedOption === "Live chat"&& (token != null || _user != null)) ? handleShowLeaveChatConfirm : handleLeaveChat} showLeaveChatConfirm={showLeaveChatConfirm} />
+            <SupportHeader close={props.close} agentName={props.agentName}  leaveChat={(props.selectedOption === "Live chat"&& (token != null || _user != null)) ? handleShowLeaveChatConfirm : handleLeaveChat} showLeaveChatConfirm={showLeaveChatConfirm} />
 
 
             {/* <OptionWindow/> */}
