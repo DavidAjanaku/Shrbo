@@ -49,6 +49,12 @@ instance.interceptors.response.use(response=>{
   if (error.response && error.response.status === 451) {
     // Handle the status code 451 error here
     // For example, redirect to a page explaining legal restrictions
+    localStorage.removeItem("Shbro");
+    localStorage.removeItem("A_Status");
+    localStorage.removeItem("H_Status");
+    localStorage.removeItem("CH_Status");
+    localStorage.removeItem("supportAgent")
+    localStorage.removeItem("supportUser")
     window.location.replace("/Login");
   }
 
