@@ -10,6 +10,8 @@ const ReportListing = ({ id,onSubmit }) => {
   const [reportType, setReportType] = useState();
   const [loading, setLoading] = useState(false);
   const [extraReason, setExtraReason] = useState("");
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+
 
   const onChange = (e) => {
     console.log("radio checked", e.target.value);
@@ -54,6 +56,7 @@ const ReportListing = ({ id,onSubmit }) => {
       return;
     }
   
+    setLoadingSubmit(true); // Disable the "Submit" button
     const requestBody = {
       title: ReportTypes.find((report) => report.index === reportType).report,
       reasonforreporting: ReportCategories.find(
@@ -71,7 +74,6 @@ const ReportListing = ({ id,onSubmit }) => {
           description: "Report submitted successfully!",
         });
         // Call the onSubmit callback
-        onSubmit();
       })
       .catch((error) => {
         console.error("Error while submitting report:", error);
@@ -79,8 +81,13 @@ const ReportListing = ({ id,onSubmit }) => {
           message: "Error",
           description: "Failed to submit report. Please try again later.",
         });
+      })
+      .finally(() => {
+        setLoadingSubmit(false); // Re-enable the "Submit" button
       });
   };
+  
+  
   
 
   // Your existing code for rendering the component goes here
@@ -257,16 +264,16 @@ const ReportListing = ({ id,onSubmit }) => {
             Next
           </button>
           <button
-            onClick={(e) => handleReport(e)}
-            disabled={reportType ? false : true}
-            className={`rounded-md text-white ${
-              !goNext ? "hidden" : "block"
-            } hover:bg-orange-500  bg-orange-300 p-2 font-medium  px-4 ${
-              reportType && "bg-orange-400"
-            }`}
-          >
-            Submit
-          </button>
+  onClick={(e) => handleReport(e)}
+  disabled={reportType ? false : true || loadingSubmit}
+  className={`rounded-md text-white ${
+    !goNext ? "hidden" : "block"
+  } hover:bg-orange-500  bg-orange-300 p-2 font-medium  px-4 ${
+    reportType && "bg-orange-400"
+  }`}
+>
+  {loadingSubmit ? "Submitting..." : "Submit"}
+</button>
         </div>
       </form>
     </div>

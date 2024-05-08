@@ -7,6 +7,8 @@ import { usePDF } from "react-to-pdf";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import Logo from "../../assets/logo.png";
 import Axios from '../../Axios'
+import moment from 'moment'; // Import moment
+
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -91,16 +93,14 @@ const DisplayBookingsPaid = () => {
   const columns = [
     {
       title: 'Date',
-      dataIndex: 'Date',
-      key: 'Date',
-      render: (text) => {
-        return moment(text).format('dddd, D MMMM YYYY');
-      },
+      dataIndex: 'paiddate',
+      key: 'paiddate',
+      
     },
     {
       title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'user_id',
+      key: 'user_id',
     },
     {
       title: 'Bank Name',
@@ -115,8 +115,8 @@ const DisplayBookingsPaid = () => {
     },
     {
       title: "User Email",
-      dataIndex: ["user", "email"],
-      key: "user_email",
+      dataIndex: "userEmail",
+      key: "userEmail",
     },
     {
       title: "User ID",
@@ -125,13 +125,13 @@ const DisplayBookingsPaid = () => {
     },
     {
       title: "User Name",
-      dataIndex: ["user", "name"],
-      key: "user_name",
+      dataIndex: "userName",
+      key: "userName",
     },
     {
       title: 'Amount',
-      dataIndex: 'amount',
-      key: 'amount',
+      dataIndex: 'amountPaid',
+      key: 'amountPaid',
       render: (totalAmount) => (
         <span>
           ₦{new Intl.NumberFormat().format(totalAmount)}
@@ -220,7 +220,7 @@ const DisplayBookingsPaid = () => {
           <div className="bg-white p-4 rounded shadow">
             <div className="mb-4">
               <p className="text-gray-400 text-sm">
-              Paid Payment section provides a record of all the payout requests that have been successfully processed and paid out to the hosts.
+              Paid Payment section provides a record of all the payout requests that have been successfully processed and paid out to the hosts or guest.
               </p>
             </div>
             

@@ -38,14 +38,12 @@ const PendingPayment = () => {
   }, []);
 
   const columns = [
-    {
-      title: 'Date',
-      dataIndex: 'Date',
-      key: 'Date',
-      render: (text) => {
-        return moment(text).format('dddd, D MMMM YYYY');
-      },
-    },
+    // {
+    //   title: 'Date',
+    //   dataIndex: 'Date',
+    //   key: 'Date',
+      
+    // },
     {
       title: 'Id',
       dataIndex: 'id',
@@ -106,10 +104,10 @@ const PendingPayment = () => {
                   key: "0",
                   onClick: (e) => handleApprove(record.id),
                 },
-                {
-                  label: <div>Decline</div>,
-                  key: "1",
-                },
+                // {
+                //   label: <div>Decline</div>,
+                //   key: "1",
+                // },
               ],
             }}
             trigger={["click"]}
