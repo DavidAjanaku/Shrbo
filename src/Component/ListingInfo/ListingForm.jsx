@@ -87,6 +87,7 @@ export default function ListingForm({
   const [messages, setMessages] = useState("");
   const [reservedPrice, setReservedPrice] = useState(0);
   const [matchedReservedPrices, setMatchedReservedPrices] = useState([]);
+  const [coHostMessageShown, setCoHostMessageShown] = useState(false);
 
   // useEffect(() => {
   //   const fetchUsers = async () => {
@@ -890,7 +891,6 @@ export default function ListingForm({
     }
   };
 
-  let coHostMessageShown = false;
 
   const hostIDs = parseInt(localStorage.getItem("receiverid"), 10);
   const coHostIdInt = parseInt(coHostId, 10);
@@ -909,12 +909,15 @@ export default function ListingForm({
   };
   
   const isCoHostNotAllowed = () => {
-    if (coHostNotAllowed === 1) {
-      message.error("Co-hosts aren't allowed to book apartments");
-      return true; // Co-host is not allowed to book
-    }
-    return false; // Co-host is allowed to book
+    return coHostNotAllowed === 1;
   };
+
+  useEffect(() => {
+    if (isCoHostNotAllowed() && !coHostMessageShown) {
+      message.error("Co-hosts aren't allowed to book apartments");
+      setCoHostMessageShown(true);
+    }
+  }, [coHostNotAllowed]);
   
   
   fetchCoHostData();
