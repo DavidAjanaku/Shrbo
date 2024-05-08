@@ -559,7 +559,7 @@ const Wallet = () => {
         await axios.get(`/cancelPayRequest/${id}`).then(response => {
             console.log(response);
             message.success(`Cancelled request`);
-            // fetchWalletWithdrawRequsts();
+            fetchWalletWithdrawRequsts();
         }).catch(error => {
             console.error("Failed to Cancel request", error);
             if (error.response.data.message) {
