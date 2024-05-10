@@ -116,19 +116,19 @@ export default function HostHeader() {
                    Listings
                 </Link>
                 <Link
-                  to=""
+                  to="/ContactSupport"
                   className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
                 
                 >
                    Visit the help center
                 </Link>
-                <Link
+                {/* <Link
                   to=""
                   className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
                 
                 >
                    Get help with a safety issue
-                </Link>
+                </Link> */}
                 <Link
                   to="/ReportDamage"
                   className="block text-gray-800 hover:text-orange-400 p-2 cursor-pointer"
