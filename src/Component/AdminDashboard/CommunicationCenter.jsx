@@ -66,7 +66,7 @@ const CommunicationCenter = () => {
         const formattedChats = data.unattended_chats.map((data) => (
           {
             id: data.id,
-            name: `User ${data.user_id}`,
+            name: `${data.user_name}`,
             userId: data.user_id,
             role: data.status,
             session_id: data.session_id,
@@ -331,8 +331,8 @@ const CommunicationCenter = () => {
 
       const formattedChats = response.data.unattended_chats.map((data) => ({
         id: data.id,
-        name: `User ${data.user_id}`,
-        // name: `${data.name}`,
+        // name: `User ${data.user_id}`,
+        name: `${data.user_name}`,
         userId: data.user_id,
         role: data.status,
         session_id: data.session_id,
@@ -971,7 +971,7 @@ const CommunicationCenter = () => {
                           {isSessionEnded && currentSession[0]?.session_id == selectedUser && <div className=" my-4 w-full font-medium text-slate-600 bg-slate-50 text-center " >Session has ended leave the chat </div>}
 
                           {isUserLeftchat && currentSession[0]?.session_id == selectedUser && <div className="mb-2 p-2 rounded bg-orange-100 text-blue-900 text-center">
-                            user{currentSession[0].userId} left the chat
+                            user{currentSession[0].name} left the chat
                           </div>}
 
 
@@ -1056,6 +1056,7 @@ export default CommunicationCenter;
 
 
 
+
 const { Option } = Select;
 
 const ChatHistory = ({ sessionMessages, handleViewPaastSession }) => {
@@ -1082,16 +1083,14 @@ const ChatHistory = ({ sessionMessages, handleViewPaastSession }) => {
           onChange={handleSessionIDChange}
           placeholder="Select Session ID"
         >
-          {sessionIDs.map(id => (
-            <Option key={id} value={id}>{id}</Option>
-          ))}
+          {sessionIDs.map(id => {
+            const session = sessionMessages.find(session => session.session_id === id);
+            return (
+              <Option key={id} value={id}>{`${id} - ${session.user_name}`}</Option>
+            );
+          })}
         </Select>
       </div>
-
-      {/* <div className="mb-4">
-              <label htmlFor="date" className="block text-lg font-semibold mb-1">Filter by Date:</label>
-              <DatePicker id="date" className="w-full" />
-          </div> */}
 
       {session && (
         <div className="border rounded-lg p-4">

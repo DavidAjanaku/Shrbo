@@ -844,6 +844,7 @@ export default function Home() {
               onClose={closeRateHouseModal}
               houseDetails={houseDetails}
               review={(data) => { ReviewListing(data) }}
+              type={true}
             />
           </div>
           <ChatSupport />

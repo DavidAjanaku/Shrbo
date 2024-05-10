@@ -72,7 +72,7 @@ export default function HostAnalysis() {
 
 
           const formattedReviews = reviewsResponse.data.data.actualReviews.map(item => ({
-            apartmentId: item.host_home_id,
+            apartmentId: item.hosthome_id,
             personName: item.user_name,
             comment: item.comment,
             starRating: item.ratings,
@@ -88,6 +88,8 @@ export default function HostAnalysis() {
           // Update state with formatted data
           setReviews(formattedReviews);
           setApartmentData(formattedApartmentData);
+
+          console.log("test1",reviewsResponse.data.data)
         }
       } catch (error) {
         console.error('Error fetching data:', error);
