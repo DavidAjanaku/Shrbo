@@ -108,8 +108,9 @@ const Reservations = () => {
       setData(formattedData);
 
 
-    }).catch().finally(() => setLoading(false));
+    }).catch().finally(() =>{} );
     getHostPendingReviewsForGuest();
+    setLoading(false)
 
 
   }, []);
