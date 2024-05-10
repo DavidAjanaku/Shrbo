@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tabs, Button, DatePicker, Dropdown, Modal,message, Form, Input } from "antd";
+import { Tabs, Button, DatePicker, Dropdown, Modal, message, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import GoBackButton from "../GoBackButton";
 import Popup from "../../hoc/Popup";
@@ -12,22 +12,38 @@ import {
 import axios from '../../Axios';
 import Rating from "../ListingInfo/Ratings";
 import { Avatar } from 'antd';
+import RateHouseModal from "../RateHouseModal";
+import { notification } from "antd";
 
 const Reservations = () => {
   const [allKey, setAllKey] = useState("6");
   const [filterDate, setFilterDate] = useState(null);
   const [visible, setVisible] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
+  const [selectedRateHouseModal, setSelectedRateHouseModal] = useState(null);
+  const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [show, setShow] = useState(false);
   const toggleShow = () => setShow(!show);
   const [drawer, setDrawer] = useState(false);
   const [dataMain, setData] = useState([]);
+  const [hostPendingReviewforGuest, setPendingReview] = useState([]);
   const [loading, setLoading] = useState(true);
   const [messageSent, setMessageSent] = useState(false);
   const [messageModalVisible, setMessageModalVisible] = useState(false);
   const [messages, setMessages] = useState("");
   const [form] = Form.useForm(); //
+
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type, error) => {
+    api[type]({
+      message: type === "error" ? "Error" : "Succesfull",
+      description: error,
+      placement: "topRight",
+      className: "bg-green",
+    });
+  };
+
 
   const calculateDaysDifference = (date1, date2) => {
     const startDate = new Date(date1);
@@ -77,7 +93,8 @@ const Reservations = () => {
         guestName: item.aboutGuest.name,
         nights: calculateDaysDifference(item.check_in_date, item.check_out_date),
         profilePic: item.profilepic,
-        rating: item.userReviews ? item.userReviews.ratings : "",
+        rating: item.userReviews ? item.userReviews.ratings : 0,
+        guestRating: item.aboutGuest.rating,
         comment: item.userReviews ? item.userReviews.comment : "",
         cancelationPolicy: item.cancelationPolicy,
         link: `/UserDetails/${item.aboutGuest.id}`,
@@ -91,10 +108,47 @@ const Reservations = () => {
       setData(formattedData);
 
 
-    }).catch().finally(() => setLoading(false));
+    }).catch().finally(() =>{} );
+    getHostPendingReviewsForGuest();
+    setLoading(false)
 
 
   }, []);
+
+
+  const getHostPendingReviewsForGuest = async () => {
+
+    await axios.get("/getHostPendingReviewsForGuest").then(response => {
+
+      const formattedData = response.data.data.map(item => ({
+        key: item.id,
+        status: "review the guest",
+        checkIn: item.checkInDate,
+        checkOut: item.checkOutDate,
+        // booked: formatDate(item.bookedDate),
+        listing: item.title,
+        // totalPayout: `  ₦ ${formatAmountWithCommas(item.amount)}`,
+        guestName: item.guestName,
+        guestId: item.guestid,
+        hostid: item.hostid,
+        bookingid: item.bookingid,
+        hosthomeid: item.hosthomeid,
+        profilePic: item.guestProfilePicture,
+        address: item.address,
+
+
+
+
+      })
+      );
+
+      console.log("Pending Review", formattedData);
+      setPendingReview(formattedData);
+
+
+    }).catch().finally(() =>"");
+
+  }
 
 
 
@@ -260,6 +314,17 @@ const Reservations = () => {
           />
         ) : empty("6", ""),
     },
+    {
+      key: "7",
+      label: <div className="text-neutral-700      rounded-t-lg">Review Guests</div>,
+      children:
+        hostPendingReviewforGuest.length > 0 ? (
+          <CardTable
+            dataSource={hostPendingReviewforGuest}
+            handlePopup={(key) => openRateHouseModal(hostPendingReviewforGuest, key)}
+          />
+        ) : empty("6", "Guests to Review"),
+    },
   ];
 
   const skeletonLoader = Array.from({ length: 6 }).map((group, index) =>
@@ -333,6 +398,78 @@ const Reservations = () => {
     }
   };
 
+  const deletePendingReview = async (id) => {
+
+    await axios.delete(`/deleteHostPendingReviews/${id}`).then(response => {
+      console.log("Deleted Pending Review Successfully", response.data)
+
+    }).catch(error => {
+      console.log("DeletePendingReview", error)
+    });
+
+
+  }
+
+
+  const ReviewListing = async (data) => {
+
+  
+
+    const reviewData = {
+      pendingreviewid: selectedRateHouseModal[0].key,
+      ratings: data.rating,
+      bookingid: selectedRateHouseModal[0].bookingid,
+      title: selectedRateHouseModal[0].listing,
+      host_id: selectedRateHouseModal[0].hostid,
+      comment: data.comment,
+      guest_id: selectedRateHouseModal[0].guestId,
+    }
+
+    console.table(reviewData);
+
+    await axios.post(`/createReviewsForguest`, reviewData).then(respnse => {
+      openNotificationWithIcon("success");
+      getHostPendingReviewsForGuest();
+    }).catch(error => {
+      console.log("createReview", error)
+      openNotificationWithIcon("error");
+
+    }).finally(() => {  getHostPendingReviewsForGuest()});
+
+  }
+
+
+  const closeRateHouseModal = () => {
+    // deletePendingReview(houseDetails[0].id);
+    setIsRateHouseModalOpen(false);
+  };
+
+  
+
+
+
+  const openRateHouseModal = (dataSource, key) => {
+    console.log("key", key);
+  
+    // Convert the key to a number
+    const keyIndex = parseInt(key, 10);
+  
+    // Check if the keyIndex is a valid index in the dataSource array
+    if (keyIndex >= 0 && keyIndex < dataSource.length) {
+      const matchingItem = dataSource[keyIndex];
+      console.log("Matching item found:", matchingItem);
+      setIsRateHouseModalOpen(true);
+      setSelectedRateHouseModal([matchingItem]);
+      // Additional code to handle opening the rate house modal
+    } else {
+      console.log("No matching item found for key:", key);
+    }
+  }
+  
+  
+
+
+
 
 
 
@@ -340,6 +477,7 @@ const Reservations = () => {
 
   return (
     <div className="px-6 md:px-10 xl:px-20 max-w-7xl max-h-screen h-screen overflow-hidden  m-auto  flex  flex-col md:gap-4 relative ">
+       {contextHolder}
       <div
         className="  py-[18px]  sticky  w-full top-0 block  bg-white
                                          box-border z-[50]   md:px-10 lg:px-6    "
@@ -568,7 +706,7 @@ const Reservations = () => {
                   <ul className=" pb-3">
                     <li>
                       <StarOutlined />
-                      <label className=" pl-1 ">{filteredData[selectedReservation].rating}.0 rating </label>
+                      <label className=" pl-1 ">{filteredData[selectedReservation].guestRating}.0 rating </label>
                     </li>
                     <li>
                       {" "}
@@ -587,20 +725,20 @@ const Reservations = () => {
                   </Link>
 
                   <div className=" py-6">
-                
-                      <button
-                        onClick={()=>setMessageModalVisible(true)}
-                        className="block  w-[140px]  h-11 rounded-3xl bg-orange-400 px-6 pb-2 pt-2 text-base font-medium  leading-normal 
+
+                    <button
+                      onClick={() => setMessageModalVisible(true)}
+                      className="block  w-[140px]  h-11 rounded-3xl bg-orange-400 px-6 pb-2 pt-2 text-base font-medium  leading-normal 
                             text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]
                             focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
                             focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] 
                             dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] 
                             dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2)
                             ,0_4px_18px_0_rgba(59,113,202,0.1)]]"
-                      >
-                        Message
-                      </button>
-                
+                    >
+                      Message
+                    </button>
+
 
                     <Modal
                       title="Message Host"
@@ -793,9 +931,30 @@ const Reservations = () => {
             ) : null}
           </div>
         </Popup>
-
         {/* Reservation Details End ------------------------------------------------------------------------------------- */}
+
+
       </div>
+
+
+{
+isRateHouseModalOpen&&
+  <RateHouseModal
+    isOpen={isRateHouseModalOpen}
+    onClose={closeRateHouseModal}
+    houseDetails={selectedRateHouseModal}
+    review={(data) => { ReviewListing(data) }}
+    type={false}
+  />
+
+}
+
+
+
+
+
+
+
     </div>
   );
 };

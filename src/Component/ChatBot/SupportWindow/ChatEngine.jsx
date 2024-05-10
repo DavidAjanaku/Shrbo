@@ -329,9 +329,10 @@ const ChatEngine = (props) => {
       } else {
         // Clear expired data
         sessionStorage.removeItem('supportAgent');
-        // localStorage.removeItem("gnT");
-        // localStorage.removeItem("gnU");
-        // localStorage.removeItem("gnUID");
+        localStorage.removeItem("gnT");
+        localStorage.removeItem("gnU");
+        localStorage.removeItem("gnUID");
+        setisSessionEnded(true);
       }
     }
     return null;
