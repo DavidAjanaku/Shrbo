@@ -164,7 +164,7 @@ const Chat = () => {
       // Initialize the typing echo after sending the typing notification
       initializeTypingEcho(selectedUser);
     }
-  };
+  }; 
   
 
   const initializeTypingEcho = (receiverId) => {
