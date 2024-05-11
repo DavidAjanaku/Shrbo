@@ -155,26 +155,46 @@ const Chat = () => {
   };
 
   const checkTyping = async () => {
-    try {
-      const response = await Axios.get(`/typing/${selectedUser}/${ADMIN_ID}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setIsTyping(response.data.typing);
-      console.log(response);
-    } catch (error) {
-      console.error("Error checking typing status:", error);
+    if (!isTyping) {
+      // Send typing notification to the server
+      await Axios.get(`/typing/${selectedUser}/${ADMIN_ID}`);
+      setIsTyping(true);
+      console.log("typing....")
+  
+      // Initialize the typing echo after sending the typing notification
+      initializeTypingEcho(selectedUser);
     }
   };
+  
 
-  // Use useEffect to call checkTyping when the selectedUser changes
-  useEffect(() => {
-    if (selectedUser) {
-      checkTyping();
-    }
-  }, [selectedUser]);
+  const initializeTypingEcho = (receiverId) => {
+    const channelName = `typing.${receiverId}`;
+  
+    const privateChannel = window.Echo.private(channelName);
+  
+    const messageHandler = (data) => {
+      if (data.typing) {
+        setIsTyping(true);
+      } else {
+        setIsTyping(false);
+      }
+    };
+  
+    privateChannel.listen("Typing", messageHandler);
+  
+    console.log("Listening for typing notifications on channel:", channelName);
+  
+    // Return a function to unsubscribe from the channel
+    return () => {
+      privateChannel.stopListening("Typing", messageHandler);
+    };
+  };
+  
+
+  
+  
+
+  
 
   const TypingIndicator = () => (
     <div className="flex items-center text-gray-500">
@@ -712,11 +732,10 @@ const Chat = () => {
                                   selectedUser,
                                   users
                                 )}
-                                {isTyping && <TypingIndicator />}
+                                {isTyping && selectedUser && <TypingIndicator />}
                               </>
                             )}
 
-                            {isTyping && <TypingIndicator />}
                           </div>
 
                           <div className="mt-4 flex gap-2">
