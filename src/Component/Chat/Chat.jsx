@@ -165,8 +165,6 @@ const Chat = () => {
       // Initialize the typing echo after sending the typing notification
       // initializeTypingEcho(ADMIN_ID);
     }
-  };  
-  
   };
 
   useEffect(() => {
@@ -785,7 +783,9 @@ const Chat = () => {
                                     selectedUser,
                                     users
                                   )}
-                                  {isTyping && <TypingIndicator />}
+                                 <div className="py-5">
+                                 {isTyping && <TypingIndicator />}
+                                 </div>
                                 </>
                               )}
 
