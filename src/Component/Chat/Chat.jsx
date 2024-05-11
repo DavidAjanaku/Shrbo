@@ -58,6 +58,7 @@ const Chat = () => {
         console.log("User ID:", data.user_id);
 
         setRecentMessages(() => data.recentMessages);
+        setIsTyping(false);
 
         setUserChats((prevChats) => {
           const newChats = { ...prevChats };
@@ -158,43 +159,88 @@ const Chat = () => {
     if (!isTyping) {
       // Send typing notification to the server
       await Axios.get(`/typing/${selectedUser}/${ADMIN_ID}`);
-      setIsTyping(true);
+      // setIsTyping(true);
       console.log("typing....")
-  
+
       // Initialize the typing echo after sending the typing notification
-      initializeTypingEcho(ADMIN_ID);
+      // initializeTypingEcho(ADMIN_ID);
     }
   };  
   
+  };
+
+  useEffect(() => {
+
+
+
+
+    if (selectedUser) {
+
+
+
+      const cleanupTyping = initializeTypingEcho(ADMIN_ID);
+
+
+      return () => {
+
+        cleanupTyping();
+
+
+      };
+    }
+  }, [selectedUser]);
+
+
+  useEffect(() => {
+    if (isTyping) {
+      const timer = setTimeout(() => {
+        setIsTyping(false);
+      }, 2000);  // Adjust delay as necessary, 1000 ms = 1 second
+
+      // Cleanup function to clear the timer when the component unmounts or updates
+      return () => clearTimeout(timer);
+    }
+  }, [isTyping]);
+
 
   const initializeTypingEcho = (receiverId) => {
     const channelName = `typing.${receiverId}`;
-  
+
     const privateChannel = window.Echo.private(channelName);
-  
+
     const messageHandler = (data) => {
-      if (data.typing) {
-        setIsTyping(true);
-      } else {
-        setIsTyping(false);
+      if (!isTyping) {
+        let message = data.message;
+        let matchedText = message.match(/(.*)\s+is typing/);
+
+        if (matchedText && matchedText.length > 1) {
+          let collectedText = matchedText[1];
+          console.log(collectedText===selectedUserName);
+
+          if(collectedText===selectedUserName){
+            setIsTyping(true);
+            console.log("hhhhhh", data)
+
+          }
+        }
       }
     };
-  
+
     privateChannel.listen("Typing", messageHandler);
-  
+
     console.log("Listening for typing notifications on channel:", channelName);
-  
+
     // Return a function to unsubscribe from the channel
     return () => {
       privateChannel.stopListening("Typing", messageHandler);
     };
   };
-  
 
-  
-  
 
-  
+
+
+
+
 
   const TypingIndicator = () => (
     <div className="flex items-center text-gray-500">
@@ -208,11 +254,21 @@ const Chat = () => {
   const handleTyping = (e) => {
     const message = e.target.value;
     setMessage(message);
-    setIsTyping(message.trim().length > 0);
+    // setIsTyping(message.trim().length > 0);
+
+  };
+
+  const handleKeyUp = () => {
+
     if (selectedUser) {
       checkTyping();
     }
-  };
+
+
+  }
+
+
+
   useEffect(() => {
     // Play the sound when new messages arrive
     if (newMessages.length > 0) {
@@ -309,7 +365,7 @@ const Chat = () => {
           if (
             !latestBookingRequest ||
             new Date(bookingRequest.created_at) >
-              new Date(latestBookingRequest.created_at)
+            new Date(latestBookingRequest.created_at)
           ) {
             latestBookingRequest = bookingRequest;
           }
@@ -494,16 +550,14 @@ const Chat = () => {
           return (
             <div
               key={index}
-              className={`flex ${
-                isSentMessage ? "flex-row-reverse" : "flex-row"
-              }`}
+              className={`flex ${isSentMessage ? "flex-row-reverse" : "flex-row"
+                }`}
             >
               <div
-                className={`mb-2 p-2 rounded ${
-                  isSentMessage
+                className={`mb-2 p-2 rounded ${isSentMessage
                     ? "bg-orange-100 w-fit text-blue-900"
                     : "bg-gray-100 text-gray-900"
-                }`}
+                  }`}
               >
                 <p>{msg.message}</p>
                 {messageDate instanceof Date &&
@@ -514,13 +568,13 @@ const Chat = () => {
                 <p className="text-xs text-gray-500">
                   {msg.time instanceof Date
                     ? msg.time.toLocaleString(undefined, {
-                        weekday: "long",
-                        day: "numeric",
-                        year: "numeric",
-                        month: "long",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
+                      weekday: "long",
+                      day: "numeric",
+                      year: "numeric",
+                      month: "long",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
                     : ""}
                 </p>
               </div>
@@ -536,47 +590,47 @@ const Chat = () => {
             ) &&
             msg.sender.id !== ADMIN_ID // Check if the sender is not the admin
         ) && (
-          <div className="flex justify-center mt-4">
-            {approved === null &&
-              loggedinuserid === receiverIds &&
-              showApprovalSection && (
-                <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
-                  {selectedUserObj && (
-                    <div className="flex items-center justify-center mb-4">
-                      <img
-                        src={selectedUserObj.profilePic || shbrologo}
-                        alt={selectedUserObj.name}
-                        className="w-10 h-10 rounded-full mr-2"
-                      />
-                      <p className="text-lg">
-                        {selectedUserObj.name} has requested to book your
-                        apartment. Approve or decline?
-                      </p>
-                    </div>
-                  )}
-                  <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                    <button
-                      className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
-                      onClick={handleApprove}
-                    >
-                      Approve
-                    </button>
-                    <button
-                      className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-                      onClick={handleDecline}
-                    >
-                      Decline
-                    </button>
-                    <Link to={`/userdetails/${selectedUser}`}>
-                      <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
-                        View Guest Profile
+            <div className="flex justify-center mt-4">
+              {approved === null &&
+                loggedinuserid === receiverIds &&
+                showApprovalSection && (
+                  <div className="bg-gray-200 p-4 rounded-lg shadow-lg">
+                    {selectedUserObj && (
+                      <div className="flex items-center justify-center mb-4">
+                        <img
+                          src={selectedUserObj.profilePic || shbrologo}
+                          alt={selectedUserObj.name}
+                          className="w-10 h-10 rounded-full mr-2"
+                        />
+                        <p className="text-lg">
+                          {selectedUserObj.name} has requested to book your
+                          apartment. Approve or decline?
+                        </p>
+                      </div>
+                    )}
+                    <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                      <button
+                        className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
+                        onClick={handleApprove}
+                      >
+                        Approve
                       </button>
-                    </Link>
+                      <button
+                        className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                        onClick={handleDecline}
+                      >
+                        Decline
+                      </button>
+                      <Link to={`/userdetails/${selectedUser}`}>
+                        <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
+                          View Guest Profile
+                        </button>
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              )}
-          </div>
-        )}
+                )}
+            </div>
+          )}
       </>
     );
   };
@@ -597,9 +651,8 @@ const Chat = () => {
         {recentMessages.map((message, index) => (
           <li
             key={index}
-            className={`cursor-pointer flex justify-between hover:bg-gray-200 my-2 py-4 items-center p-2 px-4 ${
-              selectedUser === message.user_id ? "bg-gray-200" : ""
-            }`}
+            className={`cursor-pointer flex justify-between hover:bg-gray-200 my-2 py-4 items-center p-2 px-4 ${selectedUser === message.user_id ? "bg-gray-200" : ""
+              }`}
             onClick={() => fetchUserChats(message.user_id)}
           >
             <div className="flex items-center">
@@ -695,83 +748,84 @@ const Chat = () => {
               )}
               {selectedUser &&
                 (console.log(selectedUser),
-                (
-                  <div className="w-full">
-                    <div className="bg-white p-4 rounded shadow">
-                      {selectedUser ? (
-                        <>
-                          <div className="flex items-center pb-4 gap-3">
-                            <div className="cursor-pointer">
-                              <FaArrowLeft
-                                onClick={() => setSelectedUser(null)}
-                              />
-                            </div>
-                            {loadingMessages ? (
-                              <SkeletonLoader />
-                            ) : (
-                              <Link to={`/userdetails/${selectedUser}`}>
-                                <p className="font-semibold">
-                                  {selectedUserName}
-                                </p>
-                              </Link>
-                            )}
-                          </div>
-                          <div
-                            ref={chatContainerRef}
-                            className="h-[60vh] overflow-y-auto example"
-                          >
-                            {loadingMessages ? (
-                              <div className="flex justify-center h-full items-center">
-                                <p>Loading messages...</p>
+                  (
+                    <div className="w-full">
+                      <div className="bg-white p-4 rounded shadow">
+                        {selectedUser ? (
+                          <>
+                            <div className="flex items-center pb-4 gap-3">
+                              <div className="cursor-pointer">
+                                <FaArrowLeft
+                                  onClick={() => setSelectedUser(null)}
+                                />
                               </div>
-                            ) : (
-                              <>
-                                {renderMessages(
-                                  userChats,
-                                  newMessages,
-                                  selectedUser,
-                                  users
-                                )}
-                                {isTyping && selectedUser && <TypingIndicator />}
-                              </>
-                            )}
-
-                          </div>
-
-                          <div className="mt-4 flex gap-2">
-                            <textarea
-                              className="w-full p-2 border rounded"
-                              placeholder="Type your message here..."
-                              value={message}
-                              onChange={handleTyping}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter" && !e.shiftKey) {
-                                  e.preventDefault(); // Prevent the default behavior of adding a new line
-                                  sendMessage("text");
-                                }
-                              }}
-                            ></textarea>
-
-                            <button
-                              className="bg-orange-400 text-white px-4 py-2 rounded float-right"
-                              onClick={() => sendMessage("text")}
-                              disabled={sending}
+                              {loadingMessages ? (
+                                <SkeletonLoader />
+                              ) : (
+                                <Link to={`/userdetails/${selectedUser}`}>
+                                  <p className="font-semibold">
+                                    {selectedUserName}
+                                  </p>
+                                </Link>
+                              )}
+                            </div>
+                            <div
+                              ref={chatContainerRef}
+                              className="h-[60vh] overflow-y-auto example"
                             >
-                              <FontAwesomeIcon
-                                icon={faPaperPlane}
-                                className="mr-2"
-                              />
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <p className="text-gray-500 flex items-center h-[80vh] justify-center">
-                          Select a user to start chatting.
-                        </p>
-                      )}
+                              {loadingMessages ? (
+                                <div className="flex justify-center h-full items-center">
+                                  <p>Loading messages...</p>
+                                </div>
+                              ) : (
+                                <>
+                                  {renderMessages(
+                                    userChats,
+                                    newMessages,
+                                    selectedUser,
+                                    users
+                                  )}
+                                  {isTyping && <TypingIndicator />}
+                                </>
+                              )}
+
+                            </div>
+
+                            <div className="mt-4 flex gap-2">
+                              <textarea
+                                className="w-full p-2 border rounded"
+                                placeholder="Type your message here..."
+                                value={message}
+                                onChange={handleTyping}
+                                onKeyUp={handleKeyUp}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" && !e.shiftKey) {
+                                    e.preventDefault(); // Prevent the default behavior of adding a new line
+                                    sendMessage("text");
+                                  }
+                                }}
+                              ></textarea>
+
+                              <button
+                                className="bg-orange-400 text-white px-4 py-2 rounded float-right"
+                                onClick={() => sendMessage("text")}
+                                disabled={sending}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faPaperPlane}
+                                  className="mr-2"
+                                />
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <p className="text-gray-500 flex items-center h-[80vh] justify-center">
+                            Select a user to start chatting.
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
             </div>
           </div>
         </div>
