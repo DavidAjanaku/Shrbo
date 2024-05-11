@@ -162,7 +162,7 @@ const Chat = () => {
       console.log("typing....")
   
       // Initialize the typing echo after sending the typing notification
-      initializeTypingEcho(selectedUser);
+      initializeTypingEcho(ADMIN_ID);
     }
   }; 
   
