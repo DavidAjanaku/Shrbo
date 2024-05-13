@@ -1,12 +1,13 @@
 import axios from "../../Axios";
 import React, { useState, useEffect } from "react";
-import { Table, Tag, Button, Popconfirm} from 'antd';
+import { Table} from 'antd';
 
 
 
 const WalletHistory = () => {
     const [transactions, setTransactions] = useState([]);
     const [loadingTransactions, setLoadingTransactions] = useState(true);
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5 }); 
 
     const columns = [
         {
@@ -36,18 +37,18 @@ const WalletHistory = () => {
             dataIndex: 'time',
             key: 'time',
         },
-       
+
     ];
 
 
-   
-   
+
+
 
     useEffect(() => {
         setLoadingTransactions(true);
 
 
-       
+
         fetchWalletTransactions();
 
     }, []);
@@ -80,7 +81,13 @@ const WalletHistory = () => {
 
 
 
-    
+    const handleTableChange = (pagination) => {
+        setPagination(pagination);
+    };
+
+
+
+
     const fetchWalletTransactions = async () => {
 
         try {
@@ -89,7 +96,7 @@ const WalletHistory = () => {
             // Extracting and formatting data
             const formattedTransactions = Object.entries(response.data.wallet_records).flatMap(([title, walletRecord]) => {
                 return walletRecord.records.map(record => ({
-                    key:record.id,
+                    key: record.id,
                     id: record.id,//d
                     status: "Incoming", // Assuming status is always "Incoming" for this format
                     from: `Shbro,${walletRecord.title}`,  //d
@@ -123,7 +130,12 @@ const WalletHistory = () => {
                 <div className="bg-white  rounded shadow">
                     <div className="overflow-x-auto">
                         {/* <Table columns={columns} pagination={tableParams.pagination} onChange={handleTableChange} dataSource={dataSource} loading={loading} /> */}
-                        <Table columns={columns} dataSource={transactions} loading={loadingTransactions} />
+                        <Table
+                            columns={columns}
+                            dataSource={transactions}
+                            loading={loadingTransactions}
+                            pagination={pagination}
+                            onChange={handleTableChange} />
                     </div>
                 </div>
             </div>

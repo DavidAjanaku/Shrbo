@@ -9,6 +9,7 @@ import { Table, Tag, Button, Popconfirm, message } from 'antd';
 const RequestHistory = () => {
     const [paymentRequest, setPaymentRequests] = useState([]);
     const [loadingRequest, setLoadingRequest] = useState(true);
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
 
     const columns = [
         {
@@ -45,7 +46,7 @@ const RequestHistory = () => {
                 <>
                     {tags.map((tag) => {
                         let color = 'green';
-                        if (tag === null || tag.toUpperCase() !="APPROVED" ) {
+                        if (tag === null || tag.toUpperCase() != "APPROVED") {
                             color = 'volcano';
                         }
                         return (
@@ -94,8 +95,8 @@ const RequestHistory = () => {
             console.error("Failed to Cancel request", error);
             if (error.response.data.message) {
                 message.error(error.response.data.message)
-                
-            }else{
+
+            } else {
                 message.error(error.response.data);
 
             }
@@ -181,6 +182,11 @@ const RequestHistory = () => {
 
     }
 
+    const handleTableChange = (pagination) => {
+        setPagination(pagination);
+    };
+
+
     return (
         <div className="   ">
             <div className="overflow-auto example">
@@ -189,7 +195,14 @@ const RequestHistory = () => {
                 <div className="bg-white  rounded shadow">
                     <div className="overflow-x-auto">
                         {/* <Table columns={columns} pagination={tableParams.pagination} onChange={handleTableChange} dataSource={dataSource} loading={loading} /> */}
-                        <Table columns={columns} dataSource={paymentRequest} loading={loadingRequest} />
+                        <Table
+                            columns={columns}
+                            dataSource={paymentRequest}
+                            loading={loadingRequest}
+                            pagination={pagination}
+                            onChange={handleTableChange}
+
+                        />
                     </div>
                 </div>
             </div>

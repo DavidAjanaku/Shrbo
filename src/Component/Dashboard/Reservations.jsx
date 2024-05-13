@@ -77,40 +77,45 @@ const Reservations = () => {
 
 
   useEffect(() => {
-    setLoading(true);
-    axios.get('/allReservation').then(response => {
-
-      const formattedData = response.data.bookings.map(item => ({
-        key: item.aboutGuest.id,
-        status: item.status.toLowerCase(),
-        guests: `${item.guests} guest(s)`,
-        checkIn: item.check_in_date,
-        checkOut: item.check_out_date,
-        booked: formatDate(item.bookedDate),
-        listing: item.title,
-        confirmationCode: "ABC123",
-        totalPayout: `  ₦ ${formatAmountWithCommas(item.amount)}`,
-        guestName: item.aboutGuest.name,
-        nights: calculateDaysDifference(item.check_in_date, item.check_out_date),
-        profilePic: item.profilepic,
-        rating: item.userReviews ? item.userReviews.ratings : 0,
-        guestRating: item.aboutGuest.rating,
-        comment: item.userReviews ? item.userReviews.comment : "",
-        cancelationPolicy: item.cancelationPolicy,
-        link: `/UserDetails/${item.aboutGuest.id}`,
-        guest_service_fee: `  ₦ ${formatAmountWithCommas(item.guest_service_fee)}`,
-        host_service_fee: `  ₦  ${formatAmountWithCommas(item.host_service_fee)}`,
-        dateUserJoined: item.dateUserJoined,
+   
+      setLoading(true);
+      axios.get('/allReservation').then(response => {
+  
+        const formattedData = response.data.bookings.map(item => ({
+          key: item.aboutGuest.id,
+          status: item.status.toLowerCase(),
+          guests: `${item.guests} guest(s)`,
+          checkIn: item.check_in_date,
+          checkOut: item.check_out_date,
+          booked: formatDate(item.bookedDate),
+          listing: item.title,
+          confirmationCode: "ABC123",
+          totalPayout: `  ₦ ${formatAmountWithCommas(item.amount)}`,
+          guestName: item.aboutGuest.name,
+          nights: calculateDaysDifference(item.check_in_date, item.check_out_date),
+          profilePic: item.profilepic,
+          rating: item.userReviews ? item.userReviews.ratings : 0,
+          guestRating: item.aboutGuest.rating,
+          comment: item.userReviews ? item.userReviews.comment : "",
+          cancelationPolicy: item.cancelationPolicy,
+          link: `/UserDetails/${item.aboutGuest.id}`,
+          guest_service_fee: `  ₦ ${formatAmountWithCommas(item.guest_service_fee)}`,
+          host_service_fee: `  ₦  ${formatAmountWithCommas(item.host_service_fee)}`,
+          dateUserJoined: item.dateUserJoined,
+        })
+        );
+  
+        console.log(formattedData);
+        setData(formattedData);
+  
+  
+      }).catch().finally(()=>{
+        // setLoading(false)
       })
-      );
-
-      console.log(formattedData);
-      setData(formattedData);
-
-
-    }).catch().finally(() =>{} );
-    getHostPendingReviewsForGuest();
-    setLoading(false)
+      getHostPendingReviewsForGuest().then(() => {
+        setLoading(false); // Stop loader after all asynchronous tasks are completed
+      });
+   
 
 
   }, []);
