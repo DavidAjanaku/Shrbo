@@ -373,6 +373,10 @@
     }
   }
 
+  .splide__arrow {
+    z-index: 0;
+  }
+
 
 
 
