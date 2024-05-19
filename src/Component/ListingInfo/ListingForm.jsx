@@ -832,6 +832,7 @@ export default function ListingForm({
 
     if (token) {
       fetchListingDetails();
+      fetchCoHostData();
     }
   }, [id, token]);
 
@@ -920,7 +921,7 @@ export default function ListingForm({
   }, [coHostNotAllowed]);
   
   
-  fetchCoHostData();
+  
 
   const isLoggedIn = () => {
     const token = localStorage.getItem("token"); // Assuming you store the token in localStorage

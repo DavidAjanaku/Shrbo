@@ -46,7 +46,7 @@ const ListingPhotos = ({
 
   useEffect(() => {
     const token = localStorage.getItem('Shbro'); // Assuming token is stored in localStorage
-  
+
     if (token) {
       Axios.get("/getUserWishlistContainers", {
         headers: {
@@ -62,7 +62,7 @@ const ListingPhotos = ({
         });
     }
   }, [isModalOpen]); // Include isModalOpen if you want the data to be refetched when isModalOpen changes
-  
+
 
   const handleWindowSizeChange = () => {
     setWidth(window.innerWidth);
@@ -99,33 +99,33 @@ const ListingPhotos = ({
     }
   };
 
- useEffect(() => {
-  const token = localStorage.getItem('Shbro'); // Assuming token is stored in localStorage
+  useEffect(() => {
+    const token = localStorage.getItem('Shbro'); // Assuming token is stored in localStorage
 
-  if (token) {
-    // Fetch the user's wishlist containers and items
-    Axios.get("/getUserWishlistContainersAndItems", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        const wishlistContainers = response.data.userWishlist;
-        // Check if the item exists in any of the wishlist containers
-        const exists = wishlistContainers.some((container) =>
-          container.items.some((item) => item.hosthomes.id === id)
-        );
-        // Change the label based on whether the item exists
-        setSaveLabel(exists ? "Saved" : "Save");
+    if (token) {
+      // Fetch the user's wishlist containers and items
+      Axios.get("/getUserWishlistContainersAndItems", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
-      .catch((error) => {
-        console.log("Error fetching wishlist containers and items:", error);
-      })
-      .finally(() => {
-        setLoading(false); // Set loading to false when the fetch operation completes
-      });
-  }
-}, [wishlistContainer, token]); // Include token in the dependencies array
+        .then((response) => {
+          const wishlistContainers = response.data.userWishlist;
+          // Check if the item exists in any of the wishlist containers
+          const exists = wishlistContainers.some((container) =>
+            container.items.some((item) => item.hosthomes.id === id)
+          );
+          // Change the label based on whether the item exists
+          setSaveLabel(exists ? "Saved" : "Save");
+        })
+        .catch((error) => {
+          console.log("Error fetching wishlist containers and items:", error);
+        })
+        .finally(() => {
+          setLoading(false); // Set loading to false when the fetch operation completes
+        });
+    }
+  }, [wishlistContainer, token]); // Include token in the dependencies array
 
   useEffect(() => {
     handleWindowSizeChange();
@@ -189,7 +189,7 @@ const ListingPhotos = ({
             <label className="text-base break-words">{address}</label>
           </div>
 
-          <div className="w-[30%] hidden md:flex items justify-end gap-5">
+         {token&& <div className="w-[30%] hidden md:flex items justify-end gap-5">
             <button>
               <div className="flex underline">
                 <span className="mr-2">
@@ -222,14 +222,14 @@ const ListingPhotos = ({
                   </svg>
                 </span>
                 {token ? (
-  <label className="text-sm font-medium">
-    {loading ? "Loading..." : saveLabel}
-  </label>
-) : null}
+                  <label className="text-sm font-medium">
+                    {loading ? "Loading..." : saveLabel}
+                  </label>
+                ) : null}
 
               </div>
             </button>
-          </div>
+          </div>}
         </div>
       </section>
 
