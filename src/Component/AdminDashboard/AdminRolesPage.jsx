@@ -142,9 +142,13 @@ const AdminRolesPage = () => {
     const fetchAdminUsers = async () => {
       try {
         const response = await Axios.get("/getAllAdminUsers");
-        setAdmins(response.data.adminUsers);
+        const formattedData = response.data.adminUsers.map((data) => ({
+          key:data.id,
+         ...data
+        }));
+        setAdmins(formattedData);
         setLoading(false); // Set loading to false after data is fetched
-        console.log(response.data);
+        console.log("ss",formattedData);
       } catch (error) {
         console.error("Error fetching admin users:", error);
       }
@@ -230,7 +234,7 @@ const AdminRolesPage = () => {
       // Handle error appropriately
     }
   };
-  
+
 
   return (
     <div className="bg-gray-100 h-[100vh]">
@@ -243,7 +247,7 @@ const AdminRolesPage = () => {
           <h1>Admin Roles</h1>
           <div className="mb-4">
             <p className="text-gray-400 text-sm">
-            The Admin Roles section provides an overview of all the administrators on your platform.
+              The Admin Roles section provides an overview of all the administrators on your platform.
             </p>
           </div>
           <div className="mb-4">
