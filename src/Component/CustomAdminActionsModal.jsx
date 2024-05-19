@@ -21,6 +21,8 @@ const permissionsData = [
   { label: "Service Charge", value: "ServiceCharge" },
   { label: "Security Deposit", value: "SecurityDeposit" },
   { label: "Admin User Reports", value: "AdminUserReports" },
+  { label: "Social Link", value: "SocialLink" },
+
 ];
 
 const specialPermissions = [
