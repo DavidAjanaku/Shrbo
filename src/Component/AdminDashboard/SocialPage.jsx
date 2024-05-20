@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
+import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 
 export default function SocialPage() {
   const [links, setLinks] = useState({
@@ -47,8 +48,8 @@ export default function SocialPage() {
           </p>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label htmlFor="facebook" className="block mb-2">
-                Facebook:
+              <label htmlFor="facebook" className=" mb-2 flex items-center gap-2">
+              <FaFacebook/>    Facebook: 
               </label>
               <input
                 type="text"
@@ -60,8 +61,8 @@ export default function SocialPage() {
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="instagram" className="block mb-2">
-                Instagram:
+              <label htmlFor="instagram" className=" mb-2 flex items-center gap-2">
+           <FaInstagram/>     Instagram:
               </label>
               <input
                 type="text"
@@ -73,8 +74,8 @@ export default function SocialPage() {
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="twitter" className="block mb-2">
-                X:
+              <label htmlFor="twitter" className=" mb-2 flex items-center gap-2">
+             <FaTwitter/>   X:
               </label>
               <input
                 type="text"
