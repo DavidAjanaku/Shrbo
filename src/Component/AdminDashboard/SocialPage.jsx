@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import Axios from "../../Axios";
+import { notification } from "antd";
+import { Spin } from "antd";
 
 export default function SocialPage() {
   const [links, setLinks] = useState({
@@ -9,6 +12,8 @@ export default function SocialPage() {
     instagram: "",
     twitter: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,16 +23,35 @@ export default function SocialPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you can save the links using an API call or other method
-    console.log("Submitting links:", links);
-    // Optionally, clear the form after submission
-    setLinks({
-      facebook: "",
-      instagram: "",
-      twitter: "",
-    });
+    setLoading(true);
+    try {
+      const response = await Axios.post("/createSocialMediaLink", {
+        facebook_url: links.facebook,
+        instagram_url: links.instagram,
+        twitter_url: links.twitter,
+      });
+
+      console.log("Response:", response.data);
+      // Show success notification
+      notification.success({
+        message: "Success",
+        description: "Social media links saved successfully",
+      });
+
+      // Optionally, clear the form after submission
+      setLinks({
+        facebook: "",
+        instagram: "",
+        twitter: "",
+      });
+    } catch (error) {
+      console.error("Error submitting links:", error);
+      // Handle the error appropriately
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,7 +73,7 @@ export default function SocialPage() {
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="facebook" className=" mb-2 flex items-center gap-2">
-              <FaFacebook/>    Facebook: 
+                <FaFacebook /> Facebook:
               </label>
               <input
                 type="text"
@@ -62,7 +86,7 @@ export default function SocialPage() {
             </div>
             <div className="mb-4">
               <label htmlFor="instagram" className=" mb-2 flex items-center gap-2">
-           <FaInstagram/>     Instagram:
+                <FaInstagram /> Instagram:
               </label>
               <input
                 type="text"
@@ -75,7 +99,7 @@ export default function SocialPage() {
             </div>
             <div className="mb-4">
               <label htmlFor="twitter" className=" mb-2 flex items-center gap-2">
-             <FaTwitter/>   X:
+                <FaTwitter /> X:
               </label>
               <input
                 type="text"
@@ -88,9 +112,10 @@ export default function SocialPage() {
             </div>
             <button
               type="submit"
-              className="bg-orange-500 text-white px-4 py-2 rounded"
+              className="bg-orange-500 text-white px-4 py-2 rounded flex items-center"
+              disabled={loading}
             >
-              Save
+              {loading ? <Spin size="small" /> : "Save"}
             </button>
           </form>
         </div>
