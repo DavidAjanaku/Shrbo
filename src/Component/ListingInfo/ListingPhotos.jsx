@@ -1,11 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import room from "../../assets/room.jpeg";
-import apartment from "../../assets/apartment2.jpeg";
-import apartment1 from "../../assets/apartment1.jpeg";
 import { toast, ToastContainer } from "react-toastify";
-
-import kitchen from "../../assets/room2.jpeg";
-import video from "../../assets/videos/luxuryInteriror.mp4";
 import SliderFull from "./SliderFull";
 import Modal from "react-modal"; // Import the react-modal library
 import { Carousel } from "react-responsive-carousel"; // Import Carousel from react-responsive-carousel
@@ -35,6 +29,8 @@ const ListingPhotos = ({
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const [loading, setLoading] = useState(true);
+  const [loadingImg, setLoadingImg] = useState(true);
+  const [loadedImagesCount, setLoadedImagesCount] = useState(0);
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
@@ -171,6 +167,53 @@ const ListingPhotos = ({
   const imagesPerPage = 4;
   const imagesToDisplay = imageUrlss.slice(0, imagesPerPage);
 
+  useEffect(() => {
+
+    const handleImageLoad = (index) => {
+      // setLoadedImagesCount((prevCount) => {
+      //   const newCount = prevCount + 1;
+      //   // if (newCount === 4) {
+      //     console.log('done',newCount);
+      //   // }
+      //   return newCount;
+      // });
+
+
+      if (index === 4) {
+        setLoadingImg(false);
+      }
+
+
+    };
+
+    const handleImageError = () => {
+      setLoadingImg(false);
+    };
+
+    if (hosthomephotos.length != 0) {
+      const imageUrls = hosthomephotos || [];
+      const imageUrlss = imageUrls.map((photo) => photo.images);
+      const imagesToDisplay = imageUrlss.slice(0, 4);
+      const images = imagesToDisplay;
+      images.forEach((src, index) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => { handleImageLoad(index + 1) };
+        img.onerror = handleImageError;
+      });
+    } else {
+      setLoadingImg(false);
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   // if (loadedImagesCount === 3) {
+  //     console.log("hmmm",loadedImagesCount)
+  //     setLoadingImg(false);
+  //   // }
+  // }, [loadedImagesCount,hosthomephotos]);
+
+
   return (
     <div className="w-full flex flex-wrap flex-col-reverse md:flex-row h-full">
       <div
@@ -199,7 +242,8 @@ const ListingPhotos = ({
             <label className="text-base break-words">{address}</label>
           </div>
 
-         {token&& <div className="w-[30%] flex  md:flex items justify-end gap-5">
+
+          <div className="w-[30%] flex  md:flex items justify-end gap-5">
             <button>
               <div className="flex underline">
                 <span className="mr-2">
@@ -215,124 +259,175 @@ const ListingPhotos = ({
                 <label className="text-sm font-medium cursor-pointer" onClick={openShareModal}>Share</label>
               </div>
             </button>
+            {token &&
+              <button
+                disabled={loading}
+                onClick={() => handleSave(wishlistContainer)}
+              >
+                <div className="flex underline">
+                  <span className="mr-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="17px"
+                      height="17px"
+                    >
+                      <path d="M12.1,18.55L12,18.65L11.89,18.55C7.14,14.24 4,11.39 4,8.5C4,6.5 5.5,5 7.5,5C9.04,5 10.54,6 11.07,7.36H12.93C13.46,6 14.96,5 16.5,5C18.5,5 20,6.5 20,8.5C20,11.39 16.86,14.24 12.1,18.55M16.5,3C14.76,3 13.09,3.81 12,5.08C10.91,3.81 9.24,3 7.5,3C4.42,3 2,5.41 2,8.5C2,12.27 5.4,15.36 10.55,20.03L12,21.35L13.45,20.03C18.6,15.36 22,12.27 22,8.5C22,5.41 19.58,3 16.5,3Z" />
+                    </svg>
+                  </span>
+                  {token ? (
+                    <label className="text-sm font-medium cursor-pointer">
+                      {loading ? "Loading..." : saveLabel}
+                    </label>
+                  ) : null}
 
-            <button
-              disabled={loading}
-              onClick={() => handleSave(wishlistContainer)}
-            >
-              <div className="flex underline">
-                <span className="mr-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="17px"
-                    height="17px"
-                  >
-                    <path d="M12.1,18.55L12,18.65L11.89,18.55C7.14,14.24 4,11.39 4,8.5C4,6.5 5.5,5 7.5,5C9.04,5 10.54,6 11.07,7.36H12.93C13.46,6 14.96,5 16.5,5C18.5,5 20,6.5 20,8.5C20,11.39 16.86,14.24 12.1,18.55M16.5,3C14.76,3 13.09,3.81 12,5.08C10.91,3.81 9.24,3 7.5,3C4.42,3 2,5.41 2,8.5C2,12.27 5.4,15.36 10.55,20.03L12,21.35L13.45,20.03C18.6,15.36 22,12.27 22,8.5C22,5.41 19.58,3 16.5,3Z" />
-                  </svg>
-                </span>
-                {token ? (
-                  <label className="text-sm font-medium cursor-pointer">
-                    {loading ? "Loading..." : saveLabel}
-                  </label>
-                ) : null}
+                </div>
+              </button>
+            }
+          </div>
 
-              </div>
-            </button>
-          </div>}
         </div>
       </section>
 
       <div className="md:flex md:flex-row relative mt-5 w-full hidden">
-        <div className="w-1/2 h-full rounded-l-xl md:mr-2 overflow-hidden">
-          <div className="h-full   w-full cursor-pointer">
-            <div className="relative">
-              <img
-                src={imageUrlss[0]}
-                alt="Video Thumbnail"
-                onClick={togglePlay}
-                className="cursor-pointer w-full h-[500px]"
-              />
-              {isPlaying ? (
-                <div className="absolute top-0 bottom-8 inset-0 flex items-center h-full w-full justify-center">
-                  <video
-                    src={videoUrl}
-                    controls
-                    ref={videoRef}
-                    autoPlay={isPlaying}
-                    className="w-full h-[500px]  object-cover"
-                  ></video>
+        {loadingImg ? (
+          <div className="w-full mx-auto p-4">
+            {/* Skeleton Loader */}
+            <div className="animate-pulse">
+              <div className="flex h-full gap-2">
+                <div className="bg-gray-300 w-1/2 h-[500px] rounded-md mb-4"></div>
+                <div className="grid grid-cols-2 gap-2 mb-4 w-1/2">
+                  <div className="bg-gray-300 h-[250px] rounded-md"></div>
+                  <div className="bg-gray-300 h-[250px] rounded-md"></div>
+                  <div className="bg-gray-300 h-[250px] rounded-md"></div>
+                  <div className="bg-gray-300 h-[250px] rounded-md"></div>
                 </div>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div
-                    className="bg-black bg-opacity-50 text-white p-4 rounded-full cursor-pointer"
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="w-1/2 h-full rounded-l-xl md:mr-2 overflow-hidden">
+              <div className="h-full w-full cursor-pointer">
+                <div className="relative">
+                  <img
+                    src={imageUrlss[0]}
+                    alt="Video Thumbnail"
                     onClick={togglePlay}
+
+                    className="cursor-pointer w-full h-[500px]"
+                  />
+                  {isPlaying ? (
+                    <div className="absolute top-0 bottom-8 inset-0 flex items-center h-full w-full justify-center">
+                      <video
+                        src={videoUrl}
+                        controls
+                        ref={videoRef}
+                        autoPlay={isPlaying}
+                        className="w-full h-[500px] object-cover"
+                      ></video>
+                    </div>
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div
+                        className="bg-black bg-opacity-50 text-white p-4 rounded-full cursor-pointer"
+                        onClick={togglePlay}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="48"
+                          height="48"
+                          fill="currentColor"
+                          className="bi bi-play"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10.667 8.196a.25.25 0 0 1 0 .608l-4 2.5a.25.25 0 0 1-.417-.192V5.896a.25.25 0 0 1 .417-.192l4 2.5z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="w-1/2 h-full rounded-r-xl md:ml-2 overflow-hidden">
+              <div className="h-full w-full grid grid-cols-2 gap-2">
+                {imagesToDisplay.map((imageUrl, index) => (
+                  <div
+                    key={index}
+                    className="h-[250px] overflow-hidden rounded-xl"
+                    onClick={() => showModal(imageUrl, index)}
                   >
+                    <img
+                      className="h-full w-full cursor-pointer"
+                      src={imageUrl}
+                      alt={`Image ${index + 1}`}
+
+
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="absolute xl:bottom-7 xl:right-8 md:right-6 md:bottom-[10%]">
+              <button
+                className="bg-black/80 hover:bg-black/90 p-2 xl:w-36 md:w-32 rounded"
+                onClick={() => showModal(imageUrlss[0], 0)}
+              >
+                <div className="flex">
+                  <span className="mx-1">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="48"
-                      height="48"
-                      fill="currentColor"
-                      className="bi bi-play"
-                      viewBox="0 0 16 16"
+                      viewBox="0 0 24 24"
+                      width="17px"
+                      height="17px"
+                      fill="#FFFFFF"
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M10.667 8.196a.25.25 0 0 1 0 .608l-4 2.5a.25.25 0 0 1-.417-.192V5.896a.25.25 0 0 1 .417-.192l4 2.5z"
-                      />
+                      <path d="M21,17H7V3H21M21,1H7A2,2 0 0,0 5,3V17A2,2 0 0,0 7,19H21A2,2 0 0,0 23,17V3A2,2 0 0,0 21,1M3,5H1V21A2,2 0 0,0 3,23H19V21H3M15.96,10.29L13.21,13.83L11.25,11.47L8.5,15H19.5L15.96,10.29Z" />
                     </svg>
-                  </div>
+                  </span>
+                  <label className="text-white text-sm md:text-xs">
+                    More Photos
+                  </label>
                 </div>
-              )}
+              </button>
             </div>
-          </div>
-        </div>
-
-        <div className="w-1/2 h-full rounded-r-xl md:ml-2 overflow-hidden">
-          <div className="h-full w-full grid grid-cols-2 gap-2">
-            {imagesToDisplay.map((imageUrl, index) => (
-              <div
-                key={index}
-                className="h-[250px] overflow-hidden rounded-xl"
-                onClick={() => showModal(imageUrl, index)}
-              >
-                <img
-                  className="h-full w-full cursor-pointer"
-                  src={imageUrl}
-                  alt={`Image ${index + 1}`}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="absolute xl:bottom-7 xl:right-8 md:right-6 md:bottom-[10%]">
-          <button
-            className="bg-black/80 hover:bg-black/90 p-2 xl:w-36 md:w-32 rounded"
-            onClick={() => showModal(imageUrlss[0], 0)}
-          >
-            <div className="flex">
-              <span className="mx-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="17px"
-                  height="17px"
-                  fill="#FFFFFF"
-                >
-                  <path d="M21,17H7V3H21M21,1H7A2,2 0 0,0 5,3V17A2,2 0 0,0 7,19H21A2,2 0 0,0 23,17V3A2,2 0 0,0 21,1M3,5H1V21A2,2 0 0,0 3,23H19V21H3M15.96,10.29L13.21,13.83L11.25,11.47L8.5,15H19.5L15.96,10.29Z" />
-                </svg>
-              </span>
-              <label className="text-white text-sm md:text-xs">
-                More Photos
-              </label>
-            </div>
-          </button>
-        </div>
+          </>
+        )}
       </div>
 
-      {width <= 767 ? <SliderFull /> : null}
+
+
+      {width <= 767 ?
+        <>
+          {loadingImg ?
+            <div className=" mt-5 w-full ">
+
+              <div className="w-full mx-auto ">
+                {/* Skeleton Loader */}
+                <div className="animate-pulse w-full">
+                  <div className=" h-full w-full gap-2">
+                    <div className="bg-gray-300 w-full h-64 rounded-md mb-4"></div>
+                    <div className="grid grid-cols-4 gap-2 mb-4 w-full">
+                      <div className="bg-gray-300 h-16 rounded-md"></div>
+                      <div className="bg-gray-300 h-16 rounded-md"></div>
+                      <div className="bg-gray-300 h-16 rounded-md"></div>
+                      <div className="bg-gray-300 h-16 rounded-md"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            :
+            <SliderFull />}
+
+
+        </>
+        : null}
 
       {/* Modal for displaying images */}
       <Modal
