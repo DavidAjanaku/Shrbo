@@ -36,6 +36,8 @@ export default function usersShow() {
 
   // Function to close the modal
   const closeModal = () => {
+    setRerender(true);
+
     setIsModalOpen(false);
   };
 
@@ -65,12 +67,14 @@ export default function usersShow() {
   };
 
   const handleSubmit = async (event) => {
-    setLoading(true);
     event.preventDefault();
     if (work == "" || speak == "" || lives == "" || occupation == "") {
-
+      
+      openNotificationWithIcon("error", "No field should be empty");
+      
       return;
     }
+    setLoading(true);
 
     try {
       profilePicture != defaultProfile && await axios.put(`/userDetail/${user.id}`, { profilePicture: profilePicture });

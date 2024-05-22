@@ -1,8 +1,9 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTwitter, faFacebook, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import Logo from "../../assets/logo.png";
+import axios from "../../Axios"
 
 const Footer = () => {
   return (
