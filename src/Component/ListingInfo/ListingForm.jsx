@@ -1349,6 +1349,7 @@ export default function ListingForm({
                       isCheckoutBlocked() ||
                       isBlockedDatesBetweenCheckInOut() ||
                       (checkInDate && checkOutDate && isCoHostNotAllowed())
+                      || price === null
                     }
                   >
                     Book
