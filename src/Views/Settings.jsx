@@ -9,33 +9,25 @@ import Footer from "../Component/Navigation/Footer";
 import Header from "../Component/Navigation/Header";
 import BottomNavigation from "../Component/Navigation/BottomNavigation";
 import HostModal from "../Component/Dashboard/HostModal";
-import  { useStateContext } from "../ContextProvider/ContextProvider";
+import { useStateContext } from "../ContextProvider/ContextProvider";
 import axios from "../Axios";
-import logo from "../assets/logo.png"
+import logo from "../assets/logo.png";
 import { SwapOutlined } from "@ant-design/icons";
 
-import { Skeleton } from 'antd';
 
 export default function Settings() {
-  const [isHostModalOpen, setHostModalOpen] = useState(false);
+  const [isHostModalOpen, setHostModalOpen] = useState(window.innerWidth < 768);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  const {user,setUser,setHost,setAdminStatus , host, adminStatus,coHost,setCoHost}=useStateContext();
-  const [userName,setUserName]=useState();
-  const [userEmail,setUserEmail]=useState();
+  const { user, setUser, setHost, setAdminStatus, host, adminStatus, coHost, setCoHost } = useStateContext();
+  const [userName, setUserName] = useState();
+  const [userEmail, setUserEmail] = useState();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const handleResize = () => {
       setScreenWidth(window.innerWidth);
-      if (window.innerWidth < 768) {
-        setHostModalOpen(true);
-      } else {
-        setHostModalOpen(false);
-      }
+      setHostModalOpen(window.innerWidth < 768);
     };
-
-    // Initial check
-    handleResize();
 
     // Attach event listener
     window.addEventListener("resize", handleResize);
@@ -45,7 +37,6 @@ export default function Settings() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -59,9 +50,7 @@ export default function Settings() {
         setUser(response.data);
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
-        setCoHost(response.data.co_host)
-      
-
+        setCoHost(response.data.co_host);
       } catch (error) {
         console.error('Error fetching user data:', error);
       } finally {
@@ -73,14 +62,8 @@ export default function Settings() {
     fetchUserData();
   }, []); 
 
-
-
-    
-
   return (
     <div>
-
-      
       <Header />
 
       <div className="pb-32">
@@ -92,12 +75,16 @@ export default function Settings() {
           <div className="my-14">
             <h1 className="text-4xl font-medium">Account</h1>
             <div className="text-base">
-             {user.name?<> <span className="font-medium text-orange-500">{userName||user.name},</span>
-              <span>{userEmail||user.email}</span></> : <span className="skeleton-loader text-transparent ">'Loading................................................................................'</span>
-              
-              }
+              {loading ? (
+                 <span className="skeleton-loader text-transparent ">'Loading................................................................................'</span>
+              ) : (
+                <>
+                  <span className="font-medium text-orange-500">{userName || user?.name},</span>
+                  <span>{userEmail || user?.email}</span>
+                </>
+              )}
               <br />
-              <Link to="/UsersShow" className="underline ">
+              <Link to="/UsersShow" className="underline">
                 Go to profile
               </Link>
             </div>
@@ -117,20 +104,19 @@ export default function Settings() {
                 text="Enhance the security of your account with password and login management options."
               />
             </Link>
-
-           {coHost!=1&&<Link to="/payments">
-              <Card
-                icon={PaymentIcon}
-                title="Payment Method"
-                text="Manage your payment methods "
-              />
-              
-            </Link>}
-
+            {coHost != 1 && (
+              <Link to="/payments">
+                <Card
+                  icon={PaymentIcon}
+                  title="Payment Method"
+                  text="Manage your payment methods."
+                />
+              </Link>
+            )}
             <Link to="/AccountNotifications">
               <Card
                 icon={ProfileIcon}
-                title="Notifications "
+                title="Notifications"
                 text="Control how and when you receive notifications from Shrbo."
               />
             </Link>
@@ -141,13 +127,11 @@ export default function Settings() {
                 text="View your transaction history."
               />
             </Link>
-         
           </div>
         </div>
       </div>
       <BottomNavigation />
       <Footer />
-    
     </div>
   );
 }
