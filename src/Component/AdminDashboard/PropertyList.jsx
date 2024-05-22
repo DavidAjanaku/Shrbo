@@ -144,7 +144,7 @@ export default function PropertyList() {
     <div className="bg-gray-100 h-[100vh]">
       <AdminHeader />
       <div className="flex">
-        <div className="hidden md:block overflow-scroll example overflow-scroll example overflow-scroll example bg-orange-400 text-white w-1/5 h-[100vh] p-4">
+        <div className="hidden md:block  example  example overflow-scroll example bg-orange-400 text-white w-1/5 h-[100vh] p-4">
           <AdminSidebar />
         </div>
 

@@ -79,6 +79,7 @@ import Wallet from "./Component/Wallet/Wallet";
 import AdminSecurityDeposit from "./Component/AdminDashboard/AdminSecurityDeposit";
 import WalletRecords from "./Component/Wallet/WalletRecords";
 import AdminUserReports from "./Component/AdminDashboard/AdminUserReports";
+import SocialPage from "./Component/AdminDashboard/SocialPage";
 function App() {
 
   return (
@@ -198,6 +199,7 @@ function App() {
           <Route path="/CommunicationCenter" element={<CommunicationCenter />} />
           <Route path="/AdminSecurityDeposit" element={<AdminSecurityDeposit />} />
           <Route path="/AdminUserReports" element={<AdminUserReports />} />
+          <Route path="/SocialPage" element={<SocialPage />} />
 
           
           <Route path="*" element={<PageNotFound/>} />

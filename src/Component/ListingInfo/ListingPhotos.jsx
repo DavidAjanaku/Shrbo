@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom";
 import WishlistModal from "../../Views/WishListModal";
 import Axios from "../../Axios";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
+import ShareModal from "../ShareModal";
 
 const ListingPhotos = ({
   hosthomephotos,
@@ -31,6 +32,7 @@ const ListingPhotos = ({
   const [wishlistContainer, setWishlistContainer] = useState([]);
   const [saveLabel, setSaveLabel] = useState("Save");
   const { token } = useStateContext();
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const [loading, setLoading] = useState(true);
 
@@ -63,6 +65,14 @@ const ListingPhotos = ({
     }
   }, [isModalOpen]); // Include isModalOpen if you want the data to be refetched when isModalOpen changes
 
+
+  const openShareModal = () => {
+    setIsShareModalOpen(true);
+  };
+
+  const closeShareModal = () => {
+    setIsShareModalOpen(false);
+  };
 
   const handleWindowSizeChange = () => {
     setWidth(window.innerWidth);
@@ -189,7 +199,7 @@ const ListingPhotos = ({
             <label className="text-base break-words">{address}</label>
           </div>
 
-         {token&& <div className="w-[30%] hidden md:flex items justify-end gap-5">
+         {token&& <div className="w-[30%] flex  md:flex items justify-end gap-5">
             <button>
               <div className="flex underline">
                 <span className="mr-2">
@@ -202,7 +212,7 @@ const ListingPhotos = ({
                     <path d="M12,1L8,5H11V14H13V5H16M18,23H6C4.89,23 4,22.1 4,21V9A2,2 0 0,1 6,7H9V9H6V21H18V9H15V7H18A2,2 0 0,1 20,9V21A2,2 0 0,1 18,23Z" />
                   </svg>
                 </span>
-                <label className="text-sm font-medium">Share</label>
+                <label className="text-sm font-medium cursor-pointer" onClick={openShareModal}>Share</label>
               </div>
             </button>
 
@@ -222,7 +232,7 @@ const ListingPhotos = ({
                   </svg>
                 </span>
                 {token ? (
-                  <label className="text-sm font-medium">
+                  <label className="text-sm font-medium cursor-pointer">
                     {loading ? "Loading..." : saveLabel}
                   </label>
                 ) : null}
@@ -412,6 +422,8 @@ const ListingPhotos = ({
           )}
         </div>
       </Modal>
+      <ShareModal isOpen={isShareModalOpen} onClose={closeShareModal} />
+
       <ToastContainer />
     </div>
   );

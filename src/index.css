@@ -10,7 +10,9 @@
   padding: 0;
 }
 
-
+.full-width {
+  width: 100%;
+}
 
   .containerrr {
     --uib-size: 120px;
@@ -371,6 +373,10 @@
     100% {
       transform: rotate(360deg);
     }
+  }
+
+  .splide__arrow {
+    z-index: 0;
   }
 
 

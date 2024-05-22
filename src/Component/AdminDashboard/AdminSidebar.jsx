@@ -303,6 +303,16 @@ export default function AdminSidebar() {
               </li>
             </Link>
           )}
+           {userInfo &&
+          userInfo.some((role) => role.rolePermission === "SocialLink") && (
+            <Link to="/SocialPage">
+              <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
+              Social Page
+              </li>
+            </Link>
+          )}
+
+
       </ul>
     </div>
   );

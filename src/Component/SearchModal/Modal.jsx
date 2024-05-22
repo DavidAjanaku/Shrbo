@@ -9,6 +9,8 @@ import GuestIcon from "../../assets/svg/couple-icon.svg";
 import { DatePicker, Space } from "antd";
 import moment from "moment";
 import { AutoComplete, Input } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 
 const { RangePicker } = DatePicker;
 
@@ -205,7 +207,7 @@ const SearchModal = ({ isOpen, onClose,search }) => {
                 </Button>
               </div>
             </div>
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <div className="flex-col">
                 <span className="text-lg">Children:</span>
                 <p className="text-gray-400">Ages 2–12</p>
@@ -225,14 +227,15 @@ const SearchModal = ({ isOpen, onClose,search }) => {
                   +
                 </Button>
               </div>
-            </div>
+            </div> */}
             <div className="flex items-center justify-between">
               <div className="flex-col">
                 <span className="text-lg">Pets:</span>
                 <p>
-                  <Link className="text-gray-400 underline">
+                  <Link className="text-gray-400 underline"title="Service animals are allowed without extra charges.">
                     Bringing a service animal?
                   </Link>
+                  
                 </p>
               </div>
               <div className="space-x-2">
@@ -251,7 +254,7 @@ const SearchModal = ({ isOpen, onClose,search }) => {
                 </Button>
               </div>
             </div>
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <div className="flex-col">
                 <span className="text-lg">Infants:</span>
                 <p className="text-gray-400">Under 2</p>
@@ -271,7 +274,7 @@ const SearchModal = ({ isOpen, onClose,search }) => {
                   +
                 </Button>
               </div>
-            </div>
+            </div> */}
 
             <button type="submit">submit</button>
           </div>
@@ -301,10 +304,10 @@ const SearchModal = ({ isOpen, onClose,search }) => {
     >
       <div className=" relative bg-white p-4  w-full h-[100vh] overflow-auto md:h-[70vh] md:w-[50%] md:rounded-xl">
         <header>
-          <h1 className="text-center text-2xl mb-4">Search By Location, Dates and Guests</h1>
+        <h1 className="text-center text-2xl mb-4">Find Your Perfect Stay: Choose Location, Dates, and Guests</h1>
         </header>
         <div className=" md:h-2/6">
-          <div className="mb-4 border p-4">
+          <div className="mb-4 border p-2">
             <Select
               className="text-black"
               defaultValue={selectedOption}
@@ -316,7 +319,7 @@ const SearchModal = ({ isOpen, onClose,search }) => {
           </div>
           <div className="mb-4 overflow-scroll example w-full">
             {/* <Space direction="vertical " > */}
-              <RangePicker
+              <RangePicker  className="full-width" placeholder={['Check in', 'Check out']}
                 // className="custom-picker"
                 disabledDate={(current) => current && current < moment().startOf('day')}
                 value={
@@ -345,7 +348,9 @@ const SearchModal = ({ isOpen, onClose,search }) => {
               onClick={() => setGuestModalVisible(true)}
               className="w-full text-start  py-4"
             >
-              <label className=" bg-orange-400 rounded-2xl py-2 text-white px-2">
+              <label className=" bg-orange-400  py-4 text-white px-10 cursor-pointer">
+              <FontAwesomeIcon icon={faUsers} className="mr-2" />
+
                 {displayGuestData.adults +
                   displayGuestData.children +
                   displayGuestData.pets +
@@ -353,7 +358,7 @@ const SearchModal = ({ isOpen, onClose,search }) => {
                   0
                   ? "Add Guests"
                   : "Guests"}
-                :
+                
               </label>
               <br />
               {displayGuestData.adults +
