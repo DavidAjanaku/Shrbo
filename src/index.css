@@ -14,6 +14,10 @@
   width: 100%;
 }
 
+.splide__arrows{
+  display: none;
+}
+
   .containerrr {
     --uib-size: 120px;
     --uib-color: orange;

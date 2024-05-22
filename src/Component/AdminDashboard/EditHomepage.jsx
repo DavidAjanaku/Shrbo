@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminNavigation/AdminHeader";
-import axoisInstance from "../../Axios";
-import { notification } from "antd";
-
+import axiosInstance from "../../Axios";
+import { notification, Spin } from "antd";
 
 export default function EditHomepage() {
   const [image, setImage] = useState("");
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -31,6 +31,7 @@ export default function EditHomepage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Show loader
 
     try {
       const formData = new FormData();
@@ -40,7 +41,7 @@ export default function EditHomepage() {
       console.log(formData);
 
       // Make the Axios POST request to your API endpoint
-      const response = await axoisInstance.post("/homepage", formData, {
+      const response = await axiosInstance.post("/homepage", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -55,12 +56,10 @@ export default function EditHomepage() {
       });
 
       // Handle success, e.g., show a success message or redirect to another page
-      // ...
       await new Promise((resolve) => setTimeout(resolve, 1000));
-  
+
       // Reload the page
       window.location.reload();
-
     } catch (error) {
       // Handle error, e.g., show an error message
       console.error("Error:", error.response.data);
@@ -68,6 +67,8 @@ export default function EditHomepage() {
         message: "Submission Failed",
         description: "Failed to save changes. Please try again.",
       });
+    } finally {
+      setLoading(false); // Hide loader
     }
   };
 
@@ -80,14 +81,13 @@ export default function EditHomepage() {
         </div>
 
         <div className="md:w-4/5 w-full p-4 h-[100vh]">
-        
           <h1 className="text-2xl font-semibold mb-4">Edit Homepage</h1>
           <div className="bg-white p-4 rounded shadow">
-          <div className="mb-4">
-            <p className="text-gray-400 text-sm">
-            This is where you can upload the main image for your homepage
-            </p>
-          </div>
+            <div className="mb-4">
+              <p className="text-gray-400 text-sm">
+                This is where you can upload the main image for your homepage
+              </p>
+            </div>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -138,9 +138,10 @@ export default function EditHomepage() {
 
               <button
                 type="submit"
-                className="bg-orange-400 text-white p-2 rounded hover:bg-orange-600"
+                className="bg-orange-400 text-white p-2 rounded hover:bg-orange-600 flex items-center justify-center"
+                disabled={loading}
               >
-                Submit
+                {loading ? <Spin size="small" /> : "Submit"}
               </button>
             </form>
           </div>

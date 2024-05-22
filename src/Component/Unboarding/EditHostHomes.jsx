@@ -114,6 +114,7 @@ export default function HostHome({ match }) {
     useState("");
 
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // State to manage loading
 
   const { token } = useStateContext();
 
@@ -267,6 +268,8 @@ export default function HostHome({ match }) {
       const existingPhotosUrls = apartment.hosthomephotos.map(
         (photo) => photo.images
       );
+
+      console.log(existingPhotosUrls);
 
       // Extract base64 data from newly uploaded images
       const newPhotosBase64 = uploadedImages.map((image) => image.src);
@@ -1345,16 +1348,27 @@ export default function HostHome({ match }) {
   const handleImageDelete = async (hostHomephotoId, e) => {
     try {
       e.preventDefault();
-  
+      setLoading(true); // Start loading
+
       // Make DELETE request to delete the image
       await Axios.delete(`/deleteHostHostHomeImages/${hostHomephotoId}`);
-  
-      // Remove the deleted image element from the DOM
-      const imageElement = document.getElementById(`image-${hostHomephotoId}`);
-      if (imageElement) {
-        imageElement.remove();
-      }
-  
+
+      // Update the uploadedImages state to remove the deleted image
+      setUploadedImages((prevImages) =>
+        prevImages.filter((image) => image.id !== hostHomephotoId)
+      );
+
+      // If apartment.hosthomephotos is an array, update it to remove the deleted image
+      setApartment((prevApartment) => {
+        if (Array.isArray(prevApartment.hosthomephotos)) {
+          const updatedPhotos = prevApartment.hosthomephotos.filter(
+            (photo) => photo.id !== hostHomephotoId
+          );
+          return { ...prevApartment, hosthomephotos: updatedPhotos };
+        }
+        return prevApartment;
+      });
+
       // Show success notification
       notification.success({
         message: "Image Deleted",
@@ -1362,14 +1376,17 @@ export default function HostHome({ match }) {
       });
     } catch (error) {
       console.error("Error deleting image:", error);
-  
+
       // Show error notification
       notification.error({
         message: "Error Deleting Image",
         description: "There was an error deleting the image. Please try again.",
       });
+    } finally {
+      setLoading(false); // End loading
     }
   };
+  
   
 
   const renderContent = () => {
@@ -1433,6 +1450,7 @@ export default function HostHome({ match }) {
       case 1:
         return (
           <div className=" mx-auto  flex justify-center p-4">
+            <Spin spinning={loading}></Spin>
             <div className="  overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-20">
                 <h1 className="text-6xl">
@@ -1664,6 +1682,8 @@ export default function HostHome({ match }) {
       case 5:
         return (
           <div className="mx-auto flex justify-center p-4">
+                  <Spin spinning={loading}> {/* Wrap the content with Spin for the loader */}
+
             <div className="overflow-auto">
               <div className="md:flex md:justify-center md:flex-col md:mt-28 mb-10">
                 <h1 className="text-6xl">Add some photos of your house</h1>
@@ -1737,6 +1757,7 @@ export default function HostHome({ match }) {
                 </div>
               </div>
             </div>
+            </Spin>
           </div>
         );
 
