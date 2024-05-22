@@ -68,7 +68,7 @@ export default function HostModal({ isOpen, onClose, userData, hostStatus, admin
                       </label>
                     </div>
                     <div>
-                      <h1 className="text-white text-2xl">Welcome {userData.name.split(' ')[0] || ""}</h1>
+                      <h1 className="text-white text-2xl">Welcome {userData?.name?.split(' ')[0] || ""}</h1>
                     </div>
                   </Link>
                 </div>
