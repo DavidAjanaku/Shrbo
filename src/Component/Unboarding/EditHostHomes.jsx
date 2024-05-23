@@ -1717,7 +1717,7 @@ export default function HostHome({ match }) {
                       <div className="mb-4">
                         <FaCloudUploadAlt className="text-4xl mx-auto" />
                       </div>
-                      <p className="mb-2">Click or Drag Photos Here</p>
+                      <p className="mb-2">Select  Photos Here</p>
                       <p className="text-sm font-bold text-xl">
                         Choose at least 5 photos
                       </p>
