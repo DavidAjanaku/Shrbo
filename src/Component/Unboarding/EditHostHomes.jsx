@@ -278,15 +278,31 @@ export default function HostHome({ match }) {
       const allPhotos = [...existingPhotosUrls, ...newPhotosBase64];
 
       const videoBase64 = apartment.hosthomevideo
-        ? await new Promise((resolve) => {
-            const reader = new FileReader();
-            const videoBlob = new Blob([apartment.hosthomevideo], {
-              type: "video/mp4",
-            }); // Create a Blob from the video data
+      ? await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          if (typeof apartment.hosthomevideo === 'string' && apartment.hosthomevideo.startsWith('data:video/mp4;base64,')) {
+            // If apartment.hosthomevideo is a base64 string, use it directly
+            resolve(apartment.hosthomevideo);
+          } else if (typeof apartment.hosthomevideo === 'string') {
+            // If apartment.hosthomevideo is a string reference to a Blob, fetch the Blob and convert it to base64
+            fetch(apartment.hosthomevideo)
+              .then((res) => res.blob())
+              .then((blob) => {
+                const videoBlob = new Blob([blob], { type: 'video/mp4' });
+                reader.onload = (event) => resolve(event.target.result);
+                reader.readAsDataURL(videoBlob);
+              })
+              .catch(reject);
+          } else {
+            // If apartment.hosthomevideo is a File, Blob, or ArrayBuffer, create a Blob from it
+            const videoBlob = new Blob([apartment.hosthomevideo], { type: 'video/mp4' });
             reader.onload = (event) => resolve(event.target.result);
-            reader.readAsDataURL(videoBlob); // Read the Blob as Data URL
-          })
-        : null;
+            reader.readAsDataURL(videoBlob);
+          }
+        })
+      : null;
+
+        console.log(videoBase64);
 
       const selectedDescriptions = apartment.hosthomedescriptions.map(
         (item) => item.description
