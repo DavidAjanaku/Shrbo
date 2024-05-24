@@ -153,7 +153,18 @@ export default function Listings() {
       dataIndex: "address",
       key: "address",
     },
-
+    {
+      title: "View Home",
+      dataIndex: "status",
+      key: "viewHome",
+      render: (status, record) => (
+        status === "Published" ? (
+          <Link to={`/ListingInfoMain/${record.id}`}>View Home</Link>
+        ) : (
+          <span className="text-sm text-gray-500">Cannot view home until published</span>
+        )
+      ),
+    },
  
     
     

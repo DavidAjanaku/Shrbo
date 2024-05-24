@@ -482,7 +482,7 @@ const ListingPhotos = ({
                   key={index}
                   style={{
                     height: "80%",
-                    width: "30%",
+                    width: "50%",
                     margin: "auto",
                     background:
                       index === selectedImageIndex ? "transparent" : "black", // Set the background color to transparent for the selected image
