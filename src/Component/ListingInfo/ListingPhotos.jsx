@@ -38,6 +38,8 @@ const ListingPhotos = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const { listingId } = useParams();
   console.log(listingId);
+  console.log(title);
+
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
   };
@@ -517,7 +519,8 @@ const ListingPhotos = ({
           )}
         </div>
       </Modal>
-      <ShareModal isOpen={isShareModalOpen} onClose={closeShareModal} />
+      <ShareModal isOpen={isShareModalOpen} onClose={closeShareModal} title={title} imageUrl={hosthomephotos.length > 0 ? hosthomephotos[0].images : null} />
+
 
       <ToastContainer />
     </div>

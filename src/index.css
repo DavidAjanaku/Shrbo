@@ -391,7 +391,9 @@
   }
 
 
-
-
-
+  @media (min-width: 1024px) {
+    .custom-modal-content {
+      width: 700px;
+    }
+  }
   
