@@ -714,6 +714,8 @@ export default function ListingForm({
     return 1; // Default to 1 night if dates are not selected
   };
   let pricePerNight = Number(price).toLocaleString();
+  let totalPriceForNights =calculateNumberOfNights() * Number(price);
+
 
   const navigate = useNavigate();
 
@@ -1135,7 +1137,7 @@ export default function ListingForm({
                                       ? `₦${Number(
                                           totalPrice
                                         ).toLocaleString()}`
-                                      : `₦${pricePerNight}`}
+                                      : `₦${totalPriceForNights.toLocaleString()}`}
                                   </div>
                                 </div>
                               </div>
