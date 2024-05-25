@@ -1,8 +1,6 @@
 import React, {useState, useEffect} from "react";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
-import "@splidejs/splide/dist/css/themes/splide-default.min.css";
-import room from "../../assets/room.jpeg";
-import kitchen from "../../assets/room2.jpeg";
+import "@splidejs/splide/dist/css/themes/splide-default.min.css";;
 import video from "../../assets/videos/luxuryInteriror.mp4";
 import Axios from "../../Axios";
 import { useParams } from "react-router-dom";
@@ -63,7 +61,7 @@ const ThumbnailSlider = (props) => {
                   <video
                 src={slide.min}
                 alt="Video"
-                className=" w-auto object-cover  h-auto min-h-full min-w-full"
+                className=" w-auto object-cover rounded  h-auto min-h-full min-w-full"
                 
               
                 playsInline // Add playsInline attribute for iOS
@@ -90,7 +88,7 @@ const ThumbnailSlider = (props) => {
         ref={(slider) => (props.slider2.current = slider)}
         className="thumbnail-slider"
         options={{
-          gap: 10,
+          gap: 5,
           perMove: 1,
           cover: true,
           // fixedHeight: 50,

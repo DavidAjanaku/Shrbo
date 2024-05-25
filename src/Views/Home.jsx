@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import SearchLocation from "../Component/SearchLocation";
 import CategoryHeader from "../Component/Navigation/CategoryHeader";
 import Listings from "../Component/ListingInfo/Listings";
 import Header from "../Component/Navigation/Header";
-import Hamburger from "../Component/Navigation/Hamburger";
 import { toast } from "react-toastify"; // Import toast
 import Modal from "../Component/SearchModal/Modal";
 import searchIcon from "../assets/svg/search-icon.svg";

@@ -1,13 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";
-import room from "../../assets/room.jpeg";
 import { useParams } from "react-router-dom";
-
-import kitchen from "../../assets/room2.jpeg";
-import video from "../../assets/videos/luxuryInteriror.mp4";
-import apartment from "../../assets/apartment2.jpeg";
-import apartment1 from "../../assets/apartment1.jpeg";
 import Modal from "react-modal";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -224,9 +218,9 @@ const MainSlider = (props) => {
                 {pics.map((pic, index) => (
                   <div key={pic.id}>
                     {pic.id !== "video" ? (
-                      <img src={pic.min} alt={`Image ${index}`} />
+                      <img src={pic.min} alt={`Image ${index}`} className=" h-[350px] w-full" />
                     ) : (
-                      <video src={pic.min} alt="Video" controls playsInline />
+                      <video src={pic.min} alt="Video" controls playsInline className="h-[350px] w-full object-cover" />
                     )}
                   </div>
                 ))}

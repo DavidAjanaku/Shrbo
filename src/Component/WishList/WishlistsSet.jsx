@@ -1,6 +1,6 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Dropdown, Space } from 'antd';
+import { Modal, Dropdown,} from 'antd';
 import { useNavigate } from 'react-router-dom';
 import Map from "../Map/Map";
 import { Link } from "react-router-dom";
@@ -10,7 +10,7 @@ import Rating from "../ListingInfo/Ratings";
 import Popup from '../../hoc/Popup';
 import BottomNavigation from '../Navigation/BottomNavigation';
 import Header from '../Navigation/Header';
-import Listings from '../ListingInfo/Listings';
+// import Listings from '../ListingInfo/Listings';
 import { toast, ToastContainer } from "react-toastify";
 import { useParams } from 'react-router-dom';
 import axios from '../../Axios'
@@ -560,22 +560,7 @@ const WishlistsSet = () => {
                   </div>
 
 
-                  <div className="  items-center justify-end flex" >
-                    <button className=" cursor-pointer p-0 m-0 transition-transform transparent 
-                                        border-none  relative outline-none touch-manipulation inline-block   ">
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="17px"
-                        height="17px"
-                      >
-                        <title>Share</title>
-                        <path d="M12,1L8,5H11V14H13V5H16M18,
-                                        23H6C4.89,23 4,22.1 4,21V9A2,2 0 0,1 6,
-                                        7H9V9H6V21H18V9H15V7H18A2,2 0 0,1 20,
-                                        9V21A2,2 0 0,1 18,23Z" />
-                      </svg>
-                    </button>
-
+                  <div className="  items-center justify-end flex" >                  
                     <label className=" pr-6"></label>
                   {!loading&&<MyDropdown click={handleMenu} items={items} >
                       <button className=" cursor-pointer p-0 m-0 transition-transform transparent 

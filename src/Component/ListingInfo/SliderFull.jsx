@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import MainSlider from "./MainSlider";
 import ThumbnailSlider from "./ThumbnailSlider";
-import { Splide, SplideSlide } from "@splidejs/react-splide";
 
 const SliderFull = () => {
   const slider1 = useRef();

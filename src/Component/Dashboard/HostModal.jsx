@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { BsHouseDoor, BsArrowBarRight } from "react-icons/bs"; // Import the icons
-import rightArrow from "../../assets/svg/line-angle-right-icon.svg";
+import { BsHouseDoor} from "react-icons/bs"; // Import the icons
 import defaultProfile from "../../assets/svg/avatar-icon.svg";
 import MenuCard from "../MenuCard";
 import HostingCard from "../HostingCard";

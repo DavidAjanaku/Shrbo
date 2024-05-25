@@ -4,15 +4,15 @@ import { Link } from "react-router-dom";
 import ProfileIcon from "../assets/svg/id-card-line-icon.svg";
 import Padlock from "../assets/svg/lock-icon.svg";
 import PaymentIcon from "../assets/svg/credit-card-icon.svg";
-import BellIcon from "../assets/svg/bell-icon.svg";
+// import BellIcon from "../assets/svg/bell-icon.svg";
 import Footer from "../Component/Navigation/Footer";
 import Header from "../Component/Navigation/Header";
 import BottomNavigation from "../Component/Navigation/BottomNavigation";
 import HostModal from "../Component/Dashboard/HostModal";
 import { useStateContext } from "../ContextProvider/ContextProvider";
 import axios from "../Axios";
-import logo from "../assets/logo.png";
-import { SwapOutlined } from "@ant-design/icons";
+// import logo from "../assets/logo.png";
+// import { SwapOutlined } from "@ant-design/icons";
 
 
 export default function Settings() {
@@ -113,13 +113,13 @@ export default function Settings() {
                 />
               </Link>
             )}
-            <Link to="/AccountNotifications">
+            {/* <Link to="/AccountNotifications">
               <Card
                 icon={ProfileIcon}
                 title="Notifications"
                 text="Control how and when you receive notifications from Shrbo."
               />
-            </Link>
+            </Link> */}
             <Link to="/TransactionHistory">
               <Card
                 svg={<svg xmlns="http://www.w3.org/2000/svg" width={"38px"} height={"38px"} className="mb-5" viewBox="0 0 24 24"><title>swap-horizontal</title><path d="M21,9L17,5V8H10V10H17V13M7,11L3,15L7,19V16H14V14H7V11Z" /></svg>}

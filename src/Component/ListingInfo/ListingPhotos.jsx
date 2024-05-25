@@ -315,7 +315,7 @@ const ListingPhotos = ({
                     alt="Video Thumbnail"
                     onClick={togglePlay}
 
-                    className="cursor-pointer w-full h-[500px]"
+                    className="cursor-pointer w-full h-[510px]"
                   />
                   {isPlaying ? (
                     <div className="absolute top-0 bottom-8 inset-0 flex items-center h-full w-full justify-center">
@@ -324,7 +324,7 @@ const ListingPhotos = ({
                         controls
                         ref={videoRef}
                         autoPlay={isPlaying}
-                        className="w-full h-[500px] object-cover"
+                        className="w-full h-[510px] object-cover"
                       ></video>
                     </div>
                   ) : (
@@ -404,6 +404,7 @@ const ListingPhotos = ({
 
       {width <= 767 ?
         <>
+
           {loadingImg ?
             <div className=" mt-5 w-full ">
 
@@ -425,7 +426,7 @@ const ListingPhotos = ({
             :
             <SliderFull />}
 
-
+       
         </>
         : null}
 
@@ -459,10 +460,9 @@ const ListingPhotos = ({
       >
         <div className="modal-content p-4">
           <button className="close-button text-white" onClick={closeModal}>
-            <img src={close} className="w-4" alt="" />
+            <img src={close} className="w-4" alt="Close" />
           </button>
 
-          {/* Inside the modal content, update the Carousel component as follows: */}
           {selectedImage && (
             <Carousel
               showArrows={true} // Set showArrows to true to display arrows in the carousel
@@ -471,8 +471,8 @@ const ListingPhotos = ({
               showStatus={false} // Set showStatus to false to hide the carousel status
               showThumbs={false}
               style={{
-                display: "",
-                justifyContent: "",
+                display: "flex",
+                justifyContent: "center",
                 alignItems: "center",
                 background: "black",
               }}
@@ -481,42 +481,31 @@ const ListingPhotos = ({
                 <div
                   key={index}
                   style={{
-                    height: "80%",
-                    width: "30%",
-                    margin: "auto",
-                    background:
-                      index === selectedImageIndex ? "transparent" : "black", // Set the background color to transparent for the selected image
+                    height: "400px", // Fixed height
+                    width: "500px", // Fixed width
+                    margin: "50px auto",
+                    background: "black",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  {index !== selectedImageIndex ? (
-                    <img
-                      src={imageUrl}
-                      alt={`Image ${index + 1}`}
-                      style={{
-                        height: "500px",
-                        width: "700px",
-                        margin: "100px auto",
-                        objectFit: "contain",
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src={selectedImage}
-                      alt={`Image ${index + 1}`}
-                      style={{
-                        height: "100%",
-                        width: "700%",
-                        margin: "100px auto",
-                        objectFit: "contain",
-                      }}
-                    />
-                  )}
+                  <img
+                    src={imageUrl}
+                    alt={`Image ${index + 1}`}
+                    style={{
+                      height: "100%",
+                      width: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
                 </div>
               ))}
             </Carousel>
           )}
         </div>
       </Modal>
+
       <ShareModal isOpen={isShareModalOpen} onClose={closeShareModal} />
 
       <ToastContainer />
