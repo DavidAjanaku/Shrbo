@@ -61,16 +61,16 @@ const ShareModal = ({ isOpen, onClose, title, imageUrl }) => {
     <Modal isOpen={isOpen} onRequestClose={onClose} style={{ content: { width: "300px", height: "600px", zIndex: "99999", margin: "auto" } }}>
       <div className="p-2">
         <h2 className="text-2xl mb-2">Share this experience</h2>
-        <img src={imageUrl} className=" rounded-md" alt="houseImage" />
+        <img src={imageUrl} className=" rounded-md h-36 w-full object-cover" alt="houseImage" />
         <h2 className="text-orange-400 mt-4">{title}</h2>
         <ul style={{ listStyleType: "none", padding: 0 }}>
-          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4" onClick={() => handleShare("Copy Link")}><RiClipboardFill /> Copy Link</li>
-          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4" onClick={() => handleShare("Email")}><RiMailSendFill /> Email</li>
-          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4" onClick={() => handleShare("Messages")}><RiMessage2Fill /> Messages</li>
-          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4" onClick={() => handleShare("WhatsApp")}><RiWhatsappFill /> WhatsApp</li>
-          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4" onClick={() => handleShare("Messenger")}><RiMessengerFill /> Messenger</li>
-          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4" onClick={() => handleShare("Twitter")}><RiTwitterXFill /> Twitter</li>
-          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4" onClick={() => handleShare("Facebook")}><RiFacebookCircleFill /> Facebook</li>
+          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4 cursor-pointer" onClick={() => handleShare("Copy Link")}><RiClipboardFill /> Copy Link</li>
+          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4 cursor-pointer" onClick={() => handleShare("Email")}><RiMailSendFill /> Email</li>
+          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4 cursor-pointer" onClick={() => handleShare("Messages")}><RiMessage2Fill /> Messages</li>
+          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4 cursor-pointer" onClick={() => handleShare("WhatsApp")}><RiWhatsappFill /> WhatsApp</li>
+          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4 cursor-pointer" onClick={() => handleShare("Messenger")}><RiMessengerFill /> Messenger</li>
+          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4 cursor-pointer" onClick={() => handleShare("Twitter")}><RiTwitterXFill /> Twitter</li>
+          <li className="flex items-center gap-2 py-2 border-[1px] rounded-md my-3 px-4 cursor-pointer" onClick={() => handleShare("Facebook")}><RiFacebookCircleFill /> Facebook</li>
         </ul>
       </div>
     </Modal>
