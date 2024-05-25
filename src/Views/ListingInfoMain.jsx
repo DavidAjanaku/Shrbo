@@ -82,37 +82,47 @@ const ListingInfoMain = () => {
           // If token doesn't exist, fetch details for unauthenticated user
           response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
         }
-            const data = response.data.data;
-
-        setListingDetails(response.data.data);
-        setApartment(id);
-        setUser(response.data.data.user.id);
-        setHostId(response.data.data.user.id);
-        setTitle(response.data.data.title);
-        setAddress(response.data.data.address);
-        setPhoto(response.data.data.hosthomephotos);
-        setDiscounts(response.data.data.discounts);
-        setBookingRequestStatus(response.data.data.bookingRequestStatus);
-        setVatFee(response.data.data.vat)
-        setGuestFeePrice(response.data.data.guest_fee)
-
-        console.log(response.data.data);
-
-                // Set the cohost value
-if (data.cohosts && data.cohosts.length > 0) {
-  const cohost = data.cohosts[0]; // Assuming there is only one cohost
-  setCoHost({
-    id: cohost.id,
-    name: cohost.name,
-    email: cohost.email,
-    rating: cohost.rating,
-    // Add other cohost properties as needed
-  });
-
-  console.log("Cohost:", cohost);
-} else {
-  setCoHost(null); // No cohost found
-}
+        const data = response.data.data;
+  
+        // Check if the data is in the cache
+        const cachedPhotos = JSON.parse(localStorage.getItem('hosthomephotos'));
+        const cachedTimestamp = localStorage.getItem('timestamp');
+  
+        // If the timestamp/version number is different, update the cache and the state
+        if (data.timestamp !== cachedTimestamp) {
+          // Cache the data
+          localStorage.setItem('hosthomephotos', JSON.stringify(data.hosthomephotos));
+          localStorage.setItem('timestamp', data.timestamp);
+  
+          setListingDetails(data);
+          setApartment(id);
+          setUser(data.user.id);
+          setHostId(data.user.id);
+          setTitle(data.title);
+          setAddress(data.address);
+          setPhoto(data.hosthomephotos);
+          setDiscounts(data.discounts);
+          setBookingRequestStatus(data.bookingRequestStatus);
+          setVatFee(data.vat)
+          setGuestFeePrice(data.guest_fee)
+        } else if (cachedPhotos) {
+          // If the timestamp/version number is the same, use the cached data
+          setPhoto(cachedPhotos);
+        }
+  
+        // Set the cohost value
+        if (data.cohosts && data.cohosts.length > 0) {
+          const cohost = data.cohosts[0]; // Assuming there is only one cohost
+          setCoHost({
+            id: cohost.id,
+            name: cohost.name,
+            email: cohost.email,
+            rating: cohost.rating,
+            // Add other cohost properties as needed
+          });
+        } else {
+          setCoHost(null); // No cohost found
+        }
       } catch (error) {
         console.error(
           "Error fetching listing details:",

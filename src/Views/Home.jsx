@@ -170,29 +170,47 @@ export default function Home() {
 
   useEffect(() => {
     const homePageData = async () => {
+      // Check if the data is in the cache
+      const cachedHomeImage = localStorage.getItem('homeImage');
+      const cachedHomeTitle = localStorage.getItem('homeTitle');
+      const cachedHomeSubTitle = localStorage.getItem('homeSubTitle');
+      const cachedTimestamp = localStorage.getItem('timestamp');
+  
       await axios
         .get("/homepage")
         .then((response) => {
-          // console.log("HomePage", response.data.data[0]);
           const homePageData = response.data.data[0];
-
-          setHomeImage(homePageData.image);
-          setHomeTitle(homePageData.title);
-          setHomeSubTitle(homePageData.subtitle);
+  
+          // If the timestamp/version number is different, update the cache and the state
+          if (homePageData.timestamp !== cachedTimestamp) {
+            // Cache the data
+            localStorage.setItem('homeImage', homePageData.image);
+            localStorage.setItem('homeTitle', homePageData.title);
+            localStorage.setItem('homeSubTitle', homePageData.subtitle);
+            localStorage.setItem('timestamp', homePageData.timestamp);
+  
+            setHomeImage(homePageData.image);
+            setHomeTitle(homePageData.title);
+            setHomeSubTitle(homePageData.subtitle);
+          } else if (cachedHomeImage && cachedHomeTitle && cachedHomeSubTitle) {
+            // If the timestamp/version number is the same, use the cached data
+            setHomeImage(cachedHomeImage);
+            setHomeTitle(cachedHomeTitle);
+            setHomeSubTitle(cachedHomeSubTitle);
+          }
         })
         .catch((error) => {
           console.error(error);
         }).finally(()=>{
-          if(!token){  // this is so the loader does not stop showing when the request to /user is being made
+          if(!token){
             setLoading(false);
-
           }
-
         });
     };
-
+  
     homePageData();
   }, []);
+  
 
   // View Count (register visitors)
 
@@ -435,10 +453,14 @@ export default function Home() {
 
   const fetchListings = async () => {
     setListingLoading(true);
+  
+    // Check if the data is in the cache
+    const cachedListings = JSON.parse(localStorage.getItem('listings'));
+    const cachedTimestamp = localStorage.getItem('timestamp');
+  
     await axios
       .get(token ? `/hosthomesForAuthUser?per_page=${per_page}` : `/hosthomesForUnAuthUser?per_page=${per_page}`)
       .then((response) => {
-        // console.log("homeList", response.data.data);
         const formattedHostHomes = response.data.data.map((item) => ({
           id: item.id,
           pictures: item.hosthomephotos,
@@ -450,21 +472,30 @@ export default function Home() {
           link: "/ListingInfoMain",
           isFavorite: item.addedToWishlist,
         }));
-
-        setListingType("NoFilter");
-        setCurrent_page(response.data.meta.current_page);
-        setLast_page(response.data.meta.last_page);
-        setListings(formattedHostHomes);
-        // console.log("HMMM", response);
-
+  
+        // If the timestamp/version number is different, update the cache and the state
+        if (response.data.timestamp !== cachedTimestamp) {
+          // Cache the data
+          localStorage.setItem('listings', JSON.stringify(formattedHostHomes));
+          localStorage.setItem('timestamp', response.data.timestamp);
+  
+          setListingType("NoFilter");
+          setCurrent_page(response.data.meta.current_page);
+          setLast_page(response.data.meta.last_page);
+          setListings(formattedHostHomes);
+        } else if (cachedListings) {
+          // If the timestamp/version number is the same, use the cached data
+          setListingType("NoFilter");
+          setCurrent_page(response.data.meta.current_page);
+          setLast_page(response.data.meta.last_page);
+          setListings(cachedListings);
+        }
       })
       .catch((err) => {
-        // console.log("Listing", err);
+        console.error(err);
       })
       .finally(() => setListingLoading(false));
-
-
-  }
+  };
 
   const filterData = async (data, close) => {
     setListingLoading(true);
