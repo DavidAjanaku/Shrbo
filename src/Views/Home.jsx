@@ -56,7 +56,7 @@ export default function Home() {
     setIsRateHouseModalOpen(false);
   };
 
-  console.log(token);
+  // console.log(token);
 
   useEffect(() => {
     // Add an event listener to handle scrolling
@@ -87,32 +87,25 @@ export default function Home() {
     const fetchUserData = async () => {
       try {
 
-        // Log out the parameters
-        console.log("Verified:", verified);
-        console.log("Remtoken:", remtoken);
-        console.log("Ustoken:", ustoken);
+     
 
         // Make a request to get the user data with parameters
         const response = await axios.get(
           `/verify-tokens/${remtoken}/${ustoken}`
         );
-        console.log("Response Data:", response.data);
-        console.log(response.data.id);
+        
 
         // Set the user data in state
         setUser(response.data.user);
-        console.log("User Data:", response.data);
 
         // Set the host value in state context
         setHost(response.data.user.host);
         setCoHost(response.data.user.co_host)
-        console.log("Host:", response.data.host);
-        console.log("CoHost:", response.data.user.co_host);
+   
         setToken(ustoken);
         setAdminStatus(response.data.user.adminStatus);
 
         // Log 'yes' to the console
-        console.log("yes");
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
@@ -137,17 +130,17 @@ export default function Home() {
 
         // Set the user data in state
         setUser(response.data);
-        console.log(response.data.host);
+        // console.log(response.data.host);
 
-        console.log("yes", response.data);
+        // console.log("yes", response.data);
         setHost(response.data.host);
         setAdminStatus(response.data.adminStatus);
         setCoHost(response.data.co_host)
-        console.log("CoHost:", response.data.co_host);
+        // console.log("CoHost:", response.data.co_host);
         localStorage.setItem('receiverid', response.data.id);
 
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        // console.error("Error fetching user data:", error);
       } finally {
         // Set loading to false regardless of success or error
         setLoading(false);
@@ -170,19 +163,17 @@ export default function Home() {
     localStorage.setItem('receiverid', receiverid);
   }, []);
 
-  console.log();
 
   // Home Page Data
   const receiverIds = localStorage.getItem('receiverid');
 
-  console.log(receiverIds);
 
   useEffect(() => {
     const homePageData = async () => {
       await axios
         .get("/homepage")
         .then((response) => {
-          console.log("HomePage", response.data.data[0]);
+          // console.log("HomePage", response.data.data[0]);
           const homePageData = response.data.data[0];
 
           setHomeImage(homePageData.image);
@@ -210,7 +201,7 @@ export default function Home() {
       await axios
         .get("/view-count")
         .then((response) => {
-          console.log("view-Count", response);
+          // console.log("view-Count", response);
         })
         .catch((error) => {
           console.error(error);
@@ -447,7 +438,7 @@ export default function Home() {
     await axios
       .get(token ? `/hosthomesForAuthUser?per_page=${per_page}` : `/hosthomesForUnAuthUser?per_page=${per_page}`)
       .then((response) => {
-        console.log("homeList", response.data.data);
+        // console.log("homeList", response.data.data);
         const formattedHostHomes = response.data.data.map((item) => ({
           id: item.id,
           pictures: item.hosthomephotos,
@@ -464,11 +455,11 @@ export default function Home() {
         setCurrent_page(response.data.meta.current_page);
         setLast_page(response.data.meta.last_page);
         setListings(formattedHostHomes);
-        console.log("HMMM", response);
+        // console.log("HMMM", response);
 
       })
       .catch((err) => {
-        console.log("Listing", err);
+        // console.log("Listing", err);
       })
       .finally(() => setListingLoading(false));
 
@@ -488,7 +479,7 @@ export default function Home() {
       property_type: data.selectedTypes,
       amenities: data.selectedAmenities,
     };
-    console.log(main);
+    // console.log(main);
 
     await axios
       .post(
@@ -509,10 +500,10 @@ export default function Home() {
         }));
 
         setListings(formattedHostHomes);
-        console.log("filter", response.data.data);
+        // console.log("filter", response.data.data);
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
       })
       .finally(() => setListingLoading(false));
   };
@@ -538,7 +529,7 @@ export default function Home() {
         main
       )
       .then((response) => {
-        console.log("Main 2", response.data);
+        // console.log("Main 2", response.data);
         const formattedHostHomes = response.data.data.map((item) => ({
           id: item.id,
           pictures: item.hosthomephotos,
@@ -554,7 +545,7 @@ export default function Home() {
         setListings(formattedHostHomes);
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
       })
       .finally(() => setListingLoading(false));
   };
@@ -582,7 +573,7 @@ export default function Home() {
       setListings(formattedHostHomes);
 
     }).catch((error) => {
-      console.log(error);
+      // console.log(error);
     }).finally(() => setListingLoading(false));
 
   };
@@ -616,7 +607,7 @@ export default function Home() {
   useEffect(() => {
     if(user?.id){
 
-      console.log("GET PENDING REVIEWS")
+      // console.log("GET PENDING REVIEWS")
 
       axios.get("/getPendingReviews").then(response => {
   
@@ -630,7 +621,7 @@ export default function Home() {
           hosthomeid: item.hosthomeid,
         }));
         setHouseDetails(formattedHostHomes);
-        console.log("pendingReviews", response.data.data)
+        // console.log("pendingReviews", response.data.data)
   
       }).catch(error => {
   
@@ -648,7 +639,7 @@ export default function Home() {
 
   }, [houseDetails]);
 
-  console.log("houseDetails", houseDetails)
+  // console.log("houseDetails", houseDetails)
 
   const ReviewListing = async (data) => {
 
@@ -673,7 +664,7 @@ export default function Home() {
       });
 
     }).catch(error => {
-      console.log("createReview", error)
+      // console.log("createReview", error)
 
     }).finally(() => { });
 
@@ -681,10 +672,10 @@ export default function Home() {
   const deletePendingReview = async (id) => {
 
     await axios.delete(`/deleteHostPendingReviews/${id}`).then(response => {
-      console.log("Deleted Pending Review Successfully", response.data)
+      // console.log("Deleted Pending Review Successfully", response.data)
 
     }).catch(error => {
-      console.log("DeletePendingReview", error)
+      // console.log("DeletePendingReview", error)
     });
 
 
@@ -693,7 +684,7 @@ export default function Home() {
 
   // Logic For the Pagination {START}
   const showMoreListings = () => {
-    console.log("perPage", per_page)
+    // console.log("perPage", per_page)
     setPerPage((prevPage) => prevPage + 10);
 
 
@@ -713,7 +704,7 @@ export default function Home() {
         setShowMoreLoading(false);
         fetchListings();
     }
-    console.log("show", showMoreLoading);
+    // console.log("show", showMoreLoading);
     // setShowMoreLoading(false)
 
   }, [per_page]);

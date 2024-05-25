@@ -211,12 +211,36 @@ export default function HostHomes({ match }) {
 
       const photoSrcArray = uploadedImages.map((image) => image.src);
       const videoBase64 = selectedVideo
-        ? await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (event) => resolve(event.target.result);
-            reader.readAsDataURL(selectedVideo);
-          })
-        : null;
+
+      ? await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+      
+        if (typeof selectedVideo === 'string' && selectedVideo.startsWith('data:video/')) {
+          // If selectedVideo is a base64 string, use it directly
+          resolve(selectedVideo);
+        } else if (typeof selectedVideo === 'string') {
+          // If selectedVideo is a string reference to a Blob, fetch the Blob and convert it to base64
+          fetch(selectedVideo)
+            .then((res) => res.blob())
+            .then((blob) => {
+              const videoBlob = new Blob([blob], { type: blob.type || 'video/*' });
+              reader.onload = (event) => resolve(event.target.result);
+              reader.readAsDataURL(videoBlob);
+            })
+            .catch(reject);
+        } else if (selectedVideo instanceof Blob || selectedVideo instanceof File) {
+          // If selectedVideo is a Blob or File object, convert it to base64
+          const videoBlob = new Blob([selectedVideo], { type: selectedVideo.type || 'video/*' });
+          reader.onload = (event) => resolve(event.target.result);
+          reader.readAsDataURL(videoBlob);
+        } else {
+          // If selectedVideo is an ArrayBuffer, convert it to a Blob first
+          const videoBlob = new Blob([selectedVideo], { type: 'video/*' });
+          reader.onload = (event) => resolve(event.target.result);
+          reader.readAsDataURL(videoBlob);
+        }
+      })
+      : null;
 
       const deposit = securityDeposit || 0;
 
@@ -1611,7 +1635,7 @@ export default function HostHomes({ match }) {
                       <div className="mb-4">
                         <FaCloudUploadAlt className="text-4xl mx-auto" />
                       </div>
-                      <p className="mb-2">Click or Drag Photos Here</p>
+                      <p className="mb-2">Select  Photos </p>
                       <p className="text-sm">Choose at least 5 photos</p>
                       <input
                         type="file"

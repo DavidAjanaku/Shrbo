@@ -15,6 +15,7 @@ import Popup from "../../hoc/Popup";
 import { LoadingOutlined } from '@ant-design/icons';
 import { styles } from "../ChatBot/Style";
 import logoImage from "../../assets/logo.png"
+import { Modal } from "antd";
 
 export default function Hosting() {
   const [activeTab, setActiveTab] = useState("checkingOut");
@@ -36,70 +37,12 @@ export default function Hosting() {
   const [coHostEmail, setCoHostEmail] = useState("");
   const [errorCohost, setErrorCohost] = useState("");
   const [cohostList, setCohostList] = useState([]);
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
   const [isNotificationDeleted, setNotificationDeleted] = useState(false);
   const [tabLoading, setTabLoading] = useState(true);
   const [notifications, setNotifications] = useState([
-    // {
-    //   id: 1,
-    //   message:
-    //     "New booking request for Property XYZ. Check details and confirm the reservation.",
-    //   date: "Oct 15, 2023",
-    // },
-    // {
-    //   id: 2,
-    //   message:
-    //     "Guests for Property ABC will be arriving soon. Ensure everything is ready for their check-in on [date].",
-    //   date: "Oct 18, 2023",
-    // },
-    // {
-    //   id: 3,
-    //   message:
-    //     "Don't forget to encourage guests from Property DEF to leave a review. It boosts your property's profile!",
-    //   date: "Oct 20, 2023",
-    // },
-    // {
-    //   id: 4,
-    //   message:
-    //     "Maintenance required at Property GHI. Schedule a visit to address issues reported by guests.",
-    //   date: "Oct 22, 2023",
-    // },
-    // {
-    //   id: 5,
-    //   message:
-    //     "Payment received for booking at Property JKL. Check your account for transaction details.",
-    //   date: "Oct 25, 2023",
-    // },
-    // {
-    //   id: 6,
-    //   message:
-    //     "Guests have checked out from Property MNO. Confirm the condition of the property and report any issues.",
-    //   date: "Oct 28, 2023",
-    // },
-    // {
-    //   id: 7,
-    //   message:
-    //     "Provide emergency contact information to guests staying at Property PQR. Ensure their safety and comfort.",
-    //   date: "Nov 1, 2023",
-    // },
-    // {
-    //   id: 8,
-    //   message:
-    //     "Create a special offer for Property STU to attract more bookings. Limited-time discounts available!",
-    //   date: "Nov 5, 2023",
-    // },
-    // {
-    //   id: 9,
-    //   message:
-    //     "Weather advisory for guests at Property VWX. Inform them about any potential weather-related impacts.",
-    //   date: "Nov 8, 2023",
-    // },
-    // {
-    //   id: 10,
-    //   message:
-    //     "Share information about upcoming local events near Property YZ. Enhance your guests' experience.",
-    //   date: "Nov 12, 2023",
-    // },
+   
   ]);
 
   /// ************ Notification Logic*****************************
@@ -120,6 +63,8 @@ export default function Hosting() {
     }
 
   }
+
+  
 
 
   useEffect(() => {
@@ -165,7 +110,10 @@ export default function Hosting() {
     // Render the formatted date
     return formattedDate;
   };
-
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setSelectedNotification(null);
+  };
   const initializeEcho = (token, receiverId) => {
     if (typeof window.Echo !== "undefined") {
       const channelName = `App.Models.User.${receiverId}`;
@@ -194,6 +142,10 @@ export default function Hosting() {
     }
   };
 
+  const showModal = (notification) => {
+    setSelectedNotification(notification);
+    setIsModalVisible(true);
+  };
 
   useEffect(() => {
     if (token) {
@@ -522,123 +474,25 @@ export default function Hosting() {
 
   const checkingOut = [
     ...checking,
-    // {
-    //   name: "Endo",
-    //   date: " Oct 22",
-    //   time: "12:00pm",
-
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
-    // {
-    //   name: "Endo",
-    //   date: "Today",
-    //   time: "12:00pm",
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
-    // {
-    //   name: "Endo",
-    //   date: " Oct 22",
-    //   time: "12:00pm",
-
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
-    // {
-    //   name: "Endo",
-    //   date: " Expired",
-    //   time: "12:00pm",
-
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
+   
   ];
 
   const currentlyHosting = [
     ...hosting,
-    // {
-    //   name: "Sonia",
-    //   date: "Sept 22 - Oct 22",
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
-    // {
-    //   name: "Abigail",
-    //   date: "Sept 22 - Oct 22",
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
-    // {
-    //   name: "Joy",
-    //   date: "Sept 22 - Oct 22",
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
-    // {
-    //   name: "Soma",
-    //   date: "Sept 22 - Oct 22",
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
+   
   ];
 
   const arrivingSoonReservations = [
-
-    // {
-    //   name: "John",
-    //   date: "Oct 25",
-    //   time: "3:00pm",
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
-    // {
-    //   name: "Alice",
-    //   date: "Oct 26",
-    //   time: "2:30pm",
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
     ...arriving,
   ];
 
   const upcomingReservations = [
-    // {
-    //   name: "Michael Jackson",
-    //   checkInDate: "Nov 10 2023",
-    //   checkOutDate: "Nov 10 2023",
-    //   // amountPaid: "half payment made",
-    //   time: "4:00pm",
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
-    // {
-    //   name: "William",
-    //   checkInDate: "Dec 10 2023",
-    //   checkOutDate: "Nov 10 2023",
-    //   // amountPaid: "full payment made",
-    //   time: "4:00pm",
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
+    
     ...upcoming,
   ];
 
   const pendingReviews = [
-    // {
-    //   name: "John",
-    //   checkInDate: "Oct 25, 2023",
-    //   reservationId: 123,
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
-    // {
-    //   name: "Alice",
-    //   checkInDate: "Oct 26, 2023",
-    //   reservationId: 124,
-    //   image:
-    //     "https://img.freepik.com/free-photo/handsome-cheerful-man-with-happy-smile_176420-18028.jpg",
-    // },
+  
     ...pending,
   ];
 
@@ -1165,15 +1019,6 @@ export default function Hosting() {
 
 
 
-
-
-
-
-
-
-
-
-
   return (
     <div className="pb-20">
       {contextHolder}
@@ -1209,20 +1054,26 @@ export default function Hosting() {
               <div className="absolute bg-white z-[60] h-96 overflow-scroll example left-0 mt-1 p-2 w-64 border rounded-lg shadow-lg">
                 {/* Render your notifications here */}
                 <>
-                  {(notifications[0].id) ?
-                    <>
-                      {notifications.map((notification, index) => (
-                        <div key={notification.id} onClick={() => { deleteNotification(notification.id) }} className="text-gray-800 my-4 p-2 rounded-md cursor-pointer hover:bg-orange-400 hover:text-white">
-                          {notification.message}
-                          <div className="text-gray-500 text-xs">
-                            {DateTimeConverter(notification.time)}
-                          </div>
+                {notifications.length > 0 ? (
+                        <>
+                          {notifications.map((notification, index) => (
+                            <div
+                              key={notification.id}
+                              onClick={() => showModal(notification)}
+                              className="text-gray-800 my-4 p-2 rounded-md cursor-pointer hover:bg-orange-400 hover:text-white"
+                            >
+                              {notification.message}
+                              <div className="text-gray-500 text-xs">
+                                {DateTimeConverter(notification.time)}
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        <div className="text-black w-full h-full flex items-center justify-center">
+                          No Notifications
                         </div>
-                      ))}
-                    </>
-                    :
-                    <div className=" text-black w-full h-full flex items-center justify-center  ">No Notifications</div>
-                  }
+                      )}
                 </>
               </div>
             )}
@@ -1290,6 +1141,8 @@ export default function Hosting() {
               {tips.map(tip => (
 
                 <AlertCard
+                key={tip.id} // Add the key here
+
                   title={"Verify your identity" || tip.title}
                   description={tip.message}
                   link={tip.url}
@@ -1452,6 +1305,21 @@ export default function Hosting() {
         </div>
       </div>
 
+      <Modal
+        title="Notification Details"
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        {selectedNotification && (
+          <div>
+            <p>{selectedNotification.message}</p>
+            <p className="text-gray-500 text-xs">
+              {DateTimeConverter(selectedNotification.time)}
+            </p>
+          </div>
+        )}
+      </Modal>
       <HostBottomNavigation />
     </div>
   );

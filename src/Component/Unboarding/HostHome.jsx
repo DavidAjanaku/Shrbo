@@ -182,12 +182,34 @@ export default function HostHome({ match }) {
 
       const photoSrcArray = uploadedImages.map((image) => image.src);
       const videoBase64 = selectedVideo
-        ? await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (event) => resolve(event.target.result);
-            reader.readAsDataURL(selectedVideo);
-          })
-        : null;
+
+      ? await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+      
+        reader.onload = (event) => {
+          if (event.target.result.startsWith('data:video/')) {
+            resolve(event.target.result);
+          } else {
+            const videoBlob = new Blob([selectedVideo], { type: selectedVideo.type || 'video/*' });
+            reader.readAsDataURL(videoBlob);
+          }
+        };
+      
+        reader.onerror = reject;
+      
+        if (typeof selectedVideo === 'string' && selectedVideo.startsWith('data:video/')) {
+          // If selectedVideo is a base64 string, use it directly
+          reader.onload({ target: { result: selectedVideo } });
+        } else if (selectedVideo instanceof Blob || selectedVideo instanceof File) {
+          // If selectedVideo is a Blob or File object, read it as a data URL
+          reader.readAsDataURL(selectedVideo);
+        } else {
+          // If selectedVideo is an ArrayBuffer, convert it to a Blob first
+          const videoBlob = new Blob([selectedVideo], { type: 'video/*' });
+          reader.readAsDataURL(videoBlob);
+        }
+      })
+      : null;
 
       const formDetails = {
         property_type: selectedHouseType,

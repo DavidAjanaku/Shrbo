@@ -18,6 +18,13 @@
   display: none;
 }
 
+.popup-50-height {
+  height: 70%;
+  max-height: 70%; /* Ensure it doesn't exceed 50% of the viewport height */
+  overflow-y: auto; /* Enable vertical scrolling if the content overflows */
+}
+
+
   .containerrr {
     --uib-size: 120px;
     --uib-color: orange;
@@ -384,7 +391,9 @@
   }
 
 
-
-
-
+  @media (min-width: 1024px) {
+    .custom-modal-content {
+      width: 700px;
+    }
+  }
   

@@ -89,23 +89,7 @@ export default function ListingForm({
   const [matchedReservedPrices, setMatchedReservedPrices] = useState([]);
   const [coHostMessageShown, setCoHostMessageShown] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     try {
-  //       const response = await Axios.get("/user");
-  //       setHostId(response.data.user.id);
-  //       console.log(response.data.user.id);
 
-  //       // console.log(response.data.verified);
-  //       setVerified(response.data.verified); // Set the verified status
-  //     } catch (error) {
-  //       console.error("Error fetching users:", error);
-  //       // Handle error, show error message, etc.
-  //     }
-  //   };
-
-  //   fetchUsers();
-  // }, []);
 
   // console.log(verified);
   const {
@@ -144,7 +128,7 @@ export default function ListingForm({
     setMessageModalVisible(true);
   };
 
-  console.log(bookingRequestStatus);
+  // console.log(bookingRequestStatus);
 
   useEffect(() => {
     if (reservations && reservations.length > 0) {
@@ -180,7 +164,7 @@ export default function ListingForm({
   }, [reservations, bookingRequestStatus, reservation]);
 
   const { id } = useParams(); // Get the ID parameter from the route
-  console.log(max_nights);
+  // console.log(max_nights);
   useEffect(() => {
     const fetchListingDetails = async () => {
       try {
@@ -204,7 +188,7 @@ export default function ListingForm({
           setIsAuthenticated(false);
         }
 
-        console.log(response);
+        // console.log(response);
         const receiverUserID = response.data.data.user.id;
         setReceiverId(receiverUserID);
         setListingDetails(response.data.data);
@@ -248,9 +232,9 @@ export default function ListingForm({
     fetchListingDetails();
   }, [id, token]);
 
-  console.log();
+  // console.log();
 
-  console.log(hosthomecustomdiscounts);
+  // console.log(hosthomecustomdiscounts);
 
   const resetStateValues = () => {
     setCheckInDate(null);
@@ -308,11 +292,7 @@ export default function ListingForm({
     predefinedDiscounts.includes(discount)
   );
 
-  console.log(
-    matchingDiscounts.length > 0 ? matchingDiscounts : "No matches found"
-  );
 
-  console.log(bookingCount);
 
   const calculateWeekendNights = (checkIn, checkOut) => {
     let weekendNights = 0;
@@ -329,7 +309,6 @@ export default function ListingForm({
 
     return weekendNights;
   };
-  console.log(checkoutDates);
 
   useEffect(() => {
     if (
@@ -393,8 +372,7 @@ export default function ListingForm({
       }
     }
   }, [preparation_time, checkoutDates]);
-  console.log(vatFee);
-  console.log(guestFeePrice);
+ 
 
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
@@ -410,7 +388,6 @@ export default function ListingForm({
       // Calculate basePrice
 
       let basePrice = nights * nightlyPrice;
-      console.log(basePrice);
       let basenormalPrice = basePrice;
       let reservedPrice = basePrice; // Initialize reservedPrice
       let weekendPrices = 0;
@@ -418,7 +395,6 @@ export default function ListingForm({
 
       if (reservedPricesForCertainDay.length > 0) {
         const flattenedReservedDates = reservedPricesForCertainDay.flat();
-        console.log(flattenedReservedDates);
         const checkInDate = checkIn.getTime();
         const checkOutDate = checkOut.getTime();
 
@@ -475,15 +451,7 @@ export default function ListingForm({
             // Calculate the reserved price
             reservedPrice = basenormalPrice;
 
-            console.log(
-              "Total nightly price for reserved days:",
-              totalnightlydays
-            );
-            console.log(
-              "Updated basenormalPrice after adjusting for reserved days:",
-              basenormalPrice
-            );
-            console.log("Reserved price after calculation:", reservedPrice);
+          
 
             // Add the new reservation to matchedReservedPrices if it's not already there
             if (
@@ -527,7 +495,7 @@ export default function ListingForm({
 
       if (weekend !== null && weekend !== "" && !isNaN(Number(weekend))) {
         const weekendPrice = Number(weekend);
-        console.log("Weekend Price:", weekendPrice);
+        // console.log("Weekend Price:", weekendPrice);
         const startDate = new Date(checkIn);
         const endDate = new Date(checkOut);
         let currentDate = new Date(startDate);
@@ -540,11 +508,11 @@ export default function ListingForm({
         }
 
         weekendCost = weekendNights * weekendPrice;
-        console.log("Number of weekend nights:", weekendNights);
-        console.log("Total cost for weekend nights:", weekendCost);
-        console.log("weekendCost " + weekendCost);
+        // console.log("Number of weekend nights:", weekendNights);
+        // console.log("Total cost for weekend nights:", weekendCost);
+        // console.log("weekendCost " + weekendCost);
         weekendPrices = weekendCost;
-        console.log("Updated weekendPrices with weekendCost:", weekendPrices);
+        // console.log("Updated weekendPrices with weekendCost:", weekendPrices);
 
         // Adjust the reserved price for weekend nights
         if (weekendNights === 0) {
@@ -565,36 +533,28 @@ export default function ListingForm({
 
       reservedPrice + weekendCost + securityDeposit;
       let reservedPriceForApartment = reservedPrice + weekendPrices;
-      console.log(reservedPriceForApartment);
+      // console.log(reservedPriceForApartment);
 
       //
 
       // Assuming host fees is 20%, service fee is 5%, and tax is 4%
       // const hostFees = 0.07 * basePrice;
-      console.log(basePrice);
+      // console.log(basePrice);
 
       const guest_fee = guestFee * nights;
 
       const securityDeposits = securityDeposit;
       const totalPrice = nights * nightlyPrice;
-      console.log("totalPrice " + totalPrice);
       const TotalPrice = reservedPriceForApartment + securityDeposit;
-      console.log("basePrice " + basePrice);
-      console.log("TotalPrice " + TotalPrice);
+      
       setTotalCost(reservedPriceForApartment);
 
       setHousePrice(price);
       setNights(nights);
       setTotalPrice(reservedPriceForApartment);
-      console.log(totalPrice);
+     
 
-      // setReservedPrice(reservedPrice);
-      console.log(reservedPrice);
-      console.log(securityDeposit);
-      console.log(totalCost);
-
-      console.log(reservedPrice);
-      console.log(totalCost);
+    
       setHostFees(hostFees);
       setTotalCosts(totalCosts);
       setServiceFee(serviceFees);
@@ -622,30 +582,24 @@ export default function ListingForm({
         } else if (nights >= 7 && weekDiscount > 0) {
           customDiscountPercentage = weekDiscount / 100;
         }
-        console.log(customDiscountPercentage);
 
         const baseDiscountedPrice = parseFloat(
           (reservedPriceForApartment * customDiscountPercentage).toFixed(2)
         );
 
-        console.log(baseDiscountedPrice);
         const securityDepositDiscountedPrice =
           securityDeposits * customDiscountPercentage;
 
-        console.log(securityDepositDiscountedPrice);
         const totalDiscountedPrice =
           baseDiscountedPrice + securityDepositDiscountedPrice;
-        console.log(totalDiscountedPrice);
         const discountedPrice =
           reservedPriceForApartment + securityDeposits - baseDiscountedPrice;
-        console.log(discountedPrice);
 
         if (customDiscountPercentage > 0) {
           const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
           setAppliedDiscount(
             `Custom discount applied (${formattedDiscount}% off)`
           );
-          console.log(discountedPrice);
           setTotalCost(discountedPrice);
           return; // Exit early since custom discount is applied
         }
@@ -661,7 +615,6 @@ export default function ListingForm({
         setAppliedDiscount("10% Monthly discount (10% off)");
         const discountedPrice =
           reservedPriceForApartment * 0.9 + securityDeposits;
-        console.log(discountedPrice);
         setTotalCost(discountedPrice);
       } else if (nights >= 7 && discount.includes("5% Weekly discount")) {
         setAppliedDiscount("5% Weekly discount (5% off)");
@@ -714,6 +667,8 @@ export default function ListingForm({
     return 1; // Default to 1 night if dates are not selected
   };
   let pricePerNight = Number(price).toLocaleString();
+  let totalPriceForNights =calculateNumberOfNights() * Number(price);
+
 
   const navigate = useNavigate();
 
@@ -742,8 +697,7 @@ export default function ListingForm({
   // Calculate the max date based on the availability window
   const maxDate = calculateMaxDate(availability_window);
 
-  console.log(reservation);
-  console.log(bookedDates);
+ 
   const isDateBooked = (date) => {
     return bookedDates.some(
       (bookedDate) =>
@@ -770,7 +724,6 @@ export default function ListingForm({
     return false;
   };
 
-  console.log(blockedDates);
 
   // Check if a date is blocked
   const isDateBlocked = (date) => {
@@ -804,12 +757,10 @@ export default function ListingForm({
         return true; // If any date is blocked, disable checkout
       }
     }
-    console.log("Blocked dates:", blockedDates);
 
     return false; // Enable checkout if no dates are blocked
   };
 
-  console.log(token);
   useEffect(() => {
     const fetchListingDetails = async () => {
       let response;
@@ -844,8 +795,7 @@ export default function ListingForm({
         return;
       }
 
-      console.log("HostId:", hostId);
-      console.log("HostHomeId:", id);
+  
 
       await Axios.post(`/makeRequestToBook/${hostId}/${id}`);
       setMessageSent(true);
@@ -873,7 +823,6 @@ export default function ListingForm({
   const sendMessageToHost = async (receiverId) => {
     try {
       // Log the message before sending
-      console.log("Sending message:", message);
 
       // Send the message to the API
       const response = await Axios.post(`/chat/${receiverId}`, {
@@ -882,7 +831,6 @@ export default function ListingForm({
 
       // Set messageSent to true to indicate that the message was sent successfully
       setMessageSent(true);
-      console.log("Message sent successfully");
       showMessage.success("Message sent successfully");
 
       // Handle the response as needed
@@ -896,8 +844,7 @@ export default function ListingForm({
   const hostIDs = parseInt(localStorage.getItem("receiverid"), 10);
   const coHostIdInt = parseInt(coHostId, 10);
 
-  console.log("cohostID:", coHostIdInt);
-  console.log("userID:", hostIDs);
+ 
 
   const fetchCoHostData = async () => {
     try {
@@ -1135,7 +1082,7 @@ export default function ListingForm({
                                       ? `₦${Number(
                                           totalPrice
                                         ).toLocaleString()}`
-                                      : `₦${pricePerNight}`}
+                                      : `₦${totalPriceForNights.toLocaleString()}`}
                                   </div>
                                 </div>
                               </div>

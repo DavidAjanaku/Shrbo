@@ -278,15 +278,33 @@ export default function HostHome({ match }) {
       const allPhotos = [...existingPhotosUrls, ...newPhotosBase64];
 
       const videoBase64 = apartment.hosthomevideo
-        ? await new Promise((resolve) => {
-            const reader = new FileReader();
-            const videoBlob = new Blob([apartment.hosthomevideo], {
-              type: "video/mp4",
-            }); // Create a Blob from the video data
-            reader.onload = (event) => resolve(event.target.result);
-            reader.readAsDataURL(videoBlob); // Read the Blob as Data URL
-          })
-        : null;
+
+? await new Promise((resolve, reject) => {
+  const reader = new FileReader();
+
+  if (typeof apartment.hosthomevideo === 'string' && apartment.hosthomevideo.startsWith('data:video/')) {
+    // If apartment.hosthomevideo is a base64 string, use it directly
+    resolve(apartment.hosthomevideo);
+  } else if (typeof apartment.hosthomevideo === 'string') {
+    // If apartment.hosthomevideo is a string reference to a Blob, fetch the Blob and convert it to base64
+    fetch(apartment.hosthomevideo)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const videoBlob = new Blob([blob], { type: blob.type || 'video/*' });
+        reader.onload = (event) => resolve(event.target.result);
+        reader.readAsDataURL(videoBlob);
+      })
+      .catch(reject);
+  } else {
+    // If apartment.hosthomevideo is a File, Blob, or ArrayBuffer, create a Blob from it
+    const videoBlob = new Blob([apartment.hosthomevideo], { type: (apartment.hosthomevideo.type || 'video/*') });
+    reader.onload = (event) => resolve(event.target.result);
+    reader.readAsDataURL(videoBlob);
+  }
+})
+: null;
+
+        console.log(videoBase64);
 
       const selectedDescriptions = apartment.hosthomedescriptions.map(
         (item) => item.description
@@ -1701,7 +1719,7 @@ export default function HostHome({ match }) {
                       <div className="mb-4">
                         <FaCloudUploadAlt className="text-4xl mx-auto" />
                       </div>
-                      <p className="mb-2">Click or Drag Photos Here</p>
+                      <p className="mb-2">Select  Photos Here</p>
                       <p className="text-sm font-bold text-xl">
                         Choose at least 5 photos
                       </p>
