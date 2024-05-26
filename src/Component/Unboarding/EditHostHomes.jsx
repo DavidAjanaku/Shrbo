@@ -278,31 +278,33 @@ export default function HostHome({ match }) {
       const allPhotos = [...existingPhotosUrls, ...newPhotosBase64];
 
       const videoBase64 = apartment.hosthomevideo
-
-? await new Promise((resolve, reject) => {
-  const reader = new FileReader();
-
-  if (typeof apartment.hosthomevideo === 'string' && apartment.hosthomevideo.startsWith('data:video/')) {
-    // If apartment.hosthomevideo is a base64 string, use it directly
-    resolve(apartment.hosthomevideo);
-  } else if (typeof apartment.hosthomevideo === 'string') {
-    // If apartment.hosthomevideo is a string reference to a Blob, fetch the Blob and convert it to base64
-    fetch(apartment.hosthomevideo)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const videoBlob = new Blob([blob], { type: blob.type || 'video/*' });
-        reader.onload = (event) => resolve(event.target.result);
-        reader.readAsDataURL(videoBlob);
-      })
-      .catch(reject);
-  } else {
-    // If apartment.hosthomevideo is a File, Blob, or ArrayBuffer, create a Blob from it
-    const videoBlob = new Blob([apartment.hosthomevideo], { type: (apartment.hosthomevideo.type || 'video/*') });
-    reader.onload = (event) => resolve(event.target.result);
-    reader.readAsDataURL(videoBlob);
-  }
-})
-: null;
+      ? await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+    
+          if (typeof apartment.hosthomevideo === 'string' && apartment.hosthomevideo.startsWith('data:video/')) {
+            // If apartment.hosthomevideo is a base64 string, use it directly
+            resolve(apartment.hosthomevideo);
+          } else if (typeof apartment.hosthomevideo === 'string' && apartment.hosthomevideo.startsWith('http')) {
+            // If apartment.hosthomevideo is a URL, submit it as is
+            resolve(apartment.hosthomevideo);
+          } else if (typeof apartment.hosthomevideo === 'string') {
+            // If apartment.hosthomevideo is a string reference to a Blob, fetch the Blob and convert it to base64
+            fetch(apartment.hosthomevideo)
+              .then((res) => res.blob())
+              .then((blob) => {
+                const videoBlob = new Blob([blob], { type: blob.type || 'video/*' });
+                reader.onload = (event) => resolve(event.target.result);
+                reader.readAsDataURL(videoBlob);
+              })
+              .catch(reject);
+          } else {
+            // If apartment.hosthomevideo is a File, Blob, or ArrayBuffer, create a Blob from it
+            const videoBlob = new Blob([apartment.hosthomevideo], { type: (apartment.hosthomevideo.type || 'video/*') });
+            reader.onload = (event) => resolve(event.target.result);
+            reader.readAsDataURL(videoBlob);
+          }
+        })
+      : null;
 
         console.log(videoBase64);
 
