@@ -285,8 +285,8 @@ export default function HostHome({ match }) {
             // If apartment.hosthomevideo is a base64 string, use it directly
             resolve(apartment.hosthomevideo);
           } else if (typeof apartment.hosthomevideo === 'string' && apartment.hosthomevideo.startsWith('http')) {
-            // If apartment.hosthomevideo is a URL, submit it as is
-            resolve(apartment.hosthomevideo);
+            // If apartment.hosthomevideo is a URL, submit an empty string
+            resolve("");
           } else if (typeof apartment.hosthomevideo === 'string') {
             // If apartment.hosthomevideo is a string reference to a Blob, fetch the Blob and convert it to base64
             fetch(apartment.hosthomevideo)
@@ -305,6 +305,7 @@ export default function HostHome({ match }) {
           }
         })
       : null;
+
 
         console.log(videoBase64);
 
