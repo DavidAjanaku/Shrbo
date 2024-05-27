@@ -49,41 +49,38 @@ const ReportDamage = () => {
   const handleVideoUpload = (event) => {
     setVideos('');
     const video = event.target.files[0];
-  
+
     if (video) {
       const fileSizeInMB = video.size / (1024 * 1024); // Convert bytes to megabytes
-  
+
       if (fileSizeInMB <= 30) {
-        // Check video type
-        const supportedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
-        if (!supportedTypes.includes(video.type)) {
-          openNotification('error', 'Unsupported video format.');
-          return;
-        }
-  
-        // Set previewVideo without converting to base64
         const reader = new FileReader();
         reader.onloadend = () => {
-          setVideos(reader.result); // Convert to base64 and set videos
+          setVideos(reader.result); // Set the video source
         };
         reader.readAsDataURL(video);
-  
+
         // Check video duration
         const videoElement = document.createElement('video');
         videoElement.src = URL.createObjectURL(video);
-  
+
         videoElement.onloadedmetadata = () => {
           if (videoElement.duration > 180) {
             openNotification('error', 'Video duration should not exceed 3 minutes.');
             setVideos(''); // Clear videos state if duration exceeds limit
           }
         };
+
+        // Check video format support
+        videoElement.onerror = () => {
+          openNotification('error', 'The uploaded video format is not supported in the browser.');
+        };
       } else {
         openNotification('error', 'Video file size should not exceed 30MB.');
       }
     }
   };
-  
+
 
 
 
@@ -228,19 +225,17 @@ const ReportDamage = () => {
                 onChange={handleVideoUpload}
               />
             </div> */}
-
-                <div className="bg-white  rounded-lg mb-7 ">
+                <div className="bg-white rounded-lg mb-7">
                   <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Upload Video(maximum 30mb):
+                    Upload Video (maximum 30MB):
                   </label>
                   <label
                     htmlFor="videoInput"
-                    className="grid place-items-center bg-orange-300 w-28 text-white text-sm rounded-md  cursor-pointer transition duration-300 hover:bg-orange-600"
+                    className="grid place-items-center bg-orange-300 w-28 text-white text-sm rounded-md cursor-pointer transition duration-300 hover:bg-orange-600"
                   >
-                    <div className=" m-3">
-                      <FaVideo className="text-base " />
+                    <div className="m-3">
+                      <FaVideo className="text-base" />
                     </div>
-                    {/* Click to Upload Video */}
                     <input
                       type="file"
                       accept="video/*"
@@ -249,22 +244,17 @@ const ReportDamage = () => {
                       id="videoInput"
                     />
                   </label>
+                  <div className="my-3 gap-4">
+                    {videos && (
+                      <div className="mb-4">
+                        <video className="w-full object-cover h-64" controls>
+                          <source src={videos} />
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="mb-3 gap-4">
-                  {videos && (
-                    <div className="mb-4">
-                      {/* <label className="block text-gray-700 text-sm font-bold mb-2">Uploaded Video:</label> */}
-                      <video className="w-full object-cover h-64">
-                        <source src={videos} type="video/mp4" />
-                        <source src={videos} type="video/webm" />
-                        <source src={videos} type="video/ogg" />
-                        Your browser does not support the video tag.
-                      </video>
-
-                    </div>
-                  )}
-                </div>
-
                 <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2">
                     Booking Number:
