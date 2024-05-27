@@ -49,23 +49,29 @@ const ReportDamage = () => {
   const handleVideoUpload = (event) => {
     setVideos('');
     const video = event.target.files[0];
-
+  
     if (video) {
       const fileSizeInMB = video.size / (1024 * 1024); // Convert bytes to megabytes
-
+  
       if (fileSizeInMB <= 30) {
+        // Check video type
+        const supportedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+        if (!supportedTypes.includes(video.type)) {
+          openNotification('error', 'Unsupported video format.');
+          return;
+        }
+  
         // Set previewVideo without converting to base64
         const reader = new FileReader();
         reader.onloadend = () => {
           setVideos(reader.result); // Convert to base64 and set videos
-
         };
         reader.readAsDataURL(video);
-
+  
         // Check video duration
         const videoElement = document.createElement('video');
         videoElement.src = URL.createObjectURL(video);
-
+  
         videoElement.onloadedmetadata = () => {
           if (videoElement.duration > 180) {
             openNotification('error', 'Video duration should not exceed 3 minutes.');
@@ -76,8 +82,8 @@ const ReportDamage = () => {
         openNotification('error', 'Video file size should not exceed 30MB.');
       }
     }
-
   };
+  
 
 
 
@@ -156,7 +162,7 @@ const ReportDamage = () => {
             <LoadingOutlined
               style={{
                 fontSize: 24,
-                color:'orange',
+                color: 'orange',
               }}
               spin
             />
@@ -250,6 +256,8 @@ const ReportDamage = () => {
                       {/* <label className="block text-gray-700 text-sm font-bold mb-2">Uploaded Video:</label> */}
                       <video className="w-full object-cover h-64">
                         <source src={videos} type="video/mp4" />
+                        <source src={videos} type="video/webm" />
+                        <source src={videos} type="video/ogg" />
                         Your browser does not support the video tag.
                       </video>
 
