@@ -17,6 +17,16 @@ import "slick-carousel/slick/slick-theme.css";
 import axios from "../Axios";
 import Logo from "../assets/logo.png";
 import { useStateContext } from "../ContextProvider/ContextProvider";
+import lagosImage from '../../src/assets/lagos.jpeg';
+import abujaImage from '../../src/assets/abuja.jpeg';
+import ibadanImage from '../../src/assets/ibadan.jpeg';
+import kanoImage from '../../src/assets/kano.jpeg';
+import portHarcourtImage from '../../src/assets/port harcourt.jpeg';
+import enuguImage from '../../src/assets/enugu.jpeg';
+import owerriImage from '../../src/assets/owerri.jpeg';
+import beninImage from '../../src/assets/benin.jpeg';
+import katsinaImage from '../../src/assets/kastina.webp';
+import warriImage from '../../src/assets/warri.jpeg';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -248,7 +258,7 @@ export default function Home() {
       name: "Lagos",
       description:
         "Lagos, Nigeria's largest city, is a bustling metropolis known for its vibrant energy and rich cultural diversity.",
-      image: "./src/assets/lagos.jpeg", // Provide the image path
+      image: lagosImage, // Provide the image path
       facts: [
         "Home to Nollywood, Nigeria's booming film industry.",
         "More than 20 million people live here.",
@@ -260,7 +270,7 @@ export default function Home() {
       description:
         "Abuja is Nigeria's capital city and is known for its modernity and meticulously planned layout. As the center of government, it offers a blend of contemporary architecture, lush green spaces, and cultural attractions.",
       image:
-        "./src/assets/abuja.jpeg", // Provide the image path for Abuja
+      abujaImage, // Provide the image path for Abuja
       facts: [
         "Abuja officially became the capital of Nigeria in 1991, replacing Lagos.",
         `The Aso Rock is a massive monolith that dominates the city's landscape and is considered one of the city's landmarks.`,
@@ -280,7 +290,7 @@ export default function Home() {
       description:
         'Ibadan, often referred to as the "ancient city," is one of the largest cities in Nigeria and is steeped in history. The city boasts a unique blend of tradition and modernity, making it a captivating destination for tourists.',
       image:
-        "./src/assets/ibadan.jpeg", // Provide the image path
+        ibadanImage, // Provide the image path
       facts: [
         "Known for the towering Cocoa House, a historic skyscraper that was once the tallest building in tropical Africa.",
         "Home to the University of Ibadan, the oldest university in Nigeria.",
@@ -301,7 +311,7 @@ export default function Home() {
       description:
         "Kano, located in northern Nigeria, is known for its rich history and is often regarded as the commercial and cultural heart of the north. The city offers a blend of tradition, art, and thriving commerce.",
       image:
-        "./src/assets/kano.jpeg", // Provide the image path
+        kanoImage, // Provide the image path
       facts: [
         "Kano's ancient city walls are a UNESCO World Heritage site and are among the most well-preserved city walls in Africa.",
         "The city is famous for its traditional dye pits, where colorful fabrics are created using ancient techniques.",
@@ -323,7 +333,7 @@ export default function Home() {
       description:
         "Port Harcourt, the capital of Rivers State, is a vibrant and dynamic city known for its oil and gas industry. It offers a unique blend of modernity and natural beauty along the Niger Delta.",
       image:
-        "./src/assets/port harcourt.jpeg", // Provide the image path
+        portHarcourtImage, // Provide the image path
       facts: [
         'The city is often referred to as the "Garden City" due to its lush greenery and numerous parks.',
         "Port Harcourt is a major hub for the Nigerian oil and gas industry, housing several multinational corporations.",
@@ -345,7 +355,7 @@ export default function Home() {
       description:
         'Enugu, often called the "Coal City," is located in the southeastern part of Nigeria. It is known for its lush landscapes, vibrant culture, and historical significance. Enugu offers a blend of natural beauty and a warm atmosphere.',
       image:
-        "./src/assets/enugu.jpeg", // Provide the image path
+        enuguImage, // Provide the image path
       facts: [
         "Enugu was the capital of the former Eastern Region during Nigeria's First Republic.",
         "The city boasts picturesque coal mines, with remnants of the mining industry.",
@@ -366,7 +376,7 @@ export default function Home() {
       name: "Owerri",
       description:
         "Owerri, the capital of Imo State, is a city known for its lively atmosphere, entertainment, and hospitality. The city offers a mix of modern infrastructure and traditional values.",
-      image: "./src/assets/owerri.jpeg", // Provide the image path
+      image: owerriImage, // Provide the image path
       facts: [
         "The city is renowned for its impressive roundabouts, each featuring a unique sculpture.",
         "Owerri is a hub for nightlife and entertainment, with numerous bars, clubs, and live music venues.",
@@ -388,7 +398,7 @@ export default function Home() {
       description:
         "Benin City, the capital of Edo State, is known for its historical significance as the center of the ancient Benin Kingdom. Today, it offers a glimpse into Nigeria's royal heritage and a mix of tradition and progress.",
       image:
-        "./src/assets/benin.jpeg", // Provide the image path
+        beninImage, // Provide the image path
       facts: [
         "The city is famous for the historic Benin Bronzes, intricate artworks created during the Benin Empire.",
         "Benin City is home to the Oba's Palace, a UNESCO World Heritage site and the residence of the Oba of Benin.",
@@ -410,7 +420,7 @@ export default function Home() {
       description:
         "Katsina, a city in northern Nigeria, is renowned for its rich history, culture, and craftsmanship. It offers a unique blend of tradition and modern living in a serene setting.",
       image:
-        "./src/assets/kastina.webp", // Provide the image path
+       katsinaImage, // Provide the image path
       facts: [
         "The city is the birthplace of Umaru Musa Yar'Adua, a former President of Nigeria.",
         "Katsina is known for its traditional textile industry, producing vibrant and intricate fabrics.",
@@ -432,7 +442,7 @@ export default function Home() {
       description:
         "Warri, a vibrant city in Delta State, is known for its dynamic atmosphere, oil and gas industry, and multicultural heritage. It offers a blend of commerce and culture along the coast.",
       image:
-        "./src/assets/warri.jpeg", // Provide the image path
+        warriImage, // Provide the image path
       facts: [
         "The city hosts the Effurun Roundabout, known for its iconic sculpture.",
         "Warri's Pessu Market is a bustling hub for trading, selling a variety of goods.",
