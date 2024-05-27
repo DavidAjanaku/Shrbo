@@ -17,6 +17,16 @@ import "slick-carousel/slick/slick-theme.css";
 import axios from "../Axios";
 import Logo from "../assets/logo.png";
 import { useStateContext } from "../ContextProvider/ContextProvider";
+import lagosImage from '../../src/assets/lagos.jpeg';
+import abujaImage from '../../src/assets/abuja.jpeg';
+import ibadanImage from '../../src/assets/ibadan.jpeg';
+import kanoImage from '../../src/assets/kano.jpeg';
+import portHarcourtImage from '../../src/assets/port harcourt.jpeg';
+import enuguImage from '../../src/assets/enugu.jpeg';
+import owerriImage from '../../src/assets/owerri.jpeg';
+import beninImage from '../../src/assets/benin.jpeg';
+import katsinaImage from '../../src/assets/kastina.webp';
+import warriImage from '../../src/assets/warri.jpeg';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -170,29 +180,47 @@ export default function Home() {
 
   useEffect(() => {
     const homePageData = async () => {
+      // Check if the data is in the cache
+      const cachedHomeImage = localStorage.getItem('homeImage');
+      const cachedHomeTitle = localStorage.getItem('homeTitle');
+      const cachedHomeSubTitle = localStorage.getItem('homeSubTitle');
+      const cachedTimestamp = localStorage.getItem('timestamp');
+  
       await axios
         .get("/homepage")
         .then((response) => {
-          // console.log("HomePage", response.data.data[0]);
           const homePageData = response.data.data[0];
-
-          setHomeImage(homePageData.image);
-          setHomeTitle(homePageData.title);
-          setHomeSubTitle(homePageData.subtitle);
+  
+          // If the timestamp/version number is different, update the cache and the state
+          if (homePageData.timestamp !== cachedTimestamp) {
+            // Cache the data
+            localStorage.setItem('homeImage', homePageData.image);
+            localStorage.setItem('homeTitle', homePageData.title);
+            localStorage.setItem('homeSubTitle', homePageData.subtitle);
+            localStorage.setItem('timestamp', homePageData.timestamp);
+  
+            setHomeImage(homePageData.image);
+            setHomeTitle(homePageData.title);
+            setHomeSubTitle(homePageData.subtitle);
+          } else if (cachedHomeImage && cachedHomeTitle && cachedHomeSubTitle) {
+            // If the timestamp/version number is the same, use the cached data
+            setHomeImage(cachedHomeImage);
+            setHomeTitle(cachedHomeTitle);
+            setHomeSubTitle(cachedHomeSubTitle);
+          }
         })
         .catch((error) => {
           console.error(error);
         }).finally(()=>{
-          if(!token){  // this is so the loader does not stop showing when the request to /user is being made
+          if(!token){
             setLoading(false);
-
           }
-
         });
     };
-
+  
     homePageData();
   }, []);
+  
 
   // View Count (register visitors)
 
@@ -230,7 +258,7 @@ export default function Home() {
       name: "Lagos",
       description:
         "Lagos, Nigeria's largest city, is a bustling metropolis known for its vibrant energy and rich cultural diversity.",
-      image: "https://www.petan.org/wp-content/uploads/2017/09/lagos-city.jpg", // Provide the image path
+      image: lagosImage, // Provide the image path
       facts: [
         "Home to Nollywood, Nigeria's booming film industry.",
         "More than 20 million people live here.",
@@ -242,7 +270,7 @@ export default function Home() {
       description:
         "Abuja is Nigeria's capital city and is known for its modernity and meticulously planned layout. As the center of government, it offers a blend of contemporary architecture, lush green spaces, and cultural attractions.",
       image:
-        "https://cdn.vanguardngr.com/wp-content/uploads/2021/12/ABUJA-1.jpg", // Provide the image path for Abuja
+      abujaImage, // Provide the image path for Abuja
       facts: [
         "Abuja officially became the capital of Nigeria in 1991, replacing Lagos.",
         `The Aso Rock is a massive monolith that dominates the city's landscape and is considered one of the city's landmarks.`,
@@ -262,7 +290,7 @@ export default function Home() {
       description:
         'Ibadan, often referred to as the "ancient city," is one of the largest cities in Nigeria and is steeped in history. The city boasts a unique blend of tradition and modernity, making it a captivating destination for tourists.',
       image:
-        "https://tribuneonlineng.com/wp-content/uploads/2023/07/ibadan-8-1.jpeg", // Provide the image path
+        ibadanImage, // Provide the image path
       facts: [
         "Known for the towering Cocoa House, a historic skyscraper that was once the tallest building in tropical Africa.",
         "Home to the University of Ibadan, the oldest university in Nigeria.",
@@ -283,7 +311,7 @@ export default function Home() {
       description:
         "Kano, located in northern Nigeria, is known for its rich history and is often regarded as the commercial and cultural heart of the north. The city offers a blend of tradition, art, and thriving commerce.",
       image:
-        "https://media.premiumtimesng.com/wp-content/files/2023/06/FymeoeBXsAADI7b.jpeg", // Provide the image path
+        kanoImage, // Provide the image path
       facts: [
         "Kano's ancient city walls are a UNESCO World Heritage site and are among the most well-preserved city walls in Africa.",
         "The city is famous for its traditional dye pits, where colorful fabrics are created using ancient techniques.",
@@ -305,7 +333,7 @@ export default function Home() {
       description:
         "Port Harcourt, the capital of Rivers State, is a vibrant and dynamic city known for its oil and gas industry. It offers a unique blend of modernity and natural beauty along the Niger Delta.",
       image:
-        "https://i.pinimg.com/originals/f5/5c/6b/f55c6bb13e107015f4233121b1505cf7.jpg", // Provide the image path
+        portHarcourtImage, // Provide the image path
       facts: [
         'The city is often referred to as the "Garden City" due to its lush greenery and numerous parks.',
         "Port Harcourt is a major hub for the Nigerian oil and gas industry, housing several multinational corporations.",
@@ -327,7 +355,7 @@ export default function Home() {
       description:
         'Enugu, often called the "Coal City," is located in the southeastern part of Nigeria. It is known for its lush landscapes, vibrant culture, and historical significance. Enugu offers a blend of natural beauty and a warm atmosphere.',
       image:
-        "https://guardian.ng/wp-content/uploads/2020/06/enugu-1062x598.jpg", // Provide the image path
+        enuguImage, // Provide the image path
       facts: [
         "Enugu was the capital of the former Eastern Region during Nigeria's First Republic.",
         "The city boasts picturesque coal mines, with remnants of the mining industry.",
@@ -348,7 +376,7 @@ export default function Home() {
       name: "Owerri",
       description:
         "Owerri, the capital of Imo State, is a city known for its lively atmosphere, entertainment, and hospitality. The city offers a mix of modern infrastructure and traditional values.",
-      image: "https://cimages.timbu.com/travel/2015/12/12086715673b.jpg", // Provide the image path
+      image: owerriImage, // Provide the image path
       facts: [
         "The city is renowned for its impressive roundabouts, each featuring a unique sculpture.",
         "Owerri is a hub for nightlife and entertainment, with numerous bars, clubs, and live music venues.",
@@ -370,7 +398,7 @@ export default function Home() {
       description:
         "Benin City, the capital of Edo State, is known for its historical significance as the center of the ancient Benin Kingdom. Today, it offers a glimpse into Nigeria's royal heritage and a mix of tradition and progress.",
       image:
-        "https://www.worldatlas.com/r/w1200/upload/04/3f/7a/shutterstock-1383820007.jpg", // Provide the image path
+        beninImage, // Provide the image path
       facts: [
         "The city is famous for the historic Benin Bronzes, intricate artworks created during the Benin Empire.",
         "Benin City is home to the Oba's Palace, a UNESCO World Heritage site and the residence of the Oba of Benin.",
@@ -392,7 +420,7 @@ export default function Home() {
       description:
         "Katsina, a city in northern Nigeria, is renowned for its rich history, culture, and craftsmanship. It offers a unique blend of tradition and modern living in a serene setting.",
       image:
-        "https://i2.wp.com/hukpoly.edu.ng/wp-content/uploads/2020/07/history.jpg?fit=343%2C515&ssl=1", // Provide the image path
+       katsinaImage, // Provide the image path
       facts: [
         "The city is the birthplace of Umaru Musa Yar'Adua, a former President of Nigeria.",
         "Katsina is known for its traditional textile industry, producing vibrant and intricate fabrics.",
@@ -414,7 +442,7 @@ export default function Home() {
       description:
         "Warri, a vibrant city in Delta State, is known for its dynamic atmosphere, oil and gas industry, and multicultural heritage. It offers a blend of commerce and culture along the coast.",
       image:
-        "https://facts.net/wp-content/uploads/2023/07/35-facts-about-warri-1689845041.jpeg", // Provide the image path
+        warriImage, // Provide the image path
       facts: [
         "The city hosts the Effurun Roundabout, known for its iconic sculpture.",
         "Warri's Pessu Market is a bustling hub for trading, selling a variety of goods.",
@@ -435,10 +463,14 @@ export default function Home() {
 
   const fetchListings = async () => {
     setListingLoading(true);
+  
+    // Check if the data is in the cache
+    const cachedListings = JSON.parse(localStorage.getItem('listings'));
+    const cachedTimestamp = localStorage.getItem('timestamp');
+  
     await axios
       .get(token ? `/hosthomesForAuthUser?per_page=${per_page}` : `/hosthomesForUnAuthUser?per_page=${per_page}`)
       .then((response) => {
-        // console.log("homeList", response.data.data);
         const formattedHostHomes = response.data.data.map((item) => ({
           id: item.id,
           pictures: item.hosthomephotos,
@@ -450,21 +482,30 @@ export default function Home() {
           link: "/ListingInfoMain",
           isFavorite: item.addedToWishlist,
         }));
-
-        setListingType("NoFilter");
-        setCurrent_page(response.data.meta.current_page);
-        setLast_page(response.data.meta.last_page);
-        setListings(formattedHostHomes);
-        // console.log("HMMM", response);
-
+  
+        // If the timestamp/version number is different, update the cache and the state
+        if (response.data.timestamp !== cachedTimestamp) {
+          // Cache the data
+          localStorage.setItem('listings', JSON.stringify(formattedHostHomes));
+          localStorage.setItem('timestamp', response.data.timestamp);
+  
+          setListingType("NoFilter");
+          setCurrent_page(response.data.meta.current_page);
+          setLast_page(response.data.meta.last_page);
+          setListings(formattedHostHomes);
+        } else if (cachedListings) {
+          // If the timestamp/version number is the same, use the cached data
+          setListingType("NoFilter");
+          setCurrent_page(response.data.meta.current_page);
+          setLast_page(response.data.meta.last_page);
+          setListings(cachedListings);
+        }
       })
       .catch((err) => {
-        // console.log("Listing", err);
+        console.error(err);
       })
       .finally(() => setListingLoading(false));
-
-
-  }
+  };
 
   const filterData = async (data, close) => {
     setListingLoading(true);
