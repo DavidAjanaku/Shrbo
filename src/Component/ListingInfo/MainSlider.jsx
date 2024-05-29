@@ -1,14 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef} from "react";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";
-import { useParams } from "react-router-dom";
 import Modal from "react-modal";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import close from "../../assets/svg/close-line-icon 2.svg";
 // import './MainSlider.css'; // Import your custom CSS file
-import Axios from "../../Axios";
 import { useStateContext } from "../../ContextProvider/ContextProvider";
+
 
 const modalStyles = {
   overlay: {
@@ -43,52 +42,26 @@ const modalStyles = {
   },
 };
 
-const MainSlider = (props) => {
-  const { id } = useParams(); // Get the ID parameter from the route
-
-  const [listingDetails, setListingDetails] = useState(null);
+const MainSlider = ({slider1,pics}) => {
   const { token } = useStateContext();
   console.log(token);
-  useEffect(() => {
-    const fetchListingDetails = async () => {
-      let response;
-      try {
-        if (token) {
-          // If token exists, fetch details for authenticated user
-          response = await Axios.get(`showGuestHomeForAuthUser/${id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-        } else {
-          // If token doesn't exist, fetch details for unauthenticated user
-          response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
-        }
-        setListingDetails(response.data.data);
-      } catch (error) {
-        console.error("Error fetching listing details:", error);
-      }
-    };
-  
-    fetchListingDetails();
-  }, [id, token]);
-  
 
-  const hosthomephotos = listingDetails?.hosthomephotos || [];
-  const hosthomevideo = listingDetails?.hosthomevideo || null;
 
-  const imageUrls = hosthomephotos.map((photo) => photo.images);
+  // const hosthomephotos = listingDetails?.hosthomephotos || [];
+  // const hosthomevideo = listingDetails?.hosthomevideo || null;
 
-  const pics = [
-    {
-      id: "video",
-      min: hosthomevideo, // Use hosthomevideo directly for the video
-    },
-    ...imageUrls.map((url, index) => ({
-      id: index + 1,
-      min: url,
-    })),
-  ];
+  // const imageUrls = hosthomephotos.map((photo) => photo.images);
+
+  // const pics = [
+  //   {
+  //     id: "video",
+  //     min: hosthomevideo, // Use hosthomevideo directly for the video
+  //   },
+  //   ...imageUrls.map((url, index) => ({
+  //     id: index + 1,
+  //     min: url,
+  //   })),
+  // ];
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -123,13 +96,13 @@ const MainSlider = (props) => {
                         src={slide.min}
                         controls
                         ref={videoRef}
-                        autoPlay
+                        // autoPlay 
                         className="w-auto object-cover h-auto min-h-full min-w-full"
                       ></video>
                     ) : (
                       <div className="relative h-full">
                         <img
-                          src={imageUrls[0]}
+                          src={slide.pic}
                           alt="Video Thumbnail"
                           onClick={togglePlay}
                           className="cursor-pointer w-auto object-cover h-auto min-h-full min-w-full"
@@ -178,57 +151,60 @@ const MainSlider = (props) => {
 
   return (
     <div className="w-full md:hidden ">
-      <Splide
-        ref={(slider) => (props.slider1.current = slider)}
-        className="main-slider"
-        options={{
-          perPage: 1,
-          perMove: 1,
-          arrows: false,
-          rewind: true,
-          pagination: false,
-          mediaQuery: "min",
-          breakpoints: {
-            767: {
-              destroy: true,
+      <>
+        <Splide
+          ref={(slider) => (slider1.current = slider)}
+          className="main-slider"
+          options={{
+            perPage: 1,
+            perMove: 1,
+            arrows: false,
+            rewind: true,
+            pagination: false,
+            mediaQuery: "min",
+            breakpoints: {
+              767: {
+                destroy: true,
+              },
             },
-          },
-        }}
-      >
-        {slides}
-      </Splide>
+          }}
+        >
+          {slides}
+        </Splide>
+        <Modal
+          isOpen={selectedImage !== null}
+          onRequestClose={closeImageModal}
+          style={modalStyles}
+          ariaHideApp={false}
+        >
+          <button className="close-button text-white" onClick={closeImageModal}>
+            <img src={close} className="w-4" alt="" />
+          </button>
+          <div className="modal-content" style={modalStyles.modalContent}>
+            {selectedImage && (
+              <div style={modalStyles.modalImageContainer}>
+                <Carousel
+                  showArrows={true}
+                  emulateTouch={true}
+                  selectedItem={selectedImageIndex}
+                >
+                  {pics.map((pic, index) => (
+                    <div key={pic.id}>
+                      {pic.id !== "video" ? (
+                        <img src={pic.min} alt={`Image ${index}`} className=" h-[350px] w-full" />
+                      ) : (
+                        <video src={pic.min} alt="Video" controls playsInline className="h-[350px] w-full object-cover" />
+                      )}
+                    </div>
+                  ))}
+                </Carousel>
+              </div>
+            )}
+          </div>
+        </Modal>
 
-      <Modal
-        isOpen={selectedImage !== null}
-        onRequestClose={closeImageModal}
-        style={modalStyles}
-        ariaHideApp={false}
-      >
-        <button className="close-button text-white" onClick={closeImageModal}>
-          <img src={close} className="w-4" alt="" />
-        </button>
-        <div className="modal-content" style={modalStyles.modalContent}>
-          {selectedImage && (
-            <div style={modalStyles.modalImageContainer}>
-              <Carousel
-                showArrows={true}
-                emulateTouch={true}
-                selectedItem={selectedImageIndex}
-              >
-                {pics.map((pic, index) => (
-                  <div key={pic.id}>
-                    {pic.id !== "video" ? (
-                      <img src={pic.min} alt={`Image ${index}`} className=" h-[350px] w-full" />
-                    ) : (
-                      <video src={pic.min} alt="Video" controls playsInline className="h-[350px] w-full object-cover" />
-                    )}
-                  </div>
-                ))}
-              </Carousel>
-            </div>
-          )}
-        </div>
-      </Modal>
+
+      </>
     </div>
   );
 };
