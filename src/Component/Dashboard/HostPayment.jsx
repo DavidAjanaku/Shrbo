@@ -18,7 +18,7 @@ export default function HostPayment() {
           {/* <TabPane tab="Completed Payouts" key="1">
             <div><CompletedPayout /></div>
           </TabPane> */}
-          <TabPane tab="Transaction History" key="2">
+          <TabPane tab="Booking History" key="2">
             <div><HostTransactionHistory /></div>
           </TabPane>
 
