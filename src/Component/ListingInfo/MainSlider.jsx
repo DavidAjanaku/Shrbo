@@ -97,6 +97,7 @@ const MainSlider = ({slider1,pics}) => {
                         controls
                         ref={videoRef}
                         // autoPlay 
+                        playsInline
                         className="w-auto object-cover h-auto min-h-full min-w-full"
                       ></video>
                     ) : (
