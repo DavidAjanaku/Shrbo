@@ -54,11 +54,9 @@ const ReportDamage = () => {
       const fileSizeInMB = video.size / (1024 * 1024); // Convert bytes to megabytes
 
       if (fileSizeInMB <= 30) {
-        // Set previewVideo without converting to base64
         const reader = new FileReader();
         reader.onloadend = () => {
-          setVideos(reader.result); // Convert to base64 and set videos
-
+          setVideos(reader.result); // Set the video source
         };
         reader.readAsDataURL(video);
 
@@ -72,12 +70,17 @@ const ReportDamage = () => {
             setVideos(''); // Clear videos state if duration exceeds limit
           }
         };
+
+        // Check video format support
+        videoElement.onerror = () => {
+          openNotification('error', 'The uploaded video format is not supported in the browser.');
+        };
       } else {
         openNotification('error', 'Video file size should not exceed 30MB.');
       }
     }
-
   };
+
 
 
 
@@ -156,7 +159,7 @@ const ReportDamage = () => {
             <LoadingOutlined
               style={{
                 fontSize: 24,
-                color:'orange',
+                color: 'orange',
               }}
               spin
             />
@@ -222,19 +225,17 @@ const ReportDamage = () => {
                 onChange={handleVideoUpload}
               />
             </div> */}
-
-                <div className="bg-white  rounded-lg mb-7 ">
+                <div className="bg-white rounded-lg mb-7">
                   <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Upload Video(maximum 30mb):
+                    Upload Video (maximum 30MB):
                   </label>
                   <label
                     htmlFor="videoInput"
-                    className="grid place-items-center bg-orange-300 w-28 text-white text-sm rounded-md  cursor-pointer transition duration-300 hover:bg-orange-600"
+                    className="grid place-items-center bg-orange-300 w-28 text-white text-sm rounded-md cursor-pointer transition duration-300 hover:bg-orange-600"
                   >
-                    <div className=" m-3">
-                      <FaVideo className="text-base " />
+                    <div className="m-3">
+                      <FaVideo className="text-base" />
                     </div>
-                    {/* Click to Upload Video */}
                     <input
                       type="file"
                       accept="video/*"
@@ -243,20 +244,17 @@ const ReportDamage = () => {
                       id="videoInput"
                     />
                   </label>
+                  <div className="my-3 gap-4">
+                    {videos && (
+                      <div className="mb-4">
+                        <video className="w-full object-cover h-64" controls>
+                          <source src={videos} />
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="mb-3 gap-4">
-                  {videos && (
-                    <div className="mb-4">
-                      {/* <label className="block text-gray-700 text-sm font-bold mb-2">Uploaded Video:</label> */}
-                      <video className="w-full object-cover h-64">
-                        <source src={videos} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-
-                    </div>
-                  )}
-                </div>
-
                 <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2">
                     Booking Number:

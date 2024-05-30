@@ -72,7 +72,7 @@ const HostTransactionHistory = () => {
 
   const columns = [
     {
-      title: "Transaction ID",
+      title: "Booking ID",
       dataIndex: "transactionId",
       key: "transactionId",
     },
@@ -262,7 +262,7 @@ const HostTransactionHistory = () => {
     <div>
       <div className="">
         <div className="overflow-auto example">
-          <h1 className="text-2xl font-semibold mb-4">Transaction History</h1>
+          <h1 className="text-2xl font-semibold mb-4">Booking History</h1>
 
           <div className="bg-white p-4 rounded shadow">
             <div className="overflow-x-auto">
@@ -313,7 +313,7 @@ const HostTransactionHistory = () => {
                       <span>₦{selectedBooking.guestServiceFee}</span>
                     </div>
                     <div className="flex justify-between mb-2">
-                      <span>Security service fee</span>
+                      <span>Security fee</span>
                       <span>₦{selectedBooking.securityFee}(Refundable)</span>
                     </div>
                     <div className="flex justify-between mb-2">
