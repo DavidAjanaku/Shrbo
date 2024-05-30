@@ -56,7 +56,10 @@ export default function Header() {
     setIsModalVisible(true);
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    if (selectedNotification) {
+      await deleteNotification(selectedNotification.id);
+    }
     setIsModalVisible(false);
     setSelectedNotification(null);
   };

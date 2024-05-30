@@ -30,6 +30,8 @@ const AdminRolesPage = () => {
     useState(false);
   const [viewRolePermissionsChecked, setViewRolePermissionsChecked] =
     useState(false);
+    const [submitting, setSubmitting] = useState(false); // State variable for form submission
+
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true); // State variable for loading spinner
 
@@ -99,6 +101,7 @@ const AdminRolesPage = () => {
 
   const handleCreateNewAdmin = async (values) => {
     try {
+      setSubmitting(true);
       const adminData = {
         name: values.username,
         email: values.email,
@@ -112,6 +115,8 @@ const AdminRolesPage = () => {
       newAdminForm.resetFields();
     } catch (error) {
       console.error("Error creating admin:", error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -202,7 +207,11 @@ const AdminRolesPage = () => {
         message: "Admin Deleted",
         description: "The admin user was deleted successfully.",
       });
-    } catch (error) {
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+          } catch (error) {
       console.error("Error deleting admin:", error);
       notification.error({
         message: "Error",
@@ -367,8 +376,12 @@ const AdminRolesPage = () => {
                     </Select>
                   </Form.Item>
                   <FormItem>
-                    <Button htmlType="submit" type="primary">
-                      Submit
+                  <Button
+                      type="primary"
+                      htmlType="submit"
+                      disabled={submitting} // Disable the button while submitting
+                    >
+                      {submitting ? <Spin /> : "Submit"}
                     </Button>
                   </FormItem>
                 </Form>
