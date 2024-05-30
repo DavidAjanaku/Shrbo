@@ -429,7 +429,7 @@ export default function Header() {
 
       <Modal
         title="Notification Details"
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
       >

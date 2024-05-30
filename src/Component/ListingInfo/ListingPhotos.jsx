@@ -245,7 +245,7 @@ const ListingPhotos = ({
           </div>
 
 
-          <div className="w-[30%] flex  md:flex items justify-end gap-5">
+          <div className="md:w-[30%] flex  md:flex items justify-end gap-5">
             <button>
               <div className="flex underline">
                 <span className="mr-2">
