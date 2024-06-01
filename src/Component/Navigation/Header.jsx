@@ -64,7 +64,7 @@ export default function Header() {
   const deleteNotification = async (notificationId) => {
     try {
       const response = await axios.delete(`/notification/${notificationId}`);
-      console.log("Deleted Notification", response.data);
+      // console.log("Deleted Notification", response.data);
 
       message.success("notification deleted successfully");
       setNotificationDeleted(!isNotificationDeleted);
@@ -107,10 +107,10 @@ export default function Header() {
           setNotifications(
             response.data.data.flatMap((notification) => notification)
           );
-          console.log(
-            "notification",
-            response.data.data.flatMap((notification) => notification)
-          );
+          // console.log(
+          //   "notification",
+          //   response.data.data.flatMap((notification) => notification)
+          // );
         })
         .catch((error) => {
           // console.log("Error",error);
@@ -126,10 +126,10 @@ export default function Header() {
       const channelName = `App.Models.User.${receiverId}`;
 
       window.Echo.connector.options.auth.headers.Authorization = `Bearer ${token}`;
-      console.log(
-        "Authentication token is set:",
-        window.Echo.connector.options.auth.headers.Authorization
-      );
+      // console.log(
+      //   "Authentication token is set:",
+      //   window.Echo.connector.options.auth.headers.Authorization
+      // );
 
       const privateChannel = window.Echo.private(channelName);
 
@@ -140,7 +140,7 @@ export default function Header() {
         setNotifications([data.notification, ...notifications]);
       });
 
-      console.log("Listening for messages on channel:", channelName);
+      // console.log("Listening for messages on channel:", channelName);
     } else {
       console.error(
         "Echo is not defined. Make sure Laravel Echo is properly configured."
