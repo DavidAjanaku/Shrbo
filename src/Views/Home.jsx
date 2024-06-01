@@ -460,7 +460,7 @@ export default function Home() {
     },
   ];
 
-
+  
   const fetchListings = async () => {
     setListingLoading(true);
   
