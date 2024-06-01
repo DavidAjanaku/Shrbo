@@ -48,9 +48,9 @@ const ServiceChargeSettings = () => {
   useEffect(()=>{
 
     axios.get("/getServiceCharges").then((response)=>{
-        setGuestServiceCharge(response.data.data.guest_services_charge);
-        setHostServiceCharge(response.data.data.host_services_charge);
-        setTaxServiceCharge(response.data.data.tax);
+        setGuestServiceCharge(response.data.data.guest_services_charge*100);
+        setHostServiceCharge(response.data.data.host_services_charge*100);
+        setTaxServiceCharge(response.data.data.tax*100);
 
     })
 
