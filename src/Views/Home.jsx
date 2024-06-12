@@ -33,7 +33,7 @@ export default function Home() {
   const [isSearchButtonFixed, setIsSearchButtonFixed] = useState(false);
   const [houseDetails, setHouseDetails] = useState(null); // Store house details here
   const [isRateHouseModalOpen, setIsRateHouseModalOpen] = useState(true);
-  const { setUser, setToken, token, setHost, setAdminStatus, user ,setCoHost} =useStateContext();
+  const { setUser, setToken, token, setHost, setAdminStatus, user, setCoHost } = useStateContext();
   const [loading, setLoading] = useState(true);
   const [showMoreLoading, setShowMoreLoading] = useState(true);
   const [listingLoading, setListingLoading] = useState(true);
@@ -97,13 +97,13 @@ export default function Home() {
     const fetchUserData = async () => {
       try {
 
-     
+
 
         // Make a request to get the user data with parameters
         const response = await axios.get(
           `/verify-tokens/${remtoken}/${ustoken}`
         );
-        
+
 
         // Set the user data in state
         setUser(response.data.user);
@@ -111,7 +111,7 @@ export default function Home() {
         // Set the host value in state context
         setHost(response.data.user.host);
         setCoHost(response.data.user.co_host)
-   
+
         setToken(ustoken);
         setAdminStatus(response.data.user.adminStatus);
 
@@ -125,7 +125,7 @@ export default function Home() {
     };
 
     // Call the fetchUserData function when the component mounts
-    if(verified&&remtoken&&ustoken){
+    if (verified && remtoken && ustoken) {
       setLoading(true);
 
       fetchUserData();
@@ -157,9 +157,9 @@ export default function Home() {
       }
     };
 
- 
 
-    if(token){
+
+    if (token) {
       setLoading(true);
       fetchUserData();
     }
@@ -185,12 +185,12 @@ export default function Home() {
       const cachedHomeTitle = localStorage.getItem('homeTitle');
       const cachedHomeSubTitle = localStorage.getItem('homeSubTitle');
       const cachedTimestamp = localStorage.getItem('timestamp');
-  
+
       await axios
         .get("/homepage")
         .then((response) => {
           const homePageData = response.data.data[0];
-  
+
           // If the timestamp/version number is different, update the cache and the state
           if (homePageData.timestamp !== cachedTimestamp) {
             // Cache the data
@@ -198,7 +198,7 @@ export default function Home() {
             localStorage.setItem('homeTitle', homePageData.title);
             localStorage.setItem('homeSubTitle', homePageData.subtitle);
             localStorage.setItem('timestamp', homePageData.timestamp);
-  
+
             setHomeImage(homePageData.image);
             setHomeTitle(homePageData.title);
             setHomeSubTitle(homePageData.subtitle);
@@ -211,16 +211,16 @@ export default function Home() {
         })
         .catch((error) => {
           console.error(error);
-        }).finally(()=>{
-          if(!token){
+        }).finally(() => {
+          if (!token) {
             setLoading(false);
           }
         });
     };
-  
+
     homePageData();
   }, []);
-  
+
 
   // View Count (register visitors)
 
@@ -270,7 +270,7 @@ export default function Home() {
       description:
         "Abuja is Nigeria's capital city and is known for its modernity and meticulously planned layout. As the center of government, it offers a blend of contemporary architecture, lush green spaces, and cultural attractions.",
       image:
-      abujaImage, // Provide the image path for Abuja
+        abujaImage, // Provide the image path for Abuja
       facts: [
         "Abuja officially became the capital of Nigeria in 1991, replacing Lagos.",
         `The Aso Rock is a massive monolith that dominates the city's landscape and is considered one of the city's landmarks.`,
@@ -420,7 +420,7 @@ export default function Home() {
       description:
         "Katsina, a city in northern Nigeria, is renowned for its rich history, culture, and craftsmanship. It offers a unique blend of tradition and modern living in a serene setting.",
       image:
-       katsinaImage, // Provide the image path
+        katsinaImage, // Provide the image path
       facts: [
         "The city is the birthplace of Umaru Musa Yar'Adua, a former President of Nigeria.",
         "Katsina is known for its traditional textile industry, producing vibrant and intricate fabrics.",
@@ -460,14 +460,14 @@ export default function Home() {
     },
   ];
 
-  
+
   const fetchListings = async () => {
     setListingLoading(true);
-  
+
     // Check if the data is in the cache
     const cachedListings = JSON.parse(localStorage.getItem('listings'));
     const cachedTimestamp = localStorage.getItem('timestamp');
-  
+
     await axios
       .get(token ? `/hosthomesForAuthUser?per_page=${per_page}` : `/hosthomesForUnAuthUser?per_page=${per_page}`)
       .then((response) => {
@@ -482,13 +482,13 @@ export default function Home() {
           link: "/ListingInfoMain",
           isFavorite: item.addedToWishlist,
         }));
-  
+
         // If the timestamp/version number is different, update the cache and the state
         if (response.data.timestamp !== cachedTimestamp) {
           // Cache the data
           localStorage.setItem('listings', JSON.stringify(formattedHostHomes));
           localStorage.setItem('timestamp', response.data.timestamp);
-  
+
           setListingType("NoFilter");
           setCurrent_page(response.data.meta.current_page);
           setLast_page(response.data.meta.last_page);
@@ -508,8 +508,12 @@ export default function Home() {
   };
 
   const filterData = async (data, close) => {
+    setCategory(data);
     setListingLoading(true);
-    close();
+    if (close) {
+      close();
+
+    }
     // data.priceRange[0]
     const main = {
       min_price: data.priceRange[0],
@@ -519,6 +523,7 @@ export default function Home() {
       bathrooms: data.selectedBathroom,
       property_type: data.selectedTypes,
       amenities: data.selectedAmenities,
+      per_page: per_page,
     };
     // console.log(main);
 
@@ -540,7 +545,17 @@ export default function Home() {
           isFavorite: item.addedToWishlist,
         }));
 
+        // console.log(`${per_page}`, response)
+        // console.log(`${per_page}`, response.data.meta ? response.data.meta.current_page : response.data.current_page)
+        // console.log(`${per_page}`, response.data.meta ? response.data.meta.last_page : response.data.last_page)
+
+
+        setListingType("FilterData");
         setListings(formattedHostHomes);
+        setCurrent_page(response.data.meta ? response.data.meta.current_page : response.data.current_page);
+        setLast_page(response.data.meta ? response.data.meta.last_page : response.data.last_page);
+
+
         // console.log("filter", response.data.data);
       })
       .catch((err) => {
@@ -549,9 +564,13 @@ export default function Home() {
       .finally(() => setListingLoading(false));
   };
 
+
+
   const filterDataByDates = async (data) => {
+    setCategory(data);
     setListingLoading(true);
     const totalGuest = data.adults + data.infants + data.children;
+    console.log("data", data);
 
     const main = {
       address: data.selectedOption ? data.selectedOption.value : "",
@@ -559,8 +578,9 @@ export default function Home() {
       end_date: data.checkOutDate,
       guests: totalGuest,
       allow_pets: data.pets > 0 ? "allow_pets" : "no_pets",
+      per_page: per_page,
     };
-    // console.log("Main", main);
+    console.log("Main", main);
 
     await axios
       .post(
@@ -583,13 +603,21 @@ export default function Home() {
           isFavorite: item.addedToWishlist,
         }));
 
+        // console.log(`${per_page}`, response)
+        // console.log(`${per_page}`, response.data.meta ? response.data.meta.current_page : response.data.current_page)
+        // console.log(`${per_page}`, response.data.meta ? response.data.meta.last_page : response.data.last_page)
+        setListingType("FilterbyDates");
         setListings(formattedHostHomes);
+        setCurrent_page(response.data.meta ? response.data.meta.current_page : response.data.current_page);
+        setLast_page(response.data.meta ? response.data.meta.last_page : response.data.last_page);
       })
       .catch((error) => {
-        // console.log(error);
+        console.error(error);
       })
       .finally(() => setListingLoading(false));
   };
+
+
 
   const filterDataByCategories = async (data) => {
     setCategory(data);
@@ -646,12 +674,12 @@ export default function Home() {
   // Reviews
 
   useEffect(() => {
-    if(user?.id){
+    if (user?.id) {
 
       // console.log("GET PENDING REVIEWS")
 
       axios.get("/getPendingReviews").then(response => {
-  
+
         const formattedHostHomes = response.data.data.map((item) => ({
           id: item.id,
           location: item.address,
@@ -663,13 +691,13 @@ export default function Home() {
         }));
         setHouseDetails(formattedHostHomes);
         // console.log("pendingReviews", response.data.data)
-  
+
       }).catch(error => {
-  
+
       });
     }
 
-    
+
   }, [user]);
 
   useEffect(() => {
@@ -724,6 +752,7 @@ export default function Home() {
 
 
   // Logic For the Pagination {START}
+
   const showMoreListings = () => {
     // console.log("perPage", per_page)
     setPerPage((prevPage) => prevPage + 10);
@@ -738,14 +767,23 @@ export default function Home() {
         fetchListings().finally(() => setShowMoreLoading(false));
         break;
       case "FilterbyPropertTypes":
-        
+
+        // console.log("filterType", listingType);
         filterDataByCategories(category).finally(() => setShowMoreLoading(false));
+        break;
+      case "FilterbyDates":
+        //  console.log("filterType", listingType);
+        filterDataByDates(category).finally(() => setShowMoreLoading(false));
+        break;
+      case "FilterData":
+        console.log("filterType", listingType);
+        filterData(category).finally(() => setShowMoreLoading(false));
         break;
       default:
         setShowMoreLoading(false);
         fetchListings();
     }
-    // console.log("show", showMoreLoading);
+
     // setShowMoreLoading(false)
 
   }, [per_page]);

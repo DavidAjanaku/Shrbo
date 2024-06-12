@@ -299,7 +299,7 @@ export default function Header() {
               Shrbo your place
             </Link>
           )}
-          {adminStatus == "admin" && (
+         {/admin/i.test(adminStatus) && (
             <Link
               to="/AdminAnalytical"
               className="text-white hover:text-gray-300 ml-4"
