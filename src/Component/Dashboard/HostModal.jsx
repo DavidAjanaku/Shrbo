@@ -76,7 +76,7 @@ export default function HostModal({ isOpen, onClose, userData, hostStatus, admin
                         icon={<BsHouseDoor />}
                         title="Create a new listing"
                       />}
-                      {adminStatus === "admin" && <MenuCard
+                      {/admin/i.test(adminStatus) && <MenuCard
                         linkTo="/EditHomepage"
                         icon={<BsHouseDoor />}
                         title="Dashboard"

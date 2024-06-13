@@ -41,10 +41,10 @@ const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, 
 
       axios.get("/getUserWishlistContainers").then(response => {
         setWishlistContainer(response.data.userWishlist);
-        console.log("wishlist", response.data);
+        // console.log("wishlist", response.data);
   
       }).catch(error => {
-        console.log("wishlist", error)
+        console.error("wishlist", error)
       });
 
 
@@ -59,7 +59,7 @@ const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, 
     if (listings.length != 0) {
       const img = new Image();
       img.src = listings[0].pictures[0].images;
-      console.log("images", listings[0].pictures[0].images)
+      // console.log("images", listings[0].pictures[0].images)
       img.onload = () => {
         setImageLoaded(true);
       };
@@ -76,7 +76,7 @@ const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, 
     } else {
       await axios.delete(`/removeFromWishlist/${id}`).then(response => {
 
-        console.log(response);
+        // console.log(response);
 
         toast.success('Wishlist deleted Successfuly', {
           position: toast.POSITION.TOP_CENTER,
@@ -234,7 +234,7 @@ const Listings = ({ user, homes, loading, showMore, showMoreLoading, last_page, 
   ));
 
 
-  console.log("listings", listings)
+  // console.log("listings", listings)
 
 
 

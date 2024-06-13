@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Input, Button,notification } from "antd";
 import AdminSidebar from "../AdminSidebar";
 import AdminHeader from "./AdminHeader";
-import Axios from "../../../Axios"
+import axios from "../../../Axios"
 
 const ServiceChargeSettings = () => {
   const [guestServiceCharge, setGuestServiceCharge] = useState(0);
@@ -24,7 +24,7 @@ const ServiceChargeSettings = () => {
 
   const handleSaveChanges = async () => {
     try {
-      const response = await Axios.post("/updateServiceCharges", {
+      const response = await axios.post("/updateServiceCharges", {
         guest_services_charge: guestServiceCharge,
         host_services_charge: hostServiceCharge,
         tax: taxServiceCharge,
@@ -44,6 +44,18 @@ const ServiceChargeSettings = () => {
       // Handle the error or show an error message to the user
     }
   };
+
+  useEffect(()=>{
+
+    axios.get("/getServiceCharges").then((response)=>{
+        setGuestServiceCharge(response.data.data.guest_services_charge*100);
+        setHostServiceCharge(response.data.data.host_services_charge*100);
+        setTaxServiceCharge(response.data.data.tax*100);
+
+    })
+
+
+  },[]);
   
 
   return (
