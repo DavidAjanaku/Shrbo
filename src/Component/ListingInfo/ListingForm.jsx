@@ -187,6 +187,7 @@ export default function ListingForm({
           response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
           setIsAuthenticated(false);
         }
+        console.log(response.data.data);
 
         // console.log(response);
         const receiverUserID = response.data.data.user.id;
@@ -197,6 +198,7 @@ export default function ListingForm({
         const checkoutTimeDate = response.data.data.checkout;
         setSecurityDeposit(parseInt(response.data.data.securityDeposit));
         setGuestFee(response.data.data.guest_fee);
+        setTaxFees(response.data.data.vat)
         setSecurityDeposits(parseInt(response.data.data.securityDeposit));
         const discounts = response.data.data.discounts;
         const discountValues = discounts.map((discount) => discount.discount);
@@ -544,8 +546,15 @@ export default function ListingForm({
       const guest_fee = guestFee * nights;
 
       const securityDeposits = securityDeposit;
-      const totalPrice = nights * nightlyPrice;
-      const TotalPrice = reservedPriceForApartment + securityDeposit;
+      
+      const totalPrice = nights * nightlyPrice * guestFee * taxFees;
+      console.log(totalPrice);
+      const serviceFeecharges = Number(guestFee) * Number(reservedPriceForApartment);
+const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+
+      console.log(reservedPriceForApartment);
+      const TotalPrice = reservedPriceForApartment + securityDeposit + serviceFeecharges + vatFee;
+      console.log(TotalPrice);
       
       setTotalCost(reservedPriceForApartment);
 
@@ -608,18 +617,24 @@ export default function ListingForm({
       // Apply predefined discounts if custom discount is not applied
       if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
         setAppliedDiscount("20% New listing promotion (20% off)");
+        const serviceFeecharges = Number(guestFee) * Number(reservedPriceForApartment);
+        const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
         const discountedPrice =
-          reservedPriceForApartment * 0.8 + securityDeposits;
+          reservedPriceForApartment * 0.8 + securityDeposits + serviceFeecharges + vatFee;
         setTotalCost(discountedPrice);
       } else if (nights >= 28 && discount.includes("10% Monthly discount")) {
         setAppliedDiscount("10% Monthly discount (10% off)");
+        const serviceFeecharges = Number(guestFee) * Number(reservedPriceForApartment);
+        const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
         const discountedPrice =
-          reservedPriceForApartment * 0.9 + securityDeposits;
+          reservedPriceForApartment * 0.9 + securityDeposits + serviceFeecharges + vatFee;
         setTotalCost(discountedPrice);
       } else if (nights >= 7 && discount.includes("5% Weekly discount")) {
         setAppliedDiscount("5% Weekly discount (5% off)");
+        const serviceFeecharges = Number(guestFee) * Number(reservedPriceForApartment);
+        const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
         const discountedPrice =
-          reservedPriceForApartment * 0.95 + securityDeposits;
+          reservedPriceForApartment * 0.95 + securityDeposits + serviceFeecharges + vatFee;
         setTotalCost(discountedPrice);
       } else {
         setAppliedDiscount("");
