@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import Axios from "../../Axios";
-import { notification } from "antd";
-import { Spin } from "antd";
+import { notification, Spin } from "antd";
 
 export default function SocialPage() {
   const [links, setLinks] = useState({
@@ -14,6 +13,27 @@ export default function SocialPage() {
   });
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Function to fetch existing social media links
+    const fetchSocialMediaLinks = async () => {
+      try {
+        const response = await Axios.get("/returnSocialMediaLink");
+        if (response.data && response.data.length > 0) {
+          const { facebook_url, instagram_url, twitter_url } = response.data[0];
+          setLinks({
+            facebook: facebook_url || "",
+            instagram: instagram_url || "",
+            twitter: twitter_url || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching social media links:", error);
+      }
+    };
+
+    fetchSocialMediaLinks();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,6 +69,10 @@ export default function SocialPage() {
     } catch (error) {
       console.error("Error submitting links:", error);
       // Handle the error appropriately
+      notification.error({
+        message: "Error",
+        description: "Failed to save social media links. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -99,7 +123,7 @@ export default function SocialPage() {
             </div>
             <div className="mb-4">
               <label htmlFor="twitter" className=" mb-2 flex items-center gap-2">
-                <FaTwitter /> X:
+                <FaTwitter /> Twitter:
               </label>
               <input
                 type="text"
