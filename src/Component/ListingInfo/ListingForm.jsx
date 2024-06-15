@@ -599,8 +599,16 @@ export default function ListingForm({
 
         const totalDiscountedPrice =
           baseDiscountedPrice + securityDepositDiscountedPrice;
+
+          const serviceFeecharges =
+          Number(guestFee) * Number(reservedPriceForApartment);
+        const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+        const totalFee = serviceFeecharges + vatFee;
+
+
         const discountedPrice =
-          reservedPriceForApartment + securityDeposits - baseDiscountedPrice;
+          reservedPriceForApartment + totalFee + securityDeposits - baseDiscountedPrice;
+
 
         if (customDiscountPercentage > 0) {
           const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage

@@ -171,7 +171,7 @@ const UserDetails = () => {
             />
             <div>
               <h3 className="text-lg font-semibold">{review.title}</h3>
-              <h3 className="text-sm">{review.guestName}</h3>
+              <h3 className="text-sm">{review.user_name}</h3>
 
               <span className="text-gray-600">
                 {getStarRating(review.ratings)}
