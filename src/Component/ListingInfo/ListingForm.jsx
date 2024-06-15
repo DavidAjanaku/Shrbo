@@ -88,8 +88,7 @@ export default function ListingForm({
   const [reservedPrice, setReservedPrice] = useState(0);
   const [matchedReservedPrices, setMatchedReservedPrices] = useState([]);
   const [coHostMessageShown, setCoHostMessageShown] = useState(false);
-
-
+  const [priceToMultiply, setPriceToMultiply] = useState(0);
 
   // console.log(verified);
   const {
@@ -198,7 +197,7 @@ export default function ListingForm({
         const checkoutTimeDate = response.data.data.checkout;
         setSecurityDeposit(parseInt(response.data.data.securityDeposit));
         setGuestFee(response.data.data.guest_fee);
-        setTaxFees(response.data.data.vat)
+        setTaxFees(response.data.data.vat);
         setSecurityDeposits(parseInt(response.data.data.securityDeposit));
         const discounts = response.data.data.discounts;
         const discountValues = discounts.map((discount) => discount.discount);
@@ -294,8 +293,6 @@ export default function ListingForm({
     predefinedDiscounts.includes(discount)
   );
 
-
-
   const calculateWeekendNights = (checkIn, checkOut) => {
     let weekendNights = 0;
     let currentDate = new Date(checkIn);
@@ -374,7 +371,6 @@ export default function ListingForm({
       }
     }
   }, [preparation_time, checkoutDates]);
- 
 
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
@@ -452,8 +448,6 @@ export default function ListingForm({
 
             // Calculate the reserved price
             reservedPrice = basenormalPrice;
-
-          
 
             // Add the new reservation to matchedReservedPrices if it's not already there
             if (
@@ -546,24 +540,28 @@ export default function ListingForm({
       const guest_fee = guestFee * nights;
 
       const securityDeposits = securityDeposit;
-      
+
       const totalPrice = nights * nightlyPrice * guestFee * taxFees;
       console.log(totalPrice);
-      const serviceFeecharges = Number(guestFee) * Number(reservedPriceForApartment);
-const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+      const serviceFeecharges =
+        Number(guestFee) * Number(reservedPriceForApartment);
+      const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
 
       console.log(reservedPriceForApartment);
-      const TotalPrice = reservedPriceForApartment + securityDeposit + serviceFeecharges + vatFee;
+      setPriceToMultiply(reservedPriceForApartment)
+      const TotalPrice =
+        reservedPriceForApartment +
+        securityDeposit +
+        serviceFeecharges +
+        vatFee;
       console.log(TotalPrice);
-      
+
       setTotalCost(reservedPriceForApartment);
 
       setHousePrice(price);
       setNights(nights);
       setTotalPrice(reservedPriceForApartment);
-     
 
-    
       setHostFees(hostFees);
       setTotalCosts(totalCosts);
       setServiceFee(serviceFees);
@@ -617,25 +615,42 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
       // Apply predefined discounts if custom discount is not applied
       if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
         setAppliedDiscount("20% New listing promotion (20% off)");
-        const serviceFeecharges = Number(guestFee) * Number(reservedPriceForApartment);
+        const serviceFeecharges =
+          Number(guestFee) * Number(reservedPriceForApartment);
         const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+        const totalFee = serviceFeecharges + vatFee;
+
         const discountedPrice =
-          reservedPriceForApartment * 0.8 + securityDeposits + serviceFeecharges + vatFee;
-        setTotalCost(discountedPrice);
+          reservedPriceForApartment + securityDeposits + totalFee;
+
+        const discountTotal = discountedPrice * 0.8;
+
+        setTotalCost(discountTotal);
       } else if (nights >= 28 && discount.includes("10% Monthly discount")) {
         setAppliedDiscount("10% Monthly discount (10% off)");
-        const serviceFeecharges = Number(guestFee) * Number(reservedPriceForApartment);
+        const serviceFeecharges =
+          Number(guestFee) * Number(reservedPriceForApartment);
         const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+        const totalFee = serviceFeecharges + vatFee;
+
         const discountedPrice =
-          reservedPriceForApartment * 0.9 + securityDeposits + serviceFeecharges + vatFee;
-        setTotalCost(discountedPrice);
+          reservedPriceForApartment + securityDeposits + totalFee;
+        const discountTotal = discountedPrice * 0.9;
+
+        setTotalCost(discountTotal);
       } else if (nights >= 7 && discount.includes("5% Weekly discount")) {
         setAppliedDiscount("5% Weekly discount (5% off)");
-        const serviceFeecharges = Number(guestFee) * Number(reservedPriceForApartment);
+        const serviceFeecharges =
+          Number(guestFee) * Number(reservedPriceForApartment);
         const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+
+        const totalFee = serviceFeecharges + vatFee;
         const discountedPrice =
-          reservedPriceForApartment * 0.95 + securityDeposits + serviceFeecharges + vatFee;
-        setTotalCost(discountedPrice);
+          reservedPriceForApartment + securityDeposits + totalFee;
+        const discountTotal = discountedPrice * 0.95;
+        console.log(discountTotal);
+        console.log(discountedPrice);
+        setTotalCost(discountTotal);
       } else {
         setAppliedDiscount("");
         setTotalCost(TotalPrice);
@@ -682,8 +697,7 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
     return 1; // Default to 1 night if dates are not selected
   };
   let pricePerNight = Number(price).toLocaleString();
-  let totalPriceForNights =calculateNumberOfNights() * Number(price);
-
+  let totalPriceForNights = calculateNumberOfNights() * Number(price);
 
   const navigate = useNavigate();
 
@@ -712,7 +726,6 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
   // Calculate the max date based on the availability window
   const maxDate = calculateMaxDate(availability_window);
 
- 
   const isDateBooked = (date) => {
     return bookedDates.some(
       (bookedDate) =>
@@ -738,7 +751,6 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
 
     return false;
   };
-
 
   // Check if a date is blocked
   const isDateBlocked = (date) => {
@@ -810,8 +822,6 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
         return;
       }
 
-  
-
       await Axios.post(`/makeRequestToBook/${hostId}/${id}`);
       setMessageSent(true);
       message.success("Inquiry sent successfully");
@@ -855,11 +865,8 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
     }
   };
 
-
   const hostIDs = parseInt(localStorage.getItem("receiverid"), 10);
   const coHostIdInt = parseInt(coHostId, 10);
-
- 
 
   const fetchCoHostData = async () => {
     try {
@@ -870,7 +877,7 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
       console.error("Error fetching co-host data:", error);
     }
   };
-  
+
   const isCoHostNotAllowed = () => {
     return coHostNotAllowed === 1;
   };
@@ -881,9 +888,6 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
       setCoHostMessageShown(true);
     }
   }, [coHostNotAllowed]);
-  
-  
-  
 
   const isLoggedIn = () => {
     const token = localStorage.getItem("token"); // Assuming you store the token in localStorage
@@ -1183,26 +1187,26 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
                                 </div>
                               )}
 
-                              {/* <div className=" mb-2t box-border block">
+                              <div className=" mb-2t box-border block">
                                 <div className=" flex items-end justify-between break-words    ">
                                   <div className=" block box-border">
                                     <span>Service Fee</span>
                                   </div>
                                   <div className=" ml-4 whitespace-nowrap block box-border   ">
-                                    ₦ {Number(serviceFees).toLocaleString()}
+                                    ₦ {Number(guestFee).toLocaleString() * priceToMultiply} 
                                   </div>
                                 </div>
-                              </div> */}
-                              {/* <div className=" mb-2 box-border block">
+                              </div>
+                              <div className=" mb-2 box-border block">
                                 <div className=" flex items-end justify-between break-words    ">
                                   <div className=" block box-border">
                                     <span>Tax</span>
                                   </div>
                                   <div className=" ml-4 whitespace-nowrap block box-border   ">
-                                    ₦ {Number(taxFees).toLocaleString()}
+                                    ₦ {Number(vatFee).toLocaleString() * priceToMultiply}
                                   </div>
                                 </div>
-                              </div> */}
+                              </div>
                             </div>
                             {/* Total */}
                             <div className="  py-4">
@@ -1251,7 +1255,6 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
                             sendMessage();
                           } else if (buttonTexts === "Book") {
                             navigate("/RequestBook");
-
                           }
                         }}
                         disabled={
@@ -1310,8 +1313,8 @@ const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
                       isCheckoutDisabled() ||
                       isCheckoutBlocked() ||
                       isBlockedDatesBetweenCheckInOut() ||
-                      (checkInDate && checkOutDate && isCoHostNotAllowed())
-                      || price === null
+                      (checkInDate && checkOutDate && isCoHostNotAllowed()) ||
+                      price === null
                     }
                   >
                     Book
