@@ -6,11 +6,18 @@ import { Button } from "antd";
 import HelpNavigation from "../Component/HelpNavigation";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhone } from '@fortawesome/free-solid-svg-icons';
+import { Helmet } from "react-helmet";
 
 export default function AboutUs() {
   return (
     <div>
-      {/* <Header /> */}
+      <Helmet>
+        <title>About Us - Shortlet Booking (Shrbo)</title>
+        <meta name="description" content="Welcome to Shortlet Booking (Shrbo), your gateway to exceptional short-term accommodation experiences. Learn about our founding vision, mission, core values, and commitment to excellence." />
+        <meta name="keywords" content="Shortlet Booking, Shrbo, short-term accommodation, rentals, travel, hospitality, Africa" />
+        <meta name="author" content="Shortlet Booking (Shrbo)" />
+        {/* Add more meta tags as needed */}
+      </Helmet>
       <BottomNavigation />
       <div className="grid grid-cols-1 pt-24  md:grid-cols-3 py-8">
       <HelpNavigation/>

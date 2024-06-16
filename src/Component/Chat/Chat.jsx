@@ -39,23 +39,23 @@ const Chat = () => {
 
   const token = localStorage.getItem("tokens");
 
-  console.log(token);
+  // console.log(token);
 
   const initializeEcho = (token, receiverId) => {
     if (typeof window.Echo !== "undefined") {
       const channelName = `messanger.${receiverId}`;
 
       window.Echo.connector.options.auth.headers.Authorization = `Bearer ${token}`;
-      console.log(
-        "Authentication token is set:",
-        window.Echo.connector.options.auth.headers.Authorization
-      );
+      // console.log(
+      //   "Authentication token is set:",
+      //   window.Echo.connector.options.auth.headers.Authorization
+      // );
 
       const privateChannel = window.Echo.private(channelName);
 
       privateChannel.listen("MessageSent", (data) => {
-        console.log("Received message:", data);
-        console.log("User ID:", data.user_id);
+        // console.log("Received message:", data);
+        // console.log("User ID:", data.user_id);
 
         setRecentMessages(() => data.recentMessages);
         setIsTyping(false);
@@ -76,11 +76,11 @@ const Chat = () => {
         });
       });
 
-      console.log("Listening for messages on channel:", channelName);
+      // console.log("Listening for messages on channel:", channelName);
     } else {
-      console.error(
-        "Echo is not defined. Make sure Laravel Echo is properly configured."
-      );
+      // console.error(
+      //   "Echo is not defined. Make sure Laravel Echo is properly configured."
+      // );
     }
   };
 
@@ -143,13 +143,13 @@ const Chat = () => {
 
       // Create a new array reference to force re-render
       setRecentMessages([...newRecentMessages]);
-      console.log("check", selectedUserProfilePic);
+      // console.log("check", selectedUserProfilePic);
 
       setMessage(""); // Clear the message input after sending
       setSelectedUser(selectedUser); // Set the selectedUser state to the receiverId
       setSending(false); // Reset sending state to false
     } catch (error) {
-      console.error("Error sending message:", error);
+      // console.error("Error sending message:", error);
       messages2.error(error.response.data.message);
       setSending(false); // Reset sending state to false in case of error
     }
@@ -160,7 +160,7 @@ const Chat = () => {
       // Send typing notification to the server
       await Axios.get(`/typing/${selectedUser}/${ADMIN_ID}`);
       // setIsTyping(true);
-      console.log("typing....")
+      // console.log("typing....")
 
       // Initialize the typing echo after sending the typing notification
       // initializeTypingEcho(ADMIN_ID);
@@ -213,11 +213,11 @@ const Chat = () => {
 
         if (matchedText && matchedText.length > 1) {
           let collectedText = matchedText[1];
-          console.log(collectedText===selectedUserName);
+          // console.log(collectedText===selectedUserName);
 
           if(collectedText===selectedUserName){
             setIsTyping(true);
-            console.log("hhhhhh", data)
+            // console.log("hhhhhh", data)
 
           }
         }
@@ -226,7 +226,7 @@ const Chat = () => {
 
     privateChannel.listen("Typing", messageHandler);
 
-    console.log("Listening for typing notifications on channel:", channelName);
+    // console.log("Listening for typing notifications on channel:", channelName);
 
     // Return a function to unsubscribe from the channel
     return () => {
@@ -308,7 +308,7 @@ const Chat = () => {
 
         // console.log(response.data);
       } catch (error) {
-        console.error("Error fetching messages:", error);
+        // console.error("Error fetching messages:", error);
       }
     };
 
@@ -322,9 +322,9 @@ const Chat = () => {
         setHostId(response.data.id);
         setLoggedinuserid(response.data.id); // Set loggedinuserid state
 
-        console.log(response.data.id);
+        // console.log(response.data.id);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        // console.error("Error fetching users:", error);
         // Handle error, show error message, etc.
       }
     };
@@ -332,7 +332,7 @@ const Chat = () => {
     fetchUsers();
   }, []);
 
-  console.log(loggedinuserid);
+  // console.log(loggedinuserid);
 
   const fetchUserChats = async (receiverId) => {
     try {
@@ -349,11 +349,11 @@ const Chat = () => {
       });
       setRecentMessages(response.data.recentMessages);
       setSelectedUser(receiverId); // Set the selectedUser state to the clicked user
-      console.log(response.data.messagesWithAUser);
-      console.log(response.data.receiver.name);
+      // console.log(response.data.messagesWithAUser);
+      // console.log(response.data.receiver.name);
       setSelectedUserName(response.data.receiver.name); // Store the name of the selected user in state
       setSelectedUserProfilePic(response.data.receiver.profilePicture); // Store the profile picture of the selected user in state
-      console.log(response);
+      // console.log(response);
 
       // Find the latest booking request
       let latestBookingRequest = null;
@@ -370,7 +370,7 @@ const Chat = () => {
         }
       });
 
-      console.log("Latest Booking Request:", latestBookingRequest);
+      // console.log("Latest Booking Request:", latestBookingRequest);
 
       // Set the selected user object with the latest booking request
       setSelectedUserObj({
@@ -385,13 +385,13 @@ const Chat = () => {
       });
       setReceiverIds(latestBookingRequest.host_id); // Set host_ids state
       setApproved(latestBookingRequest.approved)
-      console.log(latestBookingRequest.host_id);
+      // console.log(latestBookingRequest.host_id);
 
-      console.log("APPROVED " + latestBookingRequest.approved);
+      // console.log("APPROVED " + latestBookingRequest.approved);
     } catch (error) {
       setLoadingMessages(false); // Set loading state to false if there's an error
 
-      console.error("Error fetching messages:", error);
+      // console.error("Error fetching messages:", error);
     } finally {
       setLoadingMessages(false); // Set loading state to false when messages are loaded
     }
@@ -429,27 +429,27 @@ const Chat = () => {
       guestId,
       action
     ) => {
-      console.log(requestId, hostHomeId, hostId, guestId, action);
+      // console.log(requestId, hostHomeId, hostId, guestId, action);
       try {
         const response = await Axios.post(
           `/handleBookingRequest/${requestId}/${hostHomeId}/${hostId}/${guestId}/${action}`
         );
-        console.log("Booking request handled successfully:", response.data);
+        // console.log("Booking request handled successfully:", response.data);
         // Optionally, you can update your UI or state based on the response
       } catch (error) {
-        console.error("Error handling booking request:", error);
+        // console.error("Error handling booking request:", error);
         // Handle error scenarios, e.g., display an error message to the user
       }
     };
 
     const handleApprove = () => {
-      console.log("Approve parameters:", {
-        requestId: selectedUserObj.requestId,
-        hostHomeId: selectedUserObj.hostHomeId,
-        hostId: hostId,
-        guestId: selectedUser,
-        action: "accept",
-      });
+      // console.log("Approve parameters:", {
+      //   requestId: selectedUserObj.requestId,
+      //   hostHomeId: selectedUserObj.hostHomeId,
+      //   hostId: hostId,
+      //   guestId: selectedUser,
+      //   action: "accept",
+      // });
 
       handleBookingAction(
         selectedUserObj.requestId,
@@ -497,7 +497,7 @@ const Chat = () => {
         return dateA - dateB;
       }
     );
-    console.log(filteredNewMessages);
+    // console.log(filteredNewMessages);
 
     const uniqueMessages = filteredNewMessages.filter((msg, index, self) => {
       // Check if there is a message with the same content and time earlier in the array
@@ -517,8 +517,8 @@ const Chat = () => {
     });
 
     if (selectedUserObj) {
-      console.log("User ID:", selectedUserObj.user_id);
-      console.log("Receiver ID:", receiverIds);
+      // console.log("User ID:", selectedUserObj.user_id);
+      // console.log("Receiver ID:", receiverIds);
     }
 
     return (
@@ -686,10 +686,10 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    console.log(
-      "Recent Messages Updated:",
-      recentMessages.map((message) => message.user_id)
-    );
+    // console.log(
+    //   "Recent Messages Updated:",
+    //   recentMessages.map((message) => message.user_id)
+    // );
   }, [recentMessages]);
   return (
     <div>
@@ -745,7 +745,7 @@ const Chat = () => {
                 </div>
               )}
               {selectedUser &&
-                (console.log(selectedUser),
+                (
                   (
                     <div className="w-full">
                       <div className="bg-white p-4 rounded shadow">

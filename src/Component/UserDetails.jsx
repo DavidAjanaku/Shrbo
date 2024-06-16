@@ -171,7 +171,9 @@ const UserDetails = () => {
             />
             <div>
               <h3 className="text-lg font-semibold">{review.title}</h3>
-              <h3 className="text-sm">{review.user_name}</h3>
+              <Link to={`/UserDetails/${review.user_id}`}>
+              <h3 className="text-sm cursor-pointer">{review.user_name}</h3>
+             </Link>
 
               <span className="text-gray-600">
                 {getStarRating(review.ratings)}

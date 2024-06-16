@@ -25,7 +25,7 @@ const ListingInfoMain = () => {
 
   const { token } = useStateContext();
 
-  console.log(id);
+  // console.log(id);
   const {
     setTitle,
     setCancellationPolicy,
@@ -55,9 +55,9 @@ const ListingInfoMain = () => {
           setUser(response.data.id);
           setHostId(response.data.id);
   
-          console.log(response.data.id);
+          // console.log(response.data.id);
         } catch (error) {
-          console.error("Error fetching users:", error);
+          // console.error("Error fetching users:", error);
           // Handle error, show error message, etc.
         }
       };
@@ -124,10 +124,10 @@ const ListingInfoMain = () => {
           setCoHost(null); // No cohost found
         }
       } catch (error) {
-        console.error(
-          "Error fetching listing details:",
-          error.response ? error.response.data : error.message
-        );
+        // console.error(
+        //   "Error fetching listing details:",
+        //   error.response ? error.response.data : error.message
+        // );
         // Handle error, show error message, etc.
       }
     };
@@ -138,13 +138,13 @@ const ListingInfoMain = () => {
   const recordHostHomeView = async (hostHomeId, hostId) => {
     try {
       const response = await Axios.get(`/hostHomeView/${hostHomeId}/${hostId}`);
-      console.log("Host home view recorded successfully:", response.data);
+      // console.log("Host home view recorded successfully:", response.data);
     } catch (error) {
-      console.error("Error recording host home view:", error);
+      // console.error("Error recording host home view:", error);
     }
   };
 
-  console.log(hostId);
+  // console.log(hostId);
 
   useEffect(() => {
     if (hostId) {

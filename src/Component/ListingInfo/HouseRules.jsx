@@ -26,7 +26,7 @@ const items = [
 
 const HouseRules = () => {
   const onChange = (key) => {
-    console.log(key);
+    // console.log(key);
   };
 
   return (

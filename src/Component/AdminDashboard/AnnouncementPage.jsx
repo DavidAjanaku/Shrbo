@@ -7,8 +7,11 @@ import Axois from "../../Axios"
 
 const AnnouncementPage = () => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = async (values) => {
+    setLoading(true); // Disable the button
     try {
       // Make a request to the API endpoint
       await Axois.post("/sendEmail", {
@@ -34,6 +37,8 @@ const AnnouncementPage = () => {
     } catch (error) {
       // Display error message
       message.error("Failed to send announcement");
+    } finally {
+      setLoading(false); // Re-enable the button
     }
   };
 
@@ -79,11 +84,11 @@ const AnnouncementPage = () => {
               <Input.TextArea rows={4} />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Send Announcement
+            <Button type="primary" htmlType="submit" loading={loading}>
+            Send Announcement
               </Button>
             </Form.Item>
-          </Form>
+          </Form>    
         </div>
       </div>
     </div>

@@ -55,7 +55,7 @@ const WishlistModal = ({ added, onClose, closable,listingId,wishlistContainer })
   };
 
   const userId = localStorage.getItem('receiverid'); // Assuming 'userId' is stored in local storage
-console.log(userId);
+// console.log(userId);
 
   const handleAddToWishlist = async() => {
 
@@ -69,14 +69,14 @@ console.log(userId);
       hosthomeid:listingId,
     }
 
-    console.log(data)
+    // console.log(data)
     added()
     
     await axios.post(`/createWishlist/${user.id || userId}`,data).then(response=>{
       toggleFav("success");
       
     }).catch(error=>{
-      console.log('ADDing to Wishlist',error)
+      // console.log('ADDing to Wishlist',error)
       toggleFav("error");
       handleCancel()
     });

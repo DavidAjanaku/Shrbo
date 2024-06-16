@@ -75,7 +75,7 @@ const HostProfilePreview = ({
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching host information:", error);
+        // console.error("Error fetching host information:", error);
         setLoading(false);
       });
   }, [hostId]);

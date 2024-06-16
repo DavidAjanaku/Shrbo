@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Modal, Button, Input, Form } from "antd";
+import { Table, Modal, Button, Input, Form, notification } from "antd";
 import AdminHeader from "./AdminNavigation/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 import Axios from "../../Axios";
@@ -35,6 +35,28 @@ const AdminSupportPage = () => {
   useEffect(() => {
     fetchReportedIssues();
   }, []);
+  const handleDelete = async (id) => {
+    try {
+      console.log(id);
+      await Axios.delete(`/reporthosthome/${id}`);
+      setSupportTickets((prevTickets) =>
+        prevTickets.filter((ticket) => ticket.id !== id)
+      );
+      notification.success({
+        message: "Success",
+        description: "Ticket deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting ticket:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to delete ticket",
+      });
+    }
+  };
+  
+
+  
 
   const columns = [
     {
@@ -76,17 +98,7 @@ const AdminSupportPage = () => {
     },
   ];
 
-  const handleDelete = async (id) => {
-    try {
-      await Axios.delete(`/reporthosthome/${id}`);
-      setSupportTickets((prevTickets) =>
-        prevTickets.filter((ticket) => ticket.id !== id)
-      );
-      console.log("Ticket deleted successfully");
-    } catch (error) {
-      console.error("Error deleting ticket:", error);
-    }
-  };
+
 
   const showTicketModal = (ticket) => {
     setSelectedTicket({

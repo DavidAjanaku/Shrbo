@@ -186,7 +186,7 @@ export default function ListingForm({
           response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
           setIsAuthenticated(false);
         }
-        console.log(response.data.data);
+        // console.log(response.data.data);
 
         // console.log(response);
         const receiverUserID = response.data.data.user.id;
@@ -225,7 +225,7 @@ export default function ListingForm({
 
         setBlockedDates(blockedDates);
       } catch (error) {
-        console.error("Error fetching listing details:", error);
+        // console.error("Error fetching listing details:", error);
         // Handle error, show error message, etc.
       }
     };
@@ -513,18 +513,18 @@ export default function ListingForm({
         // Adjust the reserved price for weekend nights
         if (weekendNights === 0) {
           // Do nothing if there are no weekend nights
-          reservedPrice = reservedPrice;
+          // reservedPrice = reservedPrice;
           console.log(reservedPrice);
         } else {
-          console.log(reservedPrice);
+          // console.log(reservedPrice);
           // Remove two nightly prices from the reserved price and add the weekend price
           reservedPrice = reservedPrice - weekendNights * nightlyPrice;
         }
 
-        console.log(
-          "Updated reserved price after weekend calculation:",
-          reservedPrice
-        );
+        // console.log(
+        //   "Updated reserved price after weekend calculation:",
+        //   reservedPrice
+        // );
       }
 
       reservedPrice + weekendCost + securityDeposit;
@@ -542,7 +542,7 @@ export default function ListingForm({
       const securityDeposits = securityDeposit;
 
       const totalPrice = nights * nightlyPrice * guestFee * taxFees;
-      console.log(totalPrice);
+      // console.log(totalPrice);
       const serviceFeecharges =
         Number(guestFee) * Number(reservedPriceForApartment);
       const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
@@ -554,7 +554,7 @@ export default function ListingForm({
         securityDeposit +
         serviceFeecharges +
         vatFee;
-      console.log(TotalPrice);
+      // console.log(TotalPrice);
 
       setTotalCost(reservedPriceForApartment);
 
@@ -656,8 +656,8 @@ export default function ListingForm({
         const discountedPrice =
           reservedPriceForApartment + securityDeposits + totalFee;
         const discountTotal = discountedPrice * 0.95;
-        console.log(discountTotal);
-        console.log(discountedPrice);
+        // console.log(discountTotal);
+        // console.log(discountedPrice);
         setTotalCost(discountTotal);
       } else {
         setAppliedDiscount("");
@@ -807,12 +807,12 @@ export default function ListingForm({
         }
         setHostId(response.data.data.user.id);
       } catch (error) {
-        console.error(
-          `Error fetching listing details${
-            token ? " for authenticated" : " for unauthenticated"
-          } user:`,
-          error
-        );
+        // console.error(
+        //   `Error fetching listing details${
+        //     token ? " for authenticated" : " for unauthenticated"
+        //   } user:`,
+        //   error
+        // );
       }
     };
 
@@ -838,7 +838,7 @@ export default function ListingForm({
       form.resetFields();
     } catch (error) {
       message.error("Failed to send message " + error.response.data.error);
-      console.error(error);
+      // console.error(error);
     }
   };
   const isBlockedDatesBetweenCheckInOut = () => {
@@ -868,7 +868,7 @@ export default function ListingForm({
 
       // Handle the response as needed
     } catch (error) {
-      console.error("Error sending message to host:", error);
+      // console.error("Error sending message to host:", error);
       // Handle errors
     }
   };
@@ -882,7 +882,7 @@ export default function ListingForm({
       const coHostData = response.data;
       setCoHostNotAllowed(coHostData.co_host);
     } catch (error) {
-      console.error("Error fetching co-host data:", error);
+      // console.error("Error fetching co-host data:", error);
     }
   };
 
@@ -1410,8 +1410,9 @@ export default function ListingForm({
           centered={true}
           // width={"600px"}
         >
-          <ReportListing id={id} />
-        </Popup>
+  <ReportListing id={id}           handleCancel={() => setIsReportModalVisible(false)}
+ />
+  </Popup>
         {/* <CustomModal isOpen={isReportModalVisible} onClose={()=>setIsReportModalVisible(false)}   >
           <ReportListing/>
           </CustomModal> */}
