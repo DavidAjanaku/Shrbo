@@ -14,7 +14,6 @@ import { message as antdMessage } from "antd";
 
 import { Link } from "react-router-dom";
 import { message as messages2 } from "antd";
-import notificationSound from "../../notifcation sound/mixkit-bell-notification-933.wav"
 
 const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -35,7 +34,6 @@ const Chat = () => {
   const [selectedUserObj, setSelectedUserObj] = useState({});
   const [loadingUsersCard, setLoadingUsersCard] = useState(true);
   const [sending, setSending] = useState(false);
-  const audioRef = useRef(null);
   const [approved, setApproved] = useState(null);
 
   const token = localStorage.getItem("tokens");
@@ -89,21 +87,7 @@ const Chat = () => {
     initializeEcho(token, receiverId);
   }, []);
 
-  useEffect(() => {
-    // Load the audio file
-    const audioRef = new Audio(notificationSound);
-  
-    // Play the sound when new messages arrive
-    if (newMessages.length > 0) {
-      audioRef.play();
-    }
-  
-    // Cleanup function
-    return () => {
-      audioRef.pause(); // Pause the audio when the component is unmounted
-      audioRef.currentTime = 0; // Reset the audio to the beginning
-    };
-  }, [newMessages]);
+ 
 
   const [userChats, setUserChats] = useState({});
   const [message, setMessage] = useState("");
@@ -277,12 +261,7 @@ const Chat = () => {
 
 
 
-  useEffect(() => {
-    // Play the sound when new messages arrive
-    if (newMessages.length > 0) {
-      audioRef.current.play();
-    }
-  }, [newMessages]);
+
 
   const filteredUsers = users.filter((user) => {
     const nameMatch = user.name
