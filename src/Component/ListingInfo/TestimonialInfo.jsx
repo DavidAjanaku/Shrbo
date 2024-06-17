@@ -140,7 +140,7 @@ const TestimonialInfo = ({ reviews }) => {
 
           <div className=" pt-3 pl-2">
             <div className=" md:text-lg  text-base font-bold text-orange-600">
-             <Link to={`/UserDetails/${client.user_id}`}>
+             <Link to={`/Guestdetails/${client.user_id}`}>
              <label>{client.user_name} </label>
              </Link>
             </div>

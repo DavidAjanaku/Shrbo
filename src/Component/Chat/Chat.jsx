@@ -14,6 +14,7 @@ import { message as antdMessage } from "antd";
 
 import { Link } from "react-router-dom";
 import { message as messages2 } from "antd";
+import notificationSound from "../../notifcation sound/mixkit-bell-notification-933.wav"
 
 const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -90,10 +91,19 @@ const Chat = () => {
 
   useEffect(() => {
     // Load the audio file
-    audioRef.current = new Audio(
-      "../src/notifcation sound/mixkit-bell-notification-933.wav"
-    );
-  }, []);
+    const audioRef = new Audio(notificationSound);
+  
+    // Play the sound when new messages arrive
+    if (newMessages.length > 0) {
+      audioRef.play();
+    }
+  
+    // Cleanup function
+    return () => {
+      audioRef.pause(); // Pause the audio when the component is unmounted
+      audioRef.currentTime = 0; // Reset the audio to the beginning
+    };
+  }, [newMessages]);
 
   const [userChats, setUserChats] = useState({});
   const [message, setMessage] = useState("");
@@ -619,7 +629,7 @@ const Chat = () => {
                       >
                         Decline
                       </button>
-                      <Link to={`/userdetails/${selectedUser}`}>
+                      <Link to={`/GuestDetails/${selectedUser}`}>
                         <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600">
                           View Guest Profile
                         </button>
@@ -760,7 +770,7 @@ const Chat = () => {
                               {loadingMessages ? (
                                 <SkeletonLoader />
                               ) : (
-                                <Link to={`/userdetails/${selectedUser}`}>
+                                <Link to={`/GuestDetails/${selectedUser}`}>
                                   <p className="font-semibold">
                                     {selectedUserName}
                                   </p>

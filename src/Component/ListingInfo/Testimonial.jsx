@@ -68,7 +68,7 @@ const Testimonial = ({ reviews }) => {
                       className="object-cover w-[80px] h-[80px] rounded-full absolute top-10 left-4"
                     />
                     <div className="ml-20">
-                    <Link to={`/UserDetails/${review.user_id}`}>
+                    <Link to={`/GuestDetails/${review.user_id}`}>
 
                       <p className="text-lg font-semibold pb-3">
                         {review.user_name}

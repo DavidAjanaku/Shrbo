@@ -80,6 +80,7 @@ import AdminSecurityDeposit from "./Component/AdminDashboard/AdminSecurityDeposi
 import WalletRecords from "./Component/Wallet/WalletRecords";
 import AdminUserReports from "./Component/AdminDashboard/AdminUserReports";
 import SocialPage from "./Component/AdminDashboard/SocialPage";
+import GuestDetails from "./Component/GuestDetails";
 function App() {
 
   return (
@@ -200,6 +201,7 @@ function App() {
           <Route path="/AdminSecurityDeposit" element={<AdminSecurityDeposit />} />
           <Route path="/AdminUserReports" element={<AdminUserReports />} />
           <Route path="/SocialPage" element={<SocialPage />} />
+          <Route path="/GuestDetails/:id" element={<GuestDetails />} />
 
           
           <Route path="*" element={<PageNotFound/>} />
