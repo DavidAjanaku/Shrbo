@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import adv from "../../assets/user.png";
 import PaginationExample from "../PaginationExample";
 import { Pagination } from "antd";
@@ -110,9 +110,7 @@ const TestimonialInfo = ({ reviews }) => {
             {/* {client.title} */}
           </p>
 
-          <div className="  overflow-hidden text-ellipsis box-border block text-sm   md:text-lg ">
-            <label className="sm overflow-clip ">{client.comment}</label>
-          </div>
+         
         </div>
         <span className=" absolute right-10 bottom-10 flex  gap-[2px] justify-end items-center box-border md:font-semibold font-bold md:text-2xl text-base">
           <div className=" flex flex-row items-center gap-[2px]">
@@ -142,8 +140,13 @@ const TestimonialInfo = ({ reviews }) => {
 
           <div className=" pt-3 pl-2">
             <div className=" md:text-lg  text-base font-bold text-orange-600">
-              <label>{client.user_name} </label>
+             <Link to={`/Guestdetails/${client.user_id}`}>
+             <label>{client.user_name} </label>
+             </Link>
             </div>
+            <div className="  overflow-hidden text-ellipsis box-border block text-sm   md:text-lg ">
+            <label className="sm overflow-clip ">{client.comment}</label>
+          </div>
             <div className=" text-sm md:text-base">
               <label>
                 {new Date(client.datePosted).toLocaleDateString("en-US", {

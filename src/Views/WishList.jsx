@@ -11,7 +11,7 @@ const WishList=()=>{
     useEffect(()=>{
 
         axios.get('/getUserWishlistContainersAndItems').then(response=>{
-            console.log(response.data.userWishlist);
+            // console.log(response.data.userWishlist);
             const formattedWishlist=response.data.userWishlist.map(item=>({
                     id:item.wishlistContainer.id,
                     title:item.wishlistContainer.name,
@@ -21,12 +21,12 @@ const WishList=()=>{
                 
             }));
 
-            console.log(formattedWishlist);
+            // console.log(formattedWishlist);
             setWishLists(formattedWishlist);
 
 
         }).catch(err=>{
-            console.error(err);
+            // console.error(err);
 
         }).finally(()=>setLoading(false));
 

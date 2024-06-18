@@ -192,8 +192,9 @@ export default function GuestsListings() {
       title: "Verified",
       dataIndex: "verified",
       key: "verified",
-      render: (verified) => (verified ? "Yes" : "No"),
+      render: (verified) => (verified === "Verified" ? "Yes" : "No"),
     },
+    
     {
       title: "Date Created",
       dataIndex: "created_at",
@@ -235,10 +236,7 @@ export default function GuestsListings() {
                 {
                   type: "divider",
                 },
-                {
-                  label: <div>No idea</div>,
-                  key: "3",
-                },
+               
               ],
             }}
             trigger={["click"]}
@@ -439,16 +437,16 @@ export default function GuestsListings() {
     <div className="bg-gray-100 h-[100vh]">
       <AdminHeader />
       <div className="flex">
-        <div className="hidden md:block overflow-scroll example overflow-scroll example bg-orange-400 text-white md:w-1/5 h-[100vh] p-4">
+        <div className="hidden md:block example overflow-scroll example bg-orange-400 text-white md:w-1/5 h-[100vh] p-4">
           <AdminSidebar />
         </div>
 
         <div className="w-full md:w-4/5 p-4 h-[100vh] overflow-auto example">
-          <h1 className="text-2xl font-semibold mb-4">Guest Listings</h1>
+          <h1 className="text-2xl font-semibold mb-4">Users</h1>
           <div className="bg-white p-4 rounded shadow">
             <div className="mb-4">
               <p className="text-gray-400 text-sm">
-              The Guest Listings section provides a comprehensive view of all the guests registered on your platform. Each entry includes the guest’s name, email, verification status, date of account creation, and last login date.
+              The Users Listings section provides a comprehensive view of all the users registered on your platform. Each entry includes the user's name, email, verification status, date of account creation, and last login date.
               </p>
             </div>
             <div className="mb-4 flex justify-end">

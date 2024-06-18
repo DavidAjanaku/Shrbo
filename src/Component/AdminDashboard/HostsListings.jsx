@@ -236,10 +236,11 @@ export default function HostsListings() {
     },
     {
       title: "Verified",
-      dataIndex: "verified",
+      dataIndex: "user",
       key: "verified",
-      render: (verified) => (verified ? "Yes" : "No"),
+      render: (user) => (user.verified === "Verified" ? "Yes" : "No"),
     },
+    
     {
       title: "Date Created",
       dataIndex: ["user", "created_at"], // Update this line to access the created_at field nested inside the user object

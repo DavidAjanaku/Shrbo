@@ -80,7 +80,7 @@ export default function AdminSidebar() {
               >
                 <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
                   <Link to="/GuestsListings" className="w-full">
-                    <div>Guests</div>
+                    <div>Users</div>
                   </Link>
                 </li>
                 <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">

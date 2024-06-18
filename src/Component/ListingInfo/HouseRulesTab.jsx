@@ -8,7 +8,7 @@ const HouseRulesTab = () => {
   const [listingDetails, setListingDetails] = useState(null);
   const { id } = useParams(); // Get the ID parameter from the route
   const { token } = useStateContext();
-  console.log(token);
+  // console.log(token);
 
   useEffect(() => {
     const fetchListingDetails = async () => {
@@ -27,7 +27,7 @@ const HouseRulesTab = () => {
         }
         setListingDetails(response.data.data);
       } catch (error) {
-        console.error("Error fetching listing details:", error);
+        // console.error("Error fetching listing details:", error);
       }
     };
   

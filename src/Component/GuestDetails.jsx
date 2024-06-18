@@ -11,7 +11,7 @@ import UserDetailsSkeleton from "../SkeletonLoader/UserDetailsSkeleton";
 import { StarFilled } from "@ant-design/icons";
 import logoImage from "../assets/shbro logo.png";
 
-const UserDetails = () => {
+const GuestDetails = () => {
   const [showReviews, setShowReviews] = useState(false);
   const [showAllHouses, setShowAllHouses] = useState(false);
   const [housesPerPage, setHousesPerPage] = useState(5);
@@ -28,7 +28,7 @@ const UserDetails = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await Axios.get(`/hostReview/${id}`);
+        const response = await Axios.get(`/guestReview/${id}`);
         setUserData(response.data.data);
         console.log(response.data.data);
       } catch (error) {
@@ -164,16 +164,10 @@ const UserDetails = () => {
           className="bg-white p-4 rounded-lg flex flex-col items-start"
         >
           <div className="flex items-center mb-2 w-full">
-            <img
-              src={review.photo_url}
-              alt=""
-              className="h-16 w-16 object-cover rounded-full mr-2"
-            />
+          
             <div>
               <h3 className="text-lg font-semibold">{review.title}</h3>
-              <Link to={`/UserDetails/${review.user_id}`}>
-              <h3 className="text-sm cursor-pointer">{review.user_name}</h3>
-             </Link>
+             
 
               <span className="text-gray-600">
                 {getStarRating(review.ratings)}
@@ -190,42 +184,7 @@ const UserDetails = () => {
 
         </Popup>
 
-        {userData.Status === "Host" && (
-          <>
-            {userData.hosthomeDetails.length > 0 ? (
-              <>
-                <h3 className="text-xl font-semibold mt-4">
-                  Houses {userData.name} has hosted
-                </h3>
-                <div
-                  className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
-                    showAllHouses ? "w-full" : "w-fit"
-                  }`}
-                >
-                  {userData.hosthomeDetails.map((apartment, index) => (
-                    <Link
-                      to={`/ListingInfoMain/${apartment.hosthome_id}`}
-                      key={index}
-                    >
-                      <div className="mt-2 p-4 bg-white ">
-                        <img
-                          src={apartment.photo_image}
-                          className="h-32 w-full object-cover rounded-t-lg"
-                          alt={apartment.hosthome_title}
-                        />
-                        <p className="text-center text-gray-800 mt-2 font-semibold">
-                          {apartment.hosthome_title}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p>No houses hosted by {userData.name}</p>
-            )}
-          </>
-        )}
+      
 
         {userData.Status === "Guest" && (
           <>
@@ -266,38 +225,7 @@ const UserDetails = () => {
 
         {userData.Status === "Host And Guest" && (
           <>
-            {userData.hosthomeDetails.length > 0 ? (
-              <>
-                <h3 className="text-xl font-semibold mt-4">
-                  Houses {userData.name} has hosted
-                </h3>
-                <div
-                  className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${
-                    showAllHouses ? "w-full" : "w-fit"
-                  }`}
-                >
-                  {userData.hosthomeDetails.map((apartment, index) => (
-                    <Link
-                      to={`/ListingInfoMain/${apartment.hosthome_id}`}
-                      key={index}
-                    >
-                      <div className="mt-2 p-4 bg-white ">
-                        <img
-                          src={apartment.photo_image}
-                          className="h-32 w-full object-cover rounded-t-lg"
-                          alt={apartment.hosthome_title}
-                        />
-                        <p className="text-center text-gray-800 mt-2 font-semibold">
-                          {apartment.hosthome_title}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p>No houses hosted by {userData.name}</p>
-            )}
+          
 
             {userData.bookedhosthomeDetails.length > 0 ? (
               <>
@@ -384,4 +312,4 @@ const UserDetails = () => {
   );
 };
 
-export default UserDetails;
+export default GuestDetails;

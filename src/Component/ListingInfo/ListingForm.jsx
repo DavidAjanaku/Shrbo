@@ -88,8 +88,7 @@ export default function ListingForm({
   const [reservedPrice, setReservedPrice] = useState(0);
   const [matchedReservedPrices, setMatchedReservedPrices] = useState([]);
   const [coHostMessageShown, setCoHostMessageShown] = useState(false);
-
-
+  const [priceToMultiply, setPriceToMultiply] = useState(0);
 
   // console.log(verified);
   const {
@@ -187,6 +186,7 @@ export default function ListingForm({
           response = await Axios.get(`showGuestHomeForUnAuthUser/${id}`);
           setIsAuthenticated(false);
         }
+        // console.log(response.data.data);
 
         // console.log(response);
         const receiverUserID = response.data.data.user.id;
@@ -197,6 +197,7 @@ export default function ListingForm({
         const checkoutTimeDate = response.data.data.checkout;
         setSecurityDeposit(parseInt(response.data.data.securityDeposit));
         setGuestFee(response.data.data.guest_fee);
+        setTaxFees(response.data.data.vat);
         setSecurityDeposits(parseInt(response.data.data.securityDeposit));
         const discounts = response.data.data.discounts;
         const discountValues = discounts.map((discount) => discount.discount);
@@ -224,7 +225,7 @@ export default function ListingForm({
 
         setBlockedDates(blockedDates);
       } catch (error) {
-        console.error("Error fetching listing details:", error);
+        // console.error("Error fetching listing details:", error);
         // Handle error, show error message, etc.
       }
     };
@@ -291,8 +292,6 @@ export default function ListingForm({
   const matchingDiscounts = discount.filter((discount) =>
     predefinedDiscounts.includes(discount)
   );
-
-
 
   const calculateWeekendNights = (checkIn, checkOut) => {
     let weekendNights = 0;
@@ -372,7 +371,6 @@ export default function ListingForm({
       }
     }
   }, [preparation_time, checkoutDates]);
- 
 
   const calculateTotalPrice = (checkIn, checkOut) => {
     // Ensure that checkIn and checkOut are valid dates
@@ -451,8 +449,6 @@ export default function ListingForm({
             // Calculate the reserved price
             reservedPrice = basenormalPrice;
 
-          
-
             // Add the new reservation to matchedReservedPrices if it's not already there
             if (
               !updatedMatchedReservedPrices.some(
@@ -517,18 +513,18 @@ export default function ListingForm({
         // Adjust the reserved price for weekend nights
         if (weekendNights === 0) {
           // Do nothing if there are no weekend nights
-          reservedPrice = reservedPrice;
+          // reservedPrice = reservedPrice;
           console.log(reservedPrice);
         } else {
-          console.log(reservedPrice);
+          // console.log(reservedPrice);
           // Remove two nightly prices from the reserved price and add the weekend price
           reservedPrice = reservedPrice - weekendNights * nightlyPrice;
         }
 
-        console.log(
-          "Updated reserved price after weekend calculation:",
-          reservedPrice
-        );
+        // console.log(
+        //   "Updated reserved price after weekend calculation:",
+        //   reservedPrice
+        // );
       }
 
       reservedPrice + weekendCost + securityDeposit;
@@ -544,17 +540,28 @@ export default function ListingForm({
       const guest_fee = guestFee * nights;
 
       const securityDeposits = securityDeposit;
-      const totalPrice = nights * nightlyPrice;
-      const TotalPrice = reservedPriceForApartment + securityDeposit;
-      
+
+      const totalPrice = nights * nightlyPrice * guestFee * taxFees;
+      // console.log(totalPrice);
+      const serviceFeecharges =
+        Number(guestFee) * Number(reservedPriceForApartment);
+      const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+
+      console.log(reservedPriceForApartment);
+      setPriceToMultiply(reservedPriceForApartment)
+      const TotalPrice =
+        reservedPriceForApartment +
+        securityDeposit +
+        serviceFeecharges +
+        vatFee;
+      // console.log(TotalPrice);
+
       setTotalCost(reservedPriceForApartment);
 
       setHousePrice(price);
       setNights(nights);
       setTotalPrice(reservedPriceForApartment);
-     
 
-    
       setHostFees(hostFees);
       setTotalCosts(totalCosts);
       setServiceFee(serviceFees);
@@ -592,8 +599,16 @@ export default function ListingForm({
 
         const totalDiscountedPrice =
           baseDiscountedPrice + securityDepositDiscountedPrice;
+
+          const serviceFeecharges =
+          Number(guestFee) * Number(reservedPriceForApartment);
+        const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+        const totalFee = serviceFeecharges + vatFee;
+
+
         const discountedPrice =
-          reservedPriceForApartment + securityDeposits - baseDiscountedPrice;
+          reservedPriceForApartment + totalFee + securityDeposits - baseDiscountedPrice;
+
 
         if (customDiscountPercentage > 0) {
           const formattedDiscount = (customDiscountPercentage * 100).toFixed(0); // Format discount percentage
@@ -608,19 +623,42 @@ export default function ListingForm({
       // Apply predefined discounts if custom discount is not applied
       if (bookingCount < 3 && discount.includes("20% New listing promotion")) {
         setAppliedDiscount("20% New listing promotion (20% off)");
+        const serviceFeecharges =
+          Number(guestFee) * Number(reservedPriceForApartment);
+        const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+        const totalFee = serviceFeecharges + vatFee;
+
         const discountedPrice =
-          reservedPriceForApartment * 0.8 + securityDeposits;
-        setTotalCost(discountedPrice);
+          reservedPriceForApartment + securityDeposits + totalFee;
+
+        const discountTotal = discountedPrice * 0.8;
+
+        setTotalCost(discountTotal);
       } else if (nights >= 28 && discount.includes("10% Monthly discount")) {
         setAppliedDiscount("10% Monthly discount (10% off)");
+        const serviceFeecharges =
+          Number(guestFee) * Number(reservedPriceForApartment);
+        const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+        const totalFee = serviceFeecharges + vatFee;
+
         const discountedPrice =
-          reservedPriceForApartment * 0.9 + securityDeposits;
-        setTotalCost(discountedPrice);
+          reservedPriceForApartment + securityDeposits + totalFee;
+        const discountTotal = discountedPrice * 0.9;
+
+        setTotalCost(discountTotal);
       } else if (nights >= 7 && discount.includes("5% Weekly discount")) {
         setAppliedDiscount("5% Weekly discount (5% off)");
+        const serviceFeecharges =
+          Number(guestFee) * Number(reservedPriceForApartment);
+        const vatFee = Number(taxFees) * Number(reservedPriceForApartment);
+
+        const totalFee = serviceFeecharges + vatFee;
         const discountedPrice =
-          reservedPriceForApartment * 0.95 + securityDeposits;
-        setTotalCost(discountedPrice);
+          reservedPriceForApartment + securityDeposits + totalFee;
+        const discountTotal = discountedPrice * 0.95;
+        // console.log(discountTotal);
+        // console.log(discountedPrice);
+        setTotalCost(discountTotal);
       } else {
         setAppliedDiscount("");
         setTotalCost(TotalPrice);
@@ -667,8 +705,7 @@ export default function ListingForm({
     return 1; // Default to 1 night if dates are not selected
   };
   let pricePerNight = Number(price).toLocaleString();
-  let totalPriceForNights =calculateNumberOfNights() * Number(price);
-
+  let totalPriceForNights = calculateNumberOfNights() * Number(price);
 
   const navigate = useNavigate();
 
@@ -697,7 +734,6 @@ export default function ListingForm({
   // Calculate the max date based on the availability window
   const maxDate = calculateMaxDate(availability_window);
 
- 
   const isDateBooked = (date) => {
     return bookedDates.some(
       (bookedDate) =>
@@ -723,7 +759,6 @@ export default function ListingForm({
 
     return false;
   };
-
 
   // Check if a date is blocked
   const isDateBlocked = (date) => {
@@ -772,12 +807,12 @@ export default function ListingForm({
         }
         setHostId(response.data.data.user.id);
       } catch (error) {
-        console.error(
-          `Error fetching listing details${
-            token ? " for authenticated" : " for unauthenticated"
-          } user:`,
-          error
-        );
+        // console.error(
+        //   `Error fetching listing details${
+        //     token ? " for authenticated" : " for unauthenticated"
+        //   } user:`,
+        //   error
+        // );
       }
     };
 
@@ -795,8 +830,6 @@ export default function ListingForm({
         return;
       }
 
-  
-
       await Axios.post(`/makeRequestToBook/${hostId}/${id}`);
       setMessageSent(true);
       message.success("Inquiry sent successfully");
@@ -805,7 +838,7 @@ export default function ListingForm({
       form.resetFields();
     } catch (error) {
       message.error("Failed to send message " + error.response.data.error);
-      console.error(error);
+      // console.error(error);
     }
   };
   const isBlockedDatesBetweenCheckInOut = () => {
@@ -835,16 +868,13 @@ export default function ListingForm({
 
       // Handle the response as needed
     } catch (error) {
-      console.error("Error sending message to host:", error);
+      // console.error("Error sending message to host:", error);
       // Handle errors
     }
   };
 
-
   const hostIDs = parseInt(localStorage.getItem("receiverid"), 10);
   const coHostIdInt = parseInt(coHostId, 10);
-
- 
 
   const fetchCoHostData = async () => {
     try {
@@ -852,10 +882,10 @@ export default function ListingForm({
       const coHostData = response.data;
       setCoHostNotAllowed(coHostData.co_host);
     } catch (error) {
-      console.error("Error fetching co-host data:", error);
+      // console.error("Error fetching co-host data:", error);
     }
   };
-  
+
   const isCoHostNotAllowed = () => {
     return coHostNotAllowed === 1;
   };
@@ -866,9 +896,6 @@ export default function ListingForm({
       setCoHostMessageShown(true);
     }
   }, [coHostNotAllowed]);
-  
-  
-  
 
   const isLoggedIn = () => {
     const token = localStorage.getItem("token"); // Assuming you store the token in localStorage
@@ -1168,26 +1195,26 @@ export default function ListingForm({
                                 </div>
                               )}
 
-                              {/* <div className=" mb-2t box-border block">
+                              <div className=" mb-2t box-border block">
                                 <div className=" flex items-end justify-between break-words    ">
                                   <div className=" block box-border">
                                     <span>Service Fee</span>
                                   </div>
                                   <div className=" ml-4 whitespace-nowrap block box-border   ">
-                                    ₦ {Number(serviceFees).toLocaleString()}
+                                    ₦ {Number(guestFee).toLocaleString() * priceToMultiply} 
                                   </div>
                                 </div>
-                              </div> */}
-                              {/* <div className=" mb-2 box-border block">
+                              </div>
+                              <div className=" mb-2 box-border block">
                                 <div className=" flex items-end justify-between break-words    ">
                                   <div className=" block box-border">
                                     <span>Tax</span>
                                   </div>
                                   <div className=" ml-4 whitespace-nowrap block box-border   ">
-                                    ₦ {Number(taxFees).toLocaleString()}
+                                    ₦ {Number(vatFee).toLocaleString() * priceToMultiply}
                                   </div>
                                 </div>
-                              </div> */}
+                              </div>
                             </div>
                             {/* Total */}
                             <div className="  py-4">
@@ -1236,7 +1263,6 @@ export default function ListingForm({
                             sendMessage();
                           } else if (buttonTexts === "Book") {
                             navigate("/RequestBook");
-
                           }
                         }}
                         disabled={
@@ -1295,8 +1321,8 @@ export default function ListingForm({
                       isCheckoutDisabled() ||
                       isCheckoutBlocked() ||
                       isBlockedDatesBetweenCheckInOut() ||
-                      (checkInDate && checkOutDate && isCoHostNotAllowed())
-                      || price === null
+                      (checkInDate && checkOutDate && isCoHostNotAllowed()) ||
+                      price === null
                     }
                   >
                     Book
@@ -1384,8 +1410,9 @@ export default function ListingForm({
           centered={true}
           // width={"600px"}
         >
-          <ReportListing id={id} />
-        </Popup>
+  <ReportListing id={id}           handleCancel={() => setIsReportModalVisible(false)}
+ />
+  </Popup>
         {/* <CustomModal isOpen={isReportModalVisible} onClose={()=>setIsReportModalVisible(false)}   >
           <ReportListing/>
           </CustomModal> */}

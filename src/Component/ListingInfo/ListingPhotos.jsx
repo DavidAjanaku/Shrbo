@@ -37,8 +37,8 @@ const ListingPhotos = ({
   const [isWishlistModalVisible, setIsWishlistModalVisible] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const { listingId } = useParams();
-  console.log(listingId);
-  console.log(title);
+  // console.log(listingId);
+  // console.log(title);
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
@@ -55,10 +55,10 @@ const ListingPhotos = ({
       })
         .then((response) => {
           setWishlistContainer(response.data.userWishlist);
-          console.log("wishlist", response.data);
+          // console.log("wishlist", response.data);
         })
         .catch((error) => {
-          console.log("wishlist", error);
+          // console.log("wishlist", error);
         });
     }
   }, [isModalOpen]); // Include isModalOpen if you want the data to be refetched when isModalOpen changes
@@ -80,7 +80,7 @@ const ListingPhotos = ({
   const imageUrlss = imageUrls.map((photo) => photo.images);
   // console.log(imageUrlss);
 
-  console.log(id);
+  // console.log(id);
 
   const handleSave = (container) => {
     if (saveLabel === "Saved") {
@@ -94,11 +94,11 @@ const ListingPhotos = ({
               setWishlistContainer(response.data.userWishlist);
             })
             .catch((error) => {
-              console.log("Error fetching wishlist containers:", error);
+              // console.log("Error fetching wishlist containers:", error);
             });
         })
         .catch((error) => {
-          console.log("Error removing item from wishlist:", error);
+          // console.log("Error removing item from wishlist:", error);
           toast.error("Failed to remove from wishlist");
         });
     } else {
@@ -127,7 +127,7 @@ const ListingPhotos = ({
           setSaveLabel(exists ? "Saved" : "Save");
         })
         .catch((error) => {
-          console.log("Error fetching wishlist containers and items:", error);
+          // console.log("Error fetching wishlist containers and items:", error);
         })
         .finally(() => {
           setLoading(false); // Set loading to false when the fetch operation completes
@@ -218,9 +218,9 @@ const ListingPhotos = ({
 
   return (
     <div className="w-full flex flex-wrap flex-col-reverse md:flex-row h-full">
+      
       <div
-        isOpen={isWishlistModalVisible}
-        onRequestClose={() => setIsWishlistModalVisible(false)}
+       
       >
         {isWishlistModalVisible && (
           <WishlistModal
@@ -507,6 +507,7 @@ const ListingPhotos = ({
           )}
         </div>
       </Modal>
+      
       <ShareModal isOpen={isShareModalOpen} onClose={closeShareModal} title={title} imageUrl={hosthomephotos.length > 0 ? hosthomephotos[0].images : null} />
 
 

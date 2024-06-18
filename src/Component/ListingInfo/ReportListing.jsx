@@ -1,24 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { Radio } from "antd";
+import React, { useState } from "react";
+import { Radio, notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Axios from "../../Axios";
-import { notification } from "antd";
 
-const ReportListing = ({ id,onSubmit }) => {
+const ReportListing = ({ id, handleCancel }) => {
   const [goNext, setGoNext] = useState(false);
-  const [reportCategory, setReportCategory] = useState(0);
+  const [reportCategory, setReportCategory] = useState();
   const [reportType, setReportType] = useState();
   const [loading, setLoading] = useState(false);
   const [extraReason, setExtraReason] = useState("");
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-
   const onChange = (e) => {
-    console.log("radio checked", e.target.value);
     setReportType(e.target.value);
   };
+
   const onCategoryChange = (e) => {
-    console.log("radio checked", e.target.value);
     setReportCategory(e.target.value);
   };
 
@@ -29,6 +26,7 @@ const ReportListing = ({ id,onSubmit }) => {
       setLoading(true);
     }
   };
+
   const handleBack = () => {
     setGoNext(false);
   };
@@ -39,23 +37,23 @@ const ReportListing = ({ id,onSubmit }) => {
 
   const handleReport = (e) => {
     e.preventDefault();
-  
-    if (!reportType) {
+
+    if (typeof reportType === "undefined") {
       notification.error({
         message: "Error",
         description: "Please select a report type.",
       });
       return;
     }
-  
-    if (goNext && reportCategory === 0) {
+
+    if (goNext && typeof reportCategory === "undefined") {
       notification.error({
         message: "Error",
         description: "Please select a reason for reporting.",
       });
       return;
     }
-  
+
     setLoadingSubmit(true); // Disable the "Submit" button
     const requestBody = {
       title: ReportTypes.find((report) => report.index === reportType).report,
@@ -65,18 +63,16 @@ const ReportListing = ({ id,onSubmit }) => {
       host_home_id: id,
       extrareasonforreporting: extraReason,
     };
-  
+
     Axios.post("/reporthosthome", requestBody)
       .then((response) => {
-        console.log("Report submitted successfully");
         notification.success({
           message: "Success",
           description: "Report submitted successfully!",
         });
-        // Call the onSubmit callback
+        handleCancel(); // Close the modal
       })
       .catch((error) => {
-        console.error("Error while submitting report:", error);
         notification.error({
           message: "Error",
           description: "Failed to submit report. Please try again later.",
@@ -86,11 +82,6 @@ const ReportListing = ({ id,onSubmit }) => {
         setLoadingSubmit(false); // Re-enable the "Submit" button
       });
   };
-  
-  
-  
-
-  // Your existing code for rendering the component goes here
 
   const ReportTypes = [
     { index: 1, report: "Inaccurate", type: "This listing Is inaccurate" },
@@ -251,29 +242,26 @@ const ReportListing = ({ id,onSubmit }) => {
           >
             Back
           </button>
-          <button
-            type="button"
-            onClick={handleNext}
-            disabled={reportType ? false : true}
-            className={`rounded-md text-white  ${
-              goNext ? "hidden" : "block"
-            } disabled:hover:bg-orange-300 hover:bg-orange-500   bg-orange-300 p-2 font-medium  px-4 ${
-              reportType && "bg-orange-400"
-            }`}
-          >
-            Next
-          </button>
-          <button
-  onClick={(e) => handleReport(e)}
-  disabled={reportType ? false : true || loadingSubmit}
-  className={`rounded-md text-white ${
-    !goNext ? "hidden" : "block"
-  } hover:bg-orange-500  bg-orange-300 p-2 font-medium  px-4 ${
-    reportType && "bg-orange-400"
-  }`}
->
-  {loadingSubmit ? "Submitting..." : "Submit"}
-</button>
+          {!goNext ? (
+            <button
+              onClick={handleNext}
+              className={`rounded-md transition-3 text-white ring-1 font-medium ring-orange-400 p-2 px-3 bg-orange-400 hover:bg-orange-500`}
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              onClick={handleReport}
+              className={`rounded-md transition-3 text-white ring-1 font-medium ring-orange-400 p-2 px-3 bg-orange-400 hover:bg-orange-500`}
+              disabled={loadingSubmit}
+            >
+              {loadingSubmit ? (
+                <LoadingOutlined style={{ fontSize: 20 }} />
+              ) : (
+                "Submit"
+              )}
+            </button>
+          )}
         </div>
       </form>
     </div>

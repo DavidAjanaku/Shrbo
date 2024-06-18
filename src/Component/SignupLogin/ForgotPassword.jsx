@@ -1,43 +1,61 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.png';
-import axios from '../../Axios'
+import axios from '../../Axios';
+import { notification } from 'antd';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const submitForm = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault(); // Prevent form submission
+
+    setLoading(true); // Set loading state to true
+
     const data = {
-      email
-    }
+      email // Assuming email is defined elsewhere in your code
+    };
+
     try {
       const response = await axios.post('/password/reset', data);
-
-      if (response.ok) {
-        console.log('Password reset request successful');
-        // Handle success, e.g., show a success message or redirect
-      } else {
-        console.error('Password reset request failed');
-        // Handle failure, e.g., show an error message to the user
-      }
+      console.log('Password reset request successful');
+      console.log(response.data); // Log the response data
+      setSuccess(true); // Set success state to true
+      setTimeout(() => {
+        // Redirect to homepage after 3 seconds
+        window.location.href = '/';
+      }, 3000);
     } catch (error) {
-      console.error('Error:', error);
-      // Handle other errors if needed
-    }finally{
-      setLoading(false)
+      console.log(error);
+      notification.error({
+        message: 'Password Reset Failed',
+        description: error.response.data.message
+      });
+      // Handle errors, e.g., show an error message to the user
+    } finally {
+      setLoading(false); // Set loading state to false, whether the request succeeded or failed
     }
   };
 
   return (
     <>
-      {loading ? <div className=' w-full h-screen flex items-center justify-center'>
-        <div class="containerld"></div>
-
+      {loading ? (
+        <div className='w-full h-screen flex items-center justify-center'>
+          <div className="containerld"></div>
+        </div>
+      ) : success ? (
+        <div className='w-full h-screen flex items-center justify-center bg-white'>
+        <div className='bg-white p-8 mx-10 rounded-lg shadow-lg text-center'>
+          <h1 className='text-2xl font-bold text-orange-500'>Password Reset Link Sent</h1>
+          <p className='text-gray-600 mt-4'>
+            A password reset link has been sent to your email address. Please check your inbox and follow the instructions in the email to reset your password.
+          </p>
+        </div>
       </div>
-        :
+      
+      ) : (
         <div className="flex h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <img className="mx-auto h-20 w-auto" src={logo} alt="Shrbo" />
@@ -75,7 +93,6 @@ const ForgotPassword = () => {
                   type="submit"
                   className="flex w-full justify-center rounded-md bg-orange-500 focus:bg-orange-400 px-3 py-3 text-lg font-semibold leading-6 text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
                   style={{ backgroundColor: 'rgb(249, 115, 22)' }}
-
                 >
                   Reset password
                 </button>
@@ -95,8 +112,7 @@ const ForgotPassword = () => {
             </div>
           </div>
         </div>
-      }
-
+      )}
     </>
   );
 };

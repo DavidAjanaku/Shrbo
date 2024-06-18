@@ -4,10 +4,11 @@ import "@splidejs/react-splide/css";
 import PopupFull from "../../hoc/PopupFull";
 import TestimonialInfo from "./TestimonialInfo";
 import logoImage from "../../assets/shbro logo.png";
+import { Link } from "react-router-dom";
 
 const Testimonial = ({ reviews }) => {
   const [open, setOpen] = useState(false);
-  console.log(reviews);
+  // console.log(reviews);
 
   const openPopup = () => {
     setOpen(true);
@@ -67,9 +68,12 @@ const Testimonial = ({ reviews }) => {
                       className="object-cover w-[80px] h-[80px] rounded-full absolute top-10 left-4"
                     />
                     <div className="ml-20">
+                    <Link to={`/GuestDetails/${review.user_id}`}>
+
                       <p className="text-lg font-semibold pb-3">
                         {review.user_name}
                       </p>
+                      </Link>
                       <p className="text-lg font-semibold pb-3">
                         {review.title}
                       </p>
