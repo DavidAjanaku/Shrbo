@@ -6,7 +6,7 @@ import { useStateContext } from "../../ContextProvider/ContextProvider";
 import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { message } from "antd";
+import { message as messages } from "antd";
 
 import Axios from "../../Axios";
 export default function Example() {
@@ -213,8 +213,13 @@ export default function Example() {
       // Show success message to the user
       console.log("Payment initiated successfully");
     } catch (error) {
-      console.error("Error initiating payment:", error.response.data);
-      message.error(error.response.data.message);
+
+      console.error("Error initiating payment:", error.response.data.message);
+      messages.error(error.response.data.message);
+
+      setTimeout(() => {
+        window.location.href = "/Profile";
+      }, 3000);
   
       // Handle error: show error message to user
       console.log("Error initiating payment:", error.response.data);

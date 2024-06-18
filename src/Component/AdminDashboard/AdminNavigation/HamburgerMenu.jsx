@@ -65,7 +65,7 @@ const HamburgerMenuComponent = ({ isOpen, toggleMenu }) => {
               }`}
             >
               <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
-                <Link to="/GuestsListings">Guests</Link>
+                <Link to="/GuestsListings">Users</Link>
               </li>
               <li className="p-2 hover:bg-orange-400 cursor-pointer w-full">
                 <Link to="/HostsListings">Hosts</Link>
