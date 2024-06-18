@@ -192,8 +192,9 @@ export default function GuestsListings() {
       title: "Verified",
       dataIndex: "verified",
       key: "verified",
-      render: (verified) => (verified ? "Yes" : "No"),
+      render: (verified) => (verified === "Verified" ? "Yes" : "No"),
     },
+    
     {
       title: "Date Created",
       dataIndex: "created_at",
