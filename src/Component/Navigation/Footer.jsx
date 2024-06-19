@@ -43,7 +43,7 @@ const Footer = () => {
           <div>
             <h2 className="text-base font-bold mb-4">About Us</h2>
             <ul>
-              <li className='text-sm'><Link to="/aboutus">About Shbro</Link></li>
+              <li className='text-sm'><Link to="/aboutus">About Shrbo</Link></li>
               <li className='text-sm'><Link to="/SupportAndHelp">Customer Support and Information</Link></li>
               <li className='text-sm'><Link to="/ContactSupport">Help Center</Link></li>
               <li className='text-sm'><Link to="/CancellationPolicy">Cancellation options</Link></li>
@@ -61,7 +61,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="text-center">
-        <img src={Logo} className="w-20 h-20 mx-auto" alt="Shbro Logo" />
+        <img src={Logo} className="w-20 h-20 mx-auto" alt="Shrbo Logo" />
         <div className="mt-4 space-x-5">
           <Link to={socialLinks.twitter} target="_blank" rel="noopener noreferrer">
             <FontAwesomeIcon icon={faTwitter} size="1x" className="text-white mr-2" />

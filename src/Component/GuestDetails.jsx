@@ -145,7 +145,7 @@ const GuestDetails = () => {
           centered={true}
           className="popup-50-height"
         >
-          <h3 className="text-xl font-semibold">Reviews by {userData.name}</h3>
+          <h3 className="text-xl font-semibold">Reviews by  Hosts</h3>
           <ul className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4 mt-4">
   {userData.actualReviews.length === 0 ? (
     <p className="text-gray-600 mt-4">No reviews available</p>
