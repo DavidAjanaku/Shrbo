@@ -27,7 +27,7 @@ const ChatSupport = () => {
     setVisible(true);
     setShowOption(false);
     setSelectedCategory(option);
-    console.log(option);
+    // console.log(option);
   };
 
   function handleClose() {
@@ -185,10 +185,10 @@ const ChatSupport = () => {
     if (botm) {
       const messages = botm.message; // Access the 'message' property from the object
       // const menu=botm.type==="menu";
-      console.log(messages);
+      // console.log(messages);
       setBotMessage(messages);
     } else {
-      console.log("Category not found.");
+      // console.log("Category not found.");
     }
   };
 

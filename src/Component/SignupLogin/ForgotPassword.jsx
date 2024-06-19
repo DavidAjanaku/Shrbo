@@ -20,8 +20,8 @@ const ForgotPassword = () => {
 
     try {
       const response = await axios.post('/password/reset', data);
-      console.log('Password reset request successful');
-      console.log(response.data); // Log the response data
+      // console.log('Password reset request successful');
+      // console.log(response.data); // Log the response data
       setSuccess(true); // Set success state to true
       setTimeout(() => {
         // Redirect to homepage after 3 seconds

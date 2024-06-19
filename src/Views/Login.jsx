@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import logo from "../assets/logo.png";
 import google from "../assets/google.png";
 import { Link } from "react-router-dom";
-import { notification} from 'antd';
+import { notification } from 'antd';
 import axios from '../Axios'
 // import { LoadingOutlined } from '@ant-design/icons';
 import { useStateContext } from "../ContextProvider/ContextProvider.jsx";
@@ -26,7 +26,7 @@ const LogIn = () => {
       // Make a GET request to the Google OAuth endpoint
       axios.get("/auth").then((response) => {
         setGoogleUrl(response.data.url);
-        console.log(response.data);
+        // console.log(response.data);
       });
 
       // // Redirect the user to the Google sign-in page
@@ -68,7 +68,7 @@ const LogIn = () => {
 
         setUser(response.data.user);
         setToken(response.data.token);
-            /// Live Chat unAuthenticated user logic
+        /// Live Chat unAuthenticated user logic
         localStorage.removeItem("gnT");
         localStorage.removeItem("gnU");
         localStorage.removeItem("gnUID");
@@ -82,19 +82,25 @@ const LogIn = () => {
       setLoading(false);
       console.error("Error:", error);
 
+      let test;
+
       if (error.response.data.message) {
         openNotificationWithIcon("error", error.response.data.message);
         setError(error.response.data.message);
+        test = error.response.data.message;
       } else {
         openNotificationWithIcon("error", error.response.data);
         setError(error.response.data);
+        test = error.response.data;
       }
-    } finally {
       // Set loading to false regardless of success or failure
-      if (error === "Your account has been deactivated") {
-        goActivate.current.click();
+      if (test === "Your account has been deactivated") {
+        console.log("hihi");
+        window.location.href = "/ReactivateAccount"; // Replace "/activate" with the desired URL
       }
+
     }
+
 
     // console.log(userData);
     // console.log(token)
