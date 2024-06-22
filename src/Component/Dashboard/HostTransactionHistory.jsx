@@ -4,49 +4,100 @@ import { usePDF } from "react-to-pdf";
 import Logo from "../../assets/logo.png";
 import axios from "../../Axios";
 import qs from 'qs';
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
 
-// const sampleBookingDetails = {
-//   bookingDetails1: {
-//     guestName: "Jane Smith",
-//     roomPerNightPrice: 100, // Replace with the actual price per night
-//     guestServiceFee: 20, // Replace with the actual guest service fee
-//     numNights: 10,
-//     nightlyRateAdjustment: -50.7,
-//     hostServiceFee: -28.9,
-//   },
-//   bookingDetails2: {
-//     guestName: "John Doe",
-//     roomPerNightPrice: 120, // Replace with the actual price per night
-//     guestServiceFee: 25, // Replace with the actual guest service fee
-//     numNights: 8,
-//     nightlyRateAdjustment: -40.6,
-//     hostServiceFee: -23.5,
-//   },
-// };
 
-// const data = [
-//   {
-//     key: "1",
-//     guestName: "John Doe",
-//     transactionId: "T12345",
-//     numGuests: 2,
-//     propertyId: "ABC123",
-//     amountReceivedByHost: 70,
-//     paymentAmount: 100,
-//     serivceCharge: 10,
-//   },
-//   {
-//     key: "2",
-//     guestName: "Jane Smith",
-//     transactionId: "T12345",
-//     numGuests: 3,
-//     propertyId: "XYZ789",
-//     amountReceivedByHost: 85,
-//     paymentAmount: 150,
-//     serivceCharge: 15,
-//   },
-//   // Add more booking data as needed
-// ];
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#FFFFFF',
+    padding: 30,
+    fontFamily: 'Helvetica',
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+  },
+  header: {
+    fontSize: 24,
+    marginBottom: 20,
+    color: '#333333',
+    textAlign: 'center',
+  },
+  subHeader: {
+    fontSize: 18,
+    marginTop: 15,
+    marginBottom: 10,
+    color: '#4A4A4A',
+    borderBottom: '1 solid #CCCCCC',
+    paddingBottom: 5,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    fontSize: 12,
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
+    alignSelf: 'center',
+  },
+  label: {
+    color: '#666666',
+  },
+  value: {
+    color: '#333333',
+  },
+});
+
+
+const MyDocument = ({ booking, formatAmountWithCommas }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <Image src={Logo} style={styles.logo} />
+      <Text style={styles.header}>Your transaction receipt from Shbro</Text>
+      
+      <View style={styles.section}>
+        <Text style={styles.subHeader}>Guest Paid</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>{`₦${formatAmountWithCommas(booking.roomPerNightPrice)} * ${booking.numNights} nights`}</Text>
+          <Text style={styles.value}>{`₦${formatAmountWithCommas(booking.roomPerNightPrice * booking.numNights)}`}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Guest service fee</Text>
+          <Text style={styles.value}>{`₦${booking.guestServiceFee}`}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Security fee</Text>
+          <Text style={styles.value}>{`₦${booking.securityFee} (Refundable)`}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.bold}>Total (NGN)</Text>
+          <Text style={styles.bold}>{`₦${booking.paymentAmount}`}</Text>
+        </View>
+
+        <Text style={styles.subHeader}>Breakdowns</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>{`${booking.numNights} nights room fee`}</Text>
+          <Text style={styles.value}>{`₦${formatAmountWithCommas(booking.roomPerNightPrice * booking.numNights)}`}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>{`Host service fee (${booking.serviceFeePercentage}%)`}</Text>
+          <Text style={styles.value}>{`₦${formatAmountWithCommas(booking.hostServiceFee)}`}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.bold}>Total (NGN)</Text>
+          <Text style={styles.bold}>{`₦${booking.amountReceivedByHost}`}</Text>
+        </View>
+      </View>
+    </Page>
+  </Document>
+);
 
 const getRandomuserParams = (params) => ({
   per_page: params.pagination?.pageSize,
@@ -68,7 +119,13 @@ const HostTransactionHistory = () => {
     },
   });
 
-  const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
+  function formatAmountWithCommas(amount) {
+    const [integerPart, decimalPart] = amount.toString().split('.');
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+  }
+
+  const { toPDF, targetRef } = usePDF({ filename: "HostTransactionHistory.pdf" });
 
   const columns = [
     {
@@ -327,12 +384,18 @@ const HostTransactionHistory = () => {
                     </div>
                   </div>
                   {renderBreakdowns(selectedBooking)}
-                  <button
-                    onClick={downloadPDF}
-                    className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-700 mt-4"
+                  <PDFDownloadLink 
+                    document={<MyDocument booking={selectedBooking} formatAmountWithCommas={formatAmountWithCommas} />} 
+                    fileName="transaction_receipt.pdf"
                   >
-                    Download PDF
-                  </button>
+                    {({ blob, url, loading, error }) => 
+                      loading ? 'Loading document...' : (
+                        <button className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-700 mt-4">
+                          Download PDF
+                        </button>
+                      )
+                    }
+                  </PDFDownloadLink>
                 </div>
               </div>
             )}

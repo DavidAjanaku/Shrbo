@@ -5,6 +5,8 @@ import AdminSidebar from "./AdminSidebar";
 import { usePDF } from "react-to-pdf";
 import Logo from "../../assets/logo.png";
 import Axios from "../../Axios";
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
+
 
 const CompletedBooking = () => {
   const [detailsVisible, setDetailsVisible] = useState(false);
@@ -35,6 +37,56 @@ const CompletedBooking = () => {
   
 
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
+
+
+  const styles = StyleSheet.create({
+    page: {
+      flexDirection: 'column',
+      backgroundColor: '#FFFFFF',
+      padding: 30,
+      fontFamily: 'Helvetica',
+    },
+    section: {
+      margin: 10,
+      padding: 10,
+    },
+    header: {
+      fontSize: 24,
+      marginBottom: 20,
+      color: '#333333',
+      textAlign: 'center',
+    },
+    subHeader: {
+      fontSize: 18,
+      marginTop: 15,
+      marginBottom: 10,
+      color: '#4A4A4A',
+      borderBottom: '1 solid #CCCCCC',
+      paddingBottom: 5,
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+      fontSize: 12,
+    },
+    bold: {
+      fontWeight: 'bold',
+    },
+    logo: {
+      width: 100,
+      height: 100,
+      marginBottom: 20,
+      alignSelf: 'center',
+    },
+    label: {
+      color: '#666666',
+    },
+    value: {
+      color: '#333333',
+    },
+  });
+
 
   const columns = [
     {
@@ -67,11 +119,8 @@ const CompletedBooking = () => {
         </span>
       ),
     },
-    // {
-    //   title: "Taxes",
-    //   dataIndex: "taxes",
-    //   key: "taxes",
-    // },
+   
+
     {
       title: "Action",
       key: "action",
@@ -109,6 +158,75 @@ const CompletedBooking = () => {
       });
     }
   };
+
+
+  const MyDocument = ({ booking }) => (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <Image src={Logo} style={styles.logo} />
+        <Text style={styles.header}>Booking Details</Text>
+        
+        <View style={styles.section}>
+          <Text style={styles.subHeader}>Guest Information</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Guest Name:</Text>
+            <Text style={styles.value}>{booking.guestName}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Email:</Text>
+            <Text style={styles.value}>{booking.guestEmail}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Number of Guests:</Text>
+            <Text style={styles.value}>{booking.number_of_guest}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Check-In Date:</Text>
+            <Text style={styles.value}>{new Date(booking["check-In"]).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Check-Out Date:</Text>
+            <Text style={styles.value}>{new Date(booking["check-out"]).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
+          </View>
+  
+          <Text style={styles.subHeader}>Host Information</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Host Name:</Text>
+            <Text style={styles.value}>{booking.hostName}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Host Email:</Text>
+            <Text style={styles.value}>{booking.hostEmail}</Text>
+          </View>
+  
+          <Text style={styles.subHeader}>Property Selection</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Property Name:</Text>
+            <Text style={styles.value}>{booking.property_name}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Property Type:</Text>
+            <Text style={styles.value}>{booking.homeType}</Text>
+          </View>
+  
+          <Text style={styles.subHeader}>Pricing and Payments</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Total Booking Cost:</Text>
+            <Text style={styles.value}>₦{booking.totalamount.toLocaleString('en-US')}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Payment Type:</Text>
+            <Text style={styles.value}>{booking.paymentType}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Payment ID:</Text>
+            <Text style={styles.value}>{booking.paymentId}</Text>
+          </View>
+        </View>
+      </Page>
+    </Document>
+  );
+  
 
   return (
     <div>
@@ -202,19 +320,18 @@ const CompletedBooking = () => {
               {/* <p>Tax: ${selectedBooking.tax}</p> */}
               {/* <p>
                 Guest Service Charge: ${selectedBooking.guest_service_charge}
-              </p> */}
-
-              <button
-                onClick={() =>
-                  toPDF(pdfRef, {
-                    unit: "mm",
-                    format: "a4",
-                  })
-                }
-                className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-700 mt-4"
+              </p> */} <PDFDownloadLink 
+                document={<MyDocument booking={selectedBooking} />} 
+                fileName="booking_details.pdf"
               >
-                Download PDF
-              </button>
+                {({ blob, url, loading, error }) => 
+                  loading ? 'Loading document...' : (
+                    <button className="bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-700 mt-4">
+                      Download PDF
+                    </button>
+                  )
+                }
+              </PDFDownloadLink>
             </div>
           )}
         </Modal>

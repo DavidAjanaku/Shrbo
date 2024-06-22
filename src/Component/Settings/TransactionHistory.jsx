@@ -8,65 +8,137 @@ import { usePDF } from "react-to-pdf";
 import Logo from "../../assets/logo.png";
 import axios from "../../Axios"
 import qs from 'qs';
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
 
-// Sample booking details
-const sampleBookingDetails = {
-  bookingDetails1: {
-    hostName: "Jane Smith",
-    roomPerNightPrice: 100, // Replace with the actual price per night
-    guestServiceFee: 20, // Replace with the actual guest service fee
-    numNights: 10,
-    nightlyRateAdjustment: -50.7,
-    hostServiceFee: -28.9,
-    bookingDates: "2023-02-15 to 2023-02-23",
-    propertyDetails: "Beachfront Villa, Miami Beach",
-    receiptId: "ADkfkfkslf124",
-    paymentMethod: "Card",
-    propertyDescription: "2bed 3 guests",
-    host: "Hosted by Endi",
+
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#FFFFFF',
+    padding: 30,
+    fontFamily: 'Helvetica',
   },
-  bookingDetails2: {
-    hostName: "John Doe",
-    roomPerNightPrice: 120, // Replace with the actual price per night
-    guestServiceFee: 25, // Replace with the actual guest service fee
-    numNights: 8,
-    nightlyRateAdjustment: -40.6,
-    hostServiceFee: -23.5,
-    bookingDates: "2023-01-10 to 2023-01-20",
-    propertyDetails: "Mountain Cabin, Aspen",
-    receiptId: "ADkfkfkslf124",
-    paymentMethod: "Transfer", // Add payment method for the second booking
-    propertyDescription: "2bed 3 guests",
-    host: "Hosted by Daniel",
+  section: {
+    margin: 10,
+    padding: 10,
+    border: '1px solid #E0E0E0',
+    borderRadius: 5,
   },
+  header: {
+    fontSize: 24,
+    marginBottom: 20,
+    color: '#333333',
+    textAlign: 'center',
+  },
+  subHeader: {
+    fontSize: 18,
+    marginTop: 15,
+    marginBottom: 10,
+    color: '#4A4A4A',
+    borderBottom: '1px solid #CCCCCC',
+    paddingBottom: 5,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    fontSize: 12,
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
+    alignSelf: 'center',
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 15,
+    marginBottom: 15,
+    paddingTop: 10,
+    borderTop: '1px solid #CCCCCC',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  label: {
+    color: '#666666',
+  },
+  value: {
+    color: '#333333',
+  },
+});
+
+const formatAmountWithCommas = (amount) => {
+  const [integerPart, decimalPart] = amount.toString().split('.');
+  const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
 };
 
-// Sample transaction data
-// const data = [
-//   {
-//     key: "1",
-//     hostName: "John Doe",
-//     transactionId: "T12345",
-//     numGuests: 2,
-//     propertyId: "ABC123",
-//     bookingStatus: "confirmed",
-//     paymentAmount: 100,
-//     serivceCharge: 10,
-//     bookingDates: "2023-01-10 to 2023-01-20",
-//   },
-//   {
-//     key: "2",
-//     hostName: "Jane Smith",
-//     transactionId: "T12345",
-//     numGuests: 3,
-//     propertyId: "XYZ789",
-//     bookingStatus: "pending",
-//     paymentAmount: 150,
-//     serivceCharge: 15,
-//     bookingDates: "2023-02-15 to 2023-02-23",
-//   },
-//   // Add more booking data as needed
-// ];
+const MyDocument = ({ booking }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <Image src={Logo} style={styles.logo} />
+      <View style={styles.section}>
+        <Text style={styles.header}>Your transaction receipt from Shrbo</Text>
+        
+        <View style={styles.row}>
+          <Text style={[styles.bold, styles.label]}>Receipt ID:</Text>
+          <Text style={styles.value}>{booking.receiptId}</Text>
+        </View>
+        
+        <Text style={styles.subHeader}>Guest Paid</Text>
+        
+        <View style={styles.row}>
+          <Text style={styles.label}>{booking.propertyDetails}</Text>
+          <Text style={styles.value}>{formatAmountWithCommas(booking.roomPerNightPrice)} * {booking.numNights} night(s)</Text>
+        </View>
+        
+        <View style={styles.row}>
+          <Text style={styles.label}>Booking Dates:</Text>
+          <Text style={styles.value}>{booking.bookingDates}</Text>
+        </View>
+        
+        <Text style={styles.subHeader}>Deductions</Text>
+        
+        <View style={styles.row}>
+          <Text style={styles.label}>Service fee:</Text>
+          <Text style={styles.value}>{formatAmountWithCommas(booking.guestServiceFee)} (Refundable)</Text>
+        </View>
+        
+        <View style={styles.row}>
+          <Text style={styles.label}>Security fee:</Text>
+          <Text style={styles.value}>{formatAmountWithCommas(booking.securityFee)}</Text>
+        </View>
+        
+        <View style={styles.totalRow}>
+          <Text style={styles.label}>Total (NGN):</Text>
+          <Text style={styles.value}>{formatAmountWithCommas(booking.paymentAmount)}</Text>
+        </View>
+        
+        <Text style={styles.subHeader}>Description</Text>
+        
+        <View style={styles.row}>
+          <Text style={styles.label}>Payment Method:</Text>
+          <Text style={styles.value}>{booking.paymentMethod}</Text>
+        </View>
+        
+        <View style={styles.row}>
+          <Text style={styles.label}>Property Description:</Text>
+          <Text style={styles.value}>{booking.propertyDescription}</Text>
+        </View>
+        
+        <View style={styles.row}>
+          <Text style={styles.label}>Host:</Text>
+          <Text style={styles.value}>{booking.hostName}</Text>
+        </View>
+      </View>
+    </Page>
+  </Document>
+);
+
 
 
 const getRandomuserParams = (params) => ({
@@ -200,14 +272,13 @@ export default function TransactionHistory() {
   };
 
   // Function to download the PDF
-  const downloadPDF = () => {
-    if (selectedBooking) {
-      toPDF(pdfRef, {
-        unit: "mm",
-        format: "a4", // Set the format to A4 paper size
-      });
-    }
-  };
+  const DownloadPDFLink = ({ booking }) => (
+    <PDFDownloadLink document={<MyDocument booking={booking} />} fileName="TransactionReceipt.pdf">
+      {({ blob, url, loading, error }) =>
+        loading ? 'Loading document...' : 'Download PDF'
+      }
+    </PDFDownloadLink>
+  );
 
   const fetchData = async () => {
     setLoading(true);
@@ -316,7 +387,7 @@ export default function TransactionHistory() {
                 <img src={Logo} alt="Company Logo" className="w-16 h-auto" />
                 <div className="receipt-header flex justify-between items-center">
                   <h2 className="text-xl font-semibold">
-                    Your transaction receipt from Shbro
+                    Your transaction receipt from Shrbo
                   </h2>
                 </div>
                 <div className="receipt-details mt-4">
@@ -390,12 +461,9 @@ export default function TransactionHistory() {
                     </div>
                   </div>
                   {renderBreakdowns(selectedBooking)}
-                  <button
-                    onClick={downloadPDF}
-                    className="bg-orange-500 text-white px-4 py-2 rounded-full hover-bg-orange-700 mt-4"
-                  >
-                    Download PDF
-                  </button>
+                  <Button type="primary" className="mt-4">
+            <DownloadPDFLink booking={selectedBooking} />
+          </Button>
                 </div>
               </div>
             )}
