@@ -6,6 +6,7 @@ import { Button } from "antd";
 import HelpNavigation from "../Component/HelpNavigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPhone } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 export default function CancellationPolicy() {
   return (
@@ -168,7 +169,9 @@ export default function CancellationPolicy() {
           </h1>
           <p>We’ll start with some questions and get you to the right place.</p>
           <div className="mt-10">
+            <Link to="/aboutus">
             <Button>About Us</Button>
+            </Link>
           </div>
         </div>
       </div>
