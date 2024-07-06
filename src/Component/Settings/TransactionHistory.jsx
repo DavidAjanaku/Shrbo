@@ -134,6 +134,18 @@ const MyDocument = ({ booking }) => (
           <Text style={styles.label}>Host:</Text>
           <Text style={styles.value}>{booking.hostName}</Text>
         </View>
+
+        <Text style={styles.subHeader}>Breakdowns</Text>
+      
+      <View style={styles.row}>
+        <Text style={styles.label}>{booking.numNights} nights room fee:</Text>
+        <Text style={styles.value}>₦{formatAmountWithCommas(booking.roomPerNightPrice * booking.numNights)}</Text>
+      </View>
+      
+      <View style={styles.totalRow}>
+        <Text style={styles.label}>Total (NGN):</Text>
+        <Text style={styles.value}>₦{formatAmountWithCommas(booking.paymentAmount)}</Text>
+      </View>
       </View>
     </Page>
   </Document>
