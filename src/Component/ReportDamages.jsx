@@ -111,12 +111,6 @@ const ReportDamage = () => {
 
     // Send the report to the server using Axios
     try {
-      console.table({
-        description: damageDescription,
-        photos,
-        video: [videos],
-        booking_number: bookingNumber,
-      })
       const response = await axios.post('/reportDamage', {
         description: damageDescription,
         photos,

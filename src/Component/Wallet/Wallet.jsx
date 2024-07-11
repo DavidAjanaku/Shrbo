@@ -26,76 +26,15 @@ import WithdrawForm from "./WithdrawForm";
 const Wallet = () => {
 
 
-    const [transactions, setTransactions] = useState([
-
-        // {
-        //     id: "1",
-        //     imageUrl: url,
-        //     status: "Incoming",
-        //     from: "Shbro",
-        //     amount: "1,000"
-
-        // },
-
-
-        // {
-        //     id: "2",
-        //     imageUrl: url,
-        //     status: "Outgoing",
-        //     from: "Shbro",
-        //     amount: "3,000"
-
-        // },
-        // {
-        //     id: "3",
-        //     imageUrl: url,
-        //     status: "Incoming",
-        //     from: "Shbro",
-        //     amount: "500"
-
-        // },
-        // {
-        //     id: "4",
-        //     imageUrl: url,
-        //     status: "Outgoing",
-        //     from: "Shbro",
-        //     amount: "4,000"
-
-        // },
-
-
-    ]);
+    const [transactions, setTransactions] = useState([]);
     const [loadingCards, setLoadingCards] = useState(true);
     const [requestLoading, setRequestLoading] = useState(false);
     const [loadingBalance, setLoadingBalance] = useState(true);
     const [loadingRequest, setLoadingRequest] = useState(true);
     const [loadingTransactions, setLoadingTransactions] = useState(true);
     const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
-
-    const [paymentDetails, setPaymentDetails] = useState([
-        // {
-        //     title: "MasterCard ****4567",
-        //     value: "Expiration: 02/24",
-        //     selected: "",
-        //     //   action: "Remove Payment Method",
-        //     link: "",
-        //     id: "1",
-        //     card_type: "Visa",
-        //     created_at: "",
-        // },
-        // {
-        //     title: "MasterCard ****4567",
-        //     value: "Expiration: 02/24",
-        //     //   action: "Remove Payment Method",
-        //     link: "",
-        //     id: "2",
-        //     selected: "Selected",
-        //     card_type: "Verve",
-        //     created_at: "2",
-        // },
-
-    ]);
-    const [isViewBalance, setViewBalance] = useState(true);
+    const [paymentDetails, setPaymentDetails] = useState([]);
+    const [isViewBalance, setViewBalance] = useState(false);
     const [balance, setBalance] = useState("");
     const [acLoading, setAcLoading] = useState(false);
     const [supportedBanks, setSupportedBanks] = useState([]);
@@ -103,8 +42,7 @@ const Wallet = () => {
 
 
     const { user, setUser, setHost, setAdminStatus } = useStateContext();
-    // const [loading, setLoading] = useState(false);
-
+ 
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -200,7 +138,7 @@ const Wallet = () => {
         toggleSelected(cardId);
 
         await axios.get(`/selectCard/${cardId}/${user.id}`).then(response => {
-            console.log(response);
+            // console.log(response);
             message.success(`Card ${type} Selected successfully`);
         }).catch(err => {
             console.error("Failed to Selected Card", err);
