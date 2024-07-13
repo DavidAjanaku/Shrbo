@@ -175,7 +175,7 @@ const Wallet = () => {
                 {transaction.status == "Incoming" ? <LuArrowDownLeft /> : <LuArrowUpRight />}
 
                 <div className="min-w-0 flex-auto">
-                    <p className="text-sm font-semibold leading-6 text-gray-900">{transaction.for}</p>
+                    <p className="text-sm font-semibold leading-6 text-gray-900">{transaction.from}</p>
                     <p className="mt-1 truncate text-xs leading-5 text-gray-500">{transaction.status == "Incoming" ? "From" : "To"}: {transaction.from},{transaction.for} {transaction.time}</p>
                 </div>
             </div>
