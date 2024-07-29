@@ -69,9 +69,9 @@ export default function usersShow() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (work == "" || speak == "" || lives == "" || occupation == "") {
-      
+
       openNotificationWithIcon("error", "No field should be empty");
-      
+
       return;
     }
     setLoading(true);
@@ -137,10 +137,10 @@ export default function usersShow() {
           // Make a request to get the reviews based on the user ID
           const reviewResponse = await axios.get(`/hostReview/${userId}`);
 
-          setWork(reviewResponse.data.data.aboutUser[0].work);
-          setOccupation(reviewResponse.data.data.aboutUser[0].occupation);
-          setLives(reviewResponse.data.data.aboutUser[0].lives_in);
-          setSpeak(reviewResponse.data.data.aboutUser[0].speaks);
+          setWork(reviewResponse.data.data.aboutUser.work);
+          setOccupation(reviewResponse.data.data.aboutUser.occupation);
+          setLives(reviewResponse.data.data.aboutUser.lives_in);
+          setSpeak(reviewResponse.data.data.aboutUser.speaks);
 
 
         }
@@ -374,13 +374,13 @@ export default function usersShow() {
 
               }
             </div>
-            <CustomModal isOpen={isModalOpen} onClose={closeModal}>
-              {loading ?
-                <div className=' w-full h-screen flex items-center justify-center'>
-                  <div class="containerld"></div>
+            {loading ?
+              <div className=' w-full h-screen flex items-center justify-center'>
+                <div className="containerld"></div>
 
-                </div>
-                :
+              </div>
+              :
+              <CustomModal isOpen={isModalOpen} onClose={closeModal}>
                 <form onSubmit={handleSubmit} className="md:w-2/3  mx-auto p-4">
                   {/* Modal content */}
                   <div className="my-4  mx-auto ">
@@ -521,8 +521,8 @@ export default function usersShow() {
                     </button>
                   </div>
                 </form>
-              }
-            </CustomModal>
+              </CustomModal>
+            }
           </div>
         </div>
         <Footer />
