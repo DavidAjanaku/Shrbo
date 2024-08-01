@@ -374,7 +374,7 @@ export default function usersShow() {
 
               }
             </div>
-            {loading ?
+            {loading&&isModalOpen ?
               <div className=' w-full h-screen flex items-center justify-center'>
                 <div className="containerld"></div>
 
