@@ -36,7 +36,7 @@ export default function usersShow() {
 
   // Function to close the modal
   const closeModal = () => {
-    setRerender(true);
+    // setRerender(true);
 
     setIsModalOpen(false);
   };
@@ -374,13 +374,8 @@ export default function usersShow() {
 
               }
             </div>
-            {loading&&isModalOpen ?
-              <div className=' w-full h-screen flex items-center justify-center'>
-                <div className="containerld"></div>
-
-              </div>
-              :
-              <CustomModal isOpen={isModalOpen} onClose={closeModal}>
+          
+              <CustomModal isOpen={isModalOpen} onClose={closeModal} isloading={loading}>
                 <form onSubmit={handleSubmit} className="md:w-2/3  mx-auto p-4">
                   {/* Modal content */}
                   <div className="my-4  mx-auto ">
@@ -522,7 +517,6 @@ export default function usersShow() {
                   </div>
                 </form>
               </CustomModal>
-            }
           </div>
         </div>
         <Footer />
