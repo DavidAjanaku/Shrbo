@@ -153,6 +153,7 @@ export default class Scheduler extends Component {
 
     if (houseId === "") {
       this.setState({ selectedHouse: null });
+      this.setState({ isSelectedHouseLoading: false });
       return;
     }
 
@@ -1049,7 +1050,7 @@ export default class Scheduler extends Component {
 
 
               {!isSelectedHouseLoading ?
-                <>{selectedHouse && (
+                <>{selectedHouse !=null  && (
                   <FullCalendar
                     plugins={[dayGridPlugin, interactionPlugin, multiMonthPlugin]}
                     initialView="dayGridMonth"

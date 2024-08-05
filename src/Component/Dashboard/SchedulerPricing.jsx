@@ -20,35 +20,7 @@ const Pricing = ({
   isHouseLoading,
 }) => {
   // Define the apartment data
-  const apartments = {
-    "Lekki Admiralty": {
-      basePrice: "₦42",
-      customWeekendPrice: "Add",
-      weeklyDiscount: "10%",
-      weeklyAverage: "₦265000",
-      monthlyDiscount: "20%",
-      monthlyAverage: "₦265000",
-      moreDiscounts: "Early bird, last-minute, trip length",
-    },
-    "Lekki Phase 1": {
-      basePrice: "₦50000",
-      customWeekendPrice: "Add",
-      weeklyDiscount: "15%",
-      weeklyAverage: "₦300000",
-      monthlyDiscount: "25%",
-      monthlyAverage: "₦300000",
-      moreDiscounts: "Early bird, last-minute, trip length",
-    },
-    "Lekki Units square": {
-      basePrice: "₦40005",
-      customWeekendPrice: "Add",
-      weeklyDiscount: "12%",
-      weeklyAverage: "₦200080",
-      monthlyDiscount: "22%",
-      monthlyAverage: "₦200080",
-      moreDiscounts: "Early bird, last-minute, trip length",
-    },
-  };
+  
 
   const [discountModalVisible, setDiscountModalVisible] = useState(false);
   const [pricingModalVisible, setPricingModalVisible] = useState(false);
